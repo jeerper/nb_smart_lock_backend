@@ -24,7 +24,7 @@ public class PU_EVENT_REGISTER extends Structure {
 	/** C type : CHAR[32] */
 	public byte[] szReserved = new byte[32];
 	public PU_EVENT_REGISTER() {
-		super();
+		this.setAlignType(ALIGN_NONE);
 	}
 	@Override
 	protected List<String > getFieldOrder() {
@@ -55,7 +55,7 @@ public class PU_EVENT_REGISTER extends Structure {
 		this.szReserved = szReserved;
 	}
 	public PU_EVENT_REGISTER(Pointer peer) {
-		super(peer);
+		super(peer,ALIGN_NONE);
 		read();
 	}
 	public static class ByReference extends PU_EVENT_REGISTER implements Structure.ByReference {

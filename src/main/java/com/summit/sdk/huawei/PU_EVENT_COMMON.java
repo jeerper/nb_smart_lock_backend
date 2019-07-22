@@ -22,7 +22,7 @@ public class PU_EVENT_COMMON extends Structure {
 	public NativeLong ulIdentifyID;
 	public NativeLong ulChannelId;
 	public PU_EVENT_COMMON() {
-		super();
+		this.setAlignType(ALIGN_NONE);
 	}
 	@Override
 	protected List<String > getFieldOrder() {
@@ -40,7 +40,7 @@ public class PU_EVENT_COMMON extends Structure {
 		this.ulChannelId = ulChannelId;
 	}
 	public PU_EVENT_COMMON(Pointer peer) {
-		super(peer);
+		super(peer,ALIGN_NONE);
 		read();
 	}
 	public static class ByReference extends PU_EVENT_COMMON implements Structure.ByReference {
