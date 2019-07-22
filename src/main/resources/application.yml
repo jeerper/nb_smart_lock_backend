@@ -1,0 +1,18 @@
+server:
+  port: 22233
+spring:
+  profiles:
+    active: pro
+    include: common
+  application:
+    name: "cbb-web-service-skeleton"
+  flyway:
+  # 如果启动的时候需要flyway管理sql脚本的话，将enabled设置为true
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db
+    encoding: UTF-8
+
+mybatis-plus:
+  mapper-locations: classpath:com/summit/dao/*.xml
+  config-location: classpath:mybatis-config.xml

@@ -1,0 +1,15 @@
+version: '2'
+services:
+  backend:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    image: ${projectName}/backend:1.0
+    restart: always
+    env_file:
+    - .env
+    ports:
+    - "${WebServer_Port}:${WebServer_Port}"
+    volumes:
+    - ./logs:/opt/App/logs
+    user: root

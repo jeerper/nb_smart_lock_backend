@@ -1,0 +1,20 @@
+#开发环境
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.140.155:49999/web_service_skeleton?createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8
+    username: root
+    password: Summit2017
+
+  redis:
+    host: 192.168.140.155
+    port: 10001
+eureka:
+  instance:
+    #使用IP注册服务
+    prefer-ip-address: true
+  client:
+    healthcheck:
+      enabled: true
+    serviceUrl:
+      defaultZone: "http://ucp:Summit2018@192.168.140.155:45000/eureka/"

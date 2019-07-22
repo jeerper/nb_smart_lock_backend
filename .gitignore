@@ -1,0 +1,13 @@
+target/
+.project
+.classpath
+.settings/
+.DS_Store
+*.iml
+.idea/
+logs/
+log/
+*.versionsBackup
+disconf/
+*.pdb
+*.db
