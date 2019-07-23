@@ -10,7 +10,7 @@ component_description="智能锁联动业务组件后端服务"
 #组件标签
 component_tag=${projectName}
 #业务组件端口
-Web_Service_Skeleton_Port=47000
+Web_Service_Skeleton_Port=45012
 
 source ${WORKSPACE}/env/env.sh
 
