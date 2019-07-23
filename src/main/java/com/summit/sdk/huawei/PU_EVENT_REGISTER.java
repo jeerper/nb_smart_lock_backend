@@ -39,7 +39,7 @@ public class PU_EVENT_REGISTER extends Structure {
 	 * @param szReserved C type : CHAR[32]
 	 */
 	public PU_EVENT_REGISTER(PU_EVENT_COMMON stPuEventCommon, byte szDeviceId[], byte szDeviceIp[], byte szDeviceType[], byte szReserved[]) {
-		super();
+		this.setAlignType(ALIGN_NONE);
 		this.stPuEventCommon = stPuEventCommon;
 		if ((szDeviceId.length != this.szDeviceId.length)) 
 			throw new IllegalArgumentException("Wrong array size !");

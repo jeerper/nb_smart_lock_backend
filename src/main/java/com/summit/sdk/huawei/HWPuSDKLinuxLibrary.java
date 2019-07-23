@@ -4,7 +4,6 @@ import com.summit.sdk.huawei.PU_META_DATA.ByReference;
 import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
@@ -12968,7 +12967,7 @@ public interface HWPuSDKLinuxLibrary extends Library {
 	 * Original signature : <code>BOOL IVS_PU_EventStatesCallBack(pfGetEventInfoCallBack)</code><br>
 	 * <i>native declaration : E:\video\HWPuSDK.h:10831</i>
 	 */
-	boolean IVS_PU_EventStatesCallBack(HWPuSDKLibrary.pfGetEventInfoCallBack fEventResportCallBack);
+	boolean IVS_PU_EventStatesCallBack(HWPuSDKLinuxLibrary.pfGetEventInfoCallBack fEventResportCallBack);
 	/**
 	 * release sdk resources<br>
 	 * Original signature : <code>BOOL IVS_PU_Cleanup()</code><br>
@@ -14656,7 +14655,7 @@ public interface HWPuSDKLinuxLibrary extends Library {
 	 * Original signature : <code>ULONG IVS_PU_RealPlay(ULONG, LPPU_REAL_PLAY_INFO_S, pfRealDataCallBack, VOID*)</code><br>
 	 * <i>native declaration : E:\video\HWPuSDK.h:11428</i>
 	 */
-	NativeLong IVS_PU_RealPlay(NativeLong ulIdentifyID, PU_REAL_PLAY_INFO pstRealPlayInfo, HWPuSDKLibrary.pfRealDataCallBack fRealDataCallBack, Pointer pUsrData);
+	NativeLong IVS_PU_RealPlay(NativeLong ulIdentifyID, PU_REAL_PLAY_INFO pstRealPlayInfo, HWPuSDKLinuxLibrary.pfRealDataCallBack fRealDataCallBack, Pointer pUsrData);
 	/**
 	 * Original signature : <code>ULONG IVS_PU_RealPlay_V20(ULONG, PU_REAL_PLAY_INFO_V20_S*, PU_MEDIA_ENC_PARA_S*, pfRealDataCallBack, VOID*)</code><br>
 	 * <i>native declaration : E:\video\HWPuSDK.h:11429</i>
@@ -15562,12 +15561,12 @@ public interface HWPuSDKLinuxLibrary extends Library {
 	 * Original signature : <code>BOOL IVS_PU_AlarmInfoStatesCallBack(ULONG, pfGetAlarmInfoCallBack, VOID*)</code><br>
 	 * <i>native declaration : E:\video\HWPuSDK.h:11726</i>
 	 */
-	boolean IVS_PU_AlarmInfoStatesCallBack(NativeLong ulIdentifyID, HWPuSDKLibrary.pfGetAlarmInfoCallBack fAlarmResportCallBack, Pointer pUsrData);
+	boolean IVS_PU_AlarmInfoStatesCallBack(NativeLong ulIdentifyID, HWPuSDKLinuxLibrary.pfGetAlarmInfoCallBack fAlarmResportCallBack, Pointer pUsrData);
 	/**
 	 * Original signature : <code>BOOL IVS_PU_AlarmInfoStatesCallBack_V20(ULONG, pfGetAlarmInfoCallBack_V20, VOID*)</code><br>
 	 * <i>native declaration : E:\video\HWPuSDK.h:11729</i>
 	 */
-	boolean IVS_PU_AlarmInfoStatesCallBack_V20(NativeLong ulIdentifyID, HWPuSDKLibrary.pfGetAlarmInfoCallBack_V20 fAlarmResportCallBack, Pointer pUsrData);
+	boolean IVS_PU_AlarmInfoStatesCallBack_V20(NativeLong ulIdentifyID, HWPuSDKLinuxLibrary.pfGetAlarmInfoCallBack_V20 fAlarmResportCallBack, Pointer pUsrData);
 	/**
 	 * device alarm params, include: temperature alarm, motion detection alarm, hide alarm<br>
 	 * Original signature : <code>BOOL IVS_PU_SetAlarmPara(ULONG, PU_ALARM_TYPE_E, VOID*)</code><br>

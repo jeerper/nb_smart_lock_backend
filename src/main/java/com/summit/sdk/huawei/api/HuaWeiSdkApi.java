@@ -4,6 +4,7 @@ import com.summit.sdk.huawei.HWPuSDKLibrary;
 import com.summit.sdk.huawei.HWPuSDKLinuxLibrary;
 import com.summit.sdk.huawei.callback.ClientFaceInfoCallback;
 import com.summit.sdk.huawei.callback.EventInfoCallBack;
+import com.summit.sdk.huawei.callback.linux.EventInfoLinuxCallBack;
 import com.summit.sdk.huawei.model.DeviceInfo;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Platform;
@@ -26,6 +27,7 @@ public class HuaWeiSdkApi {
     private String sdkPassword;
     private String sdkLocalhost;
     private HWPuSDKLibrary.pfGetEventInfoCallBack pfGetEventInfoCallBack;
+    private HWPuSDKLinuxLibrary.pfGetEventInfoCallBack  pfGetEventInfoLinuxCallBack;
     private ClientFaceInfoCallback clientFaceInfoCallback;
 
     public HuaWeiSdkApi(long sdkPort, String sdkUserName, String sdkPassword, String sdkLocalhost, ClientFaceInfoCallback clientFaceInfoCallback) {
@@ -72,13 +74,18 @@ public class HuaWeiSdkApi {
         }
         log.debug("SDK版本号:" + longNative.getValue().longValue());
         //SDK注册事件回调
-        pfGetEventInfoCallBack = new EventInfoCallBack(sdkPort, sdkUserName, sdkPassword, sdkLocalhost, clientFaceInfoCallback, DEVICE_MAP);
-        boolean callBackBindStatus = HWPuSDKLibrary.INSTANCE.IVS_PU_EventStatesCallBack(pfGetEventInfoCallBack);
+        boolean callBackBindStatus;
+        if(Platform.isWindows()){
+            pfGetEventInfoCallBack = new EventInfoCallBack(sdkPort, sdkUserName, sdkPassword, sdkLocalhost, clientFaceInfoCallback, DEVICE_MAP);
+            callBackBindStatus = HWPuSDKLibrary.INSTANCE.IVS_PU_EventStatesCallBack(pfGetEventInfoCallBack);
+        }else{
+            pfGetEventInfoLinuxCallBack = new EventInfoLinuxCallBack(sdkPort, sdkUserName, sdkPassword, sdkLocalhost, clientFaceInfoCallback, DEVICE_MAP);
+            callBackBindStatus = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_EventStatesCallBack(pfGetEventInfoLinuxCallBack);
+        }
         log.debug("注册事件回调函数绑定:" + callBackBindStatus);
         if (!callBackBindStatus) {
             printReturnMsg();
         }
-
     }
 
     /**
