@@ -80,7 +80,7 @@ public class META_FACE_INFO extends Structure {
 		this.cardID = cardID;
 	}
 	public META_FACE_INFO(Pointer peer) {
-		super(peer);
+		super(peer,ALIGN_NONE);
 	}
 	public static class ByReference extends META_FACE_INFO implements Structure.ByReference {
 		

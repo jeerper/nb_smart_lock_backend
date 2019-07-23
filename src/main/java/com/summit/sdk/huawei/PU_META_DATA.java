@@ -15,20 +15,20 @@ public class PU_META_DATA extends Structure {
 	/** C type : PU_UserData* */
 	public com.summit.sdk.huawei.PU_UserData.ByReference pstMetaUserData;
 	public PU_META_DATA() {
-		super();
+		this.setAlignType(ALIGN_NONE);
 	}
 	protected List<String > getFieldOrder() {
 		return Arrays.asList("usCapacity", "usValidNumber", "pstMetaUserData");
 	}
 	/** @param pstMetaUserData C type : PU_UserData* */
 	public PU_META_DATA(short usCapacity, short usValidNumber, com.summit.sdk.huawei.PU_UserData.ByReference pstMetaUserData) {
-		super();
+		this.setAlignType(ALIGN_NONE);
 		this.usCapacity = usCapacity;
 		this.usValidNumber = usValidNumber;
 		this.pstMetaUserData = pstMetaUserData;
 	}
 	public PU_META_DATA(Pointer peer) {
-		super(peer);
+		super(peer,ALIGN_NONE);
 	}
 	public static class ByReference extends PU_META_DATA implements Structure.ByReference {
 		

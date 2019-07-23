@@ -30,7 +30,7 @@ public class PU_UserData extends Structure {
     }
 
     public PU_UserData(Pointer peer) {
-        super(peer);
+        super(peer,ALIGN_NONE);
         read();
     }
 

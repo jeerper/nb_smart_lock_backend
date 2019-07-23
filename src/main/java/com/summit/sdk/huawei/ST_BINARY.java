@@ -22,12 +22,12 @@ public class ST_BINARY extends Structure {
 	}
 	/** @param pBinaryData C type : UCHAR* */
 	public ST_BINARY(NativeLong ulBinaryLenth, Pointer pBinaryData) {
-		super();
+		this.setAlignType(ALIGN_NONE);
 		this.ulBinaryLenth = ulBinaryLenth;
 		this.pBinaryData = pBinaryData;
 	}
 	public ST_BINARY(Pointer peer) {
-		super(peer);
+		super(peer,ALIGN_NONE);
 	}
 	public static class ByReference extends ST_BINARY implements Structure.ByReference {
 		
