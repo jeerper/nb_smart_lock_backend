@@ -33,7 +33,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
         log.debug("名单库类型:{}", faceInfo.getFaceLibType().getFaceLibTypeDescription());
         FaceLibType faceLibType = faceInfo.getFaceLibType();
         if(faceLibType.equals(FaceLibType.FACE_LIB_WHITE)){
-            RestfulEntityBySummit result = unLockService.toUnLock(new LockRequest("NB100001", "张三"));
+            RestfulEntityBySummit result = unLockService.toUnLock(new LockRequest("NB100002", "张三"));
             LockInfo lockInfo = result.getData() == null ? null : (LockInfo)result.getData();
             log.info("rmid={},type={},content={},objx={},time={}" ,
                     lockInfo.getRmid(),lockInfo.getType(),lockInfo.getContent(),lockInfo.getObjx(),lockInfo.getTime());
