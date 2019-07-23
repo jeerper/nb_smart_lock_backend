@@ -71,13 +71,14 @@ public class PU_REAL_PLAY_INFO extends Structure {
 	 */
 	public byte[] szReserved = new byte[32];
 	public PU_REAL_PLAY_INFO() {
-		super();
+		this.setAlignType(ALIGN_NONE);
 	}
 	protected List<String > getFieldOrder() {
 		return Arrays.asList("ulChannelId", "hPlayWnd", "enStreamType", "enVideoType", "enProtocolType", "enMediaCallbackType", "szLocalIp", "bKeepLive", "stStartTime", "stEndTime", "enMediaCryptoType", "szMediaCrypto", "szReserved");
 	}
 	public PU_REAL_PLAY_INFO(Pointer peer) {
-		super(peer);
+		super(peer,ALIGN_NONE);
+		read();
 	}
 	public static class ByReference extends PU_REAL_PLAY_INFO implements Structure.ByReference {
 		
