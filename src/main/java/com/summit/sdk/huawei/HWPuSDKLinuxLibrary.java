@@ -21,7 +21,6 @@ import java.nio.IntBuffer;
  */
 public interface HWPuSDKLinuxLibrary extends Library {
 	public static final String JNA_LIBRARY_NAME = "hwpusdk";
-//	public static final NativeLibrary JNA_NATIVE_LIB = NativeLibrary.getInstance(HWPuSDKLinuxLibrary.JNA_LIBRARY_NAME);
 	public static final HWPuSDKLinuxLibrary SSL_INSTANCE = Native.load("ssl", HWPuSDKLinuxLibrary.class);
 	public static final HWPuSDKLinuxLibrary INSTANCE = (HWPuSDKLinuxLibrary)Native.load(HWPuSDKLinuxLibrary.JNA_LIBRARY_NAME, HWPuSDKLinuxLibrary.class);
 	/**
