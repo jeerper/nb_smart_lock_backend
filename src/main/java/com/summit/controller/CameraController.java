@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Api(tags = "video模块接口测试")
+@Api(tags = "摄像头操作接口")
 @RestController
-@RequestMapping("/video")
+@RequestMapping("/camera")
 public class CameraController {
     @Autowired
     SdkClient sdkClient;
