@@ -23,6 +23,8 @@ ADD ./target/  /opt/App/
 
 ADD ./target/lib/linux-x86-64/lib64/  /lib64/
 
+RUN chmod -R 777 /lib64/
+
 WORKDIR /opt/App/
 
 ENTRYPOINT ["java", "-jar"]
