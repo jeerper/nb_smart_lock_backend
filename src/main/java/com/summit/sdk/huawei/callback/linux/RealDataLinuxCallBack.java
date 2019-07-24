@@ -80,13 +80,13 @@ public class RealDataLinuxCallBack implements HWPuSDKLinuxLibrary.pfRealDataCall
                     if (faceInfo == null) {
                         break;
                     }
-                    faceInfo.setName(StrUtil.str(userDataEntity.unMetaData.stFaceInfo.name, "").trim());
+                    faceInfo.setName(StrUtil.str(userDataEntity.unMetaData.stFaceInfo.name, "utf-8").trim());
                     faceInfo.setGender(Gender.codeOf(userDataEntity.unMetaData.stFaceInfo.iGender));
-                    faceInfo.setBirthday(StrUtil.str(userDataEntity.unMetaData.stFaceInfo.birthday, "").trim());
-                    faceInfo.setProvince(StrUtil.str(userDataEntity.unMetaData.stFaceInfo.province, "").trim());
-                    faceInfo.setCity(StrUtil.str(userDataEntity.unMetaData.stFaceInfo.city, "").trim());
+                    faceInfo.setBirthday(StrUtil.str(userDataEntity.unMetaData.stFaceInfo.birthday, "utf-8").trim());
+                    faceInfo.setProvince(StrUtil.str(userDataEntity.unMetaData.stFaceInfo.province, "utf-8").trim());
+                    faceInfo.setCity(StrUtil.str(userDataEntity.unMetaData.stFaceInfo.city, "utf-8").trim());
                     faceInfo.setCardType(CardType.codeOf(userDataEntity.unMetaData.stFaceInfo.iCardType));
-                    faceInfo.setCardId(StrUtil.str(userDataEntity.unMetaData.stFaceInfo.cardID, "").trim());
+                    faceInfo.setCardId(StrUtil.str(userDataEntity.unMetaData.stFaceInfo.cardID, "utf-8").trim());
 
                     log.debug("名字:" + faceInfo.getName());
                     log.debug("性别:{}", faceInfo.getGender().getGenderDescription());
@@ -109,7 +109,7 @@ public class RealDataLinuxCallBack implements HWPuSDKLinuxLibrary.pfRealDataCall
                     }
                     byte[] faceLibNameBytes = userDataEntity.unMetaData.stBinay.pBinaryData.getByteArray(0,
                             userDataEntity.unMetaData.stBinay.ulBinaryLenth.intValue());
-                    faceInfo.setFaceLibName(StrUtil.str(faceLibNameBytes, "").trim());
+                    faceInfo.setFaceLibName(StrUtil.str(faceLibNameBytes, "utf-8").trim());
                     log.debug("名单库名称:{}", faceInfo.getFaceLibName());
                     break;
                 //名单库类型
