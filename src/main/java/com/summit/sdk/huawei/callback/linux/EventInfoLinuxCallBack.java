@@ -110,6 +110,7 @@ public class EventInfoLinuxCallBack implements HWPuSDKLinuxLibrary.pfGetEventInf
                 realPlayInfo.enVideoType = HWPuSDKLibrary.PU_VIDEO_TYPE.PU_VIDEO_TYPE_META;
                 realPlayInfo.enProtocolType = HWPuSDKLibrary.PU_PROTOCOL_TYPE.PU_PROTOCOL_TYPE_TCP;
                 realPlayInfo.enMediaCallbackType = HWPuSDKLibrary.PU_MEDIA_CALLBACK_TYPE.PU_MEDIA_CALLBACK_TYPE_META_FRAME;
+                log.debug("主机IP:"+sdkLocalhost);
                 byte[] localIpBytes = StrUtil.bytes(sdkLocalhost);
                 System.arraycopy(localIpBytes, 0, realPlayInfo.szLocalIp, 0, localIpBytes.length);
                 realPlayInfo.bKeepLive = true;
