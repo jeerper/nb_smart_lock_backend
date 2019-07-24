@@ -10,6 +10,9 @@ RUN echo "http://mirrors.ustc.edu.cn/alpine/v3.4/main" > /etc/apk/repositories \
  && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
  && echo "Asia/Shanghai" >  /etc/timezone \
  && apk del tzdata \
+ && apk add gcc \
+ && apk add g++ \
+ && apk add build-base \
  && rm -rf /var/cache/apk/*
 
 ###############################################################################
