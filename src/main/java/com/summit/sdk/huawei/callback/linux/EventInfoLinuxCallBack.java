@@ -1,6 +1,7 @@
 package com.summit.sdk.huawei.callback.linux;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.system.SystemUtil;
 import com.summit.sdk.huawei.HWPuSDKLibrary;
 import com.summit.sdk.huawei.HWPuSDKLinuxLibrary;
 import com.summit.sdk.huawei.PU_DEVICE_REGISTER_RSP;
@@ -110,6 +111,8 @@ public class EventInfoLinuxCallBack implements HWPuSDKLinuxLibrary.pfGetEventInf
                 realPlayInfo.enVideoType = HWPuSDKLibrary.PU_VIDEO_TYPE.PU_VIDEO_TYPE_META;
                 realPlayInfo.enProtocolType = HWPuSDKLibrary.PU_PROTOCOL_TYPE.PU_PROTOCOL_TYPE_TCP;
                 realPlayInfo.enMediaCallbackType = HWPuSDKLibrary.PU_MEDIA_CALLBACK_TYPE.PU_MEDIA_CALLBACK_TYPE_META_FRAME;
+                sdkLocalhost=SystemUtil.getHostInfo().getAddress();
+                log.debug("主机IP:"+ sdkLocalhost);
                 byte[] localIpBytes = StrUtil.bytes(sdkLocalhost);
                 System.arraycopy(localIpBytes, 0, realPlayInfo.szLocalIp, 0, localIpBytes.length);
                 realPlayInfo.bKeepLive = true;
