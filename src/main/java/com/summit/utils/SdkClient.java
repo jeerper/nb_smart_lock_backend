@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 @Component
 public class SdkClient {
     @Autowired
@@ -20,13 +23,13 @@ public class SdkClient {
     @Value("${sdk.localhost}")
     private String localhost;
 
-//    @PostConstruct
+    @PostConstruct
     public void init() {
         huaWeiSdkApi = new HuaWeiSdkApi(port, userName, password, localhost,clientFaceInfoCallback);
         huaWeiSdkApi.init();
     }
 
-//    @PreDestroy
+    @PreDestroy
     public void destroy() {
         huaWeiSdkApi.destroy();
     }
