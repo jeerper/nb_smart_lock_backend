@@ -23,7 +23,7 @@ public class PU_TIME extends Structure {
 	/** C type : CHAR[3] */
 	public byte[] szSecond = new byte[3];
 	public PU_TIME() {
-		super();
+		this.setAlignType(ALIGN_NONE);
 	}
 	protected List<String > getFieldOrder() {
 		return Arrays.asList("szYear", "szMonth", "szDay", "szHour", "szMinute", "szSecond");
@@ -37,7 +37,7 @@ public class PU_TIME extends Structure {
 	 * @param szSecond C type : CHAR[3]
 	 */
 	public PU_TIME(byte szYear[], byte szMonth[], byte szDay[], byte szHour[], byte szMinute[], byte szSecond[]) {
-		super();
+		this.setAlignType(ALIGN_NONE);
 		if ((szYear.length != this.szYear.length)) 
 			throw new IllegalArgumentException("Wrong array size !");
 		this.szYear = szYear;
@@ -58,7 +58,8 @@ public class PU_TIME extends Structure {
 		this.szSecond = szSecond;
 	}
 	public PU_TIME(Pointer peer) {
-		super(peer);
+		super(peer,ALIGN_NONE);
+		read();
 	}
 	public static class ByReference extends PU_TIME implements Structure.ByReference {
 		

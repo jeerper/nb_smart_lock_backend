@@ -60,7 +60,7 @@ public class META_FACE_INFO extends Structure {
 	 * C type : CHAR[(32)]
 	 */
 	public META_FACE_INFO(byte name[], int iGender, byte birthday[], byte province[], byte city[], int iCardType, byte cardID[]) {
-		super();
+		this.setAlignType(ALIGN_NONE);
 		if ((name.length != this.name.length)) 
 			throw new IllegalArgumentException("Wrong array size !");
 		this.name = name;

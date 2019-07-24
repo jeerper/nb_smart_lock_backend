@@ -23,7 +23,7 @@ public class PU_SYSTEM_TIME extends Structure {
 	/** C type : CHAR[32] */
 	public byte[] szReserve = new byte[32];
 	public PU_SYSTEM_TIME() {
-		super();
+		this.setAlignType(ALIGN_NONE);
 	}
 	protected List<String > getFieldOrder() {
 		return Arrays.asList("stSystime", "lTimeZone", "ulDotTimeZone", "szReserve");
@@ -36,7 +36,7 @@ public class PU_SYSTEM_TIME extends Structure {
 	 * @param szReserve C type : CHAR[32]
 	 */
 	public PU_SYSTEM_TIME(PU_TIME stSystime, NativeLong lTimeZone, NativeLong ulDotTimeZone, byte szReserve[]) {
-		super();
+		this.setAlignType(ALIGN_NONE);
 		this.stSystime = stSystime;
 		this.lTimeZone = lTimeZone;
 		this.ulDotTimeZone = ulDotTimeZone;
@@ -45,7 +45,8 @@ public class PU_SYSTEM_TIME extends Structure {
 		this.szReserve = szReserve;
 	}
 	public PU_SYSTEM_TIME(Pointer peer) {
-		super(peer);
+		super(peer,ALIGN_NONE);
+		read();
 	}
 	public static class ByReference extends PU_SYSTEM_TIME implements Structure.ByReference {
 		
