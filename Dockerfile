@@ -5,8 +5,14 @@ FROM gizmotronic/oracle-java8 as operating_system
 
 ENV LANG C.UTF-8
 
-RUN ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-    && dpkg-reconfigure -f noninteractive tzdata
+ENV TZ 'Asia/Shanghai'
+RUN echo $TZ > /etc/timezone \
+    && apt-get update \
+    && apt-get install -y tzdata \
+    && rm /etc/localtime \
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+    && dpkg-reconfigure -f noninteractive tzdata \
+    && apt-get clean
 
 #RUN echo "http://mirrors.ustc.edu.cn/alpine/v3.4/main" > /etc/apk/repositories \
 # && echo "http://mirrors.ustc.edu.cn/alpine/v3.4/community" >> /etc/apk/repositories \
