@@ -21,6 +21,8 @@ MAINTAINER liuyuan <405653510@qq.com>
 
 ADD ./target/  /opt/App/
 
+ADD ./target/lib/linux-x86-64/lib64/  /lib64/
+
 WORKDIR /opt/App/
 
 ENTRYPOINT ["java", "-jar"]
