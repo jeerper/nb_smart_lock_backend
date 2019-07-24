@@ -23,7 +23,11 @@ ADD ./target/  /opt/App/
 
 ADD ./target/lib/linux-x86-64/lib64/  /lib64/
 
+ADD ./target/lib/linux-x86-64/lib/  /lib64/
+
 RUN chmod -R 777 /lib64/
+
+RUN chmod -R 777 /lib/
 
 WORKDIR /opt/App/
 
