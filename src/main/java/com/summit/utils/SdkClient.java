@@ -7,9 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
 @Slf4j
 @Component
 public class SdkClient {
@@ -25,18 +22,16 @@ public class SdkClient {
     @Value("${sdk.localhost}")
     private String localhost;
 
-    @PostConstruct
+    //    @PostConstruct
     public void init() {
-        try {
-            huaWeiSdkApi = new HuaWeiSdkApi(port, userName, password, localhost, clientFaceInfoCallback);
-            huaWeiSdkApi.init();
-        } catch (Exception e) {
-            log.error("错误", e);
-        }
+
+        huaWeiSdkApi = new HuaWeiSdkApi(port, userName, password, localhost, clientFaceInfoCallback);
+        huaWeiSdkApi.init();
+
 
     }
 
-    @PreDestroy
+    //    @PreDestroy
     public void destroy() {
         huaWeiSdkApi.destroy();
     }
