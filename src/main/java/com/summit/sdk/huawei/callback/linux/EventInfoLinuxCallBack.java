@@ -89,8 +89,8 @@ public class EventInfoLinuxCallBack implements HWPuSDKLinuxLibrary.pfGetEventInf
                     int hour = Integer.valueOf(StrUtil.str(timeBytes.szHour, "").trim());
                     int minute = Integer.valueOf(StrUtil.str(timeBytes.szMinute, "").trim());
                     int second = Integer.valueOf(StrUtil.str(timeBytes.szSecond, "").trim());
-                    int timeZone = time.lTimeZone.intValue();
-                    String timeString = new DateTime(year, month, day, hour + timeZone, minute, second).toString("yyyy-MM-dd HH:mm:ss");
+//                    int timeZone = time.lTimeZone.intValue();
+                    String timeString = new DateTime(year, month, day, hour + 8, minute, second).toString("yyyy-MM-dd HH:mm:ss");
                     log.debug("设备时间:" + timeString);
                 }
 
@@ -110,8 +110,6 @@ public class EventInfoLinuxCallBack implements HWPuSDKLinuxLibrary.pfGetEventInf
                 realPlayInfo.enVideoType = HWPuSDKLibrary.PU_VIDEO_TYPE.PU_VIDEO_TYPE_META;
                 realPlayInfo.enProtocolType = HWPuSDKLibrary.PU_PROTOCOL_TYPE.PU_PROTOCOL_TYPE_TCP;
                 realPlayInfo.enMediaCallbackType = HWPuSDKLibrary.PU_MEDIA_CALLBACK_TYPE.PU_MEDIA_CALLBACK_TYPE_META_FRAME;
-//                sdkLocalhost=SystemUtil.getHostInfo().getAddress();
-//                log.debug("主机IP:"+ sdkLocalhost);
                 byte[] localIpBytes = StrUtil.bytes(sdkLocalhost);
                 System.arraycopy(localIpBytes, 0, realPlayInfo.szLocalIp, 0, localIpBytes.length);
                 realPlayInfo.bKeepLive = true;
