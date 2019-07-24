@@ -7,10 +7,11 @@ services:
     image: ${projectName}/backend:1.0
     restart: always
     env_file:
-    - .env
-    ports:
-    - "${WebServer_Port}:${WebServer_Port}"
-    - "6060:6060"
+      - .env
+    network_mode: "host"
+    #    ports:
+    #    - "${WebServer_Port}:${WebServer_Port}"
+    #    - "6060:6060"
     volumes:
-    - ./logs:/opt/App/logs
+      - ./logs:/opt/App/logs
     user: root
