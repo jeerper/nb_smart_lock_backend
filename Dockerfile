@@ -1,7 +1,7 @@
 ###############################################################################
 #                             第一阶段构建:Docker容器基础操作系统镜像
 ###############################################################################
-FROM openjdk:8 as operating_system
+FROM gizmotronic/oracle-java8 as operating_system
 
 #RUN echo "http://mirrors.ustc.edu.cn/alpine/v3.4/main" > /etc/apk/repositories \
 # && echo "http://mirrors.ustc.edu.cn/alpine/v3.4/community" >> /etc/apk/repositories \
@@ -21,8 +21,7 @@ MAINTAINER liuyuan <405653510@qq.com>
 
 ADD ./target/  /opt/App/
 
-ADD ./target/lib/linux-x86-64/lib64/libFEC.so  /lib/libFEC.so
-ADD ./target/lib/linux-x86-64/lib64/libSEC.so  /lib/libSEC.so
+ADD ./target/lib/linux-x86-64/lib64/ /lib/
 
 WORKDIR /opt/App/
 
