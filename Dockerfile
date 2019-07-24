@@ -23,7 +23,9 @@ ADD ./target/  /opt/App/
 
 ADD ./target/lib/linux-x86-64/lib64/  /lib64/
 
-RUN chmod -R 777 /lib64/
+RUN chmod -R 777 /lib64/libFEC.so
+
+RUN chmod -R 777 /lib64/libSEC.so
 
 WORKDIR /opt/App/
 
