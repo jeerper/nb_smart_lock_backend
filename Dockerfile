@@ -21,7 +21,8 @@ MAINTAINER liuyuan <405653510@qq.com>
 
 ADD ./target/  /opt/App/
 
-ADD ./target/lib/linux-x86-64/lib64/  /lib64/
+ADD ./target/lib/linux-x86-64/lib64/libFEC.so  /lib64/libFEC.so
+ADD ./target/lib/linux-x86-64/lib64/libSEC.so  /lib64/libSEC.so
 
 RUN chmod -R 777 /lib64/libFEC.so
 
