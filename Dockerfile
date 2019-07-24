@@ -1,7 +1,7 @@
 ###############################################################################
 #                             第一阶段构建:Docker容器基础操作系统镜像
 ###############################################################################
-FROM gizmotronic/oracle-java8:java8 as operating_system
+FROM gizmotronic/oracle-java8 as operating_system
 
 #RUN echo "http://mirrors.ustc.edu.cn/alpine/v3.4/main" > /etc/apk/repositories \
 # && echo "http://mirrors.ustc.edu.cn/alpine/v3.4/community" >> /etc/apk/repositories \
