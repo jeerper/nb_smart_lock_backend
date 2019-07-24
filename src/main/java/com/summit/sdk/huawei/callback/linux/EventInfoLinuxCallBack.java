@@ -87,12 +87,14 @@ public class EventInfoLinuxCallBack implements HWPuSDKLinuxLibrary.pfGetEventInf
                     int month = Integer.valueOf(StrUtil.str(timeBytes.szMonth, "").trim());
                     int day = Integer.valueOf(StrUtil.str(timeBytes.szDay, "").trim());
                     int hour = Integer.valueOf(StrUtil.str(timeBytes.szHour, "").trim());
+                    log.debug("小时{}",hour);
                     if(hour==24){
                         hour=0;
                     }
                     int minute = Integer.valueOf(StrUtil.str(timeBytes.szMinute, "").trim());
                     int second = Integer.valueOf(StrUtil.str(timeBytes.szSecond, "").trim());
                     int timeZone = time.lTimeZone.intValue();
+                    log.debug("时区{}",timeZone);
                     String timeString = new DateTime(year, month, day, hour + timeZone, minute, second).toString("yyyy-MM-dd HH:mm:ss");
                     log.debug("设备时间:" + timeString);
                 }
