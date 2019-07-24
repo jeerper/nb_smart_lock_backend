@@ -9,9 +9,6 @@ services:
     env_file:
       - .env
     network_mode: "host"
-    #    ports:
-    #    - "${WebServer_Port}:${WebServer_Port}"
-    #    - "6060:6060"
     volumes:
       - ./logs:/opt/App/logs
     user: root
