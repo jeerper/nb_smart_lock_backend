@@ -1,32 +1,4 @@
-###############################################################################
-#                             第一阶段构建:Docker容器基础操作系统镜像
-###############################################################################
-FROM gizmotronic/oracle-java8 as operating_system
-
-ENV LANG C.UTF-8
-
-ENV TZ 'Asia/Shanghai'
-RUN echo $TZ > /etc/timezone \
-    && apt-get update \
-    && apt-get install -y tzdata \
-    && rm /etc/localtime \
-    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
-    && dpkg-reconfigure -f noninteractive tzdata \
-    && apt-get clean
-
-#RUN echo "http://mirrors.ustc.edu.cn/alpine/v3.4/main" > /etc/apk/repositories \
-# && echo "http://mirrors.ustc.edu.cn/alpine/v3.4/community" >> /etc/apk/repositories \
-# && apk update \
-# && apk add tzdata \
-# && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-# && echo "Asia/Shanghai" >  /etc/timezone \
-# && apk del tzdata \
-# && rm -rf /var/cache/apk/*
-
-###############################################################################
-#                             第二阶段构建:将应用打包进容器
-###############################################################################
-FROM operating_system
+FROM ly405653510/java8-oracle-utf-8-shanghai
 
 MAINTAINER liuyuan <405653510@qq.com>
 
