@@ -66,6 +66,13 @@ public class EventInfoCallBack implements HWPuSDKLibrary.pfGetEventInfoCallBack 
                     HuaWeiSdkApi.printReturnMsg();
                     break;
                 }
+                if (deviceMap.containsKey(deviceIp)) {
+                    log.debug("设备重复注册,退出以前的登录");
+                    NativeLong oldUlIdentifyId = deviceMap.get(deviceIp).getUlIdentifyId();
+                    HWPuSDKLibrary.INSTANCE.IVS_PU_StopAllRealPlay(oldUlIdentifyId);
+                    HWPuSDKLibrary.INSTANCE.IVS_PU_Logout(oldUlIdentifyId);
+                    deviceMap.remove(deviceIp);
+                }
                 boolean loginStatus = HWPuSDKLibrary.INSTANCE.IVS_PU_LoginByID(arg.ulIdentifyID, sdkUserName, sdkPassword);
                 log.debug("设备登录状态:" + loginStatus);
                 if (!loginStatus) {

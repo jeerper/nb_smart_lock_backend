@@ -68,13 +68,20 @@ public class EventInfoLinuxCallBack implements HWPuSDKLinuxLibrary.pfGetEventInf
                     HuaWeiSdkApi.printReturnMsg();
                     break;
                 }
+                if (deviceMap.containsKey(deviceIp)) {
+                    log.debug("设备重复注册,退出以前的登录");
+                    NativeLong oldUlIdentifyId = deviceMap.get(deviceIp).getUlIdentifyId();
+                    HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_StopAllRealPlay(oldUlIdentifyId);
+                    HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_Logout(oldUlIdentifyId);
+                    deviceMap.remove(deviceIp);
+                }
+
                 boolean loginStatus = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_LoginByID(arg.ulIdentifyID, sdkUserName, sdkPassword);
                 log.debug("设备登录状态:" + loginStatus);
                 if (!loginStatus) {
                     HuaWeiSdkApi.printReturnMsg();
                     break;
                 }
-
 
                 PU_SYSTEM_TIME time = new PU_SYSTEM_TIME();
                 boolean timeGetStatus = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_GetDeviceTime(arg.ulIdentifyID, time);
@@ -98,7 +105,8 @@ public class EventInfoLinuxCallBack implements HWPuSDKLinuxLibrary.pfGetEventInf
                 deviceIpPointer.setString(0, deviceIp);
                 deviceMap.put(deviceIp, new DeviceInfo(deviceIpPointer, arg.ulIdentifyID));
 
-                boolean alarmCallBackBindStatus = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AlarmInfoStatesCallBack(arg.ulIdentifyID, pfGetAlarmInfoCallBack,
+                boolean alarmCallBackBindStatus = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AlarmInfoStatesCallBack(arg.ulIdentifyID,
+                        pfGetAlarmInfoCallBack,
                         deviceIpPointer);
                 log.debug("告警上报回调函数绑定:" + alarmCallBackBindStatus);
 
@@ -191,7 +199,7 @@ public class EventInfoLinuxCallBack implements HWPuSDKLinuxLibrary.pfGetEventInf
                 log.debug("从设备下线事件");
                 break;
             default:
-                log.debug("未知事件类型:{}",arg.enEventType);
+                log.debug("未知事件类型:{}", arg.enEventType);
                 break;
         }
     }
