@@ -189,6 +189,7 @@ public class EventInfoCallBack implements HWPuSDKLibrary.pfGetEventInfoCallBack 
                 log.debug("从设备下线事件");
                 break;
             default:
+                log.debug("未知事件类型:{}",arg.enEventType);
                 break;
         }
     }

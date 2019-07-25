@@ -191,6 +191,7 @@ public class EventInfoLinuxCallBack implements HWPuSDKLinuxLibrary.pfGetEventInf
                 log.debug("从设备下线事件");
                 break;
             default:
+                log.debug("未知事件类型:{}",arg.enEventType);
                 break;
         }
     }
