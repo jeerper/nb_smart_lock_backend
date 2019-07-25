@@ -74,6 +74,7 @@ public class EventInfoLinuxCallBack implements HWPuSDKLinuxLibrary.pfGetEventInf
                     HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_StopAllRealPlay(oldUlIdentifyId);
                     HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_Logout(oldUlIdentifyId);
                     deviceMap.remove(deviceIp);
+                    break;
                 }
 
                 boolean loginStatus = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_LoginByID(arg.ulIdentifyID, sdkUserName, sdkPassword);
