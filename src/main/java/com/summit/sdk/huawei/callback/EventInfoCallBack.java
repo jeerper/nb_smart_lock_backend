@@ -72,6 +72,7 @@ public class EventInfoCallBack implements HWPuSDKLibrary.pfGetEventInfoCallBack 
                     HWPuSDKLibrary.INSTANCE.IVS_PU_StopAllRealPlay(oldUlIdentifyId);
                     HWPuSDKLibrary.INSTANCE.IVS_PU_Logout(oldUlIdentifyId);
                     deviceMap.remove(deviceIp);
+                    break;
                 }
                 boolean loginStatus = HWPuSDKLibrary.INSTANCE.IVS_PU_LoginByID(arg.ulIdentifyID, sdkUserName, sdkPassword);
                 log.debug("设备登录状态:" + loginStatus);
