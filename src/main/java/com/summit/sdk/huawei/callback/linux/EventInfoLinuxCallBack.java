@@ -174,6 +174,9 @@ public class EventInfoLinuxCallBack implements HWPuSDKLinuxLibrary.pfGetEventInf
             case HWPuSDKLibrary.PU_EVENT_TYPE.PU_EVENT_TYPE_REALPALY_ERROR:
                 log.debug("实况异常");
                 HuaWeiSdkApi.printReturnMsg();
+                HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_StopAllRealPlay(arg.ulIdentifyID);
+                HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_Logout(arg.ulIdentifyID);
+                removeDeviceMapByUlIdentifyId(arg.ulIdentifyID);
                 break;
             case HWPuSDKLibrary.PU_EVENT_TYPE.PU_EVENT_TYPE_REPORT_VISUAL_INFO:
                 log.debug("上报可视化信息");
