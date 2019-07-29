@@ -21,7 +21,7 @@ spring_boot_admin_username="ucp"
 spring_boot_admin_password="Summit2018"
 
 #服务器网卡名称
-networkCardName="`ip addr | sed -r -n ' s/^[0-9]+: (.*):.*/\1/p' | grep en`"
+networkCardName="`ip addr | grep 'state UP' | sed -r -n ' s/^[0-9]+: (.*):.*/\1/p' | grep -v "veth\|br\|overlay\|lo"`"
 echo "networkCardName：${networkCardName}"
 
 #注册中心IP
