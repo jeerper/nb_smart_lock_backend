@@ -2,6 +2,11 @@
 server:
   port: ${WebServer_Port}
 spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://${Registry_Center_IP:localhost}:49999/cbb_nb_smart_lock?useOldAliasMetadataBehavior=true&createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8
+    username: root
+    password: Summit2017
   redis:
     host: "${Registry_Center_IP:localhost}"
     port: 10001
