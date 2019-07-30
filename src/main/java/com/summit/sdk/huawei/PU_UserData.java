@@ -43,6 +43,10 @@ public class PU_UserData extends Structure {
                 unMetaData.setType(ST_BINARY.class);
                 unMetaData.read();
                 break;
+            case HWPuSDKLibrary.LAYER_THREE_TYPE.PANORAMA_PIC:
+                unMetaData.setType(ST_BINARY.class);
+                unMetaData.read();
+                break;
             case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_INFO:
                 unMetaData.setType(META_FACE_INFO.class);
                 unMetaData.read();
@@ -60,6 +64,10 @@ public class PU_UserData extends Structure {
                 unMetaData.read();
                 break;
             case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_MATCHRATE:
+                unMetaData.setType(Integer.TYPE);
+                unMetaData.read();
+                break;
+            case HWPuSDKLibrary.LAYER_THREE_TYPE.TARGET_TYPE:
                 unMetaData.setType(Integer.TYPE);
                 unMetaData.read();
                 break;

@@ -42,7 +42,11 @@ public class FaceInfo {
      */
     private FaceLibType faceLibType;
     /**
-     * 人脸识别全景图
+     * 全景图片
+     */
+    private byte[] panoramaPic;
+    /**
+     * 人脸全景
      */
     private byte[] facePanorama;
     /**
@@ -61,6 +65,8 @@ public class FaceInfo {
      * 设备IP
      */
     private String deviceIp;
+
+    private Integer targetType;
 
     public String getName() {
         return name;
@@ -180,5 +186,21 @@ public class FaceInfo {
 
     public void setDeviceIp(String deviceIp) {
         this.deviceIp = deviceIp;
+    }
+
+    public byte[] getPanoramaPic() {
+        return panoramaPic;
+    }
+
+    public void setPanoramaPic(byte[] panoramaPic) {
+        this.panoramaPic = panoramaPic;
+    }
+
+    public Integer getTargetType() {
+        return targetType;
+    }
+
+    public void setTargetType(Integer targetType) {
+        this.targetType = targetType;
     }
 }

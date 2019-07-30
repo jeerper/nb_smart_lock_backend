@@ -64,17 +64,17 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
             switch (userDataEntity.eType) {
                 //人脸匹配率
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_MATCHRATE:
-                    log.debug("================人脸信息业务处理=================");
+                    log.debug("================人脸匹配率业务处理=================");
                     if (faceInfo == null) {
                         faceInfo = new FaceInfo();
                     }
                     float matchRate = userDataEntity.unMetaData.IntValue / 100f;
                     faceInfo.setFaceMatchRate(matchRate);
-
                     log.debug("人脸匹配率:{}%", faceInfo.getFaceMatchRate());
                     break;
                 //人脸信息,对应摄像头的人脸库信息
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_INFO:
+                    log.debug("================人脸信息业务处理=================");
                     if (faceInfo == null) {
                         break;
                     }
@@ -102,6 +102,7 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
                     break;
                 //名单库名字
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_LIB_NAME:
+                    log.debug("================名单库名字业务处理=================");
                     if (faceInfo == null) {
                         break;
                     }
@@ -112,26 +113,38 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
                     break;
                 //名单库类型
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_LIB_TYPE:
+                    log.debug("================名单库类型业务处理=================");
                     if (faceInfo == null) {
                         break;
                     }
                     faceInfo.setFaceLibType(FaceLibType.codeOf(userDataEntity.unMetaData.uIntValue));
                     log.debug("名单库类型:{}", faceInfo.getFaceLibType().getFaceLibTypeDescription());
                     break;
-                //人脸识别全景图
+                //人脸全景
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_PANORAMA:
+                    log.debug("================人脸全景图业务处理=================");
+                    byte[] facePanoramaBytes = userDataEntity.unMetaData.stBinay.pBinaryData.getByteArray(0,
+                            userDataEntity.unMetaData.stBinay.ulBinaryLenth.intValue());
+                    log.debug("人脸全景图长度:{}", facePanoramaBytes.length);
                     if (faceInfo == null) {
                         break;
                     }
-                    byte[] facePanoramaBytes = userDataEntity.unMetaData.stBinay.pBinaryData.getByteArray(0,
-                            userDataEntity.unMetaData.stBinay.ulBinaryLenth.intValue());
-
                     faceInfo.setFacePanorama(facePanoramaBytes);
-
-                    log.debug("人脸识别全景图长度:{}", faceInfo.getFacePanorama().length);
+                    break;
+                //全景图片
+                case HWPuSDKLibrary.LAYER_THREE_TYPE.PANORAMA_PIC:
+                    log.debug("================全景图业务处理=================");
+                    if (faceInfo == null) {
+                        break;
+                    }
+                    byte[] panoramaPicBytes = userDataEntity.unMetaData.stBinay.pBinaryData.getByteArray(0,
+                            userDataEntity.unMetaData.stBinay.ulBinaryLenth.intValue());
+                    faceInfo.setPanoramaPic(panoramaPicBytes);
+                    log.debug("全景图片长度:{}", faceInfo.getPanoramaPic().length);
                     break;
                 //人脸识别抠图
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_PIC:
+                    log.debug("================人脸识别抠图业务处理=================");
                     if (faceInfo == null) {
                         break;
                     }
@@ -142,6 +155,7 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
                     break;
                 //人脸识别和人脸库中匹配的图片
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_MATCH:
+                    log.debug("================人脸识别和人脸库中匹配的图片业务处理=================");
                     if (faceInfo == null) {
                         break;
                     }
@@ -152,6 +166,7 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
                     break;
                 //抓拍时间
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.PIC_SNAPSHOT_TIME:
+                    log.debug("================抓拍时间业务处理=================");
                     if (faceInfo == null) {
                         break;
                     }
@@ -170,6 +185,14 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
                     break;
                 //target类型，当前用于区分人脸后处理抠图和人脸识别以及人脸识别多机协同
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.TARGET_TYPE:
+                    int targetType = userDataEntity.unMetaData.IntValue;
+                    if (targetType == 2) {
+                        log.debug("检测类型为:" + targetType);
+                        if (faceInfo == null) {
+                            faceInfo = new FaceInfo();
+                        }
+                        faceInfo.setTargetType(targetType);
+                    }
                     break;
                 //车辆类型
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.VEHICLE_TYPE:
