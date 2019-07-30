@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.summit.dao.repository.FaceInfoDao">
+  <resultMap id="BaseResultMap" type="com.summit.dao.entity.FaceInfo">
+    <result column="face_id" jdbcType="VARCHAR" property="faceId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="gender" jdbcType="INTEGER" property="gender" />
+    <result column="birthday" jdbcType="TIMESTAMP" property="birthday" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="card_type" jdbcType="INTEGER" property="cardType" />
+    <result column="card_id" jdbcType="VARCHAR" property="cardId" />
+    <result column="face_match_rate" jdbcType="REAL" property="faceMatchRate" />
+    <result column="face_lib_name" jdbcType="VARCHAR" property="faceLibName" />
+    <result column="face_lib_type" jdbcType="INTEGER" property="faceLibType" />
+<!--    <result column="face_panorama_id" jdbcType="VARCHAR" property="facePanoramaId" />-->
+<!--    <result column="face_pic_id" jdbcType="VARCHAR" property="facePicId" />-->
+<!--    <result column="face_match_id" jdbcType="VARCHAR" property="faceMatchId" />-->
+    <result column="device_ip" jdbcType="VARCHAR" property="deviceIp" />
+    <result column="pic_snapshot_time" jdbcType="TIMESTAMP" property="picSnapshotTime" />
+
+    <association property="facePanorama" javaType="com.summit.dao.entity.FileInfo">
+      <result column="fi1_id" jdbcType="VARCHAR" property="fileId" />
+      <result column="fi1_name" jdbcType="VARCHAR" property="filenName" />
+      <result column="fi1_path" jdbcType="LONGVARCHAR" property="filePath" />
+      <result column="fi1_des" jdbcType="LONGVARCHAR" property="description" />
+    </association>
+    <association property="facePic" javaType="com.summit.dao.entity.FileInfo">
+      <result column="fi2_id" jdbcType="VARCHAR" property="fileId" />
+      <result column="fi2_name" jdbcType="VARCHAR" property="filenName" />
+      <result column="fi2_path" jdbcType="LONGVARCHAR" property="filePath" />
+      <result column="fi2_des" jdbcType="LONGVARCHAR" property="description" />
+    </association>
+    <association property="faceMatch" javaType="com.summit.dao.entity.FileInfo">
+      <result column="fi3_id" jdbcType="VARCHAR" property="fileId" />
+      <result column="fi3_name" jdbcType="VARCHAR" property="filenName" />
+      <result column="fi3_path" jdbcType="LONGVARCHAR" property="filePath" />
+      <result column="fi3_des" jdbcType="LONGVARCHAR" property="description" />
+    </association>
+
+  </resultMap>
+  <sql id="Base_Column_List">
+    face_id, user_name, user_id, gender, birthday, province, city, card_type, card_id, 
+    face_match_rate, face_lib_name, face_lib_type, face_panorama_id, face_pic_id, face_match_id, 
+    device_ip, pic_snapshot_time
+  </sql>
+
+  <sql id="Face_Have_Alias_List">
+    fa.face_id, fa.user_name, fa.user_id, fa.gender, fa.birthday, fa.province, fa.city, fa.card_type, fa.card_id,
+    fa.face_match_rate, fa.face_lib_name, fa.face_lib_type, fa.face_panorama_id, fa.face_pic_id, fa.face_match_id,
+    fa.device_ip, fa.pic_snapshot_time
+  </sql>
+
+  <select id="selectByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Face_Have_Alias_List" />,
+    fi1.file_id fi1_id, fi1.filen_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
+    fi2.file_id fi2_id, fi2.filen_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
+    fi3.file_id fi3_id, fi3.filen_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    from face_info fa join file_info fi1 on fa.face_panorama_id=fi1.file_id
+    join file_info fi2 on fa.face_pic_id=fi2.file_id
+    join file_info fi3 on fa.face_match_id=fi3.file_id
+    <where>
+      fa.user_name=#{userName}
+    </where>
+  </select>
+
+  <select id="selectCondition"  resultMap="BaseResultMap">
+    select
+    <include refid="Face_Have_Alias_List" />,
+    fi1.file_id fi1_id, fi1.filen_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
+    fi2.file_id fi2_id, fi2.filen_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
+    fi3.file_id fi3_id, fi3.filen_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    from face_info fa join file_info fi1 on fa.face_panorama_id=fi1.file_id
+    join file_info fi2 on fa.face_pic_id=fi2.file_id
+    join file_info fi3 on fa.face_match_id=fi3.file_id
+    <where>
+      <if test="faceInfo.faceId != null">
+        fa.face_id = #{faceInfo.faceId}
+      </if>
+      <if test="faceInfo.userName != null">
+        and fa.user_name = #{faceInfo.userName}
+      </if>
+      <if test="faceInfo.userId != null">
+        and fa.user_id = #{faceInfo.userId}
+      </if>
+      <if test="faceInfo.gender != null">
+        and fa.gender = #{faceInfo.gender}
+      </if>
+      <if test="faceInfo.birthday != null">
+        and fa.birthday = #{faceInfo.birthday}
+      </if>
+      <if test="faceInfo.province != null">
+        and fa.province = #{faceInfo.province}
+      </if>
+      <if test="faceInfo.city != null">
+        and fa.city = #{faceInfo.city}
+      </if>
+      <if test="faceInfo.cardType != null">
+        and fa.card_type = #{faceInfo.cardType}
+      </if>
+      <if test="faceInfo.cardId != null">
+        and fa.card_id = #{faceInfo.cardId}
+      </if>
+      <if test="faceInfo.faceMatchRate != null">
+        and fa.face_match_rate = #{faceInfo.faceMatchRate}
+      </if>
+      <if test="faceInfo.faceLibName != null">
+        and fa.face_lib_name = #{faceInfo.faceLibName}
+      </if>
+      <if test="faceInfo.faceLibType != null">
+        and fa.face_lib_type = #{faceInfo.faceLibType}
+      </if>
+      <if test="faceInfo.deviceIp != null">
+        and fa.device_ip = #{faceInfo.deviceIp}
+      </if>
+      <if test="start != null">
+        and fa.pic_snapshot_time &gt;= #{start}
+      </if>
+      <if test="end != null">
+        and fa.pic_snapshot_time &lt;= #{end}
+      </if>
+    </where>
+    <if test="faceInfo.picSnapshotTime  != null">
+      order by fa.alarm_time
+    </if>
+  </select>
+
+</mapper>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.summit.dao.repository.AlarmDao">
+  <resultMap id="BaseResultMap" type="com.summit.dao.entity.Alarm">
+    <result column="alarm_id" jdbcType="VARCHAR" property="alarmId" />
+    <result column="alarm_name" jdbcType="VARCHAR" property="alarmName" />
+    <result column="process_id" jdbcType="VARCHAR" property="processId" />
+    <result column="alarm_time" jdbcType="TIMESTAMP" property="alarmTime" />
+    <result column="alarm_status" jdbcType="INTEGER" property="alarmStatus" />
+
+    <association property="lockProRecord" javaType="com.summit.dao.entity.LockProcess">
+      <result column="lopid" jdbcType="VARCHAR" property="processId" />
+      <result column="device_ip" jdbcType="VARCHAR" property="deviceIp" />
+      <result column="lock_code" jdbcType="VARCHAR" property="lockCode" />
+      <result column="user_id" jdbcType="VARCHAR" property="userId" />
+      <result column="user_name" jdbcType="VARCHAR" property="userName" />
+      <result column="process_type" jdbcType="INTEGER" property="processType" />
+      <result column="process_result" jdbcType="VARCHAR" property="processResult" />
+      <result column="fail_reason" jdbcType="VARCHAR" property="failReason" />
+      <result column="process_time" jdbcType="TIMESTAMP" property="processTime" />
+
+      <association property="facePanorama" javaType="com.summit.dao.entity.FileInfo">
+        <result column="fi1_id" jdbcType="VARCHAR" property="fileId" />
+        <result column="fi1_name" jdbcType="VARCHAR" property="filenName" />
+        <result column="fi1_path" jdbcType="LONGVARCHAR" property="filePath" />
+        <result column="fi1_des" jdbcType="LONGVARCHAR" property="description" />
+      </association>
+      <association property="facePic" javaType="com.summit.dao.entity.FileInfo">
+        <result column="fi2_id" jdbcType="VARCHAR" property="fileId" />
+        <result column="fi2_name" jdbcType="VARCHAR" property="filenName" />
+        <result column="fi2_path" jdbcType="LONGVARCHAR" property="filePath" />
+        <result column="fi2_des" jdbcType="LONGVARCHAR" property="description" />
+      </association>
+      <association property="faceMatch" javaType="com.summit.dao.entity.FileInfo">
+        <result column="fi3_id" jdbcType="VARCHAR" property="fileId" />
+        <result column="fi3_name" jdbcType="VARCHAR" property="filenName" />
+        <result column="fi3_path" jdbcType="LONGVARCHAR" property="filePath" />
+        <result column="fi3_des" jdbcType="LONGVARCHAR" property="description" />
+      </association>
+    </association>
+
+  </resultMap>
+  <sql id="Base_Column_List">
+    alarm_id, alarm_name, process_id, alarm_time, alarm_status
+  </sql>
+  <sql id="Alarm_Have_Alias_List">
+    al.alarm_id, al.alarm_name, al.process_id, al.alarm_time, al.alarm_status
+  </sql>
+  <sql id="Lock_Have_Alias_List">
+    lo.process_id lopid, lo.device_ip, lo.lock_code, lo.user_id, lo.user_name, lo.process_type, lo.process_result,
+    lo.fail_reason, lo.face_panorama_id, lo.face_pic_id, lo.face_match_id, lo.process_time
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Alarm_Have_Alias_List" />,
+    <include refid="Lock_Have_Alias_List" />,
+    fi1.file_id fi1_id, fi1.filen_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
+    fi2.file_id fi2_id, fi2.filen_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
+    fi3.file_id fi3_id, fi3.filen_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    from alarm al join lock_process lo on al.process_id=lo.process_id
+    join file_info fi1 on lo.face_panorama_id=fi1.file_id
+    join file_info fi2 on lo.face_pic_id=fi2.file_id
+    join file_info fi3 on lo.face_match_id=fi3.file_id
+    <where>
+      al.alarm_id=#{alarmId}
+    </where>
+  </select>
+
+  <select id="selectByProcessId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Alarm_Have_Alias_List" />,
+    <include refid="Lock_Have_Alias_List" />,
+    fi1.file_id fi1_id, fi1.filen_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
+    fi2.file_id fi2_id, fi2.filen_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
+    fi3.file_id fi3_id, fi3.filen_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    from alarm al join lock_process lo on al.process_id=lo.process_id
+    join file_info fi1 on lo.face_panorama_id=fi1.file_id
+    join file_info fi2 on lo.face_pic_id=fi2.file_id
+    join file_info fi3 on lo.face_match_id=fi3.file_id
+    <where>
+      al.process_id=#{processId}
+    </where>
+  </select>
+
+  <select id="selectCondition" resultMap="BaseResultMap">
+    select
+    <include refid="Alarm_Have_Alias_List" />,
+    <include refid="Lock_Have_Alias_List" />,
+    fi1.file_id fi1_id, fi1.filen_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
+    fi2.file_id fi2_id, fi2.filen_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
+    fi3.file_id fi3_id, fi3.filen_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    from alarm al join lock_process lo on al.process_id=lo.process_id
+    join file_info fi1 on lo.face_panorama_id=fi1.file_id
+    join file_info fi2 on lo.face_pic_id=fi2.file_id
+    join file_info fi3 on lo.face_match_id=fi3.file_id
+    <where>
+      <if test="alarm.alarmId != null">
+        al.alarm_id = #{alarm.alarmId}
+      </if>
+      <if test="alarm.alarmName != null">
+        and al.alarm_name = #{alarm.alarmName}
+      </if>
+      <if test="alarm.processId != null">
+        and al.process_id = #{alarm.processId}
+      </if>
+      <if test="alarm.alarmStatus != null">
+        and al.alarm_status = #{alarm.alarmStatus}
+      </if>
+      <if test="start != null">
+        and al.alarm_time &gt;= #{start}
+      </if>
+      <if test="end != null">
+        and al.alarm_time &lt;= #{end}
+      </if>
+    </where>
+    <if test="alarm.alarmTime  != null">
+      order by al.alarm_time
+    </if>
+  </select>
+
+
+
+</mapper>

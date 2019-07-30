@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.summit.dao.repository.VedioMonitorInfoDao">
+  <resultMap id="BaseResultMap" type="com.summit.dao.entity.VedioMonitorInfo">
+    <result column="id" jdbcType="VARCHAR" property="id" />
+    <result column="device_ip" jdbcType="VARCHAR" property="deviceIp" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, device_ip
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from vedio_monitor_info
+    <where>
+      id=#{id}
+    </where>
+  </select>
+
+
+</mapper>

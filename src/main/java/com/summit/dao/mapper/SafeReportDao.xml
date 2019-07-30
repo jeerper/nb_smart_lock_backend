@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.summit.dao.repository.SafeReportDao">
+  <resultMap id="BaseResultMap" type="com.summit.dao.entity.SafeReport">
+    <result column="safe_rep_id" jdbcType="VARCHAR" property="safeRepId" />
+    <result column="lock_code" jdbcType="VARCHAR" property="lockCode" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="report_time" jdbcType="TIMESTAMP" property="reportTime" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+
+    <collection property="bojx" ofType="com.summit.dao.entity.SafeReportData" >
+      <result column="id" jdbcType="VARCHAR" property="id" />
+      <result column="safe_rep_id" jdbcType="VARCHAR" property="safeRepId" />
+      <result column="version" jdbcType="VARCHAR" property="version" />
+      <result column="vol" jdbcType="DECIMAL" property="vol" />
+      <result column="jzdw" jdbcType="VARCHAR" property="jzdw" />
+      <result column="latitude" jdbcType="DECIMAL" property="latitude" />
+      <result column="longitude" jdbcType="DECIMAL" property="longitude" />
+      <result column="altitude" jdbcType="DECIMAL" property="altitude" />
+      <result column="speed" jdbcType="DECIMAL" property="speed" />
+      <result column="direction" jdbcType="INTEGER" property="direction" />
+      <result column="gps_time" jdbcType="VARCHAR" property="gpsTime" />
+      <result column="status_desc" jdbcType="VARCHAR" property="statusDesc" />
+
+    </collection>
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    safe_rep_id, lock_code, type, report_time, content
+  </sql>
+  <sql id="Report_Have_Alias_List">
+    sr.safe_rep_id, sr.lock_code, sr.type, sr.report_time, sr.content
+  </sql>
+  <sql id="Data_Have_Alias_List">
+    rd.id, rd.safe_rep_id, rd.version, rd.vol, rd.jzdw, rd.latitude, rd.longitude, rd.altitude, rd.speed, rd.direction,
+    rd.gps_time, rd.status_desc
+  </sql>
+
+  <select id="selectById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Report_Have_Alias_List" />,
+    <include refid="Data_Have_Alias_List" />
+    from safe_report sr join safe_report_data rd on sr.safe_rep_id=rd.safe_rep_id
+    <where>
+      sr.safe_rep_id=#{safeRepId}
+    </where>
+  </select>
+  <select id="selectByLockCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Report_Have_Alias_List" />,
+    <include refid="Data_Have_Alias_List" />
+    from safe_report sr join safe_report_data rd on sr.safe_rep_id=rd.safe_rep_id
+    <where>
+      sr.lock_code=#{lockCode}
+    </where>
+    <if test="reportTime  != null">
+      order by sr.report_time
+    </if>
+  </select>
+
+
+  <select id="selectCondition" resultMap="BaseResultMap">
+    select
+    <include refid="Report_Have_Alias_List" />,
+    <include refid="Data_Have_Alias_List" />
+    from safe_report sr join safe_report_data rd on sr.safe_rep_id=rd.safe_rep_id
+    <where>
+      <if test="safeReport.safeRepId != null">
+        sr.safe_rep_id = #{safeReport.safeRepId}
+      </if>
+      <if test="safeReport.lockCode != null">
+        and sr.lock_code = #{safeReport.lockCode}
+      </if>
+      <if test="safeReport.type != null">
+        and sr.type = #{safeReport.type}
+      </if>
+      <if test="safeReport.content != null">
+        and sr.content = #{safeReport.content}
+      </if>
+      <if test="start != null">
+        and sr.report_time &gt;= #{start}
+      </if>
+      <if test="end != null">
+        and sr.report_time &lt;= #{end}
+      </if>
+    </where>
+    <if test="safeReport.reportTime  != null">
+      order by sr.report_time
+    </if>
+  </select>
+
+<!--  <insert id="insert" parameterType="com.summit.dao.entity.SafeReport">-->
+<!--    insert into safe_report-->
+<!--    <trim prefix="(" suffix=")" suffixOverrides=",">-->
+<!--      <if test="safeRepId != null">-->
+<!--        safe_rep_id,-->
+<!--      </if>-->
+<!--      <if test="lockCode != null">-->
+<!--        lock_code,-->
+<!--      </if>-->
+<!--      <if test="type != null">-->
+<!--        type,-->
+<!--      </if>-->
+<!--      <if test="reportTime != null">-->
+<!--        report_time,-->
+<!--      </if>-->
+<!--      <if test="content != null">-->
+<!--        content,-->
+<!--      </if>-->
+<!--    </trim>-->
+<!--    <trim prefix="values (" suffix=")" suffixOverrides=",">-->
+<!--      <if test="safeRepId != null">-->
+<!--        #{safeRepId,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="lockCode != null">-->
+<!--        #{lockCode,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="type != null">-->
+<!--        #{type,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="reportTime != null">-->
+<!--        #{reportTime,jdbcType=TIMESTAMP},-->
+<!--      </if>-->
+<!--      <if test="content != null">-->
+<!--        #{content,jdbcType=LONGVARCHAR},-->
+<!--      </if>-->
+<!--    </trim>-->
+<!--  </insert>-->
+
+
+<!--  <update id="update" parameterType="com.summit.dao.entity.SafeReport">-->
+<!--    update safe_report-->
+<!--    <set>-->
+<!--      <if test="safeRepId != null">-->
+<!--        safe_rep_id = #{safeRepId,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="lockCode != null">-->
+<!--        lock_code = #{lockCode,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="type != null">-->
+<!--        type = #{type,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="reportTime != null">-->
+<!--        report_time = #{reportTime,jdbcType=TIMESTAMP},-->
+<!--      </if>-->
+<!--      <if test="content != null">-->
+<!--        content = #{content,jdbcType=LONGVARCHAR},-->
+<!--      </if>-->
+<!--    </set>-->
+<!--    <where>-->
+<!--      safe_rep_id=#{safeRepId}-->
+<!--    </where>-->
+<!--  </update>-->
+
+</mapper>

@@ -1,0 +1,37 @@
+package com.summit.dao.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import lombok.Data;
+
+import java.util.Date;
+
+@Data
+public class SafeReportData {
+    @TableId(value = "safe_rep_id", type = IdType.ID_WORKER_STR)
+    private String id;
+    @TableField(value = "safe_rep_id")
+    private String safeRepId;
+    @TableField(value = "version")
+    private String version;
+    @TableField(value = "vol")
+    private double vol;
+    @TableField(value = "jzdw")
+    private String jzdw;
+    @TableField(value = "latitude")
+    private double latitude;
+    @TableField(value = "longitude")
+    private double longitude;
+    @TableField(value = "altitude")
+    private double altitude;
+    @TableField(value = "speed")
+    private double speed;
+    @TableField(value = "direction")
+    private Integer direction;
+    @TableField(value = "gps_time")
+    private Date gpsTime;
+    @TableField(value = "status_desc")
+    private String statusDesc;
+
+}
