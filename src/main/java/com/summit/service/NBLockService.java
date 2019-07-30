@@ -8,7 +8,7 @@ import retrofit2.http.Body;
 import retrofit2.http.POST;
 import rx.Observable;
 
-public interface UBLockService {
+public interface NBLockService {
     @POST("unlock.jhtml")
     Observable<LockInfo> unLock(@Body LockRequest lockRequest);
 

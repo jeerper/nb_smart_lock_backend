@@ -30,7 +30,7 @@ public class NBLockServiceImpl {
         }
         final LockInfo[] backLockInfo = {null};
         final ResponseCodeEnum[] resultCode = {ResponseCodeEnum.CODE_0000};
-        httpClient.ubLockService.unLock(lockRequest)
+        httpClient.nbLockService.unLock(lockRequest)
                 .flatMap(new Func1<LockInfo, Observable<LockInfo>>() {
                     @Override
                     public Observable<LockInfo> call(LockInfo lockInfo) {
@@ -80,7 +80,7 @@ public class NBLockServiceImpl {
         final LockInfo[] queryLockInfo = {null};
         final ResponseCodeEnum[] resultCode = {ResponseCodeEnum.CODE_0000};
 //        CountDownLatch count = new CountDownLatch(1);
-        httpClient.ubLockService.queryLockStatus(lockRequest)
+        httpClient.nbLockService.queryLockStatus(lockRequest)
                 .flatMap(new Func1<LockInfo, Observable<LockInfo>>() {
                     @Override
                     public Observable<LockInfo> call(LockInfo lockInfo) {
@@ -130,7 +130,7 @@ public class NBLockServiceImpl {
         final ResponseCodeEnum[] resultCode = {ResponseCodeEnum.CODE_0000};
         final SafeReportInfo[] safeReportRusult = {null};
 //        CountDownLatch count = new CountDownLatch(1);
-        httpClient.ubLockService.safeReport(reportParam)
+        httpClient.nbLockService.safeReport(reportParam)
                 .flatMap(new Func1<SafeReportInfo, Observable<SafeReportInfo>>() {
                     @Override
                     public Observable<SafeReportInfo> call(SafeReportInfo safeReport) {

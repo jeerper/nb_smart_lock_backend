@@ -2,10 +2,8 @@ package com.summit.util;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.summit.service.UBLockService;
+import com.summit.service.NBLockService;
 import okhttp3.OkHttpClient;
-import okhttp3.internal.platform.Platform;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import retrofit2.Retrofit;
@@ -17,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class HttpClient {
 
-    public UBLockService ubLockService;
+    public NBLockService nbLockService;
 
     @Value("${nbLock.baseUrl}")
     private String baseUrl = "http://47.106.35.122:8088/intf/";
@@ -35,7 +33,7 @@ public class HttpClient {
                 .addConverterFactory(JacksonConverterFactory.create(new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
-        ubLockService = retrofit.create(UBLockService.class);
+        nbLockService = retrofit.create(NBLockService.class);
 
     }
 
@@ -53,7 +51,7 @@ public class HttpClient {
                 .addConverterFactory(JacksonConverterFactory.create(new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
-        ubLockService = retrofit.create(UBLockService.class);
+        nbLockService = retrofit.create(NBLockService.class);
 
     }
 
