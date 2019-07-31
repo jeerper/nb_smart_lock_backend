@@ -24,9 +24,9 @@ public interface LockDataService {
     //不带时间重载
     List<Alarm> selectAlarmByName(String alarmName);
     //根据告警状态查询，用selectCondition实现，可指定时间段
-    List<Alarm> selectAlarmByStatus(String alarmStatus, Date start, Date end);
+    List<Alarm> selectAlarmByStatus(Integer alarmStatus, Date start, Date end);
     //不带时间重载
-    List<Alarm> selectAlarmByStatus(String alarmStatus);
+    List<Alarm> selectAlarmByStatus(Integer alarmStatus);
     //根据锁操作记录对应的锁编号查询告警，可指定时间段
     List<Alarm> selectAlarmByLockCode(String lockCode, Date start, Date end);
     //不带时间重载

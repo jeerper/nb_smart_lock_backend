@@ -1,5 +1,6 @@
 package com.summit.dao.test;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FileInfo;
@@ -80,5 +81,34 @@ public class TestDao {
         lockProcess.setUserName("1dfg");
         List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess,date1,date2);
         System.out.println(lockProcesses);
+    }
+
+    @Test
+    public void testInsert(){
+        Alarm alarm = new Alarm();
+        alarm.setProcessId("p2");
+
+        int insert = -1;
+        try {
+            insert = alarmDao.insert(alarm);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(insert);
+    }
+    @Test
+    public void testUpdate(){
+        Alarm alarm = new Alarm();
+        alarm.setAlarmName("alarm5");
+
+        int update = -1;
+        try {
+            UpdateWrapper<Alarm> updateWrapper = new UpdateWrapper<>();
+            update = alarmDao.update(alarm, updateWrapper.eq("process_id", "p1").or()
+                    .eq("alarm_status",1));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(update);
     }
 }

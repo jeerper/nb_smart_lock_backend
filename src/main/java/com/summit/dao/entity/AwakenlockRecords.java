@@ -3,11 +3,13 @@ package com.summit.dao.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
+@TableName(value = "awakenlock_records")
 public class AwakenlockRecords {
 
     @TableId(value = "awak_id", type = IdType.ID_WORKER_STR)

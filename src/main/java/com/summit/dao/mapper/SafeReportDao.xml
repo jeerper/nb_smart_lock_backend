@@ -89,7 +89,7 @@
     </if>
   </select>
 
-<!--  <insert id="insert" parameterType="com.summit.dao.entity.SafeReport">-->
+<!--  <insert id="insert" parameterType="com.summit.dao.entity.SafeReportService">-->
 <!--    insert into safe_report-->
 <!--    <trim prefix="(" suffix=")" suffixOverrides=",">-->
 <!--      <if test="safeRepId != null">-->
@@ -128,7 +128,7 @@
 <!--  </insert>-->
 
 
-<!--  <update id="update" parameterType="com.summit.dao.entity.SafeReport">-->
+<!--  <update id="update" parameterType="com.summit.dao.entity.SafeReportService">-->
 <!--    update safe_report-->
 <!--    <set>-->
 <!--      <if test="safeRepId != null">-->
