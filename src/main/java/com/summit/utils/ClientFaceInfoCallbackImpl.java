@@ -2,6 +2,7 @@ package com.summit.utils;
 
 import com.summit.sdk.huawei.callback.ClientFaceInfoCallback;
 import com.summit.sdk.huawei.model.FaceInfo;
+import com.summit.sdk.huawei.model.FaceLibType;
 import com.summit.service.impl.NBLockServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                 log.debug("人脸全景为空!!!!!!!!!");
             }
 
-            if(faceInfo.getFaceLibType()==null){
+            if(faceInfo.getFaceLibType()== FaceLibType.FACE_LIB_ALARM){
                 log.debug("开始报警!!!!！！！！");
             }
 //            log.debug("名字:" + faceInfo.getName());

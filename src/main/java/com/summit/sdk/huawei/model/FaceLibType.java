@@ -3,7 +3,8 @@ package com.summit.sdk.huawei.model;
 public enum FaceLibType {
     FACE_LIB_DEFAULT(0,"未知"),
     FACE_LIB_BLACK(1,"黑名单"),
-    FACE_LIB_WHITE(2,"白名单");
+    FACE_LIB_WHITE(2,"白名单"),
+    FACE_LIB_ALARM(3,"报警");
 
 
 

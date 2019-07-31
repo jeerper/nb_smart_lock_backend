@@ -36,6 +36,9 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
         if (faceInfo != null) {
             if (clientFaceInfoCallback != null) {
                 faceInfo.setDeviceIp(pUsrData.getString(0));
+                if(faceInfo.getFaceLibType()==null){
+                    faceInfo.setFaceLibType(FaceLibType.FACE_LIB_ALARM);
+                }
                 Observable.just(faceInfo)
                         .observeOn(Schedulers.io())
                         .subscribe(new Action1<FaceInfo>() {
