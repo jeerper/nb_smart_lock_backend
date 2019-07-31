@@ -9,7 +9,7 @@
   <sql id="Base_Column_List">
     id, user_id, lock_id
   </sql>
-  <select id="selectById" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectUserLockAuthById" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from user_lock_auth

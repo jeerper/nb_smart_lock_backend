@@ -5,11 +5,7 @@ import com.summit.dao.entity.FileInfo;
 
 public interface FileInfoDao  extends BaseMapper<FileInfo> {
 
-    FileInfo selectById(String fileId);
+    FileInfo selectFileById(String fileId);
 
-    int deleteById(String fileId);
 
-    int insert(FileInfo record);
-
-    int update(FileInfo record);
 }

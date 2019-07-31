@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
+@AllArgsConstructor
 @TableName(value = "face_info")
 public class FaceInfo {
     @TableId(value = "face_id", type = IdType.ID_WORKER_STR)
@@ -55,4 +57,5 @@ public class FaceInfo {
     @TableField(value = "pic_snapshot_time")
     private Date picSnapshotTime;
 
+    public FaceInfo(){}
 }

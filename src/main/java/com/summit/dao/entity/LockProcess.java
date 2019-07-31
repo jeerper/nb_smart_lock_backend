@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import java.util.Date;
 
 @Data
+@AllArgsConstructor
 @TableName(value = "lock_process")
 public class LockProcess {
     @TableId(value = "process_id", type = IdType.ID_WORKER_STR)
@@ -32,12 +34,16 @@ public class LockProcess {
 //    private String facePicId;
 //    @TableField(value = "face_match_id")
 //    private String faceMatchId;
-
+    @TableField(exist = false)
     private FileInfo facePanorama;
+    @TableField(exist = false)
     private FileInfo facePic;
+    @TableField(exist = false)
     private FileInfo faceMatch;
 
     @TableField(value = "process_time")
     private Date processTime;
+
+    public LockProcess(){}
 
 }

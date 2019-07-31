@@ -2,6 +2,7 @@ package com.summit.service;
 
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.LockProcess;
+import com.summit.dao.entity.Page;
 import com.summit.dao.entity.SafeReport;
 
 import java.util.Date;
@@ -54,6 +55,8 @@ public interface LockDataService {
     int delLockProcess(LockProcess lockProcess);
 
     //###锁操作记录查询
+    //查询所有
+    public List<Alarm> selectAll(Page page);
     //根据Id查询
     LockProcess selectLockProcessById(String processId);
     //根据锁编号查询，可指定时间段

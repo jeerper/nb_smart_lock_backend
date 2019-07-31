@@ -25,11 +25,21 @@
     cd.dev_id, cd.device_ip, cd.lock_code, cd.status
   </sql>
 
+  <select id="selectLockById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Lock_Have_Alias_List" />,
+    <include refid="Device_Have_Alias_List" />
+    from lock_info li left join camera_device cd on li.lock_code = cd.lock_code
+    <where>
+      li.lock_id=#{lockId}
+    </where>
+  </select>
+
   <select id="selectBylockCode" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Lock_Have_Alias_List" />,
     <include refid="Device_Have_Alias_List" />
-    from lock_info li join camera_device cd on li.lock_code = cd.lock_code
+    from lock_info li left join camera_device cd on li.lock_code = cd.lock_code
     <where>
       li.lock_code=#{lockCode}
 
@@ -40,21 +50,24 @@
     select
     <include refid="Lock_Have_Alias_List" />,
     <include refid="Device_Have_Alias_List" />
-    from lock_info li join camera_device cd on li.lock_code = cd.lock_code
+    from lock_info li left join camera_device cd on li.lock_code = cd.lock_code
     <where>
-      <if test="lockId != null">
-        li.lock_id = #{lockId}
+      <if test="lockInfo.lockId != null">
+        li.lock_id = #{lockInfo.lockId}
       </if>
-      <if test="lockCode != null">
-        and li.lock_code = #{lockCode}
+      <if test="lockInfo.lockCode != null">
+        and li.lock_code = #{lockInfo.lockCode}
       </if>
-      <if test="status != null">
-        and li.status = #{status}
+      <if test="lockInfo.status != null">
+        and li.status = #{lockInfo.status}
       </if>
-      <if test="updatetime != null">
-        and li.updatetime = #{updatetime}
+      <if test="lockInfo.updatetime != null">
+        and li.updatetime = #{lockInfo.updatetime}
       </if>
     </where>
+    <if test="page != null and page.current != null and  page.pageSize != null ">
+      limit #{page.current},#{page.pageSize}
+    </if>
   </select>
 
 </mapper>

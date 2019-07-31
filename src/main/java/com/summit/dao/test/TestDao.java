@@ -55,31 +55,31 @@ public class TestDao {
 //        Map<String , Object> map = new HashMap<>();
 //        map.put("fileId","aaa");
 
-        LockInfo lockInfo = new LockInfo();
-        lockInfo.setStatus(1);
-        List<LockInfo> lockInfos = lockInfoDao.selectCondition(lockInfo);
-        System.out.println(lockInfos);
-
-        SafeReport selSafeReport = safeReportDao.selectById("2re");
-        System.out.println(selSafeReport);
-
-
-        SafeReport safeReport = new SafeReport();
-        safeReport.setLockCode("1nb");
-        List<SafeReport> safeReports = safeReportDao.selectCondition(safeReport,date1,date2);
-        System.out.println(safeReports);
-        Alarm alarm = new Alarm();
-        alarm.setProcessId("p1");
-        List<Alarm> alarms = alarmDao.selectCondition(alarm, null, date2);
-        System.out.println(alarms);
-
-        FaceInfo faceInfo = new FaceInfo();
-        faceInfo.setCardId("fgd");
-        List<FaceInfo> faceInfos = faceInfoDao.selectCondition(faceInfo, null, date2);
-        System.out.println(faceInfos);
+//        LockInfo lockInfo = new LockInfo();
+//        lockInfo.setStatus(1);
+//        List<LockInfo> lockInfos = lockInfoDao.selectCondition(lockInfo);
+//        System.out.println(lockInfos);
+//
+//        SafeReport selSafeReport = safeReportDao.selectById("2re");
+//        System.out.println(selSafeReport);
+//
+//
+//        SafeReport safeReport = new SafeReport();
+//        safeReport.setLockCode("1nb");
+//        List<SafeReport> safeReports = safeReportDao.selectCondition(safeReport,date1,date2);
+//        System.out.println(safeReports);
+//        Alarm alarm = new Alarm();
+//        alarm.setProcessId("p1");
+//        List<Alarm> alarms = alarmDao.selectCondition(alarm, null, date2);
+//        System.out.println(alarms);
+//
+//        FaceInfo faceInfo = new FaceInfo();
+//        faceInfo.setCardId("fgd");
+//        List<FaceInfo> faceInfos = faceInfoDao.selectCondition(faceInfo, null, date2);
+//        System.out.println(faceInfos);
         LockProcess lockProcess = new LockProcess();
         lockProcess.setUserName("1dfg");
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess,date1,date2);
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess,date1,date2,null);
         System.out.println(lockProcesses);
     }
 
@@ -96,6 +96,22 @@ public class TestDao {
         }
         System.out.println(insert);
     }
+    @Test
+    public void testInsAndUpLock(){
+        LockProcess process = lockProcessDao.selectLockProcessById("p1");
+//        process.setProcessId("2");
+        process.setDeviceIp("222");
+        process.getFaceMatch().setFileId("6");
+        int insert = -1;
+        try {
+//            insert = lockProcessDao.insertRecord(process);
+            insert = lockProcessDao.updateRecord(process);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(insert);
+    }
+
     @Test
     public void testUpdate(){
         Alarm alarm = new Alarm();

@@ -14,7 +14,7 @@
     awak_id, lock_code, user_id, user_name, awakenlock_result, fail_reason, awak_time
   </sql>
 
-  <select id="selectById" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectAwakenRecordById" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from awakenlock_records
