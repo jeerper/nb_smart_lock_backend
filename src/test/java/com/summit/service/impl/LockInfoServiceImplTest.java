@@ -27,7 +27,7 @@ public class LockInfoServiceImplTest {
 
     @Test
     public void insertLock() throws ParseException {
-        LockInfo lockInfo = new LockInfo("lid01","lc01",1,dateFormat.parse("2019-7-23 01:00:00"),null);
+        LockInfo lockInfo = new LockInfo("lid01","lc01",1,dateFormat.parse("2019-7-23 01:00:00"),null,null);
         lockInfoService.insertLock(lockInfo);
     }
 
@@ -41,22 +41,27 @@ public class LockInfoServiceImplTest {
 
     @Test
     public void selectLockById() {
+        LockInfo lockInfo = lockInfoService.selectLockById("1");
+        System.out.println(lockInfo);
     }
 
     @Test
     public void selectBylockCode() {
-        LockInfo lockInfo = lockInfoService.selectBylockCode("lc01");
+        LockInfo lockInfo = lockInfoService.selectBylockCode("1nb");
         System.out.println(lockInfo);
     }
 
     @Test
     public void selectAll() {
-        List<LockInfo> lockInfos = lockInfoService.selectAll(page);
+        List<LockInfo> lockInfos = lockInfoService.selectAll(null);
         System.out.println(lockInfos);
     }
 
     @Test
     public void selectCondition() {
+        LockInfo lockInfo =new LockInfo();
+        lockInfo.setLockCode("1nb");
+        lockInfoService.selectCondition(lockInfo,page);
     }
 
 

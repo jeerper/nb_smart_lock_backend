@@ -26,7 +26,7 @@ drop table if exists safe_report;
 
 drop table if exists safe_report_data;
 
-drop table if exists user_lock_auth;
+drop table if exists role_lock_auth;
 
 drop table if exists vedio_monitor_info;
 
@@ -217,17 +217,18 @@ create table safe_report_data
 alter table safe_report_data comment '平安报数据表';
 
 /*==============================================================*/
-/* Table: user_lock_auth                                        */
+/* Table: role_lock_auth                                        */
 /*==============================================================*/
-create table user_lock_auth
+create table role_lock_auth
 (
-   id                   varchar(48) not null comment '用户开锁权限id',
-   user_id              varchar(48) not null comment '用户id',
+   id                   varchar(48) not null comment '角色开锁权限id',
+   role_id              varchar(48) not null comment '角色id',
    lock_id              varchar(48) not null comment '锁id',
+   lock_code            varchar(48) not null comment '锁编号',
    primary key (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-alter table user_lock_auth comment '用户与锁权限表';
+alter table role_lock_auth comment '角色与锁权限表';
 
 /*==============================================================*/
 /* Table: vedio_monitor_info                                    */

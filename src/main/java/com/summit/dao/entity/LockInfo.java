@@ -25,6 +25,9 @@ public class LockInfo {
     @TableField(exist = false)
     private List<CameraDevice> devices;
 
+    @TableField(exist = false)
+    private List<LockRole> roles;
+
     public LockInfo(){}
 
 }

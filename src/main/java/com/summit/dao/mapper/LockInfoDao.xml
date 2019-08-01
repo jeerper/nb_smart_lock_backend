@@ -13,6 +13,13 @@
       <result column="lock_code" jdbcType="VARCHAR" property="lockCode" />
       <result column="status" jdbcType="VARCHAR" property="status" />
     </collection>
+
+    <collection property="roles" ofType="com.summit.dao.entity.LockRole" >
+      <result column="id" jdbcType="VARCHAR" property="id" />
+      <result column="role_id" jdbcType="VARCHAR" property="roleCode" />
+      <result column="lock_id" jdbcType="VARCHAR" property="lockId" />
+      <result column="lock_code" jdbcType="VARCHAR" property="lockCode" />
+    </collection>
   </resultMap>
 
   <sql id="Base_Column_List">
@@ -24,12 +31,18 @@
   <sql id="Device_Have_Alias_List">
     cd.dev_id, cd.device_ip, cd.lock_code, cd.status
   </sql>
+  <sql id="Auth_Have_Alias_List">
+    au.id, au.role_id, au.lock_id, au.lock_code
+  </sql>
 
   <select id="selectLockById" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Lock_Have_Alias_List" />,
-    <include refid="Device_Have_Alias_List" />
-    from lock_info li left join camera_device cd on li.lock_code = cd.lock_code
+    <include refid="Device_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />
+    from lock_info li
+    left join camera_device cd on li.lock_code = cd.lock_code
+    left join role_lock_auth au on (li.lock_id = au.lock_id and li.lock_code = au.lock_code)
     <where>
       li.lock_id=#{lockId}
     </where>
@@ -38,8 +51,11 @@
   <select id="selectBylockCode" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Lock_Have_Alias_List" />,
-    <include refid="Device_Have_Alias_List" />
-    from lock_info li left join camera_device cd on li.lock_code = cd.lock_code
+    <include refid="Device_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />
+    from lock_info li
+    left join camera_device cd on li.lock_code = cd.lock_code
+    left join role_lock_auth au on (li.lock_id = au.lock_id and li.lock_code = au.lock_code)
     <where>
       li.lock_code=#{lockCode}
 
@@ -49,8 +65,11 @@
   <select id="selectCondition" parameterType="com.summit.dao.entity.LockInfo" resultMap="BaseResultMap">
     select
     <include refid="Lock_Have_Alias_List" />,
-    <include refid="Device_Have_Alias_List" />
-    from lock_info li left join camera_device cd on li.lock_code = cd.lock_code
+    <include refid="Device_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />
+    from lock_info li
+    left join camera_device cd on li.lock_code = cd.lock_code
+    left join role_lock_auth au on (li.lock_id = au.lock_id and li.lock_code = au.lock_code)
     <where>
       <if test="lockInfo.lockId != null">
         li.lock_id = #{lockInfo.lockId}

@@ -5,6 +5,7 @@ import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.Page;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.service.LockInfoService;
+import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class LockInfoServiceImpl implements LockInfoService {
 
     @Override
     public List<LockInfo> selectAll(Page page) {
+        PageConverter.convertPage(page);
         return lockInfoDao.selectCondition(new LockInfo(),page);
     }
 
@@ -38,6 +40,7 @@ public class LockInfoServiceImpl implements LockInfoService {
             log.error("锁信息为空");
             return null;
         }
+        PageConverter.convertPage(page);
         return lockInfoDao.selectCondition(lockInfo,page);
     }
 
@@ -69,12 +72,20 @@ public class LockInfoServiceImpl implements LockInfoService {
 
     @Override
     public int delLockByLockId(String lockId) {
+        if(lockId == null){
+            log.error("锁id为空");
+            return -1;
+        }
         UpdateWrapper<LockInfo> wrapper = new UpdateWrapper<>();
         return lockInfoDao.delete(wrapper.eq("lock_id", lockId));
     }
 
     @Override
     public int delLockByLockCod(String lockCode) {
+        if(lockCode == null){
+            log.error("锁id为空");
+            return -1;
+        }
         UpdateWrapper<LockInfo> wrapper = new UpdateWrapper<>();
         return lockInfoDao.delete(wrapper.eq("lock_code", lockCode));
     }

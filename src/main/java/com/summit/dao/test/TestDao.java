@@ -1,17 +1,20 @@
 package com.summit.dao.test;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.LockProcess;
+import com.summit.dao.entity.LockRole;
 import com.summit.dao.entity.SafeReport;
 import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.FaceInfoDao;
 import com.summit.dao.repository.FileInfoDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.dao.repository.LockProcessDao;
+import com.summit.dao.repository.LockRoleDao;
 import com.summit.dao.repository.SafeReportDao;
 import com.summit.dao.repository.UserDao;
 import org.junit.Test;
@@ -22,6 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +44,25 @@ public class TestDao {
     private LockInfoDao lockInfoDao;
     @Autowired
     private SafeReportDao safeReportDao;
+    @Autowired
+    private LockRoleDao lockRoleDao;
+
+
+    @Test
+    public void testLockRole(){
+        Map<String,Object> map = new HashMap<>();
+        map.put("role_id","r1");
+        List<LockRole> lockRoles = lockRoleDao.selectByMap(map);
+        QueryWrapper<LockRole> queryWrapper = new QueryWrapper<>();
+        lockRoleDao.selectList(queryWrapper.eq("role_id", "r1"));
+        System.out.println(lockRoles);
+    }
+
+    @Test
+    public void testLockRoleAuth(){
+        List<SafeReport> safeReports = safeReportDao.selectReportByRoles(Arrays.asList("r1"), null, null, null);
+        System.out.println(safeReports);
+    }
 
     @Test
     public void test(){

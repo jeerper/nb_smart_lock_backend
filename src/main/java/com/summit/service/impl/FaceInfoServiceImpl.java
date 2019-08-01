@@ -7,6 +7,7 @@ import com.summit.dao.entity.Page;
 import com.summit.dao.repository.FaceInfoDao;
 import com.summit.dao.repository.FileInfoDao;
 import com.summit.service.FaceInfoService;
+import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,10 @@ public class FaceInfoServiceImpl implements FaceInfoService {
 
     @Override
     public int insertFaceInfo(FaceInfo faceInfo) {
-
+        if(faceInfo == null){
+            log.error("人脸信息为空");
+            return -1;
+        }
         int result = faceInfoDao.insertFace(faceInfo);
         if(result != -1){
             fileInfoDao.insert(faceInfo.getFacePanorama());
@@ -36,6 +40,10 @@ public class FaceInfoServiceImpl implements FaceInfoService {
 
     @Override
     public int updateFaceInfo(FaceInfo faceInfo) {
+        if(faceInfo == null){
+            log.error("人脸信息为空");
+            return -1;
+        }
         int result = faceInfoDao.updateFace(faceInfo);
         if(result != -1){
             UpdateWrapper<FileInfo> updateWrapper = new UpdateWrapper<>();
@@ -47,6 +55,10 @@ public class FaceInfoServiceImpl implements FaceInfoService {
     }
     @Override
     public int delFaceInfoById(String faceId) {
+        if(faceId == null){
+            log.error("人脸信息id为空");
+            return -1;
+        }
         FaceInfo faceInfo = faceInfoDao.selectFaceById(faceId);
         UpdateWrapper<FaceInfo> wrapper = new UpdateWrapper<>();
         UpdateWrapper<FileInfo> fileWrapper = new UpdateWrapper<>();
@@ -62,6 +74,10 @@ public class FaceInfoServiceImpl implements FaceInfoService {
 
     @Override
     public int delFaceInfoByUserName(String userName) {
+        if(userName == null){
+            log.error("操作人名称为空");
+            return -1;
+        }
         FaceInfo faceInfo = faceInfoDao.selectByName(userName);
         UpdateWrapper<FaceInfo> wrapper = new UpdateWrapper<>();
         UpdateWrapper<FileInfo> fileWrapper = new UpdateWrapper<>();
@@ -77,31 +93,53 @@ public class FaceInfoServiceImpl implements FaceInfoService {
 
     @Override
     public FaceInfo selectFaceInfoById(String faceId) {
+        if(faceId == null){
+            log.error("人脸信息id为空");
+            return null;
+        }
         return faceInfoDao.selectFaceById(faceId);
     }
 
     @Override
     public FaceInfo selectByUserName(String userName) {
+        if(userName == null){
+            log.error("操作人名称为空");
+            return null;
+        }
         return faceInfoDao.selectByName(userName);
     }
 
     @Override
     public FaceInfo selectByUserId(String userId) {
+        if(userId == null){
+            log.error("操作人id为空");
+            return null;
+        }
         return faceInfoDao.selectByUserId(userId);
     }
 
     @Override
     public List<FaceInfo> selectAll(Page page) {
+        PageConverter.convertPage(page);
         return faceInfoDao.selectCondition(new FaceInfo(),null,null,page);
     }
 
     @Override
     public List<FaceInfo> selectCondition(FaceInfo faceInfo, Page page) {
+        if(faceInfo == null){
+            log.error("人脸信息为空");
+            return null;
+        }
         return selectCondition(faceInfo,null,null,page);
     }
 
     @Override
     public List<FaceInfo> selectCondition(FaceInfo faceInfo, Date start, Date end, Page page) {
+        if(faceInfo == null){
+            log.error("人脸信息为空");
+            return null;
+        }
+        PageConverter.convertPage(page);
         return faceInfoDao.selectCondition(faceInfo,start,end,page);
     }
 }

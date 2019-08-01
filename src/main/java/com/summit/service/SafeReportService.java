@@ -31,4 +31,10 @@ public interface SafeReportService {
     List<SafeReport> selectReportCondition(SafeReport safeReport, Date start, Date end, Page page);
     //指定条件查询，不带日期的重载
     List<SafeReport> selectReportCondition(SafeReport safeReport, Page page);
+
+    //根据锁编号查询当前用户具有权限的平安报
+    List<SafeReport> selectReportByRoles(List<String> roles, Date start, Date end, Page page);
+    //不带时间重载
+    List<SafeReport> selectReportByRoles(List<String> roles, Page page);
+
 }
