@@ -19,6 +19,8 @@ public class LockInfo {
     private String lockCode;
     @TableField(value = "status")
     private Integer status;
+    @TableField(value = "createby")
+    private String createby;
     @TableField(value = "updatetime")
     private Date updatetime;
 

@@ -150,6 +150,7 @@ create table lock_info
    lock_id              varchar(48) not null comment '锁id',
    lock_code            varchar(32) not null comment '锁编号',
    status               int comment '锁状态。1开锁，2锁定',
+   createby             varchar(48) comment '创建者',
    updatetime           timestamp comment '上次更新状态时间',
    primary key (lock_id),
    unique key AK_Key_2 (lock_code)
