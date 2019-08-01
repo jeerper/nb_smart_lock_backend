@@ -42,17 +42,24 @@
   <select id="selectSafeReportById" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Report_Have_Alias_List" />,
-    <include refid="Data_Have_Alias_List" />
-    from safe_report sr left join safe_report_data rd on sr.safe_rep_id=rd.safe_rep_id
+    <include refid="Data_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />
+    from role_lock_auth au
+    inner join safe_report sr on sr.lock_code = au.lock_code
+    left join safe_report_data rd on sr.safe_rep_id=rd.safe_rep_id
     <where>
       sr.safe_rep_id=#{safeRepId}
     </where>
   </select>
+
   <select id="selectByLockCode" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Report_Have_Alias_List" />,
-    <include refid="Data_Have_Alias_List" />
-    from safe_report sr left join safe_report_data rd on sr.safe_rep_id=rd.safe_rep_id
+    <include refid="Data_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />
+    from role_lock_auth au
+    inner join safe_report sr on sr.lock_code = au.lock_code
+    left join safe_report_data rd on sr.safe_rep_id=rd.safe_rep_id
     <where>
       sr.lock_code=#{lockCode}
     </where>

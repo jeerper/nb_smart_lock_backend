@@ -1,10 +1,13 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.summit.common.entity.UserInfo;
+import com.summit.common.web.filter.UserContextHolder;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.Page;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.service.LockInfoService;
+import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,18 +23,28 @@ public class LockInfoServiceImpl implements LockInfoService {
 
     @Override
     public LockInfo selectLockById(String lockId) {
-        return lockInfoDao.selectLockById(lockId);
+        LockInfo lockInfo = lockInfoDao.selectLockById(lockId);
+        if(!LockAuthCtrl.toFilter(lockInfo)){
+            return null;
+        }
+        return lockInfo;
     }
 
     @Override
     public LockInfo selectBylockCode(String lockCode) {
-        return lockInfoDao.selectBylockCode(lockCode);
+        LockInfo lockInfo = lockInfoDao.selectBylockCode(lockCode);
+        if(!LockAuthCtrl.toFilter(lockInfo)){
+            return null;
+        }
+        return lockInfo;
     }
 
     @Override
     public List<LockInfo> selectAll(Page page) {
         PageConverter.convertPage(page);
-        return lockInfoDao.selectCondition(new LockInfo(),page);
+        List<LockInfo> lockInfos = lockInfoDao.selectCondition(new LockInfo(), page);
+        LockAuthCtrl.toFilterLocks(lockInfos);
+        return lockInfos;
     }
 
     @Override
@@ -40,8 +53,11 @@ public class LockInfoServiceImpl implements LockInfoService {
             log.error("锁信息为空");
             return null;
         }
+
         PageConverter.convertPage(page);
-        return lockInfoDao.selectCondition(lockInfo,page);
+        List<LockInfo> lockInfos = lockInfoDao.selectCondition(lockInfo, page);
+        LockAuthCtrl.toFilterLocks(lockInfos);
+        return lockInfos;
     }
 
     @Override

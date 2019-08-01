@@ -50,6 +50,9 @@
     lo.process_id lopid, lo.device_ip, lo.lock_code, lo.user_id, lo.user_name, lo.process_type, lo.process_result,
     lo.fail_reason, lo.face_panorama_id, lo.face_pic_id, lo.face_match_id, lo.process_time
   </sql>
+  <sql id="Auth_Have_Alias_List">
+    au.id, au.role_id, au.lock_id, au.lock_code
+  </sql>
 
   <select id="selectAlarmById" parameterType="java.lang.String" resultMap="BaseResultMap">
     select

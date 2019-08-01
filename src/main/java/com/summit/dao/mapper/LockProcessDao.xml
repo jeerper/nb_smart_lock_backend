@@ -43,9 +43,9 @@
     lo.process_id, lo.device_ip, lo.lock_code, lo.user_id, lo.user_name, lo.process_type, lo.process_result,
     lo.fail_reason, lo.face_panorama_id, lo.face_pic_id, lo.face_match_id, lo.process_time
   </sql>
-<!--  <sql id="File_Have_Alias_List">-->
-<!--    fi.file_id, fi.file_name, fi.file_path, fi.description-->
-<!--  </sql>-->
+  <sql id="Auth_Have_Alias_List">
+    au.id, au.role_id, au.lock_id, au.lock_code
+  </sql>
 
   <select id="selectLockProcessById" parameterType="java.lang.String" resultMap="BaseResultMap">
     select

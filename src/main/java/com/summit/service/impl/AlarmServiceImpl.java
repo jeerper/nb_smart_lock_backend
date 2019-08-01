@@ -10,6 +10,7 @@ import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.LockProcessDao;
 import com.summit.service.AlarmService;
+import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +73,9 @@ public class AlarmServiceImpl implements AlarmService {
     @Override
     public List<Alarm> selectAll(Page page) {
         PageConverter.convertPage(page);
-        return alarmDao.selectCondition(new Alarm(), null, null, page);
+        List<Alarm> alarms = alarmDao.selectCondition(new Alarm(), null, null, page);
+        LockAuthCtrl.toFilterAlarms(alarms);
+        return alarms;
     }
 
 
@@ -83,7 +86,11 @@ public class AlarmServiceImpl implements AlarmService {
             log.error("告警id为空");
             return null;
         }
-        return alarmDao.selectAlarmById(alarmId);
+        Alarm alarm = alarmDao.selectAlarmById(alarmId);
+        if(!LockAuthCtrl.toFilter(alarm)){
+            return null;
+        }
+        return alarm;
     }
 
     @Override
@@ -95,7 +102,9 @@ public class AlarmServiceImpl implements AlarmService {
         PageConverter.convertPage(page);
         Alarm alarm = new Alarm();
         alarm.setAlarmName(alarmName);
-        return alarmDao.selectCondition(alarm, start, end, page);
+        List<Alarm> alarms = alarmDao.selectCondition(alarm, start, end, page);
+        LockAuthCtrl.toFilterAlarms(alarms);
+        return alarms;
     }
 
     @Override
@@ -116,7 +125,9 @@ public class AlarmServiceImpl implements AlarmService {
         PageConverter.convertPage(page);
         Alarm alarm = new Alarm();
         alarm.setAlarmStatus(alarmStatus);
-        return alarmDao.selectCondition(alarm, start, end, page);
+        List<Alarm> alarms = alarmDao.selectCondition(alarm, start, end, page);
+        LockAuthCtrl.toFilterAlarms(alarms);
+        return alarms;
     }
 
     @Override
@@ -140,6 +151,7 @@ public class AlarmServiceImpl implements AlarmService {
         for (LockProcess lockProcess: lockProcesses) {
             alarms.add(alarmDao.selectByProcessId(lockProcess.getProcessId()));
         }
+        LockAuthCtrl.toFilterAlarms(alarms);
         return alarms;
     }
 
@@ -166,6 +178,7 @@ public class AlarmServiceImpl implements AlarmService {
         for (LockProcess lockProcess: lockProcesses) {
             alarms.add(alarmDao.selectByProcessId(lockProcess.getProcessId()));
         }
+        LockAuthCtrl.toFilterAlarms(alarms);
         return alarms;
     }
 
@@ -197,6 +210,7 @@ public class AlarmServiceImpl implements AlarmService {
         for (LockProcess lockProcess: lockProcesses) {
             alarms.add(alarmDao.selectByProcessId(lockProcess.getProcessId()));
         }
+        LockAuthCtrl.toFilterAlarms(alarms);
         return alarms;
     }
 
@@ -216,7 +230,9 @@ public class AlarmServiceImpl implements AlarmService {
             return null;
         }
         PageConverter.convertPage(page);
-        return alarmDao.selectCondition(alarm, start, end, page);
+        List<Alarm> alarms = alarmDao.selectCondition(alarm, start, end, page);
+        LockAuthCtrl.toFilterAlarms(alarms);
+        return alarms;
     }
 
     @Override

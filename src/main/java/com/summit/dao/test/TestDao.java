@@ -17,6 +17,10 @@ import com.summit.dao.repository.LockProcessDao;
 import com.summit.dao.repository.LockRoleDao;
 import com.summit.dao.repository.SafeReportDao;
 import com.summit.dao.repository.UserDao;
+import com.summit.service.AlarmService;
+import com.summit.service.LockInfoService;
+import com.summit.service.LockRecordService;
+import com.summit.util.LockAuthCtrl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,10 +47,16 @@ public class TestDao {
     @Autowired
     private LockInfoDao lockInfoDao;
     @Autowired
+    private LockInfoService lockInfoService;
+    @Autowired
     private SafeReportDao safeReportDao;
     @Autowired
     private LockRoleDao lockRoleDao;
 
+    @Autowired
+    private AlarmService alarmService;
+    @Autowired
+    private LockRecordService lockRecordService;
 
     @Test
     public void testLockRole(){
@@ -56,6 +66,44 @@ public class TestDao {
         QueryWrapper<LockRole> queryWrapper = new QueryWrapper<>();
         lockRoleDao.selectList(queryWrapper.eq("role_id", "r1"));
         System.out.println(lockRoles);
+    }
+
+    @Test
+    public void testLockId(){
+        SafeReport safeReport = safeReportDao.selectSafeReportById("1re");
+        System.out.println(safeReport);
+    }
+    @Test
+    public void testFilter(){
+        List<LockInfo> lockInfos = lockInfoService.selectAll(null);
+        System.out.println(lockInfos);
+        LockAuthCtrl.toFilterLocks(lockInfos);
+
+        System.out.println(lockInfos);
+    }
+
+    @Test
+    public void testFilterLP(){
+        List<LockProcess> lockProcesses = lockRecordService.selectAll(null);
+        System.out.println(lockProcesses);
+        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+
+        System.out.println(lockProcesses);
+    }
+
+    @Test
+    public void testFilterAlarm(){
+        List<Alarm> alarms = alarmService.selectAll(null);
+        System.out.println(alarms);
+        LockAuthCtrl.toFilterAlarms(alarms);
+
+        System.out.println(alarms);
+    }
+
+    @Test
+    public void testLockCode(){
+        List<SafeReport> safeReports = safeReportDao.selectByLockCode("1nb",null,null,null);
+        System.out.println(safeReports);
     }
 
     @Test

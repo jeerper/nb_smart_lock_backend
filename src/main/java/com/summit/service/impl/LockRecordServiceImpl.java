@@ -11,6 +11,7 @@ import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.FileInfoDao;
 import com.summit.dao.repository.LockProcessDao;
 import com.summit.service.LockRecordService;
+import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +84,9 @@ public class LockRecordServiceImpl implements LockRecordService {
     @Override
     public List<LockProcess> selectAll(Page page) {
         PageConverter.convertPage(page);
-        return lockProcessDao.selectCondition(new LockProcess(),null,null ,page);
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(new LockProcess(), null, null, page);
+        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+        return lockProcesses;
     }
 
     @Override
@@ -92,7 +95,9 @@ public class LockRecordServiceImpl implements LockRecordService {
             log.error("锁操作信息id为空");
             return null;
         }
-        return lockProcessDao.selectLockProcessById(processId);
+        LockProcess lockProcess = lockProcessDao.selectLockProcessById(processId);
+        LockAuthCtrl.toFilter(lockProcess);
+        return lockProcess;
     }
 
     @Override
@@ -104,7 +109,9 @@ public class LockRecordServiceImpl implements LockRecordService {
         PageConverter.convertPage(page);
         LockProcess lockProcess = new LockProcess();
         lockProcess.setLockCode(lockCode);
-        return lockProcessDao.selectCondition(lockProcess, start, end, page);
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page);
+        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+        return lockProcesses;
     }
 
     @Override
@@ -114,7 +121,9 @@ public class LockRecordServiceImpl implements LockRecordService {
             return null;
         }
         PageConverter.convertPage(page);
-        return lockProcessDao.selectByLockCode(lockCode, page);
+        List<LockProcess> lockProcesses = lockProcessDao.selectByLockCode(lockCode, page);
+        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+        return lockProcesses;
     }
 
     @Override
@@ -126,7 +135,9 @@ public class LockRecordServiceImpl implements LockRecordService {
         PageConverter.convertPage(page);
         LockProcess lockProcess = new LockProcess();
         lockProcess.setDeviceIp(deviceIp);
-        return lockProcessDao.selectCondition(lockProcess, start, end, page);
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page);
+        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+        return lockProcesses;
     }
 
     @Override
@@ -148,7 +159,9 @@ public class LockRecordServiceImpl implements LockRecordService {
         CameraDevice device = deviceDao.selectDeviceById(devId);
         LockProcess lp = new LockProcess();
         lp.setDeviceIp(device.getDeviceIp());
-        return lockProcessDao.selectCondition(lp, start, end, page);
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lp, start, end, page);
+        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+        return lockProcesses;
     }
 
     @Override
@@ -169,7 +182,9 @@ public class LockRecordServiceImpl implements LockRecordService {
         PageConverter.convertPage(page);
         LockProcess lockProcess = new LockProcess();
         lockProcess.setUserName(userName);
-        return lockProcessDao.selectCondition(lockProcess, start, end, page);
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page);
+        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+        return lockProcesses;
     }
 
     @Override
@@ -190,7 +205,9 @@ public class LockRecordServiceImpl implements LockRecordService {
         PageConverter.convertPage(page);
         LockProcess lockProcess = new LockProcess();
         lockProcess.setProcessType(processType);
-        return lockProcessDao.selectCondition(lockProcess, start, end, page);
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page);
+        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+        return lockProcesses;
     }
 
     @Override
@@ -211,7 +228,9 @@ public class LockRecordServiceImpl implements LockRecordService {
         PageConverter.convertPage(page);
         LockProcess lockProcess = new LockProcess();
         lockProcess.setProcessResult(processResult);
-        return lockProcessDao.selectCondition(lockProcess, start, end, page);
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page);
+        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+        return lockProcesses;
     }
 
     @Override
@@ -230,7 +249,9 @@ public class LockRecordServiceImpl implements LockRecordService {
             return null;
         }
         PageConverter.convertPage(page);
-        return lockProcessDao.selectCondition(lockProcess,start,end, page);
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page);
+        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+        return lockProcesses;
     }
 
     @Override

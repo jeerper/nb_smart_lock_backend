@@ -16,10 +16,10 @@
     </collection>
 
     <collection property="roles" ofType="com.summit.dao.entity.LockRole" >
-      <result column="id" jdbcType="VARCHAR" property="id" />
-      <result column="role_id" jdbcType="VARCHAR" property="roleCode" />
-      <result column="lock_id" jdbcType="VARCHAR" property="lockId" />
-      <result column="lock_code" jdbcType="VARCHAR" property="lockCode" />
+      <result column="au_id" jdbcType="VARCHAR" property="id" />
+      <result column="au_role_id" jdbcType="VARCHAR" property="roleCode" />
+      <result column="au_lock_id" jdbcType="VARCHAR" property="lockId" />
+      <result column="au_lock_code" jdbcType="VARCHAR" property="lockCode" />
     </collection>
   </resultMap>
 
@@ -33,7 +33,7 @@
     cd.dev_id, cd.device_ip, cd.lock_code, cd.status
   </sql>
   <sql id="Auth_Have_Alias_List">
-    au.id, au.role_id, au.lock_id, au.lock_code
+    au.id au_id, au.role_id au_role_id, au.lock_id au_lock_id, au.lock_code au_lock_code
   </sql>
 
   <select id="selectLockById" parameterType="java.lang.String" resultMap="BaseResultMap">
