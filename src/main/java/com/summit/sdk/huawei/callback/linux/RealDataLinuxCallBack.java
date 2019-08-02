@@ -2,7 +2,6 @@ package com.summit.sdk.huawei.callback.linux;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.StrUtil;
-import com.summit.sdk.huawei.HWPuSDKLibrary;
 import com.summit.sdk.huawei.HWPuSDKLinuxLibrary;
 import com.summit.sdk.huawei.PU_META_DATA;
 import com.summit.sdk.huawei.PU_UserData;
@@ -22,7 +21,6 @@ import rx.schedulers.Schedulers;
 
 @Slf4j
 public class RealDataLinuxCallBack implements HWPuSDKLinuxLibrary.pfRealDataCallBack {
-
     private ClientFaceInfoCallback clientFaceInfoCallback;
 
     public RealDataLinuxCallBack(ClientFaceInfoCallback clientFaceInfoCallback) {
@@ -33,11 +31,14 @@ public class RealDataLinuxCallBack implements HWPuSDKLinuxLibrary.pfRealDataCall
     @Override
     public void apply(Pointer szBuffer, NativeLong lSize, Pointer pUsrData) {
         FaceInfo faceInfo = null;
-        faceInfo = procBuffer(szBuffer, lSize, HWPuSDKLibrary.LAYER_TWO_TYPE.COMMON, faceInfo);
-        faceInfo = procBuffer(szBuffer, lSize, HWPuSDKLibrary.LAYER_TWO_TYPE.TARGET, faceInfo);
+        faceInfo = procBuffer(szBuffer, lSize, HWPuSDKLinuxLibrary.LAYER_TWO_TYPE.COMMON, faceInfo);
+        faceInfo = procBuffer(szBuffer, lSize, HWPuSDKLinuxLibrary.LAYER_TWO_TYPE.TARGET, faceInfo);
         if (faceInfo != null) {
             if (clientFaceInfoCallback != null) {
                 faceInfo.setDeviceIp(pUsrData.getString(0));
+                if (faceInfo.getFaceMatchRate() == 0.0f) {
+                    faceInfo.setFaceLibType(FaceLibType.FACE_LIB_ALARM);
+                }
                 Observable.just(faceInfo)
                         .observeOn(Schedulers.io())
                         .subscribe(new Action1<FaceInfo>() {
@@ -65,21 +66,21 @@ public class RealDataLinuxCallBack implements HWPuSDKLinuxLibrary.pfRealDataCall
         for (PU_UserData userDataEntity : userData) {
             switch (userDataEntity.eType) {
                 //人脸匹配率
-                case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_MATCHRATE:
-                    log.debug("================人脸信息业务处理=================");
+                case HWPuSDKLinuxLibrary.LAYER_THREE_TYPE.FACE_MATCHRATE:
                     if (faceInfo == null) {
                         faceInfo = new FaceInfo();
                     }
+                    log.debug("================人脸匹配率业务处理=================");
                     float matchRate = userDataEntity.unMetaData.IntValue / 100f;
                     faceInfo.setFaceMatchRate(matchRate);
-
                     log.debug("人脸匹配率:{}%", faceInfo.getFaceMatchRate());
                     break;
                 //人脸信息,对应摄像头的人脸库信息
-                case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_INFO:
+                case HWPuSDKLinuxLibrary.LAYER_THREE_TYPE.FACE_INFO:
                     if (faceInfo == null) {
                         break;
                     }
+                    log.debug("================人脸信息业务处理=================");
                     faceInfo.setName(StrUtil.str(userDataEntity.unMetaData.stFaceInfo.name, "").trim());
                     faceInfo.setGender(Gender.codeOf(userDataEntity.unMetaData.stFaceInfo.iGender));
                     faceInfo.setBirthday(StrUtil.str(userDataEntity.unMetaData.stFaceInfo.birthday, "").trim());
@@ -97,90 +98,112 @@ public class RealDataLinuxCallBack implements HWPuSDKLinuxLibrary.pfRealDataCall
                     log.debug("证件号:" + faceInfo.getCardId());
                     break;
                 //人脸特征属性
-                case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_FEATURE:
+                case HWPuSDKLinuxLibrary.LAYER_THREE_TYPE.FACE_FEATURE:
                     break;
                 //人体特征属性
-                case HWPuSDKLibrary.LAYER_THREE_TYPE.HUMAN_FEATURE:
+                case HWPuSDKLinuxLibrary.LAYER_THREE_TYPE.HUMAN_FEATURE:
                     break;
                 //名单库名字
-                case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_LIB_NAME:
+                case HWPuSDKLinuxLibrary.LAYER_THREE_TYPE.FACE_LIB_NAME:
                     if (faceInfo == null) {
                         break;
                     }
+                    log.debug("================名单库名字业务处理=================");
                     byte[] faceLibNameBytes = userDataEntity.unMetaData.stBinay.pBinaryData.getByteArray(0,
                             userDataEntity.unMetaData.stBinay.ulBinaryLenth.intValue());
                     faceInfo.setFaceLibName(StrUtil.str(faceLibNameBytes, "").trim());
                     log.debug("名单库名称:{}", faceInfo.getFaceLibName());
                     break;
                 //名单库类型
-                case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_LIB_TYPE:
+                case HWPuSDKLinuxLibrary.LAYER_THREE_TYPE.FACE_LIB_TYPE:
                     if (faceInfo == null) {
                         break;
                     }
+                    log.debug("================名单库类型业务处理=================");
                     faceInfo.setFaceLibType(FaceLibType.codeOf(userDataEntity.unMetaData.uIntValue));
                     log.debug("名单库类型:{}", faceInfo.getFaceLibType().getFaceLibTypeDescription());
                     break;
-                //人脸识别全景图
-                case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_PANORAMA:
+                //人脸全景
+                case HWPuSDKLinuxLibrary.LAYER_THREE_TYPE.FACE_PANORAMA:
                     if (faceInfo == null) {
                         break;
                     }
+                    log.debug("================人脸全景图业务处理=================");
                     byte[] facePanoramaBytes = userDataEntity.unMetaData.stBinay.pBinaryData.getByteArray(0,
                             userDataEntity.unMetaData.stBinay.ulBinaryLenth.intValue());
-
+                    log.debug("人脸全景图长度:{}", facePanoramaBytes.length);
                     faceInfo.setFacePanorama(facePanoramaBytes);
-
-                    log.debug("人脸识别全景图长度:{}", faceInfo.getFacePanorama().length);
                     break;
-                //人脸识别抠图
-                case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_PIC:
+                //全景图片
+                case HWPuSDKLinuxLibrary.LAYER_THREE_TYPE.PANORAMA_PIC:
                     if (faceInfo == null) {
                         break;
                     }
+                    log.debug("================全景图业务处理=================");
+                    byte[] panoramaPicBytes = userDataEntity.unMetaData.stBinay.pBinaryData.getByteArray(0,
+                            userDataEntity.unMetaData.stBinay.ulBinaryLenth.intValue());
+                    faceInfo.setPanoramaPic(panoramaPicBytes);
+                    log.debug("全景图片长度:{}", faceInfo.getPanoramaPic().length);
+                    break;
+                //人脸识别抠图
+                case HWPuSDKLinuxLibrary.LAYER_THREE_TYPE.FACE_PIC:
+                    if (faceInfo == null) {
+                        break;
+                    }
+                    log.debug("================人脸识别抠图业务处理=================");
                     byte[] facePicBytes = userDataEntity.unMetaData.stBinay.pBinaryData.getByteArray(0,
                             userDataEntity.unMetaData.stBinay.ulBinaryLenth.intValue());
                     faceInfo.setFacePic(facePicBytes);
                     log.debug("人脸识别抠图长度:{}", faceInfo.getFacePic().length);
                     break;
                 //人脸识别和人脸库中匹配的图片
-                case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_MATCH:
+                case HWPuSDKLinuxLibrary.LAYER_THREE_TYPE.FACE_MATCH:
                     if (faceInfo == null) {
                         break;
                     }
+                    log.debug("================人脸识别和人脸库中匹配的图片业务处理=================");
                     byte[] faceMatchBytes = userDataEntity.unMetaData.stBinay.pBinaryData.getByteArray(0,
                             userDataEntity.unMetaData.stBinay.ulBinaryLenth.intValue());
                     faceInfo.setFaceMatch(faceMatchBytes);
                     log.debug("人脸识别和人脸库中匹配的图片长度:{}", faceInfo.getFaceMatch().length);
                     break;
                 //抓拍时间
-                case HWPuSDKLibrary.LAYER_THREE_TYPE.PIC_SNAPSHOT_TIME:
+                case HWPuSDKLinuxLibrary.LAYER_THREE_TYPE.PIC_SNAPSHOT_TIME:
                     if (faceInfo == null) {
                         break;
                     }
+                    log.debug("================抓拍时间业务处理=================");
                     DateTime time = new DateTime(userDataEntity.unMetaData.IntValue * 1000L);
                     faceInfo.setPicSnapshotTime(time.toString("yyyy-MM-dd HH:mm:ss"));
                     log.debug("抓怕时间:" + faceInfo.getPicSnapshotTime());
                     break;
                 //名单库中的人脸ID，用来维持特征 record的一致性
-                case HWPuSDKLibrary.LAYER_THREE_TYPE.FACELIB_RECORDID:
+                case HWPuSDKLinuxLibrary.LAYER_THREE_TYPE.FACELIB_RECORDID:
                     break;
                 //相机通道号
-                case HWPuSDKLibrary.LAYER_THREE_TYPE.CHANNEL_ID:
+                case HWPuSDKLinuxLibrary.LAYER_THREE_TYPE.CHANNEL_ID:
                     break;
                 //人脸位置(实时位置框)
-                case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_POS:
+                case HWPuSDKLinuxLibrary.LAYER_THREE_TYPE.FACE_POS:
                     break;
                 //target类型，当前用于区分人脸后处理抠图和人脸识别以及人脸识别多机协同
-                case HWPuSDKLibrary.LAYER_THREE_TYPE.TARGET_TYPE:
+                case HWPuSDKLinuxLibrary.LAYER_THREE_TYPE.TARGET_TYPE:
+                    if (faceInfo == null) {
+                        break;
+                    }
+                    log.debug("================检测类型业务处理=================");
+                    int targetType = userDataEntity.unMetaData.IntValue;
+                    log.debug("检测类型为:{}",targetType);
+                    faceInfo.setTargetType(targetType);
                     break;
                 //车辆类型
-                case HWPuSDKLibrary.LAYER_THREE_TYPE.VEHICLE_TYPE:
+                case HWPuSDKLinuxLibrary.LAYER_THREE_TYPE.VEHICLE_TYPE:
                     break;
                 //C50车辆类型
-                case HWPuSDKLibrary.LAYER_THREE_TYPE.VEHICLE_TYPE_EXT:
+                case HWPuSDKLinuxLibrary.LAYER_THREE_TYPE.VEHICLE_TYPE_EXT:
                     break;
                 //人体位置(实时位置框)
-                case HWPuSDKLibrary.LAYER_THREE_TYPE.HUMAN_RECT:
+                case HWPuSDKLinuxLibrary.LAYER_THREE_TYPE.HUMAN_RECT:
                     break;
                 default:
 //                    log.debug("未知数据类型eType-Hex: 0x" + Convert.toHex(Convert.intToBytes(userDataEntity.eType)).toUpperCase());

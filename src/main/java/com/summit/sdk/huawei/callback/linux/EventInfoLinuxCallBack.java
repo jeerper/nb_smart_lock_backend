@@ -106,10 +106,10 @@ public class EventInfoLinuxCallBack implements HWPuSDKLinuxLibrary.pfGetEventInf
                 deviceIpPointer.setString(0, deviceIp);
                 deviceMap.put(deviceIp, new DeviceInfo(deviceIpPointer, arg.ulIdentifyID));
 
-                boolean alarmCallBackBindStatus = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AlarmInfoStatesCallBack(arg.ulIdentifyID,
-                        pfGetAlarmInfoCallBack,
-                        deviceIpPointer);
-                log.debug("告警上报回调函数绑定:" + alarmCallBackBindStatus);
+//                boolean alarmCallBackBindStatus = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AlarmInfoStatesCallBack(arg.ulIdentifyID,
+//                        pfGetAlarmInfoCallBack,
+//                        deviceIpPointer);
+//                log.debug("告警上报回调函数绑定:" + alarmCallBackBindStatus);
 
 
                 PU_REAL_PLAY_INFO realPlayInfo = new PU_REAL_PLAY_INFO();
