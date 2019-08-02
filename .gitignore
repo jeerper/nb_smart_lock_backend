@@ -11,5 +11,5 @@ log/
 disconf/
 *.pdb
 *.db
-/192.*
+/snapshot
 

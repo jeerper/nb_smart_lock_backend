@@ -12,6 +12,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 @MapperScan("com.summit.dao")
 public class MainAction {
+    public static final String SnapshotFileName="snapshot";
     public static void main(String[] args) {
         SpringApplication.run(MainAction.class, args);
     }

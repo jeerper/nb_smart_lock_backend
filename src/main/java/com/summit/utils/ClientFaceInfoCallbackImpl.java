@@ -2,6 +2,7 @@ package com.summit.utils;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.system.SystemUtil;
+import com.summit.MainAction;
 import com.summit.sdk.huawei.callback.ClientFaceInfoCallback;
 import com.summit.sdk.huawei.model.FaceInfo;
 import com.summit.sdk.huawei.model.FaceLibType;
@@ -39,6 +40,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             String picturePathFacePanorama = new StringBuilder()
                     .append(SystemUtil.getUserInfo().getCurrentDir())
                     .append(File.separator)
+                    .append(MainAction.SnapshotFileName)
+                    .append(File.separator)
                     .append(faceInfo.getDeviceIp())
                     .append(File.separator)
                     .append(faceInfo.getPicSnapshotTime().toString("yyyy-MM-dd"))
@@ -52,6 +55,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             FileUtil.writeBytes(faceInfo.getFacePanorama(), picturePathFacePanorama);
             String picturePathFacePic = new StringBuilder()
                     .append(SystemUtil.getUserInfo().getCurrentDir())
+                    .append(File.separator)
+                    .append(MainAction.SnapshotFileName)
                     .append(File.separator)
                     .append(faceInfo.getDeviceIp())
                     .append(File.separator)
