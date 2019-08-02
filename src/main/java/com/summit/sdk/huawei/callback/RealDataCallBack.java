@@ -174,8 +174,8 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
                     }
                     log.debug("================抓拍时间业务处理=================");
                     DateTime time = new DateTime(userDataEntity.unMetaData.IntValue * 1000L);
-                    faceInfo.setPicSnapshotTime(time.toString("yyyy-MM-dd HH:mm:ss"));
-                    log.debug("抓怕时间:" + faceInfo.getPicSnapshotTime());
+                    faceInfo.setPicSnapshotTime(time);
+                    log.debug("抓怕时间:" + faceInfo.getPicSnapshotTime().toString("yyyy-MM-dd HH:mm:ss"));
                     break;
                 //名单库中的人脸ID，用来维持特征 record的一致性
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.FACELIB_RECORDID:

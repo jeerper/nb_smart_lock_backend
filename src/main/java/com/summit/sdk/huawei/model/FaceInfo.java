@@ -1,5 +1,7 @@
 package com.summit.sdk.huawei.model;
 
+import cn.hutool.core.date.DateTime;
+
 public class FaceInfo {
     /**
      * 名字
@@ -60,7 +62,7 @@ public class FaceInfo {
     /**
      * 抓拍时间
      */
-    private String picSnapshotTime;
+    private DateTime picSnapshotTime;
     /**
      * 设备IP
      */
@@ -172,11 +174,11 @@ public class FaceInfo {
         this.faceMatch = faceMatch;
     }
 
-    public String getPicSnapshotTime() {
+    public DateTime getPicSnapshotTime() {
         return picSnapshotTime;
     }
 
-    public void setPicSnapshotTime(String picSnapshotTime) {
+    public void setPicSnapshotTime(DateTime picSnapshotTime) {
         this.picSnapshotTime = picSnapshotTime;
     }
 

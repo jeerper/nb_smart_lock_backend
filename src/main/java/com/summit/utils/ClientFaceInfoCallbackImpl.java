@@ -1,5 +1,7 @@
 package com.summit.utils;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.system.SystemUtil;
 import com.summit.sdk.huawei.callback.ClientFaceInfoCallback;
 import com.summit.sdk.huawei.model.FaceInfo;
 import com.summit.sdk.huawei.model.FaceLibType;
@@ -8,26 +10,61 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+
 @Slf4j
 @Component
 public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
 
     @Autowired
     private NBLockServiceImpl unLockService;
+
     @Override
     public void invoke(Object object) {
-        if(object instanceof FaceInfo){
-            FaceInfo faceInfo=(FaceInfo)object;
+        if (object instanceof FaceInfo) {
+            FaceInfo faceInfo = (FaceInfo) object;
 
             log.debug("============客户端调用开始=============");
             log.debug("设备IP:" + faceInfo.getDeviceIp());
-            if(faceInfo.getFacePanorama()==null){
+            if (faceInfo.getFacePanorama() == null) {
                 log.debug("人脸全景为空!!!!!!!!!");
             }
-
-            if(faceInfo.getFaceLibType()== FaceLibType.FACE_LIB_ALARM){
+            String type = "";
+            if (faceInfo.getFaceLibType() == FaceLibType.FACE_LIB_ALARM) {
                 log.debug("开始报警!!!!！！！！");
+                type = "Alarm";
+            } else {
+                type = "Unlock";
             }
+            String picturePathFacePanorama = new StringBuilder()
+                    .append(SystemUtil.getUserInfo().getCurrentDir())
+                    .append(File.separator)
+                    .append(faceInfo.getDeviceIp())
+                    .append(File.separator)
+                    .append(faceInfo.getPicSnapshotTime().toString("yyyy-MM-dd"))
+                    .append(File.separator)
+                    .append(type)
+                    .append(File.separator)
+                    .append(faceInfo.getPicSnapshotTime().toString("yyyy-MM-dd_HH.mm.ss"))
+                    .append("_FacePanorama.jpg")
+                    .toString();
+
+            FileUtil.writeBytes(faceInfo.getFacePanorama(), picturePathFacePanorama);
+            String picturePathFacePic = new StringBuilder()
+                    .append(SystemUtil.getUserInfo().getCurrentDir())
+                    .append(File.separator)
+                    .append(faceInfo.getDeviceIp())
+                    .append(File.separator)
+                    .append(faceInfo.getPicSnapshotTime().toString("yyyy-MM-dd"))
+                    .append(File.separator)
+                    .append(type)
+                    .append(File.separator)
+                    .append(faceInfo.getPicSnapshotTime().toString("yyyy-MM-dd_HH.mm.ss"))
+                    .append("_FacePic.jpg")
+                    .toString();
+
+            FileUtil.writeBytes(faceInfo.getFacePic(), picturePathFacePic);
+
 //            log.debug("名字:" + faceInfo.getName());
 //            log.debug("性别:{}", faceInfo.getGender().getGenderDescription());
 //            log.debug("生日:" + faceInfo.getBirthday());
@@ -46,7 +83,6 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
 //                        lockInfo.getRmid(),lockInfo.getType(),lockInfo.getContent(),lockInfo.getObjx(),lockInfo.getTime());
 //            }
         }
-
 
 
     }

@@ -11,3 +11,5 @@ log/
 disconf/
 *.pdb
 *.db
+/192.*
+
