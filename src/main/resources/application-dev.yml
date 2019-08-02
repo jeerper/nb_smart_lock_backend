@@ -7,7 +7,7 @@ spring:
     password: Summit2017
 
   redis:
-    host: 192.168.140.155
+    host: 192.168.140.153
     port: 10001
 eureka:
   instance:
@@ -17,4 +17,4 @@ eureka:
     healthcheck:
       enabled: true
     serviceUrl:
-      defaultZone: "http://ucp:Summit2018@192.168.140.155:45000/eureka/"
+      defaultZone: "http://ucp:Summit2018@192.168.140.153:45000/eureka/"
