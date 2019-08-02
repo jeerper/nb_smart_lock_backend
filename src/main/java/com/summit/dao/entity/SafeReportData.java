@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
+@AllArgsConstructor
 @TableName(value = "safe_report_data")
 public class SafeReportData {
     @TableId(value = "safe_rep_id", type = IdType.ID_WORKER_STR)
@@ -36,4 +38,5 @@ public class SafeReportData {
     @TableField(value = "status_desc")
     private String statusDesc;
 
+    public SafeReportData(){}
 }

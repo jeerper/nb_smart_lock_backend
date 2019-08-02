@@ -5,11 +5,6 @@ import com.summit.dao.entity.GisInfo;
 
 public interface GisInfoDao  extends BaseMapper<GisInfo> {
 
-    GisInfo selectById(String gisId);
+    GisInfo selectGisById(String gisId);
 
-    int deleteById(String gisId);
-
-    int insert(GisInfo record);
-
-    int update(GisInfo record);
 }

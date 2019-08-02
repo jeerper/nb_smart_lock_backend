@@ -52,29 +52,57 @@
     fa.device_ip, fa.pic_snapshot_time
   </sql>
 
+  <select id="selectFaceById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Face_Have_Alias_List" />,
+    fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
+    fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
+    fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    from face_info fa left join file_info fi1 on fa.face_panorama_id=fi1.file_id
+    left join file_info fi2 on fa.face_pic_id=fi2.file_id
+    left join file_info fi3 on fa.face_match_id=fi3.file_id
+    <where>
+      fa.face_id=#{faceId}
+    </where>
+  </select>
+
   <select id="selectByName" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Face_Have_Alias_List" />,
-    fi1.file_id fi1_id, fi1.filen_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
-    fi2.file_id fi2_id, fi2.filen_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
-    fi3.file_id fi3_id, fi3.filen_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
-    from face_info fa join file_info fi1 on fa.face_panorama_id=fi1.file_id
-    join file_info fi2 on fa.face_pic_id=fi2.file_id
-    join file_info fi3 on fa.face_match_id=fi3.file_id
+    fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
+    fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
+    fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    from face_info fa left join file_info fi1 on fa.face_panorama_id=fi1.file_id
+    left join file_info fi2 on fa.face_pic_id=fi2.file_id
+    left join file_info fi3 on fa.face_match_id=fi3.file_id
     <where>
       fa.user_name=#{userName}
+    </where>
+  </select>
+
+  <select id="selectByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Face_Have_Alias_List" />,
+    fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
+    fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
+    fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    from face_info fa left join file_info fi1 on fa.face_panorama_id=fi1.file_id
+    left join file_info fi2 on fa.face_pic_id=fi2.file_id
+    left join file_info fi3 on fa.face_match_id=fi3.file_id
+    <where>
+      fa.user_id=#{userId}
     </where>
   </select>
 
   <select id="selectCondition"  resultMap="BaseResultMap">
     select
     <include refid="Face_Have_Alias_List" />,
-    fi1.file_id fi1_id, fi1.filen_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
-    fi2.file_id fi2_id, fi2.filen_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
-    fi3.file_id fi3_id, fi3.filen_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
-    from face_info fa join file_info fi1 on fa.face_panorama_id=fi1.file_id
-    join file_info fi2 on fa.face_pic_id=fi2.file_id
-    join file_info fi3 on fa.face_match_id=fi3.file_id
+    fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
+    fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
+    fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    from face_info fa left join file_info fi1 on fa.face_panorama_id=fi1.file_id
+    left join file_info fi2 on fa.face_pic_id=fi2.file_id
+    left join file_info fi3 on fa.face_match_id=fi3.file_id
     <where>
       <if test="faceInfo.faceId != null">
         fa.face_id = #{faceInfo.faceId}
@@ -125,6 +153,187 @@
     <if test="faceInfo.picSnapshotTime  != null">
       order by fa.alarm_time
     </if>
+    <if test="page != null and page.current != null and  page.pageSize != null ">
+      limit #{page.current},#{page.pageSize}
+    </if>
   </select>
+
+  <insert id="insertFace" parameterType="com.summit.dao.entity.FaceInfo">
+    insert into face_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="faceId != null">
+        face_id,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="gender != null">
+        gender,
+      </if>
+      <if test="birthday != null">
+        birthday,
+      </if>
+      <if test="province != null">
+        province,
+      </if>
+      <if test="city != null">
+        city,
+      </if>
+      <if test="cardType != null">
+        card_type,
+      </if>
+      <if test="cardId != null">
+        card_id,
+      </if>
+      <if test="faceMatchRate != null">
+        face_match_rate,
+      </if>
+      <if test="faceLibName != null">
+        face_lib_name,
+      </if>
+      <if test="faceLibType != null">
+        face_lib_type,
+      </if>
+      <if test="facePanorama != null and facePanorama.fileId != null">
+        face_panorama_id,
+      </if>
+      <if test="facePic != null and facePic.fileId != null">
+        face_pic_id,
+      </if>
+      <if test="faceMatch != null and faceMatch.fileId != null">
+        face_match_id,
+      </if>
+      <if test="deviceIp != null">
+        device_ip,
+      </if>
+      <if test="picSnapshotTime != null">
+        pic_snapshot_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="faceId != null">
+        #{faceId},
+      </if>
+      <if test="userName != null">
+        #{userName},
+      </if>
+      <if test="userId != null">
+        #{userId},
+      </if>
+      <if test="gender != null">
+        #{gender},
+      </if>
+      <if test="birthday != null">
+        #{birthday},
+      </if>
+      <if test="province != null">
+        #{province},
+      </if>
+      <if test="city != null">
+        #{city},
+      </if>
+      <if test="cardType != null">
+        #{cardType},
+      </if>
+      <if test="cardId != null">
+        #{cardId},
+      </if>
+      <if test="faceMatchRate != null">
+        #{faceMatchRate},
+      </if>
+      <if test="faceLibName != null">
+        #{faceLibName},
+      </if>
+      <if test="faceLibType != null">
+        #{faceLibType},
+      </if>
+      <if test="facePanorama != null and facePanorama.fileId != null">
+        #{facePanorama.fileId},
+      </if>
+      <if test="facePic != null and facePic.fileId != null">
+        #{facePic.fileId},
+      </if>
+      <if test="faceMatch != null and faceMatch.fileId != null">
+        #{faceMatch.fileId},
+      </if>
+      <if test="deviceIp != null">
+        #{deviceIp},
+      </if>
+      <if test="picSnapshotTime != null">
+        #{picSnapshotTime}
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateFace" parameterType="com.summit.dao.entity.FaceInfo">
+    update lock_process
+    <set>
+      <if test="faceId != null">
+        face_id = #{faceId},
+      </if>
+      <if test="userName != null">
+        user_name = #{userName},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId},
+      </if>
+      <if test="gender != null">
+        gender = #{gender},
+      </if>
+      <if test="birthday != null">
+        birthday = #{birthday},
+      </if>
+      <if test="province != null">
+        province = #{province},
+      </if>
+      <if test="city != null">
+        city = #{city},
+      </if>
+      <if test="cardType != null">
+        card_type = #{cardType},
+      </if>
+      <if test="cardId != null">
+        card_id = #{cardId},
+      </if>
+      <if test="faceMatchRate != null">
+        face_match_rate = #{faceMatchRate},
+      </if>
+      <if test="faceLibName != null">
+        face_lib_name = #{faceLibName},
+      </if>
+      <if test="faceLibType != null">
+        face_lib_type = #{faceLibType},
+      </if>
+      <if test="facePanorama != null and facePanorama.fileId != null">
+        face_panorama_id = #{facePanorama.fileId},
+      </if>
+      <if test="facePic != null and facePic.fileId != null">
+        face_pic_id = #{facePic.fileId},
+      </if>
+      <if test="faceMatch != null and faceMatch.fileId != null">
+        face_match_id = #{faceMatch.fileId},
+      </if>
+      <if test="deviceIp != null">
+        device_ip = #{deviceIp},
+      </if>
+      <if test="picSnapshotTime != null">
+        pic_snapshot_time = #{picSnapshotTime},
+      </if>
+    </set>
+    <where>
+      <if test="faceId != null">
+        face_id = #{faceId}
+      </if>
+      <if test="userName != null">
+        and user_name = #{userName}
+      </if>
+      <if test="userId != null">
+        and user_id = #{userId}
+      </if>
+    </where>
+  </update>
 
 </mapper>

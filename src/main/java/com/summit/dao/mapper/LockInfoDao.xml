@@ -5,6 +5,7 @@
     <result column="lock_id" jdbcType="VARCHAR" property="lockId" />
     <result column="lock_code" jdbcType="VARCHAR" property="lockCode" />
     <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="createby" jdbcType="VARCHAR" property="createby" />
     <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
 
     <collection property="devices" ofType="com.summit.dao.entity.CameraDevice" >
@@ -13,23 +14,49 @@
       <result column="lock_code" jdbcType="VARCHAR" property="lockCode" />
       <result column="status" jdbcType="VARCHAR" property="status" />
     </collection>
+
+    <collection property="roles" ofType="com.summit.dao.entity.LockRole" >
+      <result column="au_id" jdbcType="VARCHAR" property="id" />
+      <result column="au_role_id" jdbcType="VARCHAR" property="roleCode" />
+      <result column="au_lock_id" jdbcType="VARCHAR" property="lockId" />
+      <result column="au_lock_code" jdbcType="VARCHAR" property="lockCode" />
+    </collection>
   </resultMap>
 
   <sql id="Base_Column_List">
-    lock_id, lock_code, status, updatetime
+    lock_id, lock_code, status, createby, updatetime
   </sql>
   <sql id="Lock_Have_Alias_List">
-    li.lock_id, li.lock_code, li.status, li.updatetime
+    li.lock_id, li.lock_code, li.status, li.createby, li.updatetime
   </sql>
   <sql id="Device_Have_Alias_List">
     cd.dev_id, cd.device_ip, cd.lock_code, cd.status
   </sql>
+  <sql id="Auth_Have_Alias_List">
+    au.id au_id, au.role_id au_role_id, au.lock_id au_lock_id, au.lock_code au_lock_code
+  </sql>
+
+  <select id="selectLockById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Lock_Have_Alias_List" />,
+    <include refid="Device_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />
+    from lock_info li
+    left join camera_device cd on li.lock_code = cd.lock_code
+    left join role_lock_auth au on (li.lock_id = au.lock_id and li.lock_code = au.lock_code)
+    <where>
+      li.lock_id=#{lockId}
+    </where>
+  </select>
 
   <select id="selectBylockCode" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Lock_Have_Alias_List" />,
-    <include refid="Device_Have_Alias_List" />
-    from lock_info li join camera_device cd on li.lock_code = cd.lock_code
+    <include refid="Device_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />
+    from lock_info li
+    left join camera_device cd on li.lock_code = cd.lock_code
+    left join role_lock_auth au on (li.lock_id = au.lock_id and li.lock_code = au.lock_code)
     <where>
       li.lock_code=#{lockCode}
 
@@ -39,22 +66,28 @@
   <select id="selectCondition" parameterType="com.summit.dao.entity.LockInfo" resultMap="BaseResultMap">
     select
     <include refid="Lock_Have_Alias_List" />,
-    <include refid="Device_Have_Alias_List" />
-    from lock_info li join camera_device cd on li.lock_code = cd.lock_code
+    <include refid="Device_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />
+    from lock_info li
+    left join camera_device cd on li.lock_code = cd.lock_code
+    left join role_lock_auth au on (li.lock_id = au.lock_id and li.lock_code = au.lock_code)
     <where>
-      <if test="lockId != null">
-        li.lock_id = #{lockId}
+      <if test="lockInfo.lockId != null">
+        li.lock_id = #{lockInfo.lockId}
       </if>
-      <if test="lockCode != null">
-        and li.lock_code = #{lockCode}
+      <if test="lockInfo.lockCode != null">
+        and li.lock_code = #{lockInfo.lockCode}
       </if>
-      <if test="status != null">
-        and li.status = #{status}
+      <if test="lockInfo.status != null">
+        and li.status = #{lockInfo.status}
       </if>
-      <if test="updatetime != null">
-        and li.updatetime = #{updatetime}
+      <if test="lockInfo.updatetime != null">
+        and li.updatetime = #{lockInfo.updatetime}
       </if>
     </where>
+    <if test="page != null and page.current != null and  page.pageSize != null ">
+      limit #{page.current},#{page.pageSize}
+    </if>
   </select>
 
 </mapper>

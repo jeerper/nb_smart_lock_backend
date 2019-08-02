@@ -5,6 +5,6 @@ import com.summit.dao.entity.SafeReportData;
 
 public interface SafeReportDataDao  extends BaseMapper<SafeReportData> {
 
-    SafeReportData selectById(String id);
+    SafeReportData selectSafeReportDataById(String id);
 
 }

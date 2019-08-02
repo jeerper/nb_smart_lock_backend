@@ -50,18 +50,21 @@
     lo.process_id lopid, lo.device_ip, lo.lock_code, lo.user_id, lo.user_name, lo.process_type, lo.process_result,
     lo.fail_reason, lo.face_panorama_id, lo.face_pic_id, lo.face_match_id, lo.process_time
   </sql>
+  <sql id="Auth_Have_Alias_List">
+    au.id, au.role_id, au.lock_id, au.lock_code
+  </sql>
 
-  <select id="selectById" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectAlarmById" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Alarm_Have_Alias_List" />,
     <include refid="Lock_Have_Alias_List" />,
-    fi1.file_id fi1_id, fi1.filen_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
-    fi2.file_id fi2_id, fi2.filen_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
-    fi3.file_id fi3_id, fi3.filen_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
-    from alarm al join lock_process lo on al.process_id=lo.process_id
-    join file_info fi1 on lo.face_panorama_id=fi1.file_id
-    join file_info fi2 on lo.face_pic_id=fi2.file_id
-    join file_info fi3 on lo.face_match_id=fi3.file_id
+    fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
+    fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
+    fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    from alarm al left join lock_process lo on al.process_id=lo.process_id
+    left join file_info fi1 on lo.face_panorama_id=fi1.file_id
+    left join file_info fi2 on lo.face_pic_id=fi2.file_id
+    left join file_info fi3 on lo.face_match_id=fi3.file_id
     <where>
       al.alarm_id=#{alarmId}
     </where>
@@ -71,13 +74,13 @@
     select
     <include refid="Alarm_Have_Alias_List" />,
     <include refid="Lock_Have_Alias_List" />,
-    fi1.file_id fi1_id, fi1.filen_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
-    fi2.file_id fi2_id, fi2.filen_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
-    fi3.file_id fi3_id, fi3.filen_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
-    from alarm al join lock_process lo on al.process_id=lo.process_id
-    join file_info fi1 on lo.face_panorama_id=fi1.file_id
-    join file_info fi2 on lo.face_pic_id=fi2.file_id
-    join file_info fi3 on lo.face_match_id=fi3.file_id
+    fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
+    fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
+    fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    from alarm al left join lock_process lo on al.process_id=lo.process_id
+    left join file_info fi1 on lo.face_panorama_id=fi1.file_id
+    left join file_info fi2 on lo.face_pic_id=fi2.file_id
+    left join file_info fi3 on lo.face_match_id=fi3.file_id
     <where>
       al.process_id=#{processId}
     </where>
@@ -87,13 +90,13 @@
     select
     <include refid="Alarm_Have_Alias_List" />,
     <include refid="Lock_Have_Alias_List" />,
-    fi1.file_id fi1_id, fi1.filen_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
-    fi2.file_id fi2_id, fi2.filen_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
-    fi3.file_id fi3_id, fi3.filen_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
-    from alarm al join lock_process lo on al.process_id=lo.process_id
-    join file_info fi1 on lo.face_panorama_id=fi1.file_id
-    join file_info fi2 on lo.face_pic_id=fi2.file_id
-    join file_info fi3 on lo.face_match_id=fi3.file_id
+    fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
+    fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
+    fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    from alarm al left join lock_process lo on al.process_id=lo.process_id
+    left join file_info fi1 on lo.face_panorama_id=fi1.file_id
+    left join file_info fi2 on lo.face_pic_id=fi2.file_id
+    left join file_info fi3 on lo.face_match_id=fi3.file_id
     <where>
       <if test="alarm.alarmId != null">
         al.alarm_id = #{alarm.alarmId}
@@ -117,8 +120,10 @@
     <if test="alarm.alarmTime  != null">
       order by al.alarm_time
     </if>
+    <if test="page != null and page.current != null and  page.pageSize != null ">
+      limit #{page.current},#{page.pageSize}
+    </if>
   </select>
-
 
 
 </mapper>

@@ -10,7 +10,7 @@
 
     <collection property="bojx" ofType="com.summit.dao.entity.SafeReportData" >
       <result column="id" jdbcType="VARCHAR" property="id" />
-      <result column="safe_rep_id" jdbcType="VARCHAR" property="safeRepId" />
+      <result column="rd_safeid" jdbcType="VARCHAR" property="safeRepId" />
       <result column="version" jdbcType="VARCHAR" property="version" />
       <result column="vol" jdbcType="DECIMAL" property="vol" />
       <result column="jzdw" jdbcType="VARCHAR" property="jzdw" />
@@ -32,29 +32,64 @@
     sr.safe_rep_id, sr.lock_code, sr.type, sr.report_time, sr.content
   </sql>
   <sql id="Data_Have_Alias_List">
-    rd.id, rd.safe_rep_id, rd.version, rd.vol, rd.jzdw, rd.latitude, rd.longitude, rd.altitude, rd.speed, rd.direction,
+    rd.id, rd.safe_rep_id rd_safeid, rd.version, rd.vol, rd.jzdw, rd.latitude, rd.longitude, rd.altitude, rd.speed, rd.direction,
     rd.gps_time, rd.status_desc
   </sql>
+  <sql id="Auth_Have_Alias_List">
+    au.id, au.role_id, au.lock_id, au.lock_code
+  </sql>
 
-  <select id="selectById" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectSafeReportById" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Report_Have_Alias_List" />,
-    <include refid="Data_Have_Alias_List" />
-    from safe_report sr join safe_report_data rd on sr.safe_rep_id=rd.safe_rep_id
+    <include refid="Data_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />
+    from role_lock_auth au
+    inner join safe_report sr on sr.lock_code = au.lock_code
+    left join safe_report_data rd on sr.safe_rep_id=rd.safe_rep_id
     <where>
       sr.safe_rep_id=#{safeRepId}
     </where>
   </select>
+
   <select id="selectByLockCode" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Report_Have_Alias_List" />,
-    <include refid="Data_Have_Alias_List" />
-    from safe_report sr join safe_report_data rd on sr.safe_rep_id=rd.safe_rep_id
+    <include refid="Data_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />
+    from role_lock_auth au
+    inner join safe_report sr on sr.lock_code = au.lock_code
+    left join safe_report_data rd on sr.safe_rep_id=rd.safe_rep_id
     <where>
       sr.lock_code=#{lockCode}
     </where>
-    <if test="reportTime  != null">
-      order by sr.report_time
+    order by sr.report_time
+  </select>
+
+
+  <select id="selectReportByRoles"  resultMap="BaseResultMap">
+    select
+    <include refid="Report_Have_Alias_List" />,
+    <include refid="Data_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />
+    from role_lock_auth au
+    inner join safe_report sr on sr.lock_code = au.lock_code
+    left join safe_report_data rd on sr.safe_rep_id=rd.safe_rep_id
+    <where>
+      au.role_id in
+      <foreach collection="roles" item="role" index="index" open="(" close=")" separator=",">
+        #{role}
+      </foreach>
+      <if test="start != null">
+        and sr.report_time &gt;= #{start}
+      </if>
+      <if test="end != null">
+        and sr.report_time &lt;= #{end}
+      </if>
+    </where>
+    order by sr.report_time
+    <if test="page != null and page.current != null and  page.pageSize != null ">
+      limit #{page.current},#{page.pageSize}
     </if>
   </select>
 
@@ -63,7 +98,7 @@
     select
     <include refid="Report_Have_Alias_List" />,
     <include refid="Data_Have_Alias_List" />
-    from safe_report sr join safe_report_data rd on sr.safe_rep_id=rd.safe_rep_id
+    from safe_report sr left join safe_report_data rd on sr.safe_rep_id=rd.safe_rep_id
     <where>
       <if test="safeReport.safeRepId != null">
         sr.safe_rep_id = #{safeReport.safeRepId}
@@ -84,8 +119,9 @@
         and sr.report_time &lt;= #{end}
       </if>
     </where>
-    <if test="safeReport.reportTime  != null">
-      order by sr.report_time
+    order by sr.report_time
+    <if test="page != null and page.current != null and  page.pageSize != null ">
+      limit #{page.current},#{page.pageSize}
     </if>
   </select>
 

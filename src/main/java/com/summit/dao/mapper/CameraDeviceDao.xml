@@ -5,12 +5,12 @@
     <result column="dev_id" jdbcType="VARCHAR" property="devId" />
     <result column="device_ip" jdbcType="VARCHAR" property="deviceIp" />
     <result column="lock_code" jdbcType="VARCHAR" property="lockCode" />
-    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="status" jdbcType="INTEGER" property="status" />
   </resultMap>
   <sql id="Base_Column_List">
     dev_id, device_ip, lock_code, status
   </sql>
-  <select id="selectById" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectDeviceById" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from camera_device
@@ -24,23 +24,22 @@
     <include refid="Base_Column_List" />
     from camera_device
     <where>
-      dev_id=#{dev_id}
-      <where>
-        <if test="devId != null">
-          dev_id = #{devId}
-        </if>
-        <if test="deviceIp != null">
-          and device_ip = #{deviceIp}
-        </if>
-        <if test="lockCode != null">
-          and lock_code = #{lockCode}
-        </if>
-        <if test="status != null">
-          and status = #{status}
-        </if>
-      </where>
+      <if test="cameraDevice.devId != null">
+        dev_id = #{cameraDevice.devId}
+      </if>
+      <if test="cameraDevice.deviceIp != null">
+        and device_ip = #{cameraDevice.deviceIp}
+      </if>
+      <if test="cameraDevice.lockCode != null">
+        and lock_code = #{cameraDevice.lockCode}
+      </if>
+      <if test="cameraDevice.status != null">
+        and status = #{cameraDevice.status}
+      </if>
     </where>
-    
+    <if test="page != null and page.current != null and  page.pageSize != null ">
+      limit #{page.current},#{page.pageSize}
+    </if>
   </select>
 
 

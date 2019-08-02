@@ -1,19 +1,26 @@
 package com.summit.dao.test;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.LockProcess;
+import com.summit.dao.entity.LockRole;
 import com.summit.dao.entity.SafeReport;
 import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.FaceInfoDao;
 import com.summit.dao.repository.FileInfoDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.dao.repository.LockProcessDao;
+import com.summit.dao.repository.LockRoleDao;
 import com.summit.dao.repository.SafeReportDao;
 import com.summit.dao.repository.UserDao;
+import com.summit.service.AlarmService;
+import com.summit.service.LockInfoService;
+import com.summit.service.LockRecordService;
+import com.summit.util.LockAuthCtrl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +47,70 @@ public class TestDao {
     @Autowired
     private LockInfoDao lockInfoDao;
     @Autowired
+    private LockInfoService lockInfoService;
+    @Autowired
     private SafeReportDao safeReportDao;
+    @Autowired
+    private LockRoleDao lockRoleDao;
+
+    @Autowired
+    private AlarmService alarmService;
+    @Autowired
+    private LockRecordService lockRecordService;
+
+    @Test
+    public void testLockRole(){
+        Map<String,Object> map = new HashMap<>();
+        map.put("role_id","r1");
+        List<LockRole> lockRoles = lockRoleDao.selectByMap(map);
+        QueryWrapper<LockRole> queryWrapper = new QueryWrapper<>();
+        lockRoleDao.selectList(queryWrapper.eq("role_id", "r1"));
+        System.out.println(lockRoles);
+    }
+
+    @Test
+    public void testLockId(){
+        SafeReport safeReport = safeReportDao.selectSafeReportById("1re");
+        System.out.println(safeReport);
+    }
+    @Test
+    public void testFilter(){
+        List<LockInfo> lockInfos = lockInfoService.selectAll(null);
+        System.out.println(lockInfos);
+        LockAuthCtrl.toFilterLocks(lockInfos);
+
+        System.out.println(lockInfos);
+    }
+
+    @Test
+    public void testFilterLP(){
+        List<LockProcess> lockProcesses = lockRecordService.selectAll(null);
+        System.out.println(lockProcesses);
+        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+
+        System.out.println(lockProcesses);
+    }
+
+    @Test
+    public void testFilterAlarm(){
+        List<Alarm> alarms = alarmService.selectAll(null);
+        System.out.println(alarms);
+        LockAuthCtrl.toFilterAlarms(alarms);
+
+        System.out.println(alarms);
+    }
+
+    @Test
+    public void testLockCode(){
+        List<SafeReport> safeReports = safeReportDao.selectByLockCode("1nb",null,null,null);
+        System.out.println(safeReports);
+    }
+
+    @Test
+    public void testLockRoleAuth(){
+        List<SafeReport> safeReports = safeReportDao.selectReportByRoles(Arrays.asList("r1"), null, null, null);
+        System.out.println(safeReports);
+    }
 
     @Test
     public void test(){
@@ -55,31 +126,31 @@ public class TestDao {
 //        Map<String , Object> map = new HashMap<>();
 //        map.put("fileId","aaa");
 
-        LockInfo lockInfo = new LockInfo();
-        lockInfo.setStatus(1);
-        List<LockInfo> lockInfos = lockInfoDao.selectCondition(lockInfo);
-        System.out.println(lockInfos);
-
-        SafeReport selSafeReport = safeReportDao.selectById("2re");
-        System.out.println(selSafeReport);
-
-
-        SafeReport safeReport = new SafeReport();
-        safeReport.setLockCode("1nb");
-        List<SafeReport> safeReports = safeReportDao.selectCondition(safeReport,date1,date2);
-        System.out.println(safeReports);
-        Alarm alarm = new Alarm();
-        alarm.setProcessId("p1");
-        List<Alarm> alarms = alarmDao.selectCondition(alarm, null, date2);
-        System.out.println(alarms);
-
-        FaceInfo faceInfo = new FaceInfo();
-        faceInfo.setCardId("fgd");
-        List<FaceInfo> faceInfos = faceInfoDao.selectCondition(faceInfo, null, date2);
-        System.out.println(faceInfos);
+//        LockInfo lockInfo = new LockInfo();
+//        lockInfo.setStatus(1);
+//        List<LockInfo> lockInfos = lockInfoDao.selectCondition(lockInfo);
+//        System.out.println(lockInfos);
+//
+//        SafeReport selSafeReport = safeReportDao.selectById("2re");
+//        System.out.println(selSafeReport);
+//
+//
+//        SafeReport safeReport = new SafeReport();
+//        safeReport.setLockCode("1nb");
+//        List<SafeReport> safeReports = safeReportDao.selectCondition(safeReport,date1,date2);
+//        System.out.println(safeReports);
+//        Alarm alarm = new Alarm();
+//        alarm.setProcessId("p1");
+//        List<Alarm> alarms = alarmDao.selectCondition(alarm, null, date2);
+//        System.out.println(alarms);
+//
+//        FaceInfo faceInfo = new FaceInfo();
+//        faceInfo.setCardId("fgd");
+//        List<FaceInfo> faceInfos = faceInfoDao.selectCondition(faceInfo, null, date2);
+//        System.out.println(faceInfos);
         LockProcess lockProcess = new LockProcess();
         lockProcess.setUserName("1dfg");
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess,date1,date2);
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess,date1,date2,null);
         System.out.println(lockProcesses);
     }
 
@@ -96,6 +167,22 @@ public class TestDao {
         }
         System.out.println(insert);
     }
+    @Test
+    public void testInsAndUpLock(){
+        LockProcess process = lockProcessDao.selectLockProcessById("p1");
+//        process.setProcessId("2");
+        process.setDeviceIp("222");
+        process.getFaceMatch().setFileId("6");
+        int insert = -1;
+        try {
+//            insert = lockProcessDao.insertRecord(process);
+            insert = lockProcessDao.updateRecord(process);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(insert);
+    }
+
     @Test
     public void testUpdate(){
         Alarm alarm = new Alarm();

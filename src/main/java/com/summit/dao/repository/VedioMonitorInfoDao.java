@@ -5,11 +5,6 @@ import com.summit.dao.entity.VedioMonitorInfo;
 
 public interface VedioMonitorInfoDao  extends BaseMapper<VedioMonitorInfo> {
 
-    VedioMonitorInfo selectById(String id);
+    VedioMonitorInfo selectVedioMonitorById(String id);
 
-    int deleteById(String id);
-
-    int insert(VedioMonitorInfo record);
-
-    int update(VedioMonitorInfo record);
 }

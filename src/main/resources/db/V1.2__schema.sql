@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2019/7/29 17:58:33                           */
+/* Created on:     2019/7/31 19:21:38                           */
 /*==============================================================*/
 
 
@@ -26,7 +26,7 @@ drop table if exists safe_report;
 
 drop table if exists safe_report_data;
 
-drop table if exists user_lock_auth;
+drop table if exists role_lock_auth;
 
 drop table if exists vedio_monitor_info;
 
@@ -40,8 +40,9 @@ create table alarm
    process_id           varchar(32) not null comment '操作id，对应process_locd表中的process_id',
    alarm_time           timestamp comment '告警时间',
    alarm_status         int default 1 comment '告警状态。0已处理，1未处理',
-   primary key (alarm_id)
-)ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+   primary key (alarm_id),
+   unique key AK_Key_2 (process_id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 alter table alarm comment '告警表';
 
@@ -58,7 +59,7 @@ create table awakenlock_records
    fail_reason          varchar(120) comment '失败原因',
    awak_time            timestamp comment '唤醒操作时间',
    primary key (awak_id)
-)ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 alter table awakenlock_records comment '锁唤醒记录表';
 
@@ -70,9 +71,10 @@ create table camera_device
    dev_id               varchar(48) not null comment '摄像头id',
    device_ip            varchar(32) not null comment '摄像头ip地址',
    lock_code            varchar(48) comment '对应锁编号',
-   status               varchar(16) default '1' comment '摄像头状态。0正常，1异常',
-   primary key (dev_id)
-)ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+   status               int default 1 comment '摄像头状态。0正常，1异常',
+   primary key (dev_id),
+   unique key AK_Key_2 (device_ip)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 alter table camera_device comment '摄像头表';
 
@@ -99,8 +101,8 @@ create table face_info
    pic_snapshot_time    timestamp comment '抓拍时间',
    device_ip            varchar(32) comment '摄像头设备ip',
    primary key (face_id),
-   key AK_Key_3 (user_name)
-)ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+   unique key AK_Key_3 (user_name)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 alter table face_info comment '人脸信息表';
 
@@ -110,11 +112,11 @@ alter table face_info comment '人脸信息表';
 create table file_info
 (
    file_id              varchar(48) not null comment '文件id',
-   filen_name           varchar(48) comment '文件名',
+   file_name            varchar(48) comment '文件名',
    file_path            text not null comment '文件路径',
    description          text comment '文件描述',
    primary key (file_id)
-)ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 alter table file_info comment '文件表';
 
@@ -125,7 +127,7 @@ create table gis_alarm
 (
    gis_alarm_id         varchar(48) not null comment 'gis报警id',
    primary key (gis_alarm_id)
-)ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 alter table gis_alarm comment 'GIS报警表';
 
@@ -136,7 +138,7 @@ create table gis_info
 (
    gis_id               varchar(48) not null comment 'gis信息id',
    primary key (gis_id)
-)ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 alter table gis_info comment 'GIS信息表';
 
@@ -148,10 +150,11 @@ create table lock_info
    lock_id              varchar(48) not null comment '锁id',
    lock_code            varchar(32) not null comment '锁编号',
    status               int comment '锁状态。1开锁，2锁定',
+   createby             varchar(48) comment '创建者',
    updatetime           timestamp comment '上次更新状态时间',
    primary key (lock_id),
-   key AK_Key_2 (lock_code)
-)ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+   unique key AK_Key_2 (lock_code)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 alter table lock_info comment '锁信息表';
 
@@ -173,7 +176,7 @@ create table lock_process
    face_match_id        varchar(48) comment '人脸识别和人脸库中匹配的图片id',
    process_time         timestamp comment '锁操作时间',
    primary key (process_id)
-)ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 alter table lock_process comment '开关锁操作记录表';
 
@@ -188,7 +191,7 @@ create table safe_report
    content              longtext comment '返回说明。失败显示失败原因',
    report_time          timestamp comment '上报时间',
    primary key (safe_rep_id)
-)ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 alter table safe_report comment '工况(平安报)信息记录表';
 
@@ -207,25 +210,26 @@ create table safe_report_data
    altitude             decimal comment '高程',
    speed                decimal comment '速度',
    direction            int comment '方向',
-   gps_time             varchar(32) comment 'GPS时间',
+   gps_time             timestamp comment 'GPS时间',
    status_desc          varchar(32) comment '状态信息描述',
    primary key (id)
-)ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 alter table safe_report_data comment '平安报数据表';
 
 /*==============================================================*/
-/* Table: user_lock_auth                                        */
+/* Table: role_lock_auth                                        */
 /*==============================================================*/
-create table user_lock_auth
+create table role_lock_auth
 (
-   id                   varchar(48) not null comment '用户开锁权限id',
-   user_id              varchar(48) not null comment '用户id',
+   id                   varchar(48) not null comment '角色开锁权限id',
+   role_id              varchar(48) not null comment '角色id',
    lock_id              varchar(48) not null comment '锁id',
+   lock_code            varchar(48) not null comment '锁编号',
    primary key (id)
-)ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-alter table user_lock_auth comment '用户与锁权限表';
+alter table role_lock_auth comment '角色与锁权限表';
 
 /*==============================================================*/
 /* Table: vedio_monitor_info                                    */
@@ -235,7 +239,7 @@ create table vedio_monitor_info
    id                   varchar(48) not null comment '视频监控信息id',
    device_ip            varchar(48) not null comment '视频来源摄像头ip',
    primary key (id)
-)ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 alter table vedio_monitor_info comment '视频监控信息表';
 

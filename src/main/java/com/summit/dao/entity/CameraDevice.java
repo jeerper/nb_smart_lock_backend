@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 @TableName(value = "camera_device")
 public class CameraDevice {
     @TableId(value = "dev_id", type = IdType.ID_WORKER_STR)
@@ -16,7 +18,7 @@ public class CameraDevice {
     @TableField(value = "lock_code")
     private String lockCode;
     @TableField(value = "status")
-    private String status;
+    private Integer status;
 
-
+    public CameraDevice(){}
 }

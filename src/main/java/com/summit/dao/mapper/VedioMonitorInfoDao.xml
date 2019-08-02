@@ -9,7 +9,7 @@
     id, device_ip
   </sql>
 
-  <select id="selectById" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectVedioMonitorById" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from vedio_monitor_info

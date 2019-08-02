@@ -43,33 +43,50 @@
     lo.process_id, lo.device_ip, lo.lock_code, lo.user_id, lo.user_name, lo.process_type, lo.process_result,
     lo.fail_reason, lo.face_panorama_id, lo.face_pic_id, lo.face_match_id, lo.process_time
   </sql>
-<!--  <sql id="File_Have_Alias_List">-->
-<!--    fi.file_id, fi.filen_name, fi.file_path, fi.description-->
-<!--  </sql>-->
+  <sql id="Auth_Have_Alias_List">
+    au.id, au.role_id, au.lock_id, au.lock_code
+  </sql>
+
+  <select id="selectLockProcessById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Lock_Have_Alias_List" />,
+    fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
+    fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
+    fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    from lock_process lo left join file_info fi1 on lo.face_panorama_id=fi1.file_id
+    left join file_info fi2 on lo.face_pic_id=fi2.file_id
+    left join file_info fi3 on lo.face_match_id=fi3.file_id
+    <where>
+      lo.process_id=#{processId}
+    </where>
+  </select>
 
   <select id="selectByLockCode" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Lock_Have_Alias_List" />,
-    fi1.file_id fi1_id, fi1.filen_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
-    fi2.file_id fi2_id, fi2.filen_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
-    fi3.file_id fi3_id, fi3.filen_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
-    from lock_process lo join file_info fi1 on lo.face_panorama_id=fi1.file_id
-    join file_info fi2 on lo.face_pic_id=fi2.file_id
-    join file_info fi3 on lo.face_match_id=fi3.file_id
+    fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
+    fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
+    fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    from lock_process lo left join file_info fi1 on lo.face_panorama_id=fi1.file_id
+    left join file_info fi2 on lo.face_pic_id=fi2.file_id
+    left join file_info fi3 on lo.face_match_id=fi3.file_id
     <where>
       lo.lock_code=#{lockCode}
     </where>
+    <if test="page != null and page.current != null and  page.pageSize != null ">
+      limit #{page.current},#{page.pageSize}
+    </if>
   </select>
 
   <select id="selectCondition"  resultMap="BaseResultMap">
     select
     <include refid="Lock_Have_Alias_List" />,
-    fi1.file_id fi1_id, fi1.filen_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
-    fi2.file_id fi2_id, fi2.filen_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
-    fi3.file_id fi3_id, fi3.filen_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
-    from lock_process lo join file_info fi1 on lo.face_panorama_id=fi1.file_id
-    join file_info fi2 on lo.face_pic_id=fi2.file_id
-    join file_info fi3 on lo.face_match_id=fi3.file_id
+    fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
+    fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
+    fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    from lock_process lo left join file_info fi1 on lo.face_panorama_id=fi1.file_id
+    left join file_info fi2 on lo.face_pic_id=fi2.file_id
+    left join file_info fi3 on lo.face_match_id=fi3.file_id
     <where>
       <if test="lockProcess.processId != null">
         lo.process_id = #{lockProcess.processId}
@@ -102,7 +119,134 @@
         and lo.process_time &lt;= #{end}
       </if>
     </where>
+    <if test="page != null and page.current != null and  page.pageSize != null ">
+      limit #{page.current},#{page.pageSize}
+    </if>
   </select>
 
+  <insert id="insertRecord" parameterType="com.summit.dao.entity.LockProcess">
+    insert into lock_process
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="processId != null">
+          process_id,
+        </if>
+        <if test="deviceIp != null">
+          device_ip,
+        </if>
+        <if test="lockCode != null">
+          lock_code,
+        </if>
+        <if test="userId != null">
+          user_id,
+        </if>
+        <if test="userName != null">
+          user_name,
+        </if>
+        <if test="processType != null">
+          process_type,
+        </if>
+        <if test="processResult != null">
+          process_result,
+        </if>
+        <if test="failReason != null">
+          fail_reason,
+        </if>
+        <if test="facePanorama != null and facePanorama.fileId != null">
+          face_panorama_id,
+        </if>
+        <if test="facePic != null and facePic.fileId != null">
+          face_pic_id,
+        </if>
+        <if test="faceMatch != null and faceMatch.fileId != null">
+          face_match_id,
+        </if>
+        <if test="processTime != null">
+          process_time,
+        </if>
+      </trim>
+      <trim prefix="values (" suffix=")" suffixOverrides=",">
+        <if test="processId != null">
+          #{processId},
+        </if>
+        <if test="deviceIp != null">
+          #{deviceIp},
+        </if>
+        <if test="lockCode != null">
+          #{lockCode},
+        </if>
+        <if test="userId != null">
+          #{userId},
+        </if>
+        <if test="userName != null">
+          #{userName},
+        </if>
+        <if test="processType != null">
+          #{processType},
+        </if>
+        <if test="processResult != null">
+          #{processResult},
+        </if>
+        <if test="failReason != null">
+          #{failReason},
+        </if>
+        <if test="facePanorama != null and facePanorama.fileId != null">
+          #{facePanorama.fileId},
+        </if>
+        <if test="facePic != null and facePic.fileId != null">
+          #{facePic.fileId},
+        </if>
+        <if test="faceMatch != null and faceMatch.fileId != null">
+          #{faceMatch.fileId},
+        </if>
+        <if test="processTime != null">
+          #{processTime},
+        </if>
+      </trim>
+  </insert>
+
+    <update id="updateRecord" parameterType="com.summit.dao.entity.LockProcess">
+      update lock_process
+      <set>
+        <if test="processId != null">
+          process_id = #{processId},
+        </if>
+        <if test="deviceIp != null">
+          device_ip = #{deviceIp},
+        </if>
+        <if test="lockCode != null">
+          lock_code = #{lockCode},
+        </if>
+        <if test="userId != null">
+          user_id = #{userId},
+        </if>
+        <if test="userName != null">
+          user_name = #{userName},
+        </if>
+        <if test="processType != null">
+          process_type = #{processType},
+        </if>
+        <if test="processResult != null">
+          process_result = #{processResult},
+        </if>
+        <if test="failReason != null">
+          fail_reason = #{failReason},
+        </if>
+        <if test="facePanorama != null and facePanorama.fileId != null">
+          face_panorama_id = #{facePanorama.fileId},
+        </if>
+        <if test="facePic != null and facePic.fileId != null">
+          face_pic_id = #{facePic.fileId},
+        </if>
+        <if test="faceMatch != null and faceMatch.fileId != null">
+          face_match_id = #{faceMatch.fileId},
+        </if>
+        <if test="processTime != null">
+          process_time = #{processTime}
+        </if>
+      </set>
+      <where>
+        process_id = #{processId}
+      </where>
+    </update>
 
 </mapper>

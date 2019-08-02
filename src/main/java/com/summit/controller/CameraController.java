@@ -27,7 +27,6 @@ public class CameraController {
             return ResultBuilder.buildSuccess("重启失败");
         }
 
-
     }
 
 

@@ -1,5 +1,7 @@
 package com.summit.service;
 
+import com.summit.dao.entity.Alarm;
+import com.summit.dao.entity.Page;
 import com.summit.dao.entity.SafeReport;
 
 import java.util.Date;
@@ -17,14 +19,22 @@ public interface SafeReportService {
     int delSafeReport(SafeReport safeReport);
 
     //###平安报查询
+    //查询所有
+    List<SafeReport> selectAll(Page page);
     //根据Id查询
     SafeReport selectReportById(String safeRepId);
     //根据锁编号查询，可指定时间段
-    List<SafeReport> selectReportByLockCode(String lockCode, Date start, Date end);
+    List<SafeReport> selectReportByLockCode(String lockCode, Date start, Date end, Page page);
     //不带时间重载
-    List<SafeReport> selectReportByLockCode(String lockCode);
+    List<SafeReport> selectReportByLockCode(String lockCode, Page page);
     //指定条件查询，可指定时间段
-    List<SafeReport> selectReportCondition(SafeReport safeReport, Date start, Date end);
+    List<SafeReport> selectReportCondition(SafeReport safeReport, Date start, Date end, Page page);
     //指定条件查询，不带日期的重载
-    List<SafeReport> selectReportCondition(SafeReport safeReport);
+    List<SafeReport> selectReportCondition(SafeReport safeReport, Page page);
+
+    //根据锁编号查询当前用户具有权限的平安报
+    List<SafeReport> selectReportByRoles(List<String> roles, Date start, Date end, Page page);
+    //不带时间重载
+    List<SafeReport> selectReportByRoles(List<String> roles, Page page);
+
 }
