@@ -36,7 +36,7 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
         if (faceInfo != null) {
             if (clientFaceInfoCallback != null) {
                 faceInfo.setDeviceIp(pUsrData.getString(0));
-                if(faceInfo.getFaceLibType()==null){
+                if (faceInfo.getFaceMatchRate() == 0.0f) {
                     faceInfo.setFaceLibType(FaceLibType.FACE_LIB_ALARM);
                 }
                 Observable.just(faceInfo)
@@ -67,20 +67,20 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
             switch (userDataEntity.eType) {
                 //人脸匹配率
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_MATCHRATE:
-                    log.debug("================人脸匹配率业务处理=================");
                     if (faceInfo == null) {
                         faceInfo = new FaceInfo();
                     }
+                    log.debug("================人脸匹配率业务处理=================");
                     float matchRate = userDataEntity.unMetaData.IntValue / 100f;
                     faceInfo.setFaceMatchRate(matchRate);
                     log.debug("人脸匹配率:{}%", faceInfo.getFaceMatchRate());
                     break;
                 //人脸信息,对应摄像头的人脸库信息
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_INFO:
-                    log.debug("================人脸信息业务处理=================");
                     if (faceInfo == null) {
                         break;
                     }
+                    log.debug("================人脸信息业务处理=================");
                     faceInfo.setName(StrUtil.str(userDataEntity.unMetaData.stFaceInfo.name, "").trim());
                     faceInfo.setGender(Gender.codeOf(userDataEntity.unMetaData.stFaceInfo.iGender));
                     faceInfo.setBirthday(StrUtil.str(userDataEntity.unMetaData.stFaceInfo.birthday, "").trim());
@@ -105,10 +105,10 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
                     break;
                 //名单库名字
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_LIB_NAME:
-                    log.debug("================名单库名字业务处理=================");
                     if (faceInfo == null) {
                         break;
                     }
+                    log.debug("================名单库名字业务处理=================");
                     byte[] faceLibNameBytes = userDataEntity.unMetaData.stBinay.pBinaryData.getByteArray(0,
                             userDataEntity.unMetaData.stBinay.ulBinaryLenth.intValue());
                     faceInfo.setFaceLibName(StrUtil.str(faceLibNameBytes, "").trim());
@@ -116,30 +116,30 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
                     break;
                 //名单库类型
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_LIB_TYPE:
-                    log.debug("================名单库类型业务处理=================");
                     if (faceInfo == null) {
                         break;
                     }
+                    log.debug("================名单库类型业务处理=================");
                     faceInfo.setFaceLibType(FaceLibType.codeOf(userDataEntity.unMetaData.uIntValue));
                     log.debug("名单库类型:{}", faceInfo.getFaceLibType().getFaceLibTypeDescription());
                     break;
                 //人脸全景
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_PANORAMA:
+                    if (faceInfo == null) {
+                        break;
+                    }
                     log.debug("================人脸全景图业务处理=================");
                     byte[] facePanoramaBytes = userDataEntity.unMetaData.stBinay.pBinaryData.getByteArray(0,
                             userDataEntity.unMetaData.stBinay.ulBinaryLenth.intValue());
                     log.debug("人脸全景图长度:{}", facePanoramaBytes.length);
-                    if (faceInfo == null) {
-                        break;
-                    }
                     faceInfo.setFacePanorama(facePanoramaBytes);
                     break;
                 //全景图片
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.PANORAMA_PIC:
-                    log.debug("================全景图业务处理=================");
                     if (faceInfo == null) {
                         break;
                     }
+                    log.debug("================全景图业务处理=================");
                     byte[] panoramaPicBytes = userDataEntity.unMetaData.stBinay.pBinaryData.getByteArray(0,
                             userDataEntity.unMetaData.stBinay.ulBinaryLenth.intValue());
                     faceInfo.setPanoramaPic(panoramaPicBytes);
@@ -147,10 +147,10 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
                     break;
                 //人脸识别抠图
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_PIC:
-                    log.debug("================人脸识别抠图业务处理=================");
                     if (faceInfo == null) {
                         break;
                     }
+                    log.debug("================人脸识别抠图业务处理=================");
                     byte[] facePicBytes = userDataEntity.unMetaData.stBinay.pBinaryData.getByteArray(0,
                             userDataEntity.unMetaData.stBinay.ulBinaryLenth.intValue());
                     faceInfo.setFacePic(facePicBytes);
@@ -158,10 +158,10 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
                     break;
                 //人脸识别和人脸库中匹配的图片
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_MATCH:
-                    log.debug("================人脸识别和人脸库中匹配的图片业务处理=================");
                     if (faceInfo == null) {
                         break;
                     }
+                    log.debug("================人脸识别和人脸库中匹配的图片业务处理=================");
                     byte[] faceMatchBytes = userDataEntity.unMetaData.stBinay.pBinaryData.getByteArray(0,
                             userDataEntity.unMetaData.stBinay.ulBinaryLenth.intValue());
                     faceInfo.setFaceMatch(faceMatchBytes);
@@ -169,10 +169,10 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
                     break;
                 //抓拍时间
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.PIC_SNAPSHOT_TIME:
-                    log.debug("================抓拍时间业务处理=================");
                     if (faceInfo == null) {
                         break;
                     }
+                    log.debug("================抓拍时间业务处理=================");
                     DateTime time = new DateTime(userDataEntity.unMetaData.IntValue * 1000L);
                     faceInfo.setPicSnapshotTime(time.toString("yyyy-MM-dd HH:mm:ss"));
                     log.debug("抓怕时间:" + faceInfo.getPicSnapshotTime());
@@ -188,14 +188,13 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
                     break;
                 //target类型，当前用于区分人脸后处理抠图和人脸识别以及人脸识别多机协同
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.TARGET_TYPE:
-                    int targetType = userDataEntity.unMetaData.IntValue;
-                    if (targetType == 2) {
-                        log.debug("检测类型为:" + targetType);
-                        if (faceInfo == null) {
-                            faceInfo = new FaceInfo();
-                        }
-                        faceInfo.setTargetType(targetType);
+                    if (faceInfo == null) {
+                        break;
                     }
+                    log.debug("================检测类型业务处理=================");
+                    int targetType = userDataEntity.unMetaData.IntValue;
+                    log.debug("检测类型为:{}",targetType);
+                    faceInfo.setTargetType(targetType);
                     break;
                 //车辆类型
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.VEHICLE_TYPE:
