@@ -21,4 +21,10 @@ public class FileInfo {
     private String description;
 
     public FileInfo(){}
+
+    public FileInfo(String filenName, String filePath, String description) {
+        this.filenName = filenName;
+        this.filePath = filePath;
+        this.description = description;
+    }
 }

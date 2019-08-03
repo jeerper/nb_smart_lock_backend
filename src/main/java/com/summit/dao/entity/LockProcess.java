@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
 import java.util.Date;
 
 @Data
@@ -18,22 +19,28 @@ public class LockProcess {
     private String deviceIp;
     @TableField(value = "lock_code")
     private String lockCode;
+
+    @TableField(exist = false)
+    private LockInfo lockInfo;
+
     @TableField(value = "user_id")
     private String userId;
     @TableField(value = "user_name")
     private String userName;
+
+    //1：开锁，2：关锁
     @TableField(value = "process_type")
     private Integer processType;
     @TableField(value = "process_result")
     private String processResult;
     @TableField(value = "fail_reason")
     private String failReason;
-//    @TableField(value = "face_panorama_id")
-//    private String facePanoramaId;
-//    @TableField(value = "face_pic_id")
-//    private String facePicId;
-//    @TableField(value = "face_match_id")
-//    private String faceMatchId;
+    @TableField(value = "face_panorama_id")
+    private String facePanoramaId;
+    @TableField(value = "face_pic_id")
+    private String facePicId;
+    @TableField(value = "face_match_id")
+    private String faceMatchId;
     @TableField(exist = false)
     private FileInfo facePanorama;
     @TableField(exist = false)

@@ -19,7 +19,7 @@
     </where>
   </select>
 
-  <select id="selectCondition"  parameterType="com.summit.dao.entity.CameraDevice" resultMap="BaseResultMap">
+  <select id="selectCondition" parameterType="com.summit.dao.entity.CameraDevice" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from camera_device

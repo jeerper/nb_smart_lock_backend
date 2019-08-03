@@ -1,27 +1,27 @@
 package com.summit.dao.repository;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.summit.dao.entity.FaceInfo;
+import com.summit.dao.entity.FaceInfoEntity;
 import com.summit.dao.entity.Page;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
 
-public interface FaceInfoDao  extends BaseMapper<FaceInfo> {
+public interface FaceInfoDao  extends BaseMapper<FaceInfoEntity> {
 
-    FaceInfo selectFaceById(String faceId);
+    FaceInfoEntity selectFaceById(String faceId);
 
-    FaceInfo selectByName(String userName);
+    FaceInfoEntity selectByName(String userName);
 
-    FaceInfo selectByUserId(String userId);
+    FaceInfoEntity selectByUserId(String userId);
 
-    List<FaceInfo> selectCondition(@Param("faceInfo") FaceInfo faceInfo,
-                                   @Param("start") Date start,
-                                   @Param("end") Date end,
-                                   @Param("page") Page page);
+    List<FaceInfoEntity> selectCondition(@Param("faceInfo") FaceInfoEntity faceInfo,
+                                         @Param("start") Date start,
+                                         @Param("end") Date end,
+                                         @Param("page") Page page);
 
-    int insertFace(FaceInfo faceInfo);
+    int insertFace(FaceInfoEntity faceInfo);
 
-    int updateFace(FaceInfo faceInfo);
+    int updateFace(FaceInfoEntity faceInfo);
 }

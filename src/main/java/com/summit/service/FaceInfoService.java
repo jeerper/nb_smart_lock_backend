@@ -1,6 +1,6 @@
 package com.summit.service;
 
-import com.summit.dao.entity.FaceInfo;
+import com.summit.dao.entity.FaceInfoEntity;
 import com.summit.dao.entity.Page;
 
 import java.util.Date;
@@ -8,25 +8,25 @@ import java.util.List;
 
 public interface FaceInfoService {
 
-    int insertFaceInfo(FaceInfo faceInfo);
+    int insertFaceInfo(FaceInfoEntity faceInfo);
 
-    int updateFaceInfo(FaceInfo faceInfo);
+    int updateFaceInfo(FaceInfoEntity faceInfo);
 
     int delFaceInfoById(String faceId);
 
     int delFaceInfoByUserName(String userName);
 
-    FaceInfo selectFaceInfoById(String faceId);
+    FaceInfoEntity selectFaceInfoById(String faceId);
 
-    FaceInfo selectByUserName(String userName);
+    FaceInfoEntity selectByUserName(String userName);
 
-    FaceInfo selectByUserId(String userId);
+    FaceInfoEntity selectByUserId(String userId);
 
-    List<FaceInfo> selectAll(Page page);
+    List<FaceInfoEntity> selectAll(Page page);
 
-    List<FaceInfo> selectCondition(FaceInfo faceInfo,Page page);
+    List<FaceInfoEntity> selectCondition(FaceInfoEntity faceInfo, Page page);
 
-    List<FaceInfo> selectCondition(FaceInfo faceInfo, Date start, Date end, Page page);
+    List<FaceInfoEntity> selectCondition(FaceInfoEntity faceInfo, Date start, Date end, Page page);
 
 
 }

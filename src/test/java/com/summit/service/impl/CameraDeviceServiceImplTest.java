@@ -11,18 +11,16 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class CameraDeviceServiceImplTest {
 
     @Autowired
     private CameraDeviceService cameraDeviceService;
-    Page page = new Page(0, 3);
+    Page page = new Page(1, 3);
     @Test
     public void insertDevice() {
-        CameraDevice cameraDevice = new CameraDevice("did01","devip01","lc01",2);
+        CameraDevice cameraDevice = new CameraDevice("did02","devip02","lc04",1);
 
         cameraDeviceService.insertDevice(cameraDevice);
 

@@ -1,6 +1,6 @@
 package com.summit.service.impl;
 
-import com.summit.dao.entity.FaceInfo;
+import com.summit.dao.entity.FaceInfoEntity;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.Page;
 import com.summit.service.FaceInfoService;
@@ -14,23 +14,21 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class FaceInfoServiceImplTest {
     @Autowired
     private FaceInfoService faceInfoService;
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    Page page = new Page(0, 3);
+    Page page = new Page(1, 3);
     @Test
     public void insertFaceInfo() throws ParseException {
-        FileInfo facePanorama = new FileInfo("01","1n","1p","1d");
-        FileInfo facePic = new FileInfo("02","2n","2p","2d");
-        FileInfo faceMatch = new FileInfo("03","3n","3p","3d");
-        FaceInfo faceInfo = new FaceInfo("fi01","fun01","fui01",0,dateFormat.parse("2019-7-24 00:00:00"),
-                "province01","city01",1,"card01",1.1f,"",2,
-                facePanorama,facePic,faceMatch,"devip01",dateFormat.parse("2019-7-23 00:00:00"));
+        FileInfo facePanorama = new FileInfo("10","10n","10p","10d");
+        FileInfo facePic = new FileInfo("11","11n","11p","11d");
+        FileInfo faceMatch = new FileInfo("12","12n","12p","12d");
+        FaceInfoEntity faceInfo = new FaceInfoEntity("fi03","user01","un03",1,dateFormat.parse("2019-7-28 12:00:00"),
+                "province03","city03",1,"card03",0.8f,"白名单",2,
+                facePanorama,facePic,faceMatch,"devip01",dateFormat.parse("2019-7-29 12:09:09"));
 
         faceInfoService.insertFaceInfo(faceInfo);
     }
@@ -50,25 +48,25 @@ public class FaceInfoServiceImplTest {
 
     @Test
     public void selectFaceInfoById() {
-        FaceInfo faceInfo = faceInfoService.selectFaceInfoById("fi01");
+        FaceInfoEntity faceInfo = faceInfoService.selectFaceInfoById("fi01");
         System.out.println(faceInfo);
     }
 
     @Test
     public void selectByUserName() {
-        FaceInfo faceInfo = faceInfoService.selectByUserName("fun01");
+        FaceInfoEntity faceInfo = faceInfoService.selectByUserName("fun01");
         System.out.println(faceInfo);
     }
 
     @Test
     public void selectByUserId() {
-        FaceInfo faceInfo = faceInfoService.selectByUserId("fui01");
+        FaceInfoEntity faceInfo = faceInfoService.selectByUserId("fui01");
         System.out.println(faceInfo);
     }
 
     @Test
     public void selectAll() {
-        List<FaceInfo> faceInfos = faceInfoService.selectAll(page);
+        List<FaceInfoEntity> faceInfos = faceInfoService.selectAll(page);
         System.out.println(faceInfos);
     }
 

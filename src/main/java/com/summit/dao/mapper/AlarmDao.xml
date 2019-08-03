@@ -93,7 +93,12 @@
     fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
     fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
     fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
-    from alarm al left join lock_process lo on al.process_id=lo.process_id
+    from (select <include refid="Base_Column_List" /> from alarm order by alarm_time desc
+    <if test="page != null and page.current != null and  page.pageSize != null ">
+      limit #{page.current},#{page.pageSize}
+    </if>
+    ) al
+    left join lock_process lo on al.process_id=lo.process_id
     left join file_info fi1 on lo.face_panorama_id=fi1.file_id
     left join file_info fi2 on lo.face_pic_id=fi2.file_id
     left join file_info fi3 on lo.face_match_id=fi3.file_id
@@ -119,9 +124,6 @@
     </where>
     <if test="alarm.alarmTime  != null">
       order by al.alarm_time
-    </if>
-    <if test="page != null and page.current != null and  page.pageSize != null ">
-      limit #{page.current},#{page.pageSize}
     </if>
   </select>
 

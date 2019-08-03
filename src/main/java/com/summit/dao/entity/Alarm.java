@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @TableName(value = "alarm")
@@ -26,6 +27,8 @@ public class Alarm {
 
     @TableField(value = "alarm_time")
     private Date alarmTime;
+
+    //0已处理，1未处理
     @TableField(value = "alarm_status")
     private Integer alarmStatus;
 

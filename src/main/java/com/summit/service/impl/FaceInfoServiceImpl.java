@@ -1,7 +1,7 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.summit.dao.entity.FaceInfo;
+import com.summit.dao.entity.FaceInfoEntity;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.Page;
 import com.summit.dao.repository.FaceInfoDao;
@@ -24,7 +24,7 @@ public class FaceInfoServiceImpl implements FaceInfoService {
     private FileInfoDao fileInfoDao;
 
     @Override
-    public int insertFaceInfo(FaceInfo faceInfo) {
+    public int insertFaceInfo(FaceInfoEntity faceInfo) {
         if(faceInfo == null){
             log.error("人脸信息为空");
             return -1;
@@ -39,7 +39,7 @@ public class FaceInfoServiceImpl implements FaceInfoService {
     }
 
     @Override
-    public int updateFaceInfo(FaceInfo faceInfo) {
+    public int updateFaceInfo(FaceInfoEntity faceInfo) {
         if(faceInfo == null){
             log.error("人脸信息为空");
             return -1;
@@ -59,8 +59,8 @@ public class FaceInfoServiceImpl implements FaceInfoService {
             log.error("人脸信息id为空");
             return -1;
         }
-        FaceInfo faceInfo = faceInfoDao.selectFaceById(faceId);
-        UpdateWrapper<FaceInfo> wrapper = new UpdateWrapper<>();
+        FaceInfoEntity faceInfo = faceInfoDao.selectFaceById(faceId);
+        UpdateWrapper<FaceInfoEntity> wrapper = new UpdateWrapper<>();
         UpdateWrapper<FileInfo> fileWrapper = new UpdateWrapper<>();
         int result = faceInfoDao.delete(wrapper.eq("face_d", faceId));
 
@@ -78,8 +78,8 @@ public class FaceInfoServiceImpl implements FaceInfoService {
             log.error("操作人名称为空");
             return -1;
         }
-        FaceInfo faceInfo = faceInfoDao.selectByName(userName);
-        UpdateWrapper<FaceInfo> wrapper = new UpdateWrapper<>();
+        FaceInfoEntity faceInfo = faceInfoDao.selectByName(userName);
+        UpdateWrapper<FaceInfoEntity> wrapper = new UpdateWrapper<>();
         UpdateWrapper<FileInfo> fileWrapper = new UpdateWrapper<>();
         int result = faceInfoDao.delete(wrapper.eq("user_name", userName));
 
@@ -92,7 +92,7 @@ public class FaceInfoServiceImpl implements FaceInfoService {
     }
 
     @Override
-    public FaceInfo selectFaceInfoById(String faceId) {
+    public FaceInfoEntity selectFaceInfoById(String faceId) {
         if(faceId == null){
             log.error("人脸信息id为空");
             return null;
@@ -101,7 +101,7 @@ public class FaceInfoServiceImpl implements FaceInfoService {
     }
 
     @Override
-    public FaceInfo selectByUserName(String userName) {
+    public FaceInfoEntity selectByUserName(String userName) {
         if(userName == null){
             log.error("操作人名称为空");
             return null;
@@ -110,7 +110,7 @@ public class FaceInfoServiceImpl implements FaceInfoService {
     }
 
     @Override
-    public FaceInfo selectByUserId(String userId) {
+    public FaceInfoEntity selectByUserId(String userId) {
         if(userId == null){
             log.error("操作人id为空");
             return null;
@@ -119,13 +119,13 @@ public class FaceInfoServiceImpl implements FaceInfoService {
     }
 
     @Override
-    public List<FaceInfo> selectAll(Page page) {
+    public List<FaceInfoEntity> selectAll(Page page) {
         PageConverter.convertPage(page);
-        return faceInfoDao.selectCondition(new FaceInfo(),null,null,page);
+        return faceInfoDao.selectCondition(new FaceInfoEntity(),null,null,page);
     }
 
     @Override
-    public List<FaceInfo> selectCondition(FaceInfo faceInfo, Page page) {
+    public List<FaceInfoEntity> selectCondition(FaceInfoEntity faceInfo, Page page) {
         if(faceInfo == null){
             log.error("人脸信息为空");
             return null;
@@ -134,7 +134,7 @@ public class FaceInfoServiceImpl implements FaceInfoService {
     }
 
     @Override
-    public List<FaceInfo> selectCondition(FaceInfo faceInfo, Date start, Date end, Page page) {
+    public List<FaceInfoEntity> selectCondition(FaceInfoEntity faceInfo, Date start, Date end, Page page) {
         if(faceInfo == null){
             log.error("人脸信息为空");
             return null;

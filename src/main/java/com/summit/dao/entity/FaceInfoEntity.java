@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @TableName(value = "face_info")
-public class FaceInfo {
+public class FaceInfoEntity {
     @TableId(value = "face_id", type = IdType.ID_WORKER_STR)
     private String faceId;
     @TableField(value = "user_name")
@@ -57,5 +57,5 @@ public class FaceInfo {
     @TableField(value = "pic_snapshot_time")
     private Date picSnapshotTime;
 
-    public FaceInfo(){}
+    public FaceInfoEntity(){}
 }

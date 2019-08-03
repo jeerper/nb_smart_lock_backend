@@ -6,10 +6,12 @@ import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.LockProcess;
 import com.summit.dao.entity.Page;
+import com.summit.dao.entity.LockInfo;
 import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.FileInfoDao;
 import com.summit.dao.repository.LockProcessDao;
+import com.summit.service.LockInfoService;
 import com.summit.service.LockRecordService;
 import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
@@ -31,6 +33,8 @@ public class LockRecordServiceImpl implements LockRecordService {
     private FileInfoDao fileInfoDao;
     @Autowired
     private CameraDeviceDao deviceDao;
+    @Autowired
+    private LockInfoService lockInfoService;
 
     @Override
     public int insertLockProcess(LockProcess lockProcess) {
@@ -38,7 +42,18 @@ public class LockRecordServiceImpl implements LockRecordService {
             log.error("锁操作信息为空");
             return -1;
         }
-        int result = lockProcessDao.insertRecord(lockProcess);
+        int result = lockProcessDao.insert(lockProcess);
+        //更新锁状态和时间
+        LockInfo lockInfo = lockProcess.getLockInfo();
+        if(lockInfo != null){
+//            LockInfo lockInfo = lockInfoService.selectBylockCode(lockProcess.getLockInfo().getLockCode());
+            if(lockInfo.getLockCode() != null){
+                lockInfo.setStatus(lockInfo.getStatus());
+                lockInfo.setUpdatetime(lockInfo.getUpdatetime());
+                lockInfoService.updateLock(lockInfo);
+            }
+        }
+
         if(result != -1){
             fileInfoDao.insert(lockProcess.getFacePanorama());
             fileInfoDao.insert(lockProcess.getFacePic());

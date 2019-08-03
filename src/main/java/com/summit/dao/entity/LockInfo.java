@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +18,8 @@ public class LockInfo {
     private String lockId;
     @TableField(value = "lock_code")
     private String lockCode;
+
+    //1开锁，2锁定，3告警
     @TableField(value = "status")
     private Integer status;
     @TableField(value = "createby")

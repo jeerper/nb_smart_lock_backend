@@ -17,6 +17,8 @@ public class CameraDevice {
     private String deviceIp;
     @TableField(value = "lock_code")
     private String lockCode;
+
+    //0正常，1异常
     @TableField(value = "status")
     private Integer status;
 
