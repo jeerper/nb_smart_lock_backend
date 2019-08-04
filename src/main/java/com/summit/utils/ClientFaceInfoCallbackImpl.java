@@ -4,7 +4,12 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.system.SystemUtil;
 import com.summit.MainAction;
-import com.summit.dao.entity.*;
+
+import com.summit.dao.entity.Alarm;
+import com.summit.dao.entity.CameraDevice;
+import com.summit.dao.entity.FileInfo;
+import com.summit.dao.entity.LockInfo;
+import com.summit.dao.entity.LockProcess;
 import com.summit.sdk.huawei.callback.ClientFaceInfoCallback;
 import com.summit.sdk.huawei.model.FaceInfo;
 import com.summit.sdk.huawei.model.FaceLibType;
