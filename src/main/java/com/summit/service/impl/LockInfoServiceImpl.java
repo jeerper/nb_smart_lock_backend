@@ -1,8 +1,6 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.summit.common.entity.UserInfo;
-import com.summit.common.web.filter.UserContextHolder;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.Page;
 import com.summit.dao.repository.LockInfoDao;

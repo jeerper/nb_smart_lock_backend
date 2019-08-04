@@ -1,17 +1,14 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.LockProcess;
 import com.summit.dao.entity.Page;
-import com.summit.dao.entity.LockInfo;
 import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.FileInfoDao;
 import com.summit.dao.repository.LockProcessDao;
-import com.summit.service.LockInfoService;
 import com.summit.service.LockRecordService;
 import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
@@ -33,8 +30,6 @@ public class LockRecordServiceImpl implements LockRecordService {
     private FileInfoDao fileInfoDao;
     @Autowired
     private CameraDeviceDao deviceDao;
-    @Autowired
-    private LockInfoService lockInfoService;
 
     @Override
     public int insertLockProcess(LockProcess lockProcess) {
@@ -43,21 +38,19 @@ public class LockRecordServiceImpl implements LockRecordService {
             return -1;
         }
         int result = lockProcessDao.insert(lockProcess);
-        //更新锁状态和时间
-        LockInfo lockInfo = lockProcess.getLockInfo();
-        if(lockInfo != null){
-//            LockInfo lockInfo = lockInfoService.selectBylockCode(lockProcess.getLockInfo().getLockCode());
-            if(lockInfo.getLockCode() != null){
-                lockInfo.setStatus(lockInfo.getStatus());
-                lockInfo.setUpdatetime(lockInfo.getUpdatetime());
-                lockInfoService.updateLock(lockInfo);
-            }
-        }
-
         if(result != -1){
-            fileInfoDao.insert(lockProcess.getFacePanorama());
-            fileInfoDao.insert(lockProcess.getFacePic());
-            fileInfoDao.insert(lockProcess.getFaceMatch());
+            FileInfo facePanorama = lockProcess.getFacePanorama();
+            if(facePanorama != null){
+                fileInfoDao.insert(facePanorama);
+            }
+            FileInfo facePic = lockProcess.getFacePic();
+            if(facePic != null) {
+                fileInfoDao.insert(facePic);
+            }
+            FileInfo faceMatch = lockProcess.getFaceMatch();
+            if(faceMatch != null) {
+                fileInfoDao.insert(faceMatch);
+            }
         }
         return result;
     }
@@ -71,9 +64,18 @@ public class LockRecordServiceImpl implements LockRecordService {
         int result = lockProcessDao.updateRecord(lockProcess);
         if(result != -1){
             UpdateWrapper<FileInfo> updateWrapper = new UpdateWrapper<>();
-            fileInfoDao.update(lockProcess.getFacePanorama(),updateWrapper.eq("file_id",lockProcess.getFacePanorama().getFileId()));
-            fileInfoDao.update(lockProcess.getFacePic(),updateWrapper.eq("file_id",lockProcess.getFacePic().getFileId()));
-            fileInfoDao.update(lockProcess.getFaceMatch(),updateWrapper.eq("file_id",lockProcess.getFaceMatch().getFileId()));
+            FileInfo facePanorama = lockProcess.getFacePanorama();
+            if(facePanorama != null){
+                fileInfoDao.update(lockProcess.getFacePanorama(),updateWrapper.eq("file_id", facePanorama.getFileId()));
+            }
+            FileInfo facePic = lockProcess.getFacePic();
+            if(facePic != null){
+                fileInfoDao.update(lockProcess.getFacePic(),updateWrapper.eq("file_id",facePic.getFileId()));
+            }
+            FileInfo faceMatch = lockProcess.getFaceMatch();
+            if(faceMatch != null){
+                fileInfoDao.update(lockProcess.getFaceMatch(),updateWrapper.eq("file_id", faceMatch.getFileId()));
+            }
         }
         return result;
     }

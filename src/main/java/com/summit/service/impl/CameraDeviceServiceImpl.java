@@ -2,7 +2,6 @@ package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.dao.entity.CameraDevice;
-import com.summit.dao.entity.LockProcess;
 import com.summit.dao.entity.Page;
 import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.LockInfoDao;

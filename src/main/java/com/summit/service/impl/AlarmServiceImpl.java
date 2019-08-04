@@ -1,6 +1,5 @@
 package com.summit.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.CameraDevice;
