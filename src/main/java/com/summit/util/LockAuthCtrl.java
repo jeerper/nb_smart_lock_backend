@@ -42,7 +42,7 @@ public class LockAuthCtrl {
             rolesList = Arrays.asList(uerInfo.getRoles());
         }else{
 //            rolesList = Arrays.asList("r1","r2","r3","r4");
-            rolesList = Arrays.asList("admin");
+            rolesList = Arrays.asList("ROLE_1489581392504");
         }
 
         if(obj instanceof LockInfo){
