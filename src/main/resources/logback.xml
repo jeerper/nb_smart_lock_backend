@@ -69,8 +69,10 @@
 	<logger name="org.apache" level="error"/>
 	<logger name="com.baomidou" level="error"/>
 	<logger name="org.mybatis" level="error"/>
+	<logger name="com.summit.dao" level="error"/>
 	<logger name="com.summit.common.redis.user.UserInfoCache" level="error"/>
 	<logger name="com.summit.sdk.huawei" level="debug"/>
+
 
 
 	<root level="DEBUG">
