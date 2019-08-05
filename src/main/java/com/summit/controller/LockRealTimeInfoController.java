@@ -30,7 +30,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Api(tags = "锁实时信息接口")
@@ -58,8 +60,10 @@ public class LockRealTimeInfoController {
 
     @ApiOperation(value = "查询全部锁信息及其对应的最新操作历史", notes = "分页参数为空则查全部，不合法则取第一条")
     @GetMapping(value = "/selectAllLockRealTimeInfo")
-    public RestfulEntityBySummit<List<LockRealTimeInfo>> selectAllLockRealTimeInfo(@ApiParam(value = "当前页，大于等于1")  @RequestParam("current") Integer current,
+    public RestfulEntityBySummit<Map<String,Object>> selectAllLockRealTimeInfo(@ApiParam(value = "当前页，大于等于1")  @RequestParam("current") Integer current,
                                                            @ApiParam(value = "每页条数，大于等于1")  @RequestParam("pageSize") Integer pageSize) {
+        Map<String,Object> data = new HashMap<>();
+
         List<LockRealTimeInfo> lockRealTimeInfos = new ArrayList<>();
         List<LockInfo> lockInfos = null;
         try {
@@ -69,6 +73,7 @@ public class LockRealTimeInfoController {
             }else{
                 lockInfos = lockInfoService.selectAll(new Page(current,pageSize));
             }
+            int allAlarmCount = 0;
             for (LockInfo lock : lockInfos){
                 if(lock == null)
                     break;
@@ -129,15 +134,21 @@ public class LockRealTimeInfoController {
 
                     }
                     List<Alarm> alarms = alarmService.selectAlarmByLockCode(lockCode, null);
-                    lockRealTimeInfo.setAlarmCount(alarms == null ? 0: alarms.size());
+                    if(alarms != null){
+                        int alarmsSize = alarms.size();
+                        lockRealTimeInfo.setAlarmCount(alarmsSize);
+                        allAlarmCount += alarmsSize;
+                    }
+
                     lockRealTimeInfos.add(lockRealTimeInfo);
                 }
             }
-
+            data.put("allAlarmCount",allAlarmCount);
+            data.put("lockRealTimeInfos",lockRealTimeInfos);
         } catch (Exception e) {
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询锁操作记录失败", lockRealTimeInfos);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询锁操作记录失败", data);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询锁操作记录成功", lockRealTimeInfos);
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询锁操作记录成功", data);
 
     }
 
