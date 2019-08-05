@@ -120,7 +120,7 @@ public class LockRealTimeInfoController {
                                 lockRealTimeInfo.setCardType(faceInfoEntity.getCardType());
                                 lockRealTimeInfo.setCity(faceInfoEntity.getCity());
                                 lockRealTimeInfo.setGender(faceInfoEntity.getGender());
-
+                                lockRealTimeInfo.setFaceMatchRate(faceInfoEntity.getFaceMatchRate());
                                 lockRealTimeInfo.setFaceLibName(faceInfoEntity.getFaceLibName());
                                 lockRealTimeInfo.setFaceLibType(faceInfoEntity.getFaceLibType());
 
