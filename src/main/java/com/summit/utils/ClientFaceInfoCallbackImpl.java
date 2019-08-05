@@ -99,7 +99,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                         .append("Alarm")
                         .append(File.separator)
                         .append(snapshotTime)
-                        .append("_FacePic.jpg")
+                        .append("_FacePanorama.jpg")
                         .toString();
 
                 String facePicUrl = new StringBuilder()
