@@ -121,17 +121,20 @@ public class LockRealTimeInfoController {
                         if(facePic != null){
                             lockRealTimeInfo.setFacePicUrl(facePic.getFilePath());
                         }
-                        FaceInfoEntity faceInfoEntity = faceInfoService.selectByUserName(userName);
-                        if(faceInfoEntity != null){
-                            lockRealTimeInfo.setBirthday(dateFormat.format(faceInfoEntity.getBirthday()));
-                            lockRealTimeInfo.setCardId(faceInfoEntity.getCardId());
-                            lockRealTimeInfo.setCardType(faceInfoEntity.getCardType());
-                            lockRealTimeInfo.setCity(faceInfoEntity.getCity());
-                            lockRealTimeInfo.setGender(faceInfoEntity.getGender());
-                            lockRealTimeInfo.setFaceLibName(faceInfoEntity.getFaceLibName());
-                            lockRealTimeInfo.setFaceLibType(faceInfoEntity.getFaceLibType());
+                        if(userName != null){
+                            FaceInfoEntity faceInfoEntity = faceInfoService.selectByUserName(userName);
+                            if(faceInfoEntity != null){
+                                lockRealTimeInfo.setBirthday(dateFormat.format(faceInfoEntity.getBirthday()));
+                                lockRealTimeInfo.setCardId(faceInfoEntity.getCardId());
+                                lockRealTimeInfo.setCardType(faceInfoEntity.getCardType());
+                                lockRealTimeInfo.setCity(faceInfoEntity.getCity());
+                                lockRealTimeInfo.setGender(faceInfoEntity.getGender());
+                                lockRealTimeInfo.setFaceLibName(faceInfoEntity.getFaceLibName());
+                                lockRealTimeInfo.setFaceLibType(faceInfoEntity.getFaceLibType());
 
+                            }
                         }
+
                     }
 //                    List<Alarm> alarms = alarmService.selectAlarmByLockCode(lockCode, null);
 //                    if(alarms != null){
