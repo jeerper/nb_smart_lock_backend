@@ -72,7 +72,7 @@ public class LockRealTimeInfoController {
             }else{
                 lockInfos = lockInfoService.selectAll(new Page(current,pageSize));
             }
-            int allAlarmCount = 0;
+
             for (LockInfo lock : lockInfos){
                 if(lock == null)
                     break;
@@ -132,16 +132,20 @@ public class LockRealTimeInfoController {
                         }
 
                     }
-                    List<Alarm> alarms = alarmService.selectAlarmByLockCode(lockCode, null);
-                    if(alarms != null){
-                        int alarmsSize = alarms.size();
-                        lockRealTimeInfo.setAlarmCount(alarmsSize);
-                        allAlarmCount += alarmsSize;
-                    }
+//                    List<Alarm> alarms = alarmService.selectAlarmByLockCode(lockCode, null);
+//                    if(alarms != null){
+//                        int alarmsSize = alarms.size();
+//                        lockRealTimeInfo.setAlarmCount(alarmsSize);
+//                        allAlarmCount += alarmsSize;
+//                    }
 
                     lockRealTimeInfos.add(lockRealTimeInfo);
                 }
             }
+            List<Alarm> alarmList = alarmService.selectAlarmByStatus(1,null);
+            int allAlarmCount = 0;
+            if(alarmList != null)
+                allAlarmCount = alarmList.size();
             data.put("allAlarmCount",allAlarmCount);
             data.put("lockRealTimeInfos",lockRealTimeInfos);
         } catch (Exception e) {
