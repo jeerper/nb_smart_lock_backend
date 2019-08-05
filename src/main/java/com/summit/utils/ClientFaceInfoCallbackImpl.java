@@ -102,7 +102,6 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                     .toString();
 
             String facePicUrl = new StringBuilder()
-                    .append(File.separator)
                     .append(MainAction.SnapshotFileName)
                     .append(File.separator)
                     .append(deviceIp)
