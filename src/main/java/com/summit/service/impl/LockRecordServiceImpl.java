@@ -3,12 +3,15 @@ package com.summit.service.impl;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.FileInfo;
+import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.LockProcess;
 import com.summit.dao.entity.Page;
 import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.FileInfoDao;
+import com.summit.dao.repository.LockInfoDao;
 import com.summit.dao.repository.LockProcessDao;
+import com.summit.service.LockInfoService;
 import com.summit.service.LockRecordService;
 import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
@@ -30,6 +33,8 @@ public class LockRecordServiceImpl implements LockRecordService {
     private FileInfoDao fileInfoDao;
     @Autowired
     private CameraDeviceDao deviceDao;
+    @Autowired
+    private LockInfoService lockInfoService;
 
     @Override
     public int insertLockProcess(LockProcess lockProcess) {
@@ -38,7 +43,12 @@ public class LockRecordServiceImpl implements LockRecordService {
             return -1;
         }
         int result = lockProcessDao.insert(lockProcess);
+        LockInfo lockInfo = lockProcess.getLockInfo();
+        if(lockInfo != null){
+            lockInfoService.updateLock(lockInfo);
+        }
         if(result != -1){
+
             FileInfo facePanorama = lockProcess.getFacePanorama();
             if(facePanorama != null){
                 fileInfoDao.insert(facePanorama);

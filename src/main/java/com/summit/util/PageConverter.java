@@ -22,19 +22,4 @@ public class PageConverter {
         page.setCurrent((current - 1) * pageSize);
     }
 
-    private List<Object> getLockInfos(Page page, List<LockInfo> lockInfos) {
-        if(page != null && lockInfos != null){
-            Integer current = page.getCurrent();
-            Integer pageSize = page.getPageSize();
-            int size = lockInfos.size();
-            if(current >= size){
-                lockInfos = null;
-            }else if(current + pageSize >= size){
-                lockInfos = lockInfos.subList(current, size);
-            }else{
-                lockInfos = lockInfos.subList(current,current + pageSize);
-            }
-        }
-        return lockInfos;
-    }
 }

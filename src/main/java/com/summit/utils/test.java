@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -61,14 +62,15 @@ public class test {
 
         int len = 1024*1024 *10;
         byte[] facePanorama = new byte[len];
-        String path = getClass().getClassLoader().getResource("img/test01.jpg").getPath();
-        FileInputStream fis = new FileInputStream(path);
-        fis.read(facePanorama);
+        String pathPanorama = getClass().getClassLoader().getResource("img/test01.jpg").getPath();
+        FileInputStream fisPanorama = new FileInputStream(pathPanorama);
+        fisPanorama.read(facePanorama);
         faceInfo.setFacePanorama(facePanorama);
 
         byte[] facePic = new byte[len];
-
-
+        String pathPic = getClass().getClassLoader().getResource("img/test02.jpg").getPath();
+        FileInputStream fisPic = new FileInputStream(pathPic);
+        fisPic.read(facePanorama);
         faceInfo.setFacePic(facePic);
 
 
@@ -113,13 +115,12 @@ public class test {
                 .append("_FacePic.jpg")
                 .toString();
 
-        System.out.println(picturePathFacePanorama);
-        System.out.println(picturePathFacePic);
 
         FileInfo facePanoramaFile = new FileInfo(snapshotTime + "_FacePanorama.jpg", picturePathFacePanorama, "人脸全景图");
         FileInfo facePicFile = new FileInfo(snapshotTime + "_FacePic.jpg", picturePathFacePic, "人脸识别抠图");
 
         FileUtil.writeBytes(faceInfo.getFacePanorama(), picturePathFacePanorama);
+        FileUtil.writeBytes(faceInfo.getFacePic(), picturePathFacePic);
 
         LockProcess lockProcess = getLockProcess(faceInfo,type,facePanoramaFile,facePicFile);
         if(lockRecordService.insertLockProcess(lockProcess) != -1){
@@ -187,7 +188,7 @@ public class test {
             lockInfo.setStatus(2);
 
         }
-
+        lockProcess.setLockInfo(lockInfo);
         return lockProcess;
     }
 }

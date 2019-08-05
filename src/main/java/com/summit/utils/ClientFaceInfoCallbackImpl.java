@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Slf4j
 @Component
@@ -56,40 +57,68 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             } else {
                 type = "Unlock";
             }
-
-            String snapshotTime = faceInfo.getPicSnapshotTime().toString("yyyy-MM-dd_HH.mm.ss");
+            String deviceIp = faceInfo.getDeviceIp();
+            String snapshotTime1 = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date());
+            String snapshotTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
             String picturePathFacePanorama = new StringBuilder()
                     .append(SystemUtil.getUserInfo().getCurrentDir())
                     .append(File.separator)
                     .append(MainAction.SnapshotFileName)
                     .append(File.separator)
-                    .append(faceInfo.getDeviceIp())
+                    .append(deviceIp)
                     .append(File.separator)
-                    .append(faceInfo.getPicSnapshotTime().toString("yyyy-MM-dd"))
+                    .append(snapshotTime1)
                     .append(File.separator)
-                    .append(type)
+                    .append("Alarm")
                     .append(File.separator)
                     .append(snapshotTime)
                     .append("_FacePanorama.jpg")
                     .toString();
 
             String picturePathFacePic = new StringBuilder()
-                    .append(SystemUtil.getUserInfo().getCurrentDir())
-                    .append(File.separator)
                     .append(MainAction.SnapshotFileName)
                     .append(File.separator)
-                    .append(faceInfo.getDeviceIp())
+                    .append(deviceIp)
                     .append(File.separator)
-                    .append(faceInfo.getPicSnapshotTime().toString("yyyy-MM-dd"))
+                    .append(snapshotTime1)
                     .append(File.separator)
-                    .append(type)
+                    .append("Alarm")
+                    .append(File.separator)
+                    .append(snapshotTime)
+                    .append("_FacePanorama.jpg")
+                    .toString();
+
+            String facePanoramaUrl =new StringBuilder()
+                    .append(MainAction.SnapshotFileName)
+                    .append(File.separator)
+                    .append(deviceIp)
+                    .append(File.separator)
+                    .append(snapshotTime1)
+                    .append(File.separator)
+                    .append("Alarm")
                     .append(File.separator)
                     .append(snapshotTime)
                     .append("_FacePic.jpg")
                     .toString();
 
-            FileInfo facePanoramaFile = new FileInfo(snapshotTime + "_FacePanorama.jpg", picturePathFacePanorama, "人脸全景图");
-            FileInfo facePicFile = new FileInfo(snapshotTime + "_FacePic.jpg", picturePathFacePic, "人脸识别抠图");
+            String facePicUrl = new StringBuilder()
+                    .append(File.separator)
+                    .append(MainAction.SnapshotFileName)
+                    .append(File.separator)
+                    .append(deviceIp)
+                    .append(File.separator)
+                    .append(snapshotTime1)
+                    .append(File.separator)
+                    .append("Alarm")
+                    .append(File.separator)
+                    .append(snapshotTime)
+                    .append("_FacePic.jpg")
+                    .toString();
+            FileInfo facePanoramaFile = new FileInfo(snapshotTime + "_FacePanorama.jpg", facePanoramaUrl, "人脸全景图");
+            FileInfo facePicFile = new FileInfo(snapshotTime + "_FacePic.jpg", facePicUrl, "人脸识别抠图");
+
+            FileUtil.writeBytes(faceInfo.getFacePanorama(), picturePathFacePanorama);
+            FileUtil.writeBytes(faceInfo.getFacePic(), picturePathFacePic);
 
             LockProcess lockProcess = getLockProcess(faceInfo,type,facePanoramaFile,facePicFile);
             if(lockRecordService.insertLockProcess(lockProcess) != -1){
@@ -101,14 +130,11 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             if("Alarm".equals(type)){
                 Alarm alarm = getAlarm(lockProcess);
                 if(alarmService.insertAlarm(alarm) != -1){
-                    log.info("锁操作告警信息入库成功");
+//                log.info("锁操作告警信息入库成功");
                 }else{
                     log.error("锁操作告警信息入库失败");
                 }
             }
-
-            FileUtil.writeBytes(faceInfo.getFacePanorama(), picturePathFacePanorama);
-            FileUtil.writeBytes(faceInfo.getFacePic(), picturePathFacePic);
 
 
 //            log.debug("名字:" + faceInfo.getName());
@@ -147,8 +173,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
         String deviceIp = faceInfo.getDeviceIp();
         lockProcess.setDeviceIp(deviceIp);
         lockProcess.setUserName(faceInfo.getName());
-        lockProcess.setFacePanoramaId(facePanoramaFile.getFileId());
-        lockProcess.setFacePicId(facePicFile.getFileId());
+//        lockProcess.setFacePanoramaId(facePanoramaFile.getFileId());
+//        lockProcess.setFacePicId(facePicFile.getFileId());
         lockProcess.setFacePanorama(facePanoramaFile);
         lockProcess.setFacePic(facePicFile);
         DateTime picSnapshotTime = faceInfo.getPicSnapshotTime();
@@ -181,7 +207,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             lockInfo.setStatus(2);
 
         }
-
+        lockProcess.setLockInfo(lockInfo);
         return lockProcess;
     }
 

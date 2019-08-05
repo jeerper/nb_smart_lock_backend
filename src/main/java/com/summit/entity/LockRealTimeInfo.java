@@ -33,7 +33,6 @@ public class LockRealTimeInfo {
     private Integer faceLibType;
     private String facePanoramaUrl;
     private String facePicUrl;
-
     private String faceMatchUrl;
     private String picSnapshotTime;
 

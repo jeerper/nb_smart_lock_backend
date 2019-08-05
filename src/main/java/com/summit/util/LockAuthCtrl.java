@@ -36,10 +36,14 @@ public class LockAuthCtrl {
         if(obj == null){
             return false;
         }
-//        UserInfo uerInfo = UserContextHolder.getUserInfo();
-//        List<String> rolesList = Arrays.asList(uerInfo.getRoles());
+        UserInfo uerInfo = UserContextHolder.getUserInfo();
+        List<String> rolesList;
+        if(uerInfo != null){
+            rolesList = Arrays.asList(uerInfo.getRoles());
+        }else{
+            rolesList = Arrays.asList("r1","r2","r3","r4");
+        }
 
-        List<String> rolesList = Arrays.asList("r1","r2");
         if(obj instanceof LockInfo){
             LockInfo lockInfo = (LockInfo)obj;
             List<LockRole> lockRoles = lockInfo.getRoles();
