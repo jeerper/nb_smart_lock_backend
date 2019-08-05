@@ -91,7 +91,10 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
         CameraDevice cameraDevice = new CameraDevice();
         cameraDevice.setDeviceIp(deviceIp);
         List<CameraDevice> devices = cameraDeviceDao.selectCondition(cameraDevice, null);
-        return devices == null ? null :devices.get(0);
+        if(devices == null || devices.isEmpty()){
+            return null;
+        }
+        return devices.get(0);
     }
 
     @Override
