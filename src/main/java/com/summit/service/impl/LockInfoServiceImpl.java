@@ -41,7 +41,24 @@ public class LockInfoServiceImpl implements LockInfoService {
     public List<LockInfo> selectAll(Page page) {
         PageConverter.convertPage(page);
         List<LockInfo> lockInfos = lockInfoDao.selectCondition(new LockInfo(), page);
+        lockInfos = getLockInfos(page, lockInfos);
         LockAuthCtrl.toFilterLocks(lockInfos);
+        return lockInfos;
+    }
+
+    private List<LockInfo> getLockInfos(Page page, List<LockInfo> lockInfos) {
+        if(page != null && lockInfos != null){
+            Integer current = page.getCurrent();
+            Integer pageSize = page.getPageSize();
+            int size = lockInfos.size();
+            if(current >= size){
+                lockInfos = null;
+            }else if(current + pageSize >= size){
+                lockInfos = lockInfos.subList(current, size);
+            }else{
+                lockInfos = lockInfos.subList(current,current + pageSize);
+            }
+        }
         return lockInfos;
     }
 

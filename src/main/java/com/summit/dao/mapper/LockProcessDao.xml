@@ -15,15 +15,26 @@
 <!--    <result column="face_match_id" jdbcType="VARCHAR" property="faceMatchId" />-->
     <result column="process_time" jdbcType="TIMESTAMP" property="processTime" />
 
-    <association property="lockInfo" javaType="com.summit.dao.entity.LockInfo">
+    <association property="lockInfo"  javaType="com.summit.dao.entity.LockInfo">
       <result column="li_lock_id" jdbcType="VARCHAR" property="lockId" />
       <result column="li_lock_code" jdbcType="VARCHAR" property="lockCode" />
       <result column="li_status" jdbcType="INTEGER" property="status" />
       <result column="li_createby" jdbcType="VARCHAR" property="createby" />
       <result column="li_updatetime" jdbcType="TIMESTAMP" property="updatetime" />
 
-      <collection property="devices" resultMap="devicesResult"  />
-      <collection property="roles" resultMap="rolesResult"  />
+      <collection property="devices"  ofType="com.summit.dao.entity.CameraDevice" >
+        <result column="cd_dev_id" jdbcType="VARCHAR" property="devId" />
+        <result column="cd_device_ip" jdbcType="VARCHAR" property="deviceIp" />
+        <result column="cd_lock_code" jdbcType="VARCHAR" property="lockCode" />
+        <result column="cd_status" jdbcType="VARCHAR" property="status" />
+      </collection>
+
+      <collection property="roles" ofType="com.summit.dao.entity.LockRole" >
+        <result column="au_id" jdbcType="VARCHAR" property="id" />
+        <result column="au_role_id" jdbcType="VARCHAR" property="roleCode" />
+        <result column="au_lock_id" jdbcType="VARCHAR" property="lockId" />
+        <result column="au_lock_code" jdbcType="VARCHAR" property="lockCode" />
+      </collection>
     </association>
 
     <association property="facePanorama" javaType="com.summit.dao.entity.FileInfo">
@@ -46,21 +57,6 @@
     </association>
 
   </resultMap>
-
-  <resultMap id="devicesResult" type="com.summit.dao.entity.CameraDevice">
-    <result column="cd_dev_id" jdbcType="VARCHAR" property="devId" />
-    <result column="cd_device_ip" jdbcType="VARCHAR" property="deviceIp" />
-    <result column="cd_lock_code" jdbcType="VARCHAR" property="lockCode" />
-    <result column="cd_status" jdbcType="VARCHAR" property="status" />
-  </resultMap>
-  <resultMap id="rolesResult" type="com.summit.dao.entity.LockRole">
-    <result column="au_id" jdbcType="VARCHAR" property="id" />
-    <result column="au_role_id" jdbcType="VARCHAR" property="roleCode" />
-    <result column="au_lock_id" jdbcType="VARCHAR" property="lockId" />
-    <result column="au_lock_code" jdbcType="VARCHAR" property="lockCode" />
-  </resultMap>
-
-
   <sql id="Base_Column_List">
     process_id, device_ip, lock_code, user_id, user_name, process_type, process_result, 
     fail_reason, face_panorama_id, face_pic_id, face_match_id, process_time
@@ -70,8 +66,8 @@
     lo.fail_reason, lo.face_panorama_id, lo.face_pic_id, lo.face_match_id, lo.process_time
   </sql>
   <sql id="LockInfo_Have_Alias_List">
-    li.lock_id li_lock_id, li.lock_code li_lock_code, li.status li_status,
-    li.createby li_createby, li.updatetime li_updatetime
+    li.lock_id li_lock_id, li.lock_code li_lock_code, li.status li_status, li.createby li_createby,
+    li.updatetime li_updatetime
   </sql>
   <sql id="Auth_Have_Alias_List">
     au.id au_id, au.role_id au_role_id, au.lock_id au_lock_id, au.lock_code au_lock_code
@@ -79,6 +75,7 @@
   <sql id="Device_Have_Alias_List">
     cd.dev_id cd_dev_id, cd.device_ip cd_device_ip, cd.lock_code cd_lock_code, cd.status cd_status
   </sql>
+
 
   <select id="selectLockProcessById" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
@@ -90,11 +87,11 @@
     fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
     fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
     from lock_process lo
+    left join lock_info li on lo.lock_code=li.lock_code
+    left join camera_device cd on li.lock_code = cd.lock_code
     left join file_info fi1 on lo.face_panorama_id=fi1.file_id
     left join file_info fi2 on lo.face_pic_id=fi2.file_id
     left join file_info fi3 on lo.face_match_id=fi3.file_id
-    left join lock_info li on li.lock_code = lo.lock_code
-    left join camera_device cd on li.lock_code = cd.lock_code
     left join role_lock_auth au on (li.lock_id = au.lock_id and li.lock_code = au.lock_code)
     <where>
       lo.process_id=#{processId}
@@ -105,26 +102,24 @@
     select
     <include refid="Lock_Have_Alias_List" />,
     <include refid="LockInfo_Have_Alias_List" />,
-    <include refid="Device_Have_Alias_List" />,
     <include refid="Auth_Have_Alias_List" />,
     fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
     fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
     fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
-    from (
-    select <include refid="Base_Column_List" /> from lock_process order by process_time desc
-    <if test="page != null and page.current != null and  page.pageSize != null ">
-      limit #{page.current},#{page.pageSize}
-    </if>
-    ) lo
+    from lock_process lo
+    left join lock_info li on lo.lock_code=li.lock_code
+    left join camera_device cd on li.lock_code = cd.lock_code
     left join file_info fi1 on lo.face_panorama_id=fi1.file_id
     left join file_info fi2 on lo.face_pic_id=fi2.file_id
     left join file_info fi3 on lo.face_match_id=fi3.file_id
-    left join lock_info li on li.lock_code = lo.lock_code
-    left join camera_device cd on li.lock_code = cd.lock_code
     left join role_lock_auth au on (li.lock_id = au.lock_id and li.lock_code = au.lock_code)
     <where>
       lo.lock_code=#{lockCode}
     </where>
+    order by lo.process_time desc
+<!--    <if test="page != null and page.current != null and  page.pageSize != null ">-->
+<!--      limit #{page.current},#{page.pageSize}-->
+<!--    </if>-->
   </select>
 
   <select id="selectCondition"  resultMap="BaseResultMap">
@@ -136,17 +131,12 @@
     fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
     fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
     fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
-    from (
-    select <include refid="Base_Column_List" /> from lock_process order by process_time desc
-    <if test="page != null and page.current != null and  page.pageSize != null ">
-      limit #{page.current},#{page.pageSize}
-    </if>
-    ) lo
+    from lock_process lo
+    left join lock_info li on lo.lock_code=li.lock_code
+    left join camera_device cd on li.lock_code = cd.lock_code
     left join file_info fi1 on lo.face_panorama_id=fi1.file_id
     left join file_info fi2 on lo.face_pic_id=fi2.file_id
     left join file_info fi3 on lo.face_match_id=fi3.file_id
-    left join lock_info li on li.lock_code = lo.lock_code
-    left join camera_device cd on li.lock_code = cd.lock_code
     left join role_lock_auth au on (li.lock_id = au.lock_id and li.lock_code = au.lock_code)
     <where>
       <if test="lockProcess.processId != null">
@@ -180,6 +170,10 @@
         and lo.process_time &lt;= #{end}
       </if>
     </where>
+    order by lo.process_time desc
+<!--    <if test="page != null and page.current != null and  page.pageSize != null ">-->
+<!--      limit #{page.current},#{page.pageSize}-->
+<!--    </if>-->
   </select>
 
   <insert id="insertRecord" parameterType="com.summit.dao.entity.LockProcess">

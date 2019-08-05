@@ -1,6 +1,8 @@
 package com.summit.service.impl;
 
 import com.summit.dao.entity.Alarm;
+import com.summit.dao.entity.FileInfo;
+import com.summit.dao.entity.LockProcess;
 import com.summit.dao.entity.Page;
 import com.summit.service.AlarmService;
 import org.junit.Test;
@@ -11,7 +13,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -21,18 +26,18 @@ public class AlarmServiceImplTest {
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    Page page = new Page(1, 3);
+    Page page = new Page(0, 3);
 
     @Test
     public void insertAlarm() throws ParseException {
-//        FileInfo facePanorama = new FileInfo("10","10n","10p","10d");
-//        FileInfo facePic = new FileInfo("11","11n","11p","11d");
-//        FileInfo faceMatch = new FileInfo("12","12n","12p","12d");
-        String processId = "pid02";
-//        LockProcess lockProcess = new LockProcess(processId,"devip01","lc01",null,"user01","un01",1,"sus","",
-//                facePanorama,facePic,faceMatch,dateFormat.parse("2019-7-24 00:00:00"));
-        Alarm alarm = new Alarm("aid02","an02",processId,
-                null,dateFormat.parse("2019-8-03 00:03:00"),1);
+        FileInfo facePanorama = new FileInfo("LockPro01","LockProNm01","LockProPaht01","LockProDes01");
+        FileInfo facePic = new FileInfo("LockPro02","LockProNm02","LockProPaht02","LockProDes02");
+        FileInfo faceMatch = new FileInfo("LockPro03","LockProNm03","LockProPaht03","LockProDes03");
+        String processId = "pid01";
+        LockProcess lockProcess = new LockProcess(processId,"devip01","lc01",null,"user01","un01",1,"sus","",
+                facePanorama,facePic,faceMatch,dateFormat.parse("2019-7-24 00:00:00"));
+        Alarm alarm = new Alarm("aid01","an01",processId,
+                lockProcess,dateFormat.parse("2019-7-24 00:01:00"),1);
 
         alarmService.insertAlarm(alarm);
     }

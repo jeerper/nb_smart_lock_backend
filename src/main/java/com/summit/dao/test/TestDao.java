@@ -107,6 +107,12 @@ public class TestDao {
         List<SafeReport> safeReports = safeReportDao.selectReportByRoles(Arrays.asList("r1"), null, null, null);
         System.out.println(safeReports);
     }
+    @Test
+    public void testLock2(){
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(null, null, null, null);
+        System.out.println(lockProcesses);
+    }
+
 
     @Test
     public void test(){

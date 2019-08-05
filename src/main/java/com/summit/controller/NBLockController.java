@@ -23,7 +23,7 @@ import rx.functions.Func1;
 import java.util.concurrent.CountDownLatch;
 
 @Slf4j
-@Api(tags = "NB智能锁接口")
+@Api(tags = "NB智能锁操作接口")
 @RestController
 @RequestMapping("/nbLock")
 public class NBLockController {

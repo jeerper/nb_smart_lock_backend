@@ -20,15 +20,14 @@ public class LockInfoServiceImplTest {
 
     @Autowired
     private LockInfoService lockInfoService;
-    Page page = new Page(1, 8);
+    Page page = new Page(0, 3);
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Test
     public void insertLock() throws ParseException {
-        LockInfo lockInfo = new LockInfo(null,"lc08",1,"user008",dateFormat.parse("2019-7-28 08:00:00"),null,null);
-        lockInfoService.insertLock(lockInfo);
-        System.out.println(lockInfo);
+//        LockInfo lockInfo = new LockInfo("lid02","lc02",1,"user004",dateFormat.parse("2019-7-29 01:00:00"),null,null);
+//        lockInfoService.insertLock(lockInfo);
     }
 
     @Test
@@ -53,7 +52,7 @@ public class LockInfoServiceImplTest {
 
     @Test
     public void selectAll() {
-        List<LockInfo> lockInfos = lockInfoService.selectAll(page);
+        List<LockInfo> lockInfos = lockInfoService.selectAll(null);
         System.out.println(lockInfos);
     }
 

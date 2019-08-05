@@ -2,9 +2,12 @@
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://192.168.140.153:49999/cbb_nb_smart_lock?useOldAliasMetadataBehavior=true&createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8
+#    url: jdbc:mysql://192.168.140.153:49999/cbb_nb_smart_lock?useOldAliasMetadataBehavior=true&createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8
+#    username: root
+#    password: Summit2017
+    url: jdbc:mysql://localhost:3306/cbb_nb_smart_lock?useOldAliasMetadataBehavior=true&createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8
     username: root
-    password: Summit2017
+    password: 333
 
   redis:
     host: 192.168.140.153

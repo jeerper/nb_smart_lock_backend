@@ -14,6 +14,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import static org.junit.Assert.*;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class LockRecordServiceImplTest {
@@ -22,22 +24,18 @@ public class LockRecordServiceImplTest {
     private LockRecordService lockRecordService;
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    Page page = new Page(1, 1);
+    Page page = new Page(1, 3);
 
     @Test
     public void insertLockProcess() throws ParseException {
-        String facePanoramaId = "16";
-        String facePicId = "17";
-        String faceMatchId = "18";
-        FileInfo facePanorama = new FileInfo(facePanoramaId,"16n","16p","16d");
-        FileInfo facePic = new FileInfo(facePicId,"17n","17p","17d");
-        FileInfo faceMatch = new FileInfo(faceMatchId,"18n","18p","18d");
-        String processId = "pid03";
-        LockProcess lockProcess = new LockProcess(null,"devip03","lc05",null,"user01","un01",1,"fail","匹配度过低",
-                facePanoramaId,facePicId,faceMatchId,facePanorama,facePic,faceMatch,dateFormat.parse("2019-7-27 08:00:00"));
+        FileInfo facePanorama = new FileInfo("LockPro01","LockProNm01","LockProPaht01","LockProDes01");
+        FileInfo facePic = new FileInfo("LockPro02","LockProNm02","LockProPaht02","LockProDes02");
+        FileInfo faceMatch = new FileInfo("LockPro03","LockProNm03","LockProPaht03","LockProDes03");
+        String processId = "pid01";
+        LockProcess lockProcess = new LockProcess(processId,"devip01","lc01",null,"user01","un01",1,"sus","",
+                facePanorama,facePic,faceMatch,dateFormat.parse("2019-7-24 00:00:00"));
 
         lockRecordService.insertLockProcess(lockProcess);
-        System.out.println(lockProcess);
     }
 
     @Test
@@ -50,7 +48,7 @@ public class LockRecordServiceImplTest {
 
     @Test
     public void selectAll() {
-        List<LockProcess> lockProcesses = lockRecordService.selectAll(page);
+        List<LockProcess> lockProcesses = lockRecordService.selectAll(null);
         System.out.println(lockProcesses);
     }
 

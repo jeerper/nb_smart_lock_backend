@@ -55,8 +55,10 @@ public class AlarmServiceImpl implements AlarmService {
 //            return -1;
         }
         UpdateWrapper<Alarm> updateWrapper = new UpdateWrapper<>();
-        return alarmDao.update(alarm , updateWrapper.eq("alarm_id" , alarm.getAlarmId())
-        /*.or().eq("process_id" , alarm.getProcessId())*/);
+        if(alarm.getAlarmId() != null){
+            return alarmDao.update(alarm , updateWrapper.eq("alarm_id" , alarm.getAlarmId()));
+        }
+        return alarmDao.update(alarm , updateWrapper.eq("process_id" , alarm.getProcessId()));
     }
 
     @Override
@@ -73,6 +75,7 @@ public class AlarmServiceImpl implements AlarmService {
     public List<Alarm> selectAll(Page page) {
         PageConverter.convertPage(page);
         List<Alarm> alarms = alarmDao.selectCondition(new Alarm(), null, null, page);
+
         LockAuthCtrl.toFilterAlarms(alarms);
         return alarms;
     }

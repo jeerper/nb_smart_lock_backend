@@ -1,8 +1,10 @@
 package com.summit.dao.test;
 
+import io.swagger.models.auth.In;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SeTest {
@@ -13,6 +15,13 @@ public class SeTest {
         aaa(obj);
 
         System.out.println(obj);
+    }
+    @Test
+    public void test3(){
+        String[] strs = {"1", "3", "5", "4"};
+        List<String> ints = Arrays.asList(strs);
+        List<String> subList = ints.subList(0, 2);
+        System.out.println(subList);
     }
 
     @Test

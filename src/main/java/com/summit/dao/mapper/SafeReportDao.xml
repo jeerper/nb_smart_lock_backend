@@ -87,10 +87,10 @@
         and sr.report_time &lt;= #{end}
       </if>
     </where>
-    order by sr.report_time
-    <if test="page != null and page.current != null and  page.pageSize != null ">
-      limit #{page.current},#{page.pageSize}
-    </if>
+    order by sr.report_time desc
+<!--    <if test="page != null and page.current != null and  page.pageSize != null ">-->
+<!--      limit #{page.current},#{page.pageSize}-->
+<!--    </if>-->
   </select>
 
 
@@ -119,10 +119,10 @@
         and sr.report_time &lt;= #{end}
       </if>
     </where>
-    order by sr.report_time
-    <if test="page != null and page.current != null and  page.pageSize != null ">
-      limit #{page.current},#{page.pageSize}
-    </if>
+    order by sr.report_time desc
+<!--    <if test="page != null and page.current != null and  page.pageSize != null ">-->
+<!--      limit #{page.current},#{page.pageSize}-->
+<!--    </if>-->
   </select>
 
 <!--  <insert id="insert" parameterType="com.summit.dao.entity.SafeReportService">-->
