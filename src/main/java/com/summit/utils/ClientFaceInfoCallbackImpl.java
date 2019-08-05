@@ -203,6 +203,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
         String deviceIp = faceInfo.getDeviceIp();
         lockProcess.setDeviceIp(deviceIp);
         lockProcess.setUserName(faceInfo.getName());
+        lockProcess.setFaceMatchRate(faceInfo.getFaceMatchRate());
 //        lockProcess.setFacePanoramaId(facePanoramaFile.getFileId());
 //        lockProcess.setFacePicId(facePicFile.getFileId());
         lockProcess.setFacePanorama(facePanoramaFile);

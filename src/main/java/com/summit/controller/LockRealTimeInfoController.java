@@ -108,6 +108,7 @@ public class LockRealTimeInfoController {
                             String userName = lockProcess.getUserName();
                             lockRealTimeInfo.setDeviceIp(lockProcess.getDeviceIp());
                             lockRealTimeInfo.setName(userName);
+                            lockRealTimeInfo.setFaceMatchRate(lockProcess.getFaceMatchRate());
                             lockRealTimeInfo.setPicSnapshotTime(dateTimeFormat.format(lockProcess.getProcessTime()));
                             FileInfo facePanorama = lockProcess.getFacePanorama();
                             if(facePanorama != null){
@@ -124,7 +125,6 @@ public class LockRealTimeInfoController {
                                 lockRealTimeInfo.setCardType(faceInfoEntity.getCardType());
                                 lockRealTimeInfo.setCity(faceInfoEntity.getCity());
                                 lockRealTimeInfo.setGender(faceInfoEntity.getGender());
-                                lockRealTimeInfo.setFaceMatchRate(faceInfoEntity.getFaceMatchRate());
                                 lockRealTimeInfo.setFaceLibName(faceInfoEntity.getFaceLibName());
                                 lockRealTimeInfo.setFaceLibType(faceInfoEntity.getFaceLibType());
 

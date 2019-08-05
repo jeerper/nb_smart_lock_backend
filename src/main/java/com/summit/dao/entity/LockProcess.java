@@ -48,6 +48,9 @@ public class LockProcess {
     @TableField(exist = false)
     private FileInfo faceMatch;
 
+    @TableField(value = "face_match_rate")
+    private float faceMatchRate;
+
     @TableField(value = "process_time")
     private Date processTime;
 

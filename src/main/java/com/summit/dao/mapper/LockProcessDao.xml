@@ -67,7 +67,7 @@
   </sql>
   <sql id="Lock_Have_Alias_List">
     lo.process_id, lo.device_ip, lo.lock_code, lo.user_id, lo.user_name, lo.process_type, lo.process_result,
-    lo.fail_reason, lo.face_panorama_id, lo.face_pic_id, lo.face_match_id, lo.process_time
+    lo.fail_reason, lo.face_panorama_id, lo.face_pic_id, lo.face_match_id, lo.face_match_rate,lo.process_time
   </sql>
   <sql id="LockInfo_Have_Alias_List">
     li.lock_id li_lock_id, li.lock_code li_lock_code, li.status li_status,

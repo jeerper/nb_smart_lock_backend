@@ -34,7 +34,7 @@ public class LockRecordServiceImplTest {
         FileInfo faceMatch = new FileInfo(faceMatchId,"18n","18p","18d");
         String processId = "pid03";
         LockProcess lockProcess = new LockProcess(null,"devip03","lc05",null,"user01","un01",1,"fail","匹配度过低",
-                facePanoramaId,facePicId,faceMatchId,facePanorama,facePic,faceMatch,dateFormat.parse("2019-7-27 08:00:00"));
+                facePanoramaId,facePicId,faceMatchId,facePanorama,facePic,faceMatch,0.9f,dateFormat.parse("2019-7-27 08:00:00"));
 
         lockRecordService.insertLockProcess(lockProcess);
         System.out.println(lockProcess);
