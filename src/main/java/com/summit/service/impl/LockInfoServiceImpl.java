@@ -43,6 +43,7 @@ public class LockInfoServiceImpl implements LockInfoService {
         List<LockInfo> lockInfos = lockInfoDao.selectCondition(new LockInfo(), page);
         lockInfos = getLockInfos(page, lockInfos);
         LockAuthCtrl.toFilterLocks(lockInfos);
+
         return lockInfos;
     }
 

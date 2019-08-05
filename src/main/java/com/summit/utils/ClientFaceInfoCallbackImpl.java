@@ -5,11 +5,14 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.system.SystemUtil;
 import com.summit.MainAction;
 
+import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.LockProcess;
+import com.summit.entity.BackLockInfo;
+import com.summit.entity.LockRequest;
 import com.summit.sdk.huawei.callback.ClientFaceInfoCallback;
 import com.summit.sdk.huawei.model.FaceInfo;
 import com.summit.sdk.huawei.model.FaceLibType;
@@ -150,14 +153,13 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
 //            log.debug("人脸匹配率:{}%", faceInfo.getFaceMatchRate());
 //            log.debug("名单库名称:{}", faceInfo.getFaceLibName());
 //            log.debug("名单库类型:{}", faceInfo.getFaceLibType().getFaceLibTypeDescription());
-//            FaceLibType faceLibType = faceInfo.getFaceLibType();
-//            if(faceLibType.equals(FaceLibType.FACE_LIB_WHITE)){
-//                RestfulEntityBySummit result = unLockService.toUnLock(new LockRequest("NB100002", "张三"));
-//                LockInfo lockInfo = result.getData() == null ? null : (LockInfo)result.getData();
-//                log.info("rmid={},type={},content={},objx={},time={}" ,
-//                        lockInfo.getRmid(),lockInfo.getType(),lockInfo.getContent(),lockInfo.getObjx(),lockInfo.getTime());
-//            }
-
+            FaceLibType faceLibType = faceInfo.getFaceLibType();
+            if(faceLibType.equals(FaceLibType.FACE_LIB_WHITE)){
+                RestfulEntityBySummit result = unLockService.toUnLock(new LockRequest("NB100002", "张三"));
+                BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo)result.getData();
+                log.info("rmid={},type={},content={},objx={},time={}" ,
+                        backLockInfo.getRmid(),backLockInfo.getType(),backLockInfo.getContent(),backLockInfo.getObjx(),backLockInfo.getTime());
+            }
             }
         }catch (Exception e){
             log.error("摄像头上报信息处理异常",e);

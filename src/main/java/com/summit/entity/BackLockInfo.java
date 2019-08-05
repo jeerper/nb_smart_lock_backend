@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class LockInfo {
+public class BackLockInfo {
     private String rmid;
     private String type;
     private String content;

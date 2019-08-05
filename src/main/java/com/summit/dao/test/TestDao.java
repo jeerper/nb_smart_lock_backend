@@ -128,9 +128,9 @@ public class TestDao {
 //        Map<String , Object> map = new HashMap<>();
 //        map.put("fileId","aaa");
 
-//        LockInfo lockInfo = new LockInfo();
+//        BackLockInfo lockInfo = new BackLockInfo();
 //        lockInfo.setStatus(1);
-//        List<LockInfo> lockInfos = lockInfoDao.selectCondition(lockInfo);
+//        List<BackLockInfo> lockInfos = lockInfoDao.selectCondition(lockInfo);
 //        System.out.println(lockInfos);
 //
 //        SafeReport selSafeReport = safeReportDao.selectById("2re");

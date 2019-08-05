@@ -1,6 +1,6 @@
 package com.summit.service;
 
-import com.summit.entity.LockInfo;
+import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.entity.ReportParam;
 import com.summit.entity.SafeReportInfo;
@@ -10,11 +10,11 @@ import rx.Observable;
 
 public interface NBLockService {
     @POST("unlock.jhtml")
-    Observable<LockInfo> unLock(@Body LockRequest lockRequest);
+    Observable<BackLockInfo> unLock(@Body LockRequest lockRequest);
 
 
     @POST("lockstatus.jhtml")
-    Observable<LockInfo> queryLockStatus(@Body LockRequest lockRequest);
+    Observable<BackLockInfo> queryLockStatus(@Body LockRequest lockRequest);
 
     @POST("serachsafedata.jhtml")
     Observable<SafeReportInfo> safeReport(@Body ReportParam reportInfo);

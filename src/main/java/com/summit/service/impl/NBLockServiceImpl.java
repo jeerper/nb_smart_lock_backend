@@ -3,7 +3,7 @@ package com.summit.service.impl;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
-import com.summit.entity.LockInfo;
+import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.entity.ReportParam;
 import com.summit.entity.SafeReportInfo;
@@ -28,19 +28,19 @@ public class NBLockServiceImpl {
                 || lockRequest.getOperName() == null){
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993 );
         }
-        final LockInfo[] backLockInfo = {null};
+        final BackLockInfo[] backLockInfos = {null};
         final ResponseCodeEnum[] resultCode = {ResponseCodeEnum.CODE_0000};
         httpClient.nbLockService.unLock(lockRequest)
-                .flatMap(new Func1<LockInfo, Observable<LockInfo>>() {
+                .flatMap(new Func1<BackLockInfo, Observable<BackLockInfo>>() {
                     @Override
-                    public Observable<LockInfo> call(LockInfo lockInfo) {
-                        log.info("{}" ,lockInfo);
-                        backLockInfo[0] = lockInfo;
+                    public Observable<BackLockInfo> call(BackLockInfo backLockInfo) {
+                        log.info("{}" , backLockInfo);
+                        backLockInfos[0] = backLockInfo;
                         return null;
                     }
-                }).onErrorResumeNext(new Func1<Throwable, Observable<LockInfo>>() {
+                }).onErrorResumeNext(new Func1<Throwable, Observable<BackLockInfo>>() {
             @Override
-            public Observable<LockInfo> call(Throwable throwable) {
+            public Observable<BackLockInfo> call(Throwable throwable) {
                 if (throwable instanceof HttpException) {
                     log.error("httpException");
                     HttpException httpException = (HttpException) throwable;
@@ -52,7 +52,7 @@ public class NBLockServiceImpl {
                 resultCode[0] = ResponseCodeEnum.CODE_9999;
                 return Observable.error(throwable);
             }
-        }).subscribe(new Observer<LockInfo>() {
+        }).subscribe(new Observer<BackLockInfo>() {
             //最后的业务逻辑
             @Override
             public void onCompleted() {
@@ -64,11 +64,11 @@ public class NBLockServiceImpl {
                 log.error("请求失败", e);
             }
             @Override
-            public void onNext(LockInfo lockInfo) {
+            public void onNext(BackLockInfo backLockInfo) {
                 log.debug("onNext");
             }
         });
-        return ResultBuilder.buildError(resultCode[0] ,backLockInfo[0]);
+        return ResultBuilder.buildError(resultCode[0] ,backLockInfos[0]);
     }
 
 
@@ -77,20 +77,20 @@ public class NBLockServiceImpl {
                 || lockRequest.getOperName() == null){
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993 );
         }
-        final LockInfo[] queryLockInfo = {null};
+        final BackLockInfo[] queryBackLockInfo = {null};
         final ResponseCodeEnum[] resultCode = {ResponseCodeEnum.CODE_0000};
 //        CountDownLatch count = new CountDownLatch(1);
         httpClient.nbLockService.queryLockStatus(lockRequest)
-                .flatMap(new Func1<LockInfo, Observable<LockInfo>>() {
+                .flatMap(new Func1<BackLockInfo, Observable<BackLockInfo>>() {
                     @Override
-                    public Observable<LockInfo> call(LockInfo lockInfo) {
-                        log.info("{}" ,lockInfo);
-                        queryLockInfo[0] = lockInfo;
+                    public Observable<BackLockInfo> call(BackLockInfo backLockInfo) {
+                        log.info("{}" , backLockInfo);
+                        queryBackLockInfo[0] = backLockInfo;
                         return null;
                     }
-                }).onErrorResumeNext(new Func1<Throwable, Observable<LockInfo>>() {
+                }).onErrorResumeNext(new Func1<Throwable, Observable<BackLockInfo>>() {
             @Override
-            public Observable<LockInfo> call(Throwable throwable) {
+            public Observable<BackLockInfo> call(Throwable throwable) {
                 if (throwable instanceof HttpException) {
                     log.error("httpException");
                     HttpException httpException = (HttpException) throwable;
@@ -102,7 +102,7 @@ public class NBLockServiceImpl {
                 resultCode[0] = ResponseCodeEnum.CODE_9999;
                 return Observable.error(throwable);
             }
-        }).subscribe(new Observer<LockInfo>() {
+        }).subscribe(new Observer<BackLockInfo>() {
             @Override
             public void onCompleted() {
                 log.info("请求完成");
@@ -113,11 +113,11 @@ public class NBLockServiceImpl {
                 log.error("请求失败", e);
             }
             @Override
-            public void onNext(LockInfo lockInfo) {
+            public void onNext(BackLockInfo backLockInfo) {
                 log.debug("onNext");
             }
         });
-        return ResultBuilder.buildError(resultCode[0] , queryLockInfo[0]);
+        return ResultBuilder.buildError(resultCode[0] , queryBackLockInfo[0]);
     }
 
 

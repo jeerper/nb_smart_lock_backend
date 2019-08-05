@@ -79,17 +79,17 @@
     left join camera_device cd on li.lock_code = cd.lock_code
     left join role_lock_auth au on (li.lock_id = au.lock_id and li.lock_code = au.lock_code)
     <where>
-      <if test="lockInfo.lockId != null">
-        li.lock_id = #{lockInfo.lockId}
+      <if test="backLockInfo.lockId != null">
+        li.lock_id = #{backLockInfo.lockId}
       </if>
-      <if test="lockInfo.lockCode != null">
-        and li.lock_code = #{lockInfo.lockCode}
+      <if test="backLockInfo.lockCode != null">
+        and li.lock_code = #{backLockInfo.lockCode}
       </if>
-      <if test="lockInfo.status != null">
-        and li.status = #{lockInfo.status}
+      <if test="backLockInfo.status != null">
+        and li.status = #{backLockInfo.status}
       </if>
-      <if test="lockInfo.updatetime != null">
-        and li.updatetime = #{lockInfo.updatetime}
+      <if test="backLockInfo.updatetime != null">
+        and li.updatetime = #{backLockInfo.updatetime}
       </if>
     </where>
 
