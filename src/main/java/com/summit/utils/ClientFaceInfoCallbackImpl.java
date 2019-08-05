@@ -59,8 +59,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                     type = "Unlock";
                 }
                 String deviceIp = faceInfo.getDeviceIp();
-                String snapshotTime1 = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date());
-                String snapshotTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                String snapshotTime = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date());
+                String snapshotDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                 String picturePathFacePanorama = new StringBuilder()
                         .append(SystemUtil.getUserInfo().getCurrentDir())
                         .append(File.separator)
@@ -68,11 +68,11 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                         .append(File.separator)
                         .append(deviceIp)
                         .append(File.separator)
-                        .append(snapshotTime1)
+                        .append(snapshotTime)
                         .append(File.separator)
                         .append(type)
                         .append(File.separator)
-                        .append(snapshotTime)
+                        .append(snapshotDate)
                         .append("_FacePanorama.jpg")
                         .toString();
 
@@ -83,11 +83,11 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                         .append(File.separator)
                         .append(deviceIp)
                         .append(File.separator)
-                        .append(snapshotTime1)
+                        .append(snapshotTime)
                         .append(File.separator)
                         .append(type)
                         .append(File.separator)
-                        .append(snapshotTime)
+                        .append(snapshotDate)
                         .append("_FacePic.jpg")
                         .toString();
 
@@ -96,11 +96,11 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                         .append(File.separator)
                         .append(deviceIp)
                         .append(File.separator)
-                        .append(snapshotTime1)
+                        .append(snapshotTime)
                         .append(File.separator)
                         .append(type)
                         .append(File.separator)
-                        .append(snapshotTime)
+                        .append(snapshotDate)
                         .append("_FacePanorama.jpg")
                         .toString();
 
@@ -109,11 +109,11 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                         .append(File.separator)
                         .append(deviceIp)
                         .append(File.separator)
-                        .append(snapshotTime1)
+                        .append(snapshotTime)
                         .append(File.separator)
                         .append(type)
                         .append(File.separator)
-                        .append(snapshotTime)
+                        .append(snapshotDate)
                         .append("_FacePic.jpg")
                         .toString();
                 FileInfo facePanoramaFile = new FileInfo(snapshotTime + "_FacePanorama.jpg", facePanoramaUrl, "人脸全景图");
