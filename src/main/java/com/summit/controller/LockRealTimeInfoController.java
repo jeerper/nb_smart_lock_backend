@@ -75,62 +75,63 @@ public class LockRealTimeInfoController {
 
             for (LockInfo lock : lockInfos){
                 if(lock == null)
-                    break;
+                    continue;
                 String lockCode = lock.getLockCode();
                 LockRealTimeInfo lockRealTimeInfo = new LockRealTimeInfo();
                 if(lockCode != null){
                     lockRealTimeInfo.setLockStatus(lock.getStatus());
                     lockRealTimeInfo.setLockCode(lockCode);
                     List<LockProcess> lockProcesses = lockRecordService.selectLockProcessByLockCode(lockCode,null);
-                    if(lockProcesses != null && !lockProcesses.isEmpty()){
-                        Collections.sort(lockProcesses, new Comparator<LockProcess>() {
-                            @Override
-                            public int compare(LockProcess lockProcessOne, LockProcess lockProcessTwo) {
-                                Date processOneTime = lockProcessOne.getProcessTime();
-                                Date processTwoTime = lockProcessTwo.getProcessTime();
-                                if(processOneTime != null  && processTwoTime != null){
-                                    if(processOneTime.getTime() < processTwoTime.getTime()){
-                                        return 1;
-                                    }else if(processOneTime.getTime() == processTwoTime.getTime()){
-                                        return 0;
-                                    }else {
-                                        return -1;
-                                    }
+
+                    if(lockProcesses == null || lockProcesses.isEmpty()){
+                        continue;
+                    }
+                    Collections.sort(lockProcesses, new Comparator<LockProcess>() {
+                        @Override
+                        public int compare(LockProcess lockProcessOne, LockProcess lockProcessTwo) {
+                            Date processOneTime = lockProcessOne.getProcessTime();
+                            Date processTwoTime = lockProcessTwo.getProcessTime();
+                            if(processOneTime != null  && processTwoTime != null){
+                                if(processOneTime.getTime() < processTwoTime.getTime()){
+                                    return 1;
+                                }else if(processOneTime.getTime() == processTwoTime.getTime()){
+                                    return 0;
+                                }else {
+                                    return -1;
                                 }
-                                return 0;
                             }
-                        });
-                        //取最新的一条操作记录
-                        LockProcess lockProcess = lockProcesses.get(0);
-                        lockRealTimeInfo.setLockId(lock.getLockId());
-
-                        if(lockProcess != null){
-                            String userName = lockProcess.getUserName();
-                            lockRealTimeInfo.setDeviceIp(lockProcess.getDeviceIp());
-                            lockRealTimeInfo.setName(userName);
-                            lockRealTimeInfo.setFaceMatchRate(lockProcess.getFaceMatchRate());
-                            lockRealTimeInfo.setPicSnapshotTime(dateTimeFormat.format(lockProcess.getProcessTime()));
-                            FileInfo facePanorama = lockProcess.getFacePanorama();
-                            if(facePanorama != null){
-                                lockRealTimeInfo.setFacePanoramaUrl(facePanorama.getFilePath());
-                            }
-                            FileInfo facePic = lockProcess.getFacePic();
-                            if(facePic != null){
-                                lockRealTimeInfo.setFacePicUrl(facePic.getFilePath());
-                            }
-                            FaceInfoEntity faceInfoEntity = faceInfoService.selectByUserName(userName);
-                            if(faceInfoEntity != null){
-                                lockRealTimeInfo.setBirthday(dateFormat.format(faceInfoEntity.getBirthday()));
-                                lockRealTimeInfo.setCardId(faceInfoEntity.getCardId());
-                                lockRealTimeInfo.setCardType(faceInfoEntity.getCardType());
-                                lockRealTimeInfo.setCity(faceInfoEntity.getCity());
-                                lockRealTimeInfo.setGender(faceInfoEntity.getGender());
-                                lockRealTimeInfo.setFaceLibName(faceInfoEntity.getFaceLibName());
-                                lockRealTimeInfo.setFaceLibType(faceInfoEntity.getFaceLibType());
-
-                            }
+                            return 0;
                         }
+                    });
+                    //取最新的一条操作记录
+                    LockProcess lockProcess = lockProcesses.get(0);
+                    lockRealTimeInfo.setLockId(lock.getLockId());
 
+                    if(lockProcess != null){
+                        String userName = lockProcess.getUserName();
+                        lockRealTimeInfo.setDeviceIp(lockProcess.getDeviceIp());
+                        lockRealTimeInfo.setName(userName);
+                        lockRealTimeInfo.setFaceMatchRate(lockProcess.getFaceMatchRate());
+                        lockRealTimeInfo.setPicSnapshotTime(dateTimeFormat.format(lockProcess.getProcessTime()));
+                        FileInfo facePanorama = lockProcess.getFacePanorama();
+                        if(facePanorama != null){
+                            lockRealTimeInfo.setFacePanoramaUrl(facePanorama.getFilePath());
+                        }
+                        FileInfo facePic = lockProcess.getFacePic();
+                        if(facePic != null){
+                            lockRealTimeInfo.setFacePicUrl(facePic.getFilePath());
+                        }
+                        FaceInfoEntity faceInfoEntity = faceInfoService.selectByUserName(userName);
+                        if(faceInfoEntity != null){
+                            lockRealTimeInfo.setBirthday(dateFormat.format(faceInfoEntity.getBirthday()));
+                            lockRealTimeInfo.setCardId(faceInfoEntity.getCardId());
+                            lockRealTimeInfo.setCardType(faceInfoEntity.getCardType());
+                            lockRealTimeInfo.setCity(faceInfoEntity.getCity());
+                            lockRealTimeInfo.setGender(faceInfoEntity.getGender());
+                            lockRealTimeInfo.setFaceLibName(faceInfoEntity.getFaceLibName());
+                            lockRealTimeInfo.setFaceLibType(faceInfoEntity.getFaceLibType());
+
+                        }
                     }
 //                    List<Alarm> alarms = alarmService.selectAlarmByLockCode(lockCode, null);
 //                    if(alarms != null){
