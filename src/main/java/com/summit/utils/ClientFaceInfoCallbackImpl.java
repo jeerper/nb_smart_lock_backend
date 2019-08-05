@@ -42,98 +42,99 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
 
     @Override
     public void invoke(Object object) {
-        if (object instanceof FaceInfo) {
-            FaceInfo faceInfo = (FaceInfo) object;
+        try {
+            if (object instanceof FaceInfo) {
+                FaceInfo faceInfo = (FaceInfo) object;
 
-            log.debug("============客户端调用开始=============");
-            log.debug("设备IP:" + faceInfo.getDeviceIp());
-            if (faceInfo.getFacePanorama() == null) {
-                log.debug("人脸全景为空!!!!!!!!!");
-            }
-            String type;
-            if (faceInfo.getFaceLibType() == FaceLibType.FACE_LIB_ALARM) {
-                log.debug("开始报警!!!!！！！！");
-                type = "Alarm";
-            } else {
-                type = "Unlock";
-            }
-            String deviceIp = faceInfo.getDeviceIp();
-            String snapshotTime1 = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date());
-            String snapshotTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-            String picturePathFacePanorama = new StringBuilder()
-                    .append(SystemUtil.getUserInfo().getCurrentDir())
-                    .append(File.separator)
-                    .append(MainAction.SnapshotFileName)
-                    .append(File.separator)
-                    .append(deviceIp)
-                    .append(File.separator)
-                    .append(snapshotTime1)
-                    .append(File.separator)
-                    .append("Alarm")
-                    .append(File.separator)
-                    .append(snapshotTime)
-                    .append("_FacePanorama.jpg")
-                    .toString();
-
-            String picturePathFacePic = new StringBuilder()
-                    .append(MainAction.SnapshotFileName)
-                    .append(File.separator)
-                    .append(deviceIp)
-                    .append(File.separator)
-                    .append(snapshotTime1)
-                    .append(File.separator)
-                    .append("Alarm")
-                    .append(File.separator)
-                    .append(snapshotTime)
-                    .append("_FacePanorama.jpg")
-                    .toString();
-
-            String facePanoramaUrl =new StringBuilder()
-                    .append(MainAction.SnapshotFileName)
-                    .append(File.separator)
-                    .append(deviceIp)
-                    .append(File.separator)
-                    .append(snapshotTime1)
-                    .append(File.separator)
-                    .append("Alarm")
-                    .append(File.separator)
-                    .append(snapshotTime)
-                    .append("_FacePic.jpg")
-                    .toString();
-
-            String facePicUrl = new StringBuilder()
-                    .append(MainAction.SnapshotFileName)
-                    .append(File.separator)
-                    .append(deviceIp)
-                    .append(File.separator)
-                    .append(snapshotTime1)
-                    .append(File.separator)
-                    .append("Alarm")
-                    .append(File.separator)
-                    .append(snapshotTime)
-                    .append("_FacePic.jpg")
-                    .toString();
-            FileInfo facePanoramaFile = new FileInfo(snapshotTime + "_FacePanorama.jpg", facePanoramaUrl, "人脸全景图");
-            FileInfo facePicFile = new FileInfo(snapshotTime + "_FacePic.jpg", facePicUrl, "人脸识别抠图");
-
-            FileUtil.writeBytes(faceInfo.getFacePanorama(), picturePathFacePanorama);
-            FileUtil.writeBytes(faceInfo.getFacePic(), picturePathFacePic);
-
-            LockProcess lockProcess = getLockProcess(faceInfo,type,facePanoramaFile,facePicFile);
-            if(lockRecordService.insertLockProcess(lockProcess) != -1){
-                log.info("锁操作记录信息入库成功");
-            }else{
-                log.error("锁操作记录信息入库失败");
-            }
-            //如果是告警类型需要同时插入告警表
-            if("Alarm".equals(type)){
-                Alarm alarm = getAlarm(lockProcess);
-                if(alarmService.insertAlarm(alarm) != -1){
-//                log.info("锁操作告警信息入库成功");
-                }else{
-                    log.error("锁操作告警信息入库失败");
+                log.debug("============客户端调用开始=============");
+                log.debug("设备IP:" + faceInfo.getDeviceIp());
+                if (faceInfo.getFacePanorama() == null) {
+                    log.debug("人脸全景为空!!!!!!!!!");
                 }
-            }
+                String type;
+                if (faceInfo.getFaceLibType() == FaceLibType.FACE_LIB_ALARM) {
+                    log.debug("开始报警!!!!！！！！");
+                    type = "Alarm";
+                } else {
+                    type = "Unlock";
+                }
+                String deviceIp = faceInfo.getDeviceIp();
+                String snapshotTime1 = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date());
+                String snapshotTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                String picturePathFacePanorama = new StringBuilder()
+                        .append(SystemUtil.getUserInfo().getCurrentDir())
+                        .append(File.separator)
+                        .append(MainAction.SnapshotFileName)
+                        .append(File.separator)
+                        .append(deviceIp)
+                        .append(File.separator)
+                        .append(snapshotTime1)
+                        .append(File.separator)
+                        .append("Alarm")
+                        .append(File.separator)
+                        .append(snapshotTime)
+                        .append("_FacePanorama.jpg")
+                        .toString();
+
+                String picturePathFacePic = new StringBuilder()
+                        .append(MainAction.SnapshotFileName)
+                        .append(File.separator)
+                        .append(deviceIp)
+                        .append(File.separator)
+                        .append(snapshotTime1)
+                        .append(File.separator)
+                        .append("Alarm")
+                        .append(File.separator)
+                        .append(snapshotTime)
+                        .append("_FacePanorama.jpg")
+                        .toString();
+
+                String facePanoramaUrl = new StringBuilder()
+                        .append(MainAction.SnapshotFileName)
+                        .append(File.separator)
+                        .append(deviceIp)
+                        .append(File.separator)
+                        .append(snapshotTime1)
+                        .append(File.separator)
+                        .append("Alarm")
+                        .append(File.separator)
+                        .append(snapshotTime)
+                        .append("_FacePic.jpg")
+                        .toString();
+
+                String facePicUrl = new StringBuilder()
+                        .append(MainAction.SnapshotFileName)
+                        .append(File.separator)
+                        .append(deviceIp)
+                        .append(File.separator)
+                        .append(snapshotTime1)
+                        .append(File.separator)
+                        .append("Alarm")
+                        .append(File.separator)
+                        .append(snapshotTime)
+                        .append("_FacePic.jpg")
+                        .toString();
+                FileInfo facePanoramaFile = new FileInfo(snapshotTime + "_FacePanorama.jpg", facePanoramaUrl, "人脸全景图");
+                FileInfo facePicFile = new FileInfo(snapshotTime + "_FacePic.jpg", facePicUrl, "人脸识别抠图");
+
+                FileUtil.writeBytes(faceInfo.getFacePanorama(), picturePathFacePanorama);
+                FileUtil.writeBytes(faceInfo.getFacePic(), picturePathFacePic);
+
+                LockProcess lockProcess = getLockProcess(faceInfo, type, facePanoramaFile, facePicFile);
+                if (lockRecordService.insertLockProcess(lockProcess) != -1) {
+                    log.info("锁操作记录信息入库成功");
+                } else {
+                    log.error("锁操作记录信息入库失败");
+                }
+                //如果是告警类型需要同时插入告警表
+                if ("Alarm".equals(type)) {
+                    Alarm alarm = getAlarm(lockProcess);
+                    if (alarmService.insertAlarm(alarm) != -1) {
+//                log.info("锁操作告警信息入库成功");
+                    } else {
+                        log.error("锁操作告警信息入库失败");
+                    }
+                }
 
 
 //            log.debug("名字:" + faceInfo.getName());
@@ -154,8 +155,10 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
 //                        lockInfo.getRmid(),lockInfo.getType(),lockInfo.getContent(),lockInfo.getObjx(),lockInfo.getTime());
 //            }
 
+            }
+        }catch (Exception e){
+            log.error("摄像头上报信息处理异常",e);
         }
-
 
     }
 
