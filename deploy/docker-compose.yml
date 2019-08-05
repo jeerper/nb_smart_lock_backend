@@ -11,4 +11,5 @@ services:
     network_mode: "host"
     volumes:
       - ./logs:/opt/App/logs
+      - ./snapshot:/opt/App/snapshot
     user: root
