@@ -1,6 +1,5 @@
 package com.summit.controller;
 
-import com.netflix.discovery.converters.Auto;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
