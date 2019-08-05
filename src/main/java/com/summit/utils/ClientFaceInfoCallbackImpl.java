@@ -77,6 +77,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                         .toString();
 
                 String picturePathFacePic = new StringBuilder()
+                        .append(SystemUtil.getUserInfo().getCurrentDir())
+                        .append(File.separator)
                         .append(MainAction.SnapshotFileName)
                         .append(File.separator)
                         .append(deviceIp)
@@ -86,7 +88,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                         .append("Alarm")
                         .append(File.separator)
                         .append(snapshotTime)
-                        .append("_FacePanorama.jpg")
+                        .append("_FacePic.jpg")
                         .toString();
 
                 String facePanoramaUrl = new StringBuilder()
