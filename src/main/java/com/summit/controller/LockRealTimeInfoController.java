@@ -77,8 +77,8 @@ public class LockRealTimeInfoController {
                 if(lock == null)
                     break;
                 String lockCode = lock.getLockCode();
+                LockRealTimeInfo lockRealTimeInfo = new LockRealTimeInfo();
                 if(lockCode != null){
-                    LockRealTimeInfo lockRealTimeInfo = new LockRealTimeInfo();
                     lockRealTimeInfo.setLockStatus(lock.getStatus());
                     lockRealTimeInfo.setLockCode(lockCode);
                     List<LockProcess> lockProcesses = lockRecordService.selectLockProcessByLockCode(lockCode,null);
@@ -139,8 +139,8 @@ public class LockRealTimeInfoController {
 //                        allAlarmCount += alarmsSize;
 //                    }
 
-                    lockRealTimeInfos.add(lockRealTimeInfo);
                 }
+                lockRealTimeInfos.add(lockRealTimeInfo);
             }
             List<Alarm> alarmList = alarmService.selectAlarmByStatus(1,null);
             int allAlarmCount = 0;
