@@ -42,25 +42,26 @@ public class LockRecordServiceImpl implements LockRecordService {
             log.error("锁操作信息为空");
             return -1;
         }
+        FileInfo facePanorama = lockProcess.getFacePanorama();
+        if(facePanorama != null){
+            fileInfoDao.insert(facePanorama);
+            lockProcess.setFacePanoramaId(facePanorama.getFileId());
+        }
+        FileInfo facePic = lockProcess.getFacePic();
+        if(facePic != null) {
+            fileInfoDao.insert(facePic);
+            lockProcess.setFacePicId(facePic.getFileId());
+        }
+        FileInfo faceMatch = lockProcess.getFaceMatch();
+        if(faceMatch != null) {
+            fileInfoDao.insert(faceMatch);
+            lockProcess.setFaceMatchId(faceMatch.getFileId());
+        }
+
         int result = lockProcessDao.insert(lockProcess);
         LockInfo lockInfo = lockProcess.getLockInfo();
         if(lockInfo != null){
             lockInfoService.updateLock(lockInfo);
-        }
-        if(result != -1){
-
-            FileInfo facePanorama = lockProcess.getFacePanorama();
-            if(facePanorama != null){
-                fileInfoDao.insert(facePanorama);
-            }
-            FileInfo facePic = lockProcess.getFacePic();
-            if(facePic != null) {
-                fileInfoDao.insert(facePic);
-            }
-            FileInfo faceMatch = lockProcess.getFaceMatch();
-            if(faceMatch != null) {
-                fileInfoDao.insert(faceMatch);
-            }
         }
         return result;
     }

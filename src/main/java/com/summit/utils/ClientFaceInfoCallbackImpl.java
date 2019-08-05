@@ -177,8 +177,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
         String deviceIp = faceInfo.getDeviceIp();
         lockProcess.setDeviceIp(deviceIp);
         lockProcess.setUserName(faceInfo.getName());
-        lockProcess.setFacePanoramaId(facePanoramaFile.getFileId());
-        lockProcess.setFacePicId(facePicFile.getFileId());
+//        lockProcess.setFacePanoramaId(facePanoramaFile.getFileId());
+//        lockProcess.setFacePicId(facePicFile.getFileId());
         lockProcess.setFacePanorama(facePanoramaFile);
         lockProcess.setFacePic(facePicFile);
         DateTime picSnapshotTime = faceInfo.getPicSnapshotTime();
