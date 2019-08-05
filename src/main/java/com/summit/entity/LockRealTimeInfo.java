@@ -52,13 +52,13 @@ public class LockRealTimeInfo {
     private String faceLibName;
     @ApiModelProperty(value="人脸库类型",name="faceLibType")
     private Integer faceLibType;
-    @ApiModelProperty(value="锁编号",name="facePanoramaUrl")
+    @ApiModelProperty(value="全景图url",name="facePanoramaUrl")
     private String facePanoramaUrl;
-    @ApiModelProperty(value="锁编号",name="facePicUrl")
+    @ApiModelProperty(value="人脸识别抠图url",name="facePicUrl")
     private String facePicUrl;
     @ApiModelProperty(value="锁编号",name="faceMatchUrl")
     private String faceMatchUrl;
-    @ApiModelProperty(value="锁编号",name="picSnapshotTime")
+    @ApiModelProperty(value="快照时间",name="picSnapshotTime")
     private String picSnapshotTime;
 
     //当前锁告警数量
