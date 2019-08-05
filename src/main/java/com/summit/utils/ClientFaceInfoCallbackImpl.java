@@ -91,7 +91,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                         .append("_FacePic.jpg")
                         .toString();
 
-                String facePanoramaUrl = new StringBuilder()
+                String pathFacePanoramaWrite = new StringBuilder()
                         .append(MainAction.SnapshotFileName)
                         .append(File.separator)
                         .append(deviceIp)
@@ -104,7 +104,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                         .append("_FacePanorama.jpg")
                         .toString();
 
-                String facePicUrl = new StringBuilder()
+                String pathFacePicWrite = new StringBuilder()
                         .append(MainAction.SnapshotFileName)
                         .append(File.separator)
                         .append(deviceIp)
@@ -116,11 +116,37 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                         .append(snapshotDate)
                         .append("_FacePic.jpg")
                         .toString();
+
+                String facePanoramaUrl = new StringBuilder()
+                        .append(MainAction.SnapshotFileName)
+                        .append("/")
+                        .append(deviceIp)
+                        .append("/")
+                        .append(snapshotTime)
+                        .append("/")
+                        .append(type)
+                        .append("/")
+                        .append(snapshotDate)
+                        .append("_FacePanorama.jpg")
+                        .toString();
+
+                String facePicUrl = new StringBuilder()
+                        .append(MainAction.SnapshotFileName)
+                        .append("/")
+                        .append(deviceIp)
+                        .append("/")
+                        .append(snapshotTime)
+                        .append("/")
+                        .append(type)
+                        .append("/")
+                        .append(snapshotDate)
+                        .append("_FacePic.jpg")
+                        .toString();
                 FileInfo facePanoramaFile = new FileInfo(snapshotTime + "_FacePanorama.jpg", facePanoramaUrl, "人脸全景图");
                 FileInfo facePicFile = new FileInfo(snapshotTime + "_FacePic.jpg", facePicUrl, "人脸识别抠图");
 
-                FileUtil.writeBytes(faceInfo.getFacePanorama(), picturePathFacePanorama);
-                FileUtil.writeBytes(faceInfo.getFacePic(), picturePathFacePic);
+                FileUtil.writeBytes(faceInfo.getFacePanorama(), pathFacePanoramaWrite);
+                FileUtil.writeBytes(faceInfo.getFacePic(), pathFacePicWrite);
 
                 LockProcess lockProcess = getLockProcess(faceInfo, type, facePanoramaFile, facePicFile);
                 if (lockRecordService.insertLockProcess(lockProcess) != -1) {

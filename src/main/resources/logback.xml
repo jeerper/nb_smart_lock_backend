@@ -67,6 +67,7 @@
 	<logger name="com.netflix" level="error"/>
 	<logger name="springfox" level="error"/>
 	<logger name="org.apache" level="error"/>
+	<logger name="org.mybatis" level="error"/>
 	<logger name="com.summit.sdk.huawei" level="debug"/>
 
 
