@@ -155,10 +155,16 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
 //            log.debug("名单库类型:{}", faceInfo.getFaceLibType().getFaceLibTypeDescription());
             FaceLibType faceLibType = faceInfo.getFaceLibType();
             if(faceLibType.equals(FaceLibType.FACE_LIB_WHITE)){
-                RestfulEntityBySummit result = unLockService.toUnLock(new LockRequest("NB100002", "张三"));
-                BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo)result.getData();
-                log.info("rmid={},type={},content={},objx={},time={}" ,
-                        backLockInfo.getRmid(),backLockInfo.getType(),backLockInfo.getContent(),backLockInfo.getObjx(),backLockInfo.getTime());
+                CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
+                if(cameraDevice != null) {
+                    String lockCode = cameraDevice.getLockCode();
+                    if (lockCode != null) {
+                        RestfulEntityBySummit result = unLockService.toUnLock(new LockRequest(lockCode, faceInfo.getName()));
+                        BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
+                        log.info("rmid={},type={},content={},objx={},time={}",
+                                backLockInfo.getRmid(), backLockInfo.getType(), backLockInfo.getContent(), backLockInfo.getObjx(), backLockInfo.getTime());
+                    }
+                }
             }
             }
         }catch (Exception e){
