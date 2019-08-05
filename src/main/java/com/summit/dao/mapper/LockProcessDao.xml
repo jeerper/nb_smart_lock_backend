@@ -10,6 +10,7 @@
     <result column="process_type" jdbcType="INTEGER" property="processType" />
     <result column="process_result" jdbcType="VARCHAR" property="processResult" />
     <result column="fail_reason" jdbcType="VARCHAR" property="failReason" />
+    <result column="face_match_rate" jdbcType="VARCHAR" property="faceMatchRate" />
 <!--    <result column="face_panorama_id" jdbcType="VARCHAR" property="facePanoramaId" />-->
 <!--    <result column="face_pic_id" jdbcType="VARCHAR" property="facePicId" />-->
 <!--    <result column="face_match_id" jdbcType="VARCHAR" property="faceMatchId" />-->
@@ -63,7 +64,7 @@
 
   <sql id="Base_Column_List">
     process_id, device_ip, lock_code, user_id, user_name, process_type, process_result, 
-    fail_reason, face_panorama_id, face_pic_id, face_match_id, process_time
+    fail_reason, face_panorama_id, face_pic_id, face_match_id,face_match_rate, process_time
   </sql>
   <sql id="Lock_Have_Alias_List">
     lo.process_id, lo.device_ip, lo.lock_code, lo.user_id, lo.user_name, lo.process_type, lo.process_result,
