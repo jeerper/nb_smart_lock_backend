@@ -46,6 +46,11 @@ public class RealDataLinuxCallBack implements HWPuSDKLinuxLibrary.pfRealDataCall
                             public void call(FaceInfo faceInfo) {
                                 clientFaceInfoCallback.invoke(faceInfo);
                             }
+                        }, new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                log.error("消息分发线程执行异常",throwable);
+                            }
                         });
             }
         }
