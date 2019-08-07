@@ -138,7 +138,7 @@
     fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
     fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
     from (
-    select <include refid="Base_Column_List" /> from lock_process order by process_time desc
+    select <include refid="Base_Column_List" /> from lock_process
     <if test="page != null and page.current != null and  page.pageSize != null ">
       limit #{page.current},#{page.pageSize}
     </if>
@@ -181,6 +181,7 @@
         and lo.process_time &lt;= #{end}
       </if>
     </where>
+    order by process_time desc
   </select>
 
   <insert id="insertRecord" parameterType="com.summit.dao.entity.LockProcess">

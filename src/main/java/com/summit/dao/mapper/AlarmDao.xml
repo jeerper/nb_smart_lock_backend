@@ -93,7 +93,7 @@
     fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
     fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
     fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
-    from (select <include refid="Base_Column_List" /> from alarm order by alarm_time desc
+    from (select <include refid="Base_Column_List" /> from alarm
     <if test="page != null and page.current != null and  page.pageSize != null ">
       limit #{page.current},#{page.pageSize}
     </if>
@@ -122,9 +122,7 @@
         and al.alarm_time &lt;= #{end}
       </if>
     </where>
-    <if test="alarm.alarmTime  != null">
-      order by al.alarm_time
-    </if>
+    order by alarm_time desc
   </select>
 
 

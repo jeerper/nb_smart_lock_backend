@@ -150,9 +150,6 @@
         and fa.pic_snapshot_time &lt;= #{end}
       </if>
     </where>
-    <if test="faceInfo.picSnapshotTime  != null">
-      order by fa.alarm_time
-    </if>
     <if test="page != null and page.current != null and  page.pageSize != null ">
       limit #{page.current},#{page.pageSize}
     </if>

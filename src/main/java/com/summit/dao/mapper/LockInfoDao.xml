@@ -71,7 +71,7 @@
     <include refid="Device_Have_Alias_List" />,
     <include refid="Auth_Have_Alias_List" />
     from
-    (select <include refid="Base_Column_List" /> from lock_info order by updatetime desc
+    (select <include refid="Base_Column_List" /> from lock_info
       <if test="page != null and page.current != null and  page.pageSize != null ">
         limit #{page.current},#{page.pageSize}
       </if>
@@ -92,6 +92,7 @@
         and li.updatetime = #{lockInfo.updatetime}
       </if>
     </where>
+    order by updatetime desc
 
   </select>
 
