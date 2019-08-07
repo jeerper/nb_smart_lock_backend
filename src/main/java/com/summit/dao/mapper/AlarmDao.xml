@@ -127,7 +127,7 @@
         #{role}
       </foreach>
     </where>
-    ) au on (lo.lock_id = au.lock_id and lo.lock_code = au.lock_code)
+    ) au on (lo.lock_id = au.lock_id or lo.lock_code = au.lock_code)
     ) al
     left join lock_process lo on al.process_id=lo.process_id
     left join file_info fi1 on lo.face_panorama_id=fi1.file_id
@@ -195,7 +195,7 @@
             #{role}
           </foreach>
         </where>
-      ) au on (lo.lock_id = au.lock_id and lo.lock_code = au.lock_code)
+      ) au on (lo.lock_id = au.lock_id or lo.lock_code = au.lock_code)
       <if test="page != null and page.current != null and  page.pageSize != null ">
         limit #{page.current},#{page.pageSize}
       </if>

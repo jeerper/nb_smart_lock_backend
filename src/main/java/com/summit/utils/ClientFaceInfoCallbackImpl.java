@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -44,7 +45,9 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
     @Autowired
     private CameraDeviceService cameraDeviceService;
 
-    private  SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
+    private static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     public void invoke(Object object) {
@@ -189,9 +192,23 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
         String deviceIp = faceInfo.getDeviceIp();
         lockProcess.setDeviceIp(deviceIp);
         lockProcess.setUserName(faceInfo.getName());
+        if(faceInfo.getGender() != null)
+            lockProcess.setGender(faceInfo.getGender().getGenderCode());
+        try {
+            if(faceInfo.getBirthday() != null)
+                lockProcess.setBirthday(dateFormat.parse(faceInfo.getBirthday()));
+        } catch (ParseException e) {
+            log.error("生日格式有误");
+        }
+        lockProcess.setProvince(faceInfo.getProvince());
+        lockProcess.setCity(faceInfo.getCity());
+        if(faceInfo.getCardType() != null)
+            lockProcess.setCardType(faceInfo.getCardType().getCardTypeCode());
+        lockProcess.setCardId(faceInfo.getCardId());
         lockProcess.setFaceMatchRate(faceInfo.getFaceMatchRate());
-//        lockProcess.setFacePanoramaId(facePanoramaFile.getFileId());
-//        lockProcess.setFacePicId(facePicFile.getFileId());
+        lockProcess.setFaceLibName(faceInfo.getFaceLibName());
+        if(faceInfo.getFaceLibType() != null)
+            lockProcess.setFaceLibType(faceInfo.getFaceLibType().getFaceLibTypeCode());
         lockProcess.setFacePanorama(facePanoramaFile);
         lockProcess.setFacePic(facePicFile);
         DateTime picSnapshotTime = faceInfo.getPicSnapshotTime();
