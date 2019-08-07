@@ -1,6 +1,8 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.summit.common.entity.UserInfo;
+import com.summit.common.web.filter.UserContextHolder;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.Page;
 import com.summit.dao.repository.LockInfoDao;
@@ -11,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -21,16 +24,19 @@ public class LockInfoServiceImpl implements LockInfoService {
 
     @Override
     public LockInfo selectLockById(String lockId) {
-        LockInfo lockInfo = lockInfoDao.selectLockById(lockId);
+        List<String> rolesList = LockAuthCtrl.getRoles();
+        LockInfo lockInfo = lockInfoDao.selectLockById(lockId, rolesList);
         if(!LockAuthCtrl.toFilter(lockInfo)){
             return null;
         }
         return lockInfo;
     }
 
+
     @Override
     public LockInfo selectBylockCode(String lockCode) {
-        LockInfo lockInfo = lockInfoDao.selectBylockCode(lockCode);
+        List<String> rolesList = LockAuthCtrl.getRoles();
+        LockInfo lockInfo = lockInfoDao.selectBylockCode(lockCode, rolesList);
         if(!LockAuthCtrl.toFilter(lockInfo)){
             return null;
         }
@@ -39,29 +45,14 @@ public class LockInfoServiceImpl implements LockInfoService {
 
     @Override
     public List<LockInfo> selectAll(Page page) {
+        List<String> rolesList = LockAuthCtrl.getRoles();
         PageConverter.convertPage(page);
-        List<LockInfo> lockInfos = lockInfoDao.selectCondition(new LockInfo(), page);
-        lockInfos = getLockInfos(page, lockInfos);
-        LockAuthCtrl.toFilterLocks(lockInfos);
+        List<LockInfo> lockInfos = lockInfoDao.selectCondition(new LockInfo(), page, rolesList);
+//        LockAuthCtrl.toFilterLocks(lockInfos);
 
         return lockInfos;
     }
 
-    private List<LockInfo> getLockInfos(Page page, List<LockInfo> lockInfos) {
-        if(page != null && lockInfos != null){
-            Integer current = page.getCurrent();
-            Integer pageSize = page.getPageSize();
-            int size = lockInfos.size();
-            if(current >= size){
-                lockInfos = null;
-            }else if(current + pageSize >= size){
-                lockInfos = lockInfos.subList(current, size);
-            }else{
-                lockInfos = lockInfos.subList(current,current + pageSize);
-            }
-        }
-        return lockInfos;
-    }
 
     @Override
     public List<LockInfo> selectCondition(LockInfo lockInfo, Page page) {
@@ -69,9 +60,9 @@ public class LockInfoServiceImpl implements LockInfoService {
             log.error("锁信息为空");
             return null;
         }
-
+        List<String> rolesList = LockAuthCtrl.getRoles();
         PageConverter.convertPage(page);
-        List<LockInfo> lockInfos = lockInfoDao.selectCondition(lockInfo, page);
+        List<LockInfo> lockInfos = lockInfoDao.selectCondition(lockInfo, page,rolesList);
         LockAuthCtrl.toFilterLocks(lockInfos);
         return lockInfos;
     }

@@ -37,13 +37,27 @@
   <sql id="Auth_Have_Alias_List">
     au.id au_id, au.role_id au_role_id, au.lock_id au_lock_id, au.lock_code au_lock_code
   </sql>
+  <sql id="Auth_No_Alias_List">
+    au.id , au.role_id , au.lock_id , au.lock_code
+  </sql>
 
   <select id="selectLockById" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Lock_Have_Alias_List" />,
     <include refid="Device_Have_Alias_List" />,
     <include refid="Auth_Have_Alias_List" />
-    from lock_info li
+    from
+    (select <include refid="Lock_Have_Alias_List" /> from lock_info li
+    inner join (
+    select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
+    <where>
+      au.role_id in
+      <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+        #{role}
+      </foreach>
+    </where>
+    ) au on (li.lock_id = au.lock_id and li.lock_code = au.lock_code)
+    ) li
     left join camera_device cd on li.lock_code = cd.lock_code
     left join role_lock_auth au on (li.lock_id = au.lock_id and li.lock_code = au.lock_code)
     <where>
@@ -56,7 +70,18 @@
     <include refid="Lock_Have_Alias_List" />,
     <include refid="Device_Have_Alias_List" />,
     <include refid="Auth_Have_Alias_List" />
-    from lock_info li
+    from
+    (select <include refid="Lock_Have_Alias_List" /> from lock_info li
+    inner join (
+    select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
+    <where>
+      au.role_id in
+      <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+        #{role}
+      </foreach>
+    </where>
+    ) au on (li.lock_id = au.lock_id and li.lock_code = au.lock_code)
+    ) li
     left join camera_device cd on li.lock_code = cd.lock_code
     left join role_lock_auth au on (li.lock_id = au.lock_id and li.lock_code = au.lock_code)
     <where>
@@ -71,7 +96,16 @@
     <include refid="Device_Have_Alias_List" />,
     <include refid="Auth_Have_Alias_List" />
     from
-    (select <include refid="Base_Column_List" /> from lock_info
+    (select <include refid="Lock_Have_Alias_List" /> from lock_info li
+    inner join (
+      select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
+        <where>
+          au.role_id in
+          <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+            #{role}
+          </foreach>
+        </where>
+    ) au on (li.lock_id = au.lock_id and li.lock_code = au.lock_code)
       <if test="page != null and page.current != null and  page.pageSize != null ">
         limit #{page.current},#{page.pageSize}
       </if>

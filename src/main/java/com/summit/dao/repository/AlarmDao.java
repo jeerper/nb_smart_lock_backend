@@ -10,12 +10,13 @@ import java.util.List;
 
 public interface AlarmDao  extends BaseMapper<Alarm> {
 
-    Alarm selectAlarmById(String alarmId);
+    Alarm selectAlarmById(@Param("alarmId") String alarmId, @Param("roles") List<String> roles);
 
-    Alarm selectByProcessId(String processId);
+    Alarm selectByProcessId(@Param("processId") String processId, @Param("roles") List<String> roles);
 
     List<Alarm> selectCondition(@Param("alarm") Alarm alarm,
-                                  @Param("start") Date start,
-                                  @Param("end") Date end,
-                                @Param("page") Page page);
+                                @Param("start") Date start,
+                                @Param("end") Date end,
+                                @Param("page") Page page,
+                                @Param("roles") List<String> roles);
 }

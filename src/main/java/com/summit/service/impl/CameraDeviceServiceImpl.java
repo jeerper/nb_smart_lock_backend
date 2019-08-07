@@ -6,6 +6,7 @@ import com.summit.dao.entity.Page;
 import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.service.CameraDeviceService;
+import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,8 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
             log.error("设备信息为空");
             return -1;
         }
-        if(lockInfoDao.selectBylockCode(cameraDevice.getLockCode()) == null){
+        List<String> roles = LockAuthCtrl.getRoles();
+        if(lockInfoDao.selectBylockCode(cameraDevice.getLockCode(),roles) == null){
             log.warn("所插入的锁编号在锁信息表中不存在");
         }
         return cameraDeviceDao.insert(cameraDevice);
@@ -45,7 +47,8 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
         if(devId != null &&  deviceIp!= null){
             deviceIp = null;
         }
-        if(lockInfoDao.selectBylockCode(cameraDevice.getLockCode()) == null){
+        List<String> roles = LockAuthCtrl.getRoles();
+        if(lockInfoDao.selectBylockCode(cameraDevice.getLockCode(),roles) == null){
             log.warn("所更新的锁编号在锁信息表中不存在");
         }
         UpdateWrapper<CameraDevice> updateWrapper = new UpdateWrapper<>();

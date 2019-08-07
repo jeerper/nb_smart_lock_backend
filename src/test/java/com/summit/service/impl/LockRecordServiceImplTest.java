@@ -50,7 +50,7 @@ public class LockRecordServiceImplTest {
 
     @Test
     public void selectAll() {
-        List<LockProcess> lockProcesses = lockRecordService.selectAll(page);
+        List<LockProcess> lockProcesses = lockRecordService.selectAll(null);
         System.out.println(lockProcesses);
     }
 

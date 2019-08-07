@@ -37,13 +37,7 @@ public class LockAuthCtrl {
             return false;
         }
         UserInfo uerInfo = UserContextHolder.getUserInfo();
-        List<String> rolesList;
-        if(uerInfo != null){
-            rolesList = Arrays.asList(uerInfo.getRoles());
-        }else{
-//            rolesList = Arrays.asList("r1","r2","r3","r4");
-            rolesList = Arrays.asList("ROLE_1489581392504");
-        }
+        List<String> rolesList = getRoles();
 
         if(obj instanceof LockInfo){
             LockInfo lockInfo = (LockInfo)obj;
@@ -67,7 +61,7 @@ public class LockAuthCtrl {
         }else if(obj instanceof LockProcess){
             LockProcess lockProcess = (LockProcess)obj;
             String lockCode = lockProcess.getLockCode();
-            LockInfo lockInfo = lockAuthCtrl.lockInfoDao.selectBylockCode(lockCode);
+            LockInfo lockInfo = lockAuthCtrl.lockInfoDao.selectBylockCode(lockCode,rolesList);
             if(lockInfo == null){
                 return false;
             }
@@ -93,7 +87,7 @@ public class LockAuthCtrl {
                 return false;
             }
             String lockCode = lockProRecord.getLockCode();
-            LockInfo lockInfo = lockAuthCtrl.lockInfoDao.selectBylockCode(lockCode);
+            LockInfo lockInfo = lockAuthCtrl.lockInfoDao.selectBylockCode(lockCode, rolesList);
             if(lockInfo == null){
                 return false;
             }
@@ -167,4 +161,14 @@ public class LockAuthCtrl {
         }
     }
 
+    public static List<String> getRoles() {
+        UserInfo uerInfo = UserContextHolder.getUserInfo();
+        List<String> rolesList;
+        if (uerInfo != null) {
+            rolesList = Arrays.asList(uerInfo.getRoles());
+        } else {
+            rolesList = Arrays.asList("ROLE_1489581392504","ROLE_1489581392504xx","ROLE_1565148602817");
+        }
+        return rolesList;
+    }
 }

@@ -10,14 +10,17 @@ import java.util.List;
 
 public interface LockProcessDao  extends BaseMapper<LockProcess> {
 
-    LockProcess selectLockProcessById(String processId);
+    LockProcess selectLockProcessById(@Param("processId")  String processId, @Param("roles") List<String> roles);
 
-    List<LockProcess> selectByLockCode(@Param("lockCode") String lockCode,@Param("page") Page page);
+    List<LockProcess> selectByLockCode(@Param("lockCode") String lockCode,
+                                       @Param("page") Page page,
+                                       @Param("roles") List<String> roles);
 
     List<LockProcess> selectCondition(@Param("lockProcess") LockProcess lockProcess,
                                 @Param("start") Date start,
                                 @Param("end") Date end,
-                                @Param("page") Page page);
+                                @Param("page") Page page,
+                                @Param("roles") List<String> roles);
 
     int insertRecord(LockProcess lockProcess);
 

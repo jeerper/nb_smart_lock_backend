@@ -80,6 +80,10 @@
   <sql id="Device_Have_Alias_List">
     cd.dev_id cd_dev_id, cd.device_ip cd_device_ip, cd.lock_code cd_lock_code, cd.status cd_status
   </sql>
+  <sql id="Auth_No_Alias_List">
+    au.id , au.role_id , au.lock_id , au.lock_code
+  </sql>
+
 
   <select id="selectLockProcessById" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
@@ -90,7 +94,18 @@
     fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
     fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
     fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
-    from lock_process lo
+    from (
+    select <include refid="Lock_Have_Alias_List" /> from lock_process lo
+    inner join (
+    select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
+    <where>
+      au.role_id in
+      <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+        #{role}
+      </foreach>
+    </where>
+    ) au on (lo.lock_id = au.lock_id and lo.lock_code = au.lock_code)
+    ) lo
     left join file_info fi1 on lo.face_panorama_id=fi1.file_id
     left join file_info fi2 on lo.face_pic_id=fi2.file_id
     left join file_info fi3 on lo.face_match_id=fi3.file_id
@@ -112,7 +127,16 @@
     fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
     fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
     from (
-    select <include refid="Base_Column_List" /> from lock_process order by process_time desc
+      select <include refid="Lock_Have_Alias_List" /> from lock_process lo
+      inner join (
+      select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
+      <where>
+        au.role_id in
+        <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+          #{role}
+        </foreach>
+      </where>
+    ) au on (lo.lock_id = au.lock_id and lo.lock_code = au.lock_code)
     <if test="page != null and page.current != null and  page.pageSize != null ">
       limit #{page.current},#{page.pageSize}
     </if>
@@ -138,7 +162,16 @@
     fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
     fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
     from (
-    select <include refid="Base_Column_List" /> from lock_process
+    select <include refid="Lock_Have_Alias_List" /> from lock_process lo
+    inner join (
+    select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
+    <where>
+      au.role_id in
+      <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+        #{role}
+      </foreach>
+    </where>
+    ) au on (<!--lo.lock_id = au.lock_id and -->lo.lock_code = au.lock_code)
     <if test="page != null and page.current != null and  page.pageSize != null ">
       limit #{page.current},#{page.pageSize}
     </if>

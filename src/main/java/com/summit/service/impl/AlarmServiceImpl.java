@@ -37,7 +37,8 @@ public class AlarmServiceImpl implements AlarmService {
             log.error("告警信息为空");
             return -1;
         }
-        if(lockProcessDao.selectLockProcessById(alarm.getProcessId()) == null){
+        List<String> roles = LockAuthCtrl.getRoles();
+        if(lockProcessDao.selectLockProcessById(alarm.getProcessId(),roles) == null){
             log.warn("此告警对应锁操作记录不存在");
 //            return -1;
         }
@@ -50,7 +51,8 @@ public class AlarmServiceImpl implements AlarmService {
             log.error("告警信息为空");
             return -1;
         }
-        if(lockProcessDao.selectLockProcessById(alarm.getProcessId()) == null){
+        List<String> roles = LockAuthCtrl.getRoles();
+        if(lockProcessDao.selectLockProcessById(alarm.getProcessId(),roles) == null){
             log.warn("此告警对应锁操作记录不存在");
 //            return -1;
         }
@@ -74,7 +76,8 @@ public class AlarmServiceImpl implements AlarmService {
     @Override
     public List<Alarm> selectAll(Page page) {
         PageConverter.convertPage(page);
-        List<Alarm> alarms = alarmDao.selectCondition(new Alarm(), null, null, page);
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<Alarm> alarms = alarmDao.selectCondition(new Alarm(), null, null, page,roles);
 
         LockAuthCtrl.toFilterAlarms(alarms);
         return alarms;
@@ -88,7 +91,8 @@ public class AlarmServiceImpl implements AlarmService {
             log.error("告警id为空");
             return null;
         }
-        Alarm alarm = alarmDao.selectAlarmById(alarmId);
+        List<String> roles = LockAuthCtrl.getRoles();
+        Alarm alarm = alarmDao.selectAlarmById(alarmId, roles);
         if(!LockAuthCtrl.toFilter(alarm)){
             return null;
         }
@@ -104,7 +108,8 @@ public class AlarmServiceImpl implements AlarmService {
         PageConverter.convertPage(page);
         Alarm alarm = new Alarm();
         alarm.setAlarmName(alarmName);
-        List<Alarm> alarms = alarmDao.selectCondition(alarm, start, end, page);
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<Alarm> alarms = alarmDao.selectCondition(alarm, start, end, page, roles);
         LockAuthCtrl.toFilterAlarms(alarms);
         return alarms;
     }
@@ -127,7 +132,8 @@ public class AlarmServiceImpl implements AlarmService {
         PageConverter.convertPage(page);
         Alarm alarm = new Alarm();
         alarm.setAlarmStatus(alarmStatus);
-        List<Alarm> alarms = alarmDao.selectCondition(alarm, start, end, page);
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<Alarm> alarms = alarmDao.selectCondition(alarm, start, end, page, roles);
         LockAuthCtrl.toFilterAlarms(alarms);
         return alarms;
     }
@@ -149,11 +155,13 @@ public class AlarmServiceImpl implements AlarmService {
         }
         PageConverter.convertPage(page);
         List<Alarm> alarms = new ArrayList<>();
-        List<LockProcess> lockProcesses = lockProcessDao.selectByLockCode(lockCode, page);
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<LockProcess> lockProcesses = lockProcessDao.selectByLockCode(lockCode, page,roles);
         for (LockProcess lockProcess: lockProcesses) {
-            alarms.add(alarmDao.selectByProcessId(lockProcess.getProcessId()));
+
+            alarms.add(alarmDao.selectByProcessId(lockProcess.getProcessId(), roles));
         }
-        LockAuthCtrl.toFilterAlarms(alarms);
+//        LockAuthCtrl.toFilterAlarms(alarms);
         return alarms;
     }
 
@@ -176,11 +184,12 @@ public class AlarmServiceImpl implements AlarmService {
         List<Alarm> alarms = new ArrayList<>();
         LockProcess lp = new LockProcess();
         lp.setDeviceIp(deviceIp);
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lp, start, end, page);
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lp, start, end, page,roles);
         for (LockProcess lockProcess: lockProcesses) {
-            alarms.add(alarmDao.selectByProcessId(lockProcess.getProcessId()));
+            alarms.add(alarmDao.selectByProcessId(lockProcess.getProcessId(), roles));
         }
-        LockAuthCtrl.toFilterAlarms(alarms);
+//        LockAuthCtrl.toFilterAlarms(alarms);
         return alarms;
     }
 
@@ -208,11 +217,12 @@ public class AlarmServiceImpl implements AlarmService {
         }
         LockProcess lp = new LockProcess();
         lp.setDeviceIp(cameraDevice.getDeviceIp());
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lp, start, end, page);
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lp, start, end, page,roles);
         for (LockProcess lockProcess: lockProcesses) {
-            alarms.add(alarmDao.selectByProcessId(lockProcess.getProcessId()));
+            alarms.add(alarmDao.selectByProcessId(lockProcess.getProcessId(), roles));
         }
-        LockAuthCtrl.toFilterAlarms(alarms);
+//        LockAuthCtrl.toFilterAlarms(alarms);
         return alarms;
     }
 
@@ -232,8 +242,9 @@ public class AlarmServiceImpl implements AlarmService {
             return null;
         }
         PageConverter.convertPage(page);
-        List<Alarm> alarms = alarmDao.selectCondition(alarm, start, end, page);
-        LockAuthCtrl.toFilterAlarms(alarms);
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<Alarm> alarms = alarmDao.selectCondition(alarm, start, end, page, roles);
+//        LockAuthCtrl.toFilterAlarms(alarms);
         return alarms;
     }
 

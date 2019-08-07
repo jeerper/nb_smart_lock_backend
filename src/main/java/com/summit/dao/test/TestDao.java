@@ -109,7 +109,8 @@ public class TestDao {
     }
     @Test
     public void testLock2(){
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(null, null, null, null);
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(null, null, null, null,roles);
         System.out.println(lockProcesses);
     }
 
@@ -152,7 +153,8 @@ public class TestDao {
 //        System.out.println(faceInfos);
         LockProcess lockProcess = new LockProcess();
         lockProcess.setUserName("1dfg");
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess,date1,date2,null);
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess,date1,date2,null,roles);
         System.out.println(lockProcesses);
     }
 
@@ -171,7 +173,8 @@ public class TestDao {
     }
     @Test
     public void testInsAndUpLock(){
-        LockProcess process = lockProcessDao.selectLockProcessById("p1");
+        List<String> roles = LockAuthCtrl.getRoles();
+        LockProcess process = lockProcessDao.selectLockProcessById("p1",roles);
 //        process.setProcessId("2");
         process.setDeviceIp("222");
         process.getFaceMatch().setFileId("6");

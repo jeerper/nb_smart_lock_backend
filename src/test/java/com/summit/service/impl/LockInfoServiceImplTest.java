@@ -41,13 +41,13 @@ public class LockInfoServiceImplTest {
 
     @Test
     public void selectLockById() {
-        LockInfo lockInfo = lockInfoService.selectLockById("1");
+        LockInfo lockInfo = lockInfoService.selectLockById("lid04");
         System.out.println(lockInfo);
     }
 
     @Test
     public void selectBylockCode() {
-        LockInfo lockInfo = lockInfoService.selectBylockCode("1nb");
+        LockInfo lockInfo = lockInfoService.selectBylockCode("lc07");
         System.out.println(lockInfo);
     }
 

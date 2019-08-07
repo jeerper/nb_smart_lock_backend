@@ -97,7 +97,8 @@ public class LockRecordServiceImpl implements LockRecordService {
             log.error("锁操作信息id为空");
             return -1;
         }
-        LockProcess lockProcess = lockProcessDao.selectLockProcessById(processId);
+        List<String> roles = LockAuthCtrl.getRoles();
+        LockProcess lockProcess = lockProcessDao.selectLockProcessById(processId, roles);
         UpdateWrapper<LockProcess> wrapper = new UpdateWrapper<>();
         UpdateWrapper<FileInfo> fileWrapper = new UpdateWrapper<>();
         int result = lockProcessDao.delete(wrapper.eq("process_id", processId));
@@ -112,29 +113,13 @@ public class LockRecordServiceImpl implements LockRecordService {
     @Override
     public List<LockProcess> selectAll(Page page) {
         PageConverter.convertPage(page);
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(new LockProcess(), null, null, page);
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(new LockProcess(), null, null, page,roles);
 
-
-        lockProcesses = getLockProcesses(page, lockProcesses);
-
-        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+//        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
         return lockProcesses;
     }
 
-    private List<LockProcess> getLockProcesses(Page page, List<LockProcess> lockProcesses) {
-        if(page != null && lockProcesses != null){
-            Integer current = page.getCurrent();
-            Integer pageSize = page.getPageSize();
-            if(current >= lockProcesses.size()){
-                lockProcesses = null;
-            }else if(current + pageSize >= lockProcesses.size()){
-                lockProcesses = lockProcesses.subList(current, lockProcesses.size());
-            }else{
-                lockProcesses = lockProcesses.subList(current,current + pageSize);
-            }
-        }
-        return lockProcesses;
-    }
 
     @Override
     public LockProcess selectLockProcessById(String processId) {
@@ -142,7 +127,8 @@ public class LockRecordServiceImpl implements LockRecordService {
             log.error("锁操作信息id为空");
             return null;
         }
-        LockProcess lockProcess = lockProcessDao.selectLockProcessById(processId);
+        List<String> roles = LockAuthCtrl.getRoles();
+        LockProcess lockProcess = lockProcessDao.selectLockProcessById(processId, roles);
         if(!LockAuthCtrl.toFilter(lockProcess)){
             return null;
         }
@@ -158,9 +144,9 @@ public class LockRecordServiceImpl implements LockRecordService {
         PageConverter.convertPage(page);
         LockProcess lockProcess = new LockProcess();
         lockProcess.setLockCode(lockCode);
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page);
-        lockProcesses = getLockProcesses(page, lockProcesses);
-        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
+//        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
         return lockProcesses;
     }
 
@@ -171,9 +157,9 @@ public class LockRecordServiceImpl implements LockRecordService {
             return null;
         }
         PageConverter.convertPage(page);
-        List<LockProcess> lockProcesses = lockProcessDao.selectByLockCode(lockCode, page);
-        lockProcesses = getLockProcesses(page, lockProcesses);
-        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<LockProcess> lockProcesses = lockProcessDao.selectByLockCode(lockCode, page, roles);
+//        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
         return lockProcesses;
     }
 
@@ -186,9 +172,9 @@ public class LockRecordServiceImpl implements LockRecordService {
         PageConverter.convertPage(page);
         LockProcess lockProcess = new LockProcess();
         lockProcess.setDeviceIp(deviceIp);
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page);
-        lockProcesses = getLockProcesses(page, lockProcesses);
-        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
+//        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
         return lockProcesses;
     }
 
@@ -211,9 +197,9 @@ public class LockRecordServiceImpl implements LockRecordService {
         CameraDevice device = deviceDao.selectDeviceById(devId);
         LockProcess lp = new LockProcess();
         lp.setDeviceIp(device.getDeviceIp());
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lp, start, end, page);
-        lockProcesses = getLockProcesses(page, lockProcesses);
-        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lp, start, end, page, roles);
+//        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
         return lockProcesses;
     }
 
@@ -235,9 +221,9 @@ public class LockRecordServiceImpl implements LockRecordService {
         PageConverter.convertPage(page);
         LockProcess lockProcess = new LockProcess();
         lockProcess.setUserName(userName);
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page);
-        lockProcesses = getLockProcesses(page, lockProcesses);
-        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
+//        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
         return lockProcesses;
     }
 
@@ -259,9 +245,9 @@ public class LockRecordServiceImpl implements LockRecordService {
         PageConverter.convertPage(page);
         LockProcess lockProcess = new LockProcess();
         lockProcess.setProcessType(processType);
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page);
-        lockProcesses = getLockProcesses(page, lockProcesses);
-        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
+//        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
         return lockProcesses;
     }
 
@@ -283,9 +269,9 @@ public class LockRecordServiceImpl implements LockRecordService {
         PageConverter.convertPage(page);
         LockProcess lockProcess = new LockProcess();
         lockProcess.setProcessResult(processResult);
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page);
-        lockProcesses = getLockProcesses(page, lockProcesses);
-        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
+//        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
         return lockProcesses;
     }
 
@@ -305,9 +291,9 @@ public class LockRecordServiceImpl implements LockRecordService {
             return null;
         }
         PageConverter.convertPage(page);
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page);
-        lockProcesses = getLockProcesses(page, lockProcesses);
-        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page,roles);
+//        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
         return lockProcesses;
     }
 

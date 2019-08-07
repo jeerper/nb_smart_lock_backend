@@ -9,10 +9,11 @@ import java.util.List;
 
 public interface LockInfoDao  extends BaseMapper<LockInfo> {
 
-    LockInfo selectLockById(String lockId);
+    LockInfo selectLockById(@Param("lockId") String lockId, @Param("roles") List<String> roles);
 
-    LockInfo selectBylockCode(String lockCode);
+    LockInfo selectBylockCode(@Param("lockCode")String lockCode, @Param("roles") List<String> roles);
 
     List<LockInfo> selectCondition(@Param("lockInfo") LockInfo lockInfo,
-                                   @Param("page") Page page);
+                                   @Param("page") Page page,
+                                   @Param("roles") List<String> roles);
 }
