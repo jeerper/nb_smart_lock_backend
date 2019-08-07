@@ -14,8 +14,11 @@ import com.summit.dao.entity.LockProcess;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.sdk.huawei.callback.ClientFaceInfoCallback;
+import com.summit.sdk.huawei.model.AlarmStatus;
 import com.summit.sdk.huawei.model.FaceInfo;
 import com.summit.sdk.huawei.model.FaceLibType;
+import com.summit.sdk.huawei.model.LockProcessType;
+import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.service.AlarmService;
 import com.summit.service.CameraDeviceService;
 import com.summit.service.LockRecordService;
@@ -161,7 +164,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                     if (lockCode != null) {
                         RestfulEntityBySummit result = unLockService.toUnLock(new LockRequest(lockCode, faceInfo.getName()));
                         BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
-                        log.info("rmid={},type={},content={},objx={},time={}",
+                        log.debug("rmid={},type={},content={},objx={},time={}",
                                 backLockInfo.getRmid(), backLockInfo.getType(), backLockInfo.getContent(), backLockInfo.getObjx(), backLockInfo.getTime());
                     }
                 }
@@ -177,7 +180,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
         Alarm alarm = new Alarm();
         alarm.setProcessId(lockProcess.getProcessId());
         alarm.setAlarmTime(lockProcess.getProcessTime());
-        alarm.setAlarmStatus(1);
+        alarm.setAlarmStatus(AlarmStatus.UNPROCESSED.getCode());
         return alarm;
     }
 
@@ -204,21 +207,21 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             lockInfo.setUpdatetime(picSnapshotTime == null ? null : picSnapshotTime.toJdkDate());
         }
         if("Unlock".equals(type)){
-            lockInfo.setStatus(1);
-            lockProcess.setProcessType(1);
+            lockInfo.setStatus(LockStatus.UNLOCK.getCode());
+            lockProcess.setProcessType(LockProcessType.UNLOCK.getCode());
             lockProcess.setProcessResult("success");
 
         }else if("Alarm".equals(type)){
-            lockInfo.setStatus(3);
-            lockProcess.setProcessType(3);
+            lockInfo.setStatus(LockStatus.LOCK_ALARM.getCode());
+            lockProcess.setProcessType(LockProcessType.LOCK_ALARM.getCode());
             lockProcess.setProcessResult("fail");
             lockProcess.setFailReason("匹配度过低");
 
         }else{
             //关锁
-            lockProcess.setProcessType(2);
+            lockProcess.setProcessType(LockProcessType.CLOSE_LOCK.getCode());
             lockProcess.setProcessResult("success");
-            lockInfo.setStatus(2);
+            lockInfo.setStatus(LockStatus.LOCK_CLOSED.getCode());
 
         }
         lockProcess.setLockInfo(lockInfo);
