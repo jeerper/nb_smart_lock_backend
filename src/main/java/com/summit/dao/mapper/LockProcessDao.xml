@@ -8,10 +8,19 @@
     <result column="lock_code" jdbcType="VARCHAR" property="lockCode" />
     <result column="user_id" jdbcType="VARCHAR" property="userId" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="gender" jdbcType="INTEGER" property="gender" />
+    <result column="birthday" jdbcType="TIMESTAMP" property="birthday" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="card_type" jdbcType="INTEGER" property="cardType" />
+    <result column="card_id" jdbcType="VARCHAR" property="cardId" />
+    <result column="face_match_rate" jdbcType="REAL" property="faceMatchRate" />
+    <result column="face_lib_name" jdbcType="VARCHAR" property="faceLibName" />
+    <result column="face_lib_type" jdbcType="INTEGER" property="faceLibType" />
+
     <result column="process_type" jdbcType="INTEGER" property="processType" />
     <result column="process_result" jdbcType="VARCHAR" property="processResult" />
     <result column="fail_reason" jdbcType="VARCHAR" property="failReason" />
-    <result column="face_match_rate" jdbcType="VARCHAR" property="faceMatchRate" />
     <result column="face_panorama_id" jdbcType="VARCHAR" property="facePanoramaId" />
     <result column="face_pic_id" jdbcType="VARCHAR" property="facePicId" />
     <result column="face_match_id" jdbcType="VARCHAR" property="faceMatchId" />
@@ -65,12 +74,15 @@
 
 
   <sql id="Base_Column_List">
-    process_id, device_ip, lock_id,lock_code, user_id, user_name, process_type, process_result,
-    fail_reason, face_panorama_id, face_pic_id, face_match_id,face_match_rate, process_time
+    process_id, device_ip, lock_id,lock_code, user_id, user_name, gender, birthday, province, city, card_type, card_id,
+    face_match_rate, face_lib_name, face_lib_type,process_type, process_result,fail_reason,
+    face_panorama_id, face_pic_id, face_match_id, process_time
   </sql>
   <sql id="Lock_Have_Alias_List">
-    lo.process_id, lo.device_ip, lo.lock_id, lo.lock_code, lo.user_id, lo.user_name, lo.process_type, lo.process_result,
-    lo.fail_reason, lo.face_panorama_id, lo.face_pic_id, lo.face_match_id, lo.face_match_rate,lo.process_time
+    lo.process_id, lo.device_ip, lo.lock_id, lo.lock_code, lo.user_id, lo.user_name, lo.gender, lo.birthday,
+    lo.province, lo.city, lo.card_type, lo.card_id,lo.face_match_rate, lo.face_lib_name, lo.face_lib_type,
+    lo.process_type, lo.process_result,lo.fail_reason, lo.face_panorama_id, lo.face_pic_id, lo.face_match_id,
+    lo.process_time
   </sql>
   <sql id="LockInfo_Have_Alias_List">
     li.lock_id li_lock_id, li.lock_code li_lock_code, li.status li_status,
@@ -203,6 +215,33 @@
       <if test="lockProcess.userName != null">
         and lo.user_name = #{lockProcess.userName}
       </if>
+      <if test="lockProcess.gender != null">
+        and lo.gender = #{lockProcess.gender}
+      </if>
+      <if test="lockProcess.birthday != null">
+        and lo.birthday = #{lockProcess.birthday}
+      </if>
+      <if test="lockProcess.province != null">
+        and lo.province = #{lockProcess.province}
+      </if>
+      <if test="lockProcess.city != null">
+        and lo.city = #{lockProcess.city}
+      </if>
+      <if test="lockProcess.cardType != null">
+        and lo.card_type = #{lockProcess.cardType}
+      </if>
+      <if test="lockProcess.cardId != null">
+        and lo.card_id = #{lockProcess.cardId}
+      </if>
+      <if test="lockProcess.faceMatchRate != null">
+        and lo.face_match_rate = #{lockProcess.faceMatchRate}
+      </if>
+      <if test="lockProcess.faceLibName != null">
+        and lo.face_lib_name = #{lockProcess.faceLibName}
+      </if>
+      <if test="lockProcess.faceLibType != null">
+        and lo.face_lib_type = #{lockProcess.faceLibType}
+      </if>
       <if test="lockProcess.processType != null">
         and lo.process_type = #{lockProcess.processType}
       </if>
@@ -242,6 +281,33 @@
         </if>
         <if test="userName != null">
           user_name,
+        </if>
+        <if test="gender != null">
+          gender,
+        </if>
+        <if test="birthday != null">
+          birthday,
+        </if>
+        <if test="province != null">
+          province,
+        </if>
+        <if test="city != null">
+          city,
+        </if>
+        <if test="cardType != null">
+          and lo.card_type = #{lockProcess.cardType}
+        </if>
+        <if test="cardId != null">
+          card_id,
+        </if>
+        <if test="faceMatchRate != null">
+          face_match_rate,
+        </if>
+        <if test="faceLibName != null">
+          face_lib_name,
+        </if>
+        <if test="faceLibType != null">
+          face_lib_type,
         </if>
         <if test="processType != null">
           process_type,
@@ -283,6 +349,33 @@
         </if>
         <if test="userName != null">
           #{userName},
+        </if>
+        <if test="gender != null">
+          #{gender},
+        </if>
+        <if test="birthday != null">
+          #{birthday},
+        </if>
+        <if test="province != null">
+          #{province},
+        </if>
+        <if test="city != null">
+          #{city},
+        </if>
+        <if test="cardType != null">
+          #{cardType},
+        </if>
+        <if test="cardId != null">
+          #{cardId},
+        </if>
+        <if test="faceMatchRate != null">
+          #{faceMatchRate},
+        </if>
+        <if test="faceLibName != null">
+          #{faceLibName},
+        </if>
+        <if test="faceLibType != null">
+          #{faceLibType},
         </if>
         <if test="processType != null">
           #{processType},
@@ -328,6 +421,33 @@
         </if>
         <if test="userName != null">
           user_name = #{userName},
+        </if>
+        <if test="gender != null">
+          gender = #{gender},
+        </if>
+        <if test="birthday != null">
+          birthday = #{birthday},
+        </if>
+        <if test="province != null">
+          province = #{province},
+        </if>
+        <if test="city != null">
+          city = #{city},
+        </if>
+        <if test="cardType != null">
+          card_type = #{cardType},
+        </if>
+        <if test="cardId != null">
+          card_id = #{cardId},
+        </if>
+        <if test="faceMatchRate != null">
+          face_match_rate = #{faceMatchRate},
+        </if>
+        <if test="faceLibName != null">
+          face_lib_name = #{faceLibName},
+        </if>
+        <if test="faceLibType != null">
+          face_lib_type = #{faceLibType},
         </if>
         <if test="processType != null">
           process_type = #{processType},

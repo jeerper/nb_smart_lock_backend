@@ -29,6 +29,24 @@ public class LockProcess {
     private String userId;
     @TableField(value = "user_name")
     private String userName;
+    @TableField(value = "gender")
+    private Integer gender;
+    @TableField(value = "birthday")
+    private Date birthday;
+    @TableField(value = "province")
+    private String province;
+    @TableField(value = "city")
+    private String city;
+    @TableField(value = "card_type")
+    private Integer cardType;
+    @TableField(value = "card_id")
+    private String cardId;
+    @TableField(value = "face_match_rate")
+    private Float faceMatchRate;
+    @TableField(value = "face_lib_name")
+    private String faceLibName;
+    @TableField(value = "face_lib_type")
+    private Integer faceLibType;
 
     //1：开锁，2：关锁
     @TableField(value = "process_type")
@@ -49,9 +67,6 @@ public class LockProcess {
     private FileInfo facePic;
     @TableField(exist = false)
     private FileInfo faceMatch;
-
-    @TableField(value = "face_match_rate")
-    private float faceMatchRate;
 
     @TableField(value = "process_time")
     private Date processTime;
