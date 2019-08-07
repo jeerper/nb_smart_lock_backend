@@ -33,7 +33,7 @@ public class LockRecordServiceImplTest {
         FileInfo facePic = new FileInfo(facePicId,"17n","17p","17d");
         FileInfo faceMatch = new FileInfo(faceMatchId,"18n","18p","18d");
         String processId = "pid03";
-        LockProcess lockProcess = new LockProcess(null,"devip03","lc05",null,"user01","un01",1,"fail","匹配度过低",
+        LockProcess lockProcess = new LockProcess(null,"devip03","lid05","NB100002",null,"user01","un01",1,"fail","匹配度过低",
                 facePanoramaId,facePicId,faceMatchId,facePanorama,facePic,faceMatch,0.9f,dateFormat.parse("2019-7-27 08:00:00"));
 
         lockRecordService.insertLockProcess(lockProcess);
@@ -56,10 +56,14 @@ public class LockRecordServiceImplTest {
 
     @Test
     public void selectLockProcessById() {
+        LockProcess lockProcess = lockRecordService.selectLockProcessById("1158360850495442945");
+        System.out.println(lockProcess);
     }
 
     @Test
     public void selectLockProcessByLockCode() {
+        List<LockProcess> lockProcesses = lockRecordService.selectLockProcessByLockCode("NB100002", null);
+        System.out.println(lockProcesses);
     }
 
     @Test
@@ -68,6 +72,8 @@ public class LockRecordServiceImplTest {
 
     @Test
     public void selectLockProcessByDeviceIp() {
+        List<LockProcess> lockProcesses = lockRecordService.selectLockProcessByDeviceIp("192.168.141.141", null);
+        System.out.println(lockProcesses);
     }
 
     @Test

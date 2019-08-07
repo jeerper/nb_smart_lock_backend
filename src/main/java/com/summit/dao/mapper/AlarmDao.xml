@@ -11,6 +11,7 @@
     <association property="lockProRecord" javaType="com.summit.dao.entity.LockProcess">
       <result column="lopid" jdbcType="VARCHAR" property="processId" />
       <result column="device_ip" jdbcType="VARCHAR" property="deviceIp" />
+      <result column="lock_id" jdbcType="VARCHAR" property="lockId" />
       <result column="lock_code" jdbcType="VARCHAR" property="lockCode" />
       <result column="user_id" jdbcType="VARCHAR" property="userId" />
       <result column="user_name" jdbcType="VARCHAR" property="userName" />
@@ -47,11 +48,11 @@
     al.alarm_id, al.alarm_name, al.process_id, al.alarm_time, al.alarm_status
   </sql>
   <sql id="Lock_Have_Alias_List">
-    lo.process_id lopid, lo.device_ip, lo.lock_code, lo.user_id, lo.user_name, lo.process_type, lo.process_result,
+    lo.process_id lopid, lo.device_ip, lo.lock_id, lo.lock_code, lo.user_id, lo.user_name, lo.process_type, lo.process_result,
     lo.fail_reason, lo.face_panorama_id, lo.face_pic_id, lo.face_match_id, lo.process_time
   </sql>
   <sql id="Auth_Have_Alias_List">
-    au.id, au.role_id, au.lock_id, au.lock_code
+    au.id au_id, au.role_id au_role_id, au.lock_id au_lock_id, au.lock_code au_lock_code
   </sql>
   <sql id="Auth_No_Alias_List">
     au.id , au.role_id , au.lock_id , au.lock_code
@@ -74,7 +75,7 @@
         #{role}
       </foreach>
     </where>
-    ) au on (<!--lo.lock_id = au.lock_id and -->lo.lock_code = au.lock_code)
+    ) au on (lo.lock_id = au.lock_id and lo.lock_code = au.lock_code)
     ) al
     left join lock_process lo on al.process_id=lo.process_id
     left join file_info fi1 on lo.face_panorama_id=fi1.file_id
@@ -130,7 +131,7 @@
             #{role}
           </foreach>
         </where>
-      ) au on (<!--lo.lock_id = au.lock_id and -->lo.lock_code = au.lock_code)
+      ) au on (lo.lock_id = au.lock_id and lo.lock_code = au.lock_code)
       <if test="page != null and page.current != null and  page.pageSize != null ">
         limit #{page.current},#{page.pageSize}
       </if>

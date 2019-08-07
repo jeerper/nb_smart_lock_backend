@@ -8,7 +8,7 @@
     <result column="status" jdbcType="INTEGER" property="status" />
   </resultMap>
   <sql id="Base_Column_List">
-    dev_id, device_ip, lock_code, status
+    dev_id, device_ip, lock_id, lock_code, status
   </sql>
   <select id="selectDeviceById" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
@@ -29,6 +29,9 @@
       </if>
       <if test="cameraDevice.deviceIp != null">
         and device_ip = #{cameraDevice.deviceIp}
+      </if>
+      <if test="cameraDevice.lockId != null">
+        and lock_id = #{cameraDevice.lockId}
       </if>
       <if test="cameraDevice.lockCode != null">
         and lock_code = #{cameraDevice.lockCode}

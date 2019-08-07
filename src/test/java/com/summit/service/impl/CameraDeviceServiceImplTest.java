@@ -20,7 +20,7 @@ public class CameraDeviceServiceImplTest {
     Page page = new Page(1, 3);
     @Test
     public void insertDevice() {
-        CameraDevice cameraDevice = new CameraDevice("did02","devip02","lc04",1);
+        CameraDevice cameraDevice = new CameraDevice("did02","devip02","lid04","lc04",1);
 
         cameraDeviceService.insertDevice(cameraDevice);
 
@@ -52,7 +52,7 @@ public class CameraDeviceServiceImplTest {
 
     @Test
     public void selectDeviceByIpAddress() {
-        CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress("devip01");
+        CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress("192.168.141.141");
         System.out.println(cameraDevice);
     }
 

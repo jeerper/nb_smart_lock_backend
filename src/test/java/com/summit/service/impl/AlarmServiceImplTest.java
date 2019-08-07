@@ -59,7 +59,7 @@ public class AlarmServiceImplTest {
 
     @Test
     public void selectAlarmById() {
-        Alarm alarm = alarmService.selectAlarmById("1alarm");
+        Alarm alarm = alarmService.selectAlarmById("1158360061051932674");
         System.out.println(alarm);
     }
 
@@ -73,6 +73,8 @@ public class AlarmServiceImplTest {
 
     @Test
     public void selectAlarmByStatus() {
+        List<Alarm> alarms = alarmService.selectAlarmByStatus(1, null);
+        System.out.println(alarms);
     }
 
     @Test

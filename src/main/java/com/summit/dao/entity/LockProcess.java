@@ -17,6 +17,8 @@ public class LockProcess {
     private String processId;
     @TableField(value = "device_ip")
     private String deviceIp;
+    @TableField(value = "lock_id")
+    private String lockId;
     @TableField(value = "lock_code")
     private String lockCode;
 
