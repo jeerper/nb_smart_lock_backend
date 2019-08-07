@@ -164,6 +164,7 @@
     <where>
       lo.lock_code=#{lockCode}
     </where>
+    order by process_time desc
   </select>
 
   <select id="selectCondition"  resultMap="BaseResultMap">
