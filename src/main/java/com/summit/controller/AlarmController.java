@@ -87,8 +87,8 @@ public class AlarmController {
     @ApiOperation(value = "更新锁告警状态", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间取当前时间")
     @PutMapping(value = "/updateAlarmStatus")
         public RestfulEntityBySummit<String> updateAlarmStatus(@ApiParam(value = "锁告警状态", required = true) @RequestParam("alarmStatus") Integer alarmStatus,
-                                                           @ApiParam(value = "锁告警状态") @RequestParam("alarmId") String alarmId,
-                                                           @ApiParam(value = "锁告警状态") @RequestParam("processId") String processId) {
+                                                           @ApiParam(value = "锁告警状态") @RequestParam(value = "alarmId",required = false) String alarmId,
+                                                           @ApiParam(value = "锁告警状态") @RequestParam(value = "processId",required = false) String processId) {
         if(alarmStatus == null){
             log.error("锁告警状态为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"锁告警状态为空",null);
@@ -98,8 +98,11 @@ public class AlarmController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"alarmId和processId不能同时为空",null);
         }
         Alarm alarm = new Alarm();
-        alarm.setAlarmId(alarmId);
-        alarm.setProcessId(processId);
+        if(alarmId != null){
+            alarm.setAlarmId(alarmId);
+        }else{
+            alarm.setProcessId(processId);
+        }
         alarm.setAlarmStatus(alarmStatus);
         alarm.setAlarmTime(new Date());
         int result = alarmService.updateAlarm(alarm);
