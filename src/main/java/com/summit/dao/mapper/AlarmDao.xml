@@ -175,26 +175,26 @@
     </where>
   </select>
 
-    <select id="selectAlarmCountByStatus"  resultType="java.lang.Integer">
-        select  count(alarm_id)
-        from (
-            select al.alarm_id, al.alarm_status from alarm al
-            left join lock_process lo on al.process_id=lo.process_id
-            inner join (
-            select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
-            <where>
-                au.role_id in
-                <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
-                    #{role}
-                </foreach>
-            </where>
-            ) au on (lo.lock_id = au.lock_id or lo.lock_code = au.lock_code)
-        ) al
-
+  <select id="selectAlarmCountByStatus"  resultType="java.lang.Integer">
+    select  count(alarm_id)
+    from (
+        select al.alarm_id, al.alarm_status from alarm al
+        left join lock_process lo on al.process_id=lo.process_id
+        inner join (
+        select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
         <where>
-            al.alarm_status=#{alarmStatus}
+            au.role_id in
+            <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+                #{role}
+            </foreach>
         </where>
-    </select>
+        ) au on (lo.lock_id = au.lock_id or lo.lock_code = au.lock_code)
+    ) al
+
+    <where>
+        al.alarm_status=#{alarmStatus}
+    </where>
+  </select>
 
 
   <select id="selectCondition" resultMap="BaseResultMap">
