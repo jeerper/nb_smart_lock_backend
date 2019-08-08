@@ -67,7 +67,7 @@ public class AlarmController {
 
     @ApiOperation(value = "更新锁告警信息", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间若为空则取当前时间")
     @PutMapping(value = "/updateAlarm")
-    public RestfulEntityBySummit<String> updateAlarm(@ApiParam(value = "锁告警id", required = true) @RequestBody Alarm alarm) {
+    public RestfulEntityBySummit<String> updateAlarm(@ApiParam(value = "锁告警各字段", required = true) @RequestBody Alarm alarm) {
         if(alarm == null){
             log.error("告警信息为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警信息为空",null);
@@ -83,6 +83,33 @@ public class AlarmController {
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新告警信息成功",null);
     }
+
+    @ApiOperation(value = "更新锁告警状态", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间取当前时间")
+    @PutMapping(value = "/updateAlarmStatus")
+        public RestfulEntityBySummit<String> updateAlarmStatus(@ApiParam(value = "锁告警状态", required = true) @RequestParam("alarmStatus") Integer alarmStatus,
+                                                           @ApiParam(value = "锁告警状态") @RequestParam("alarmId") String alarmId,
+                                                           @ApiParam(value = "锁告警状态") @RequestParam("processId") String processId) {
+        if(alarmStatus == null){
+            log.error("锁告警状态为空");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"锁告警状态为空",null);
+        }
+        if(alarmId == null && processId == null){
+            log.error("alarmId和processId不能同时为空");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"alarmId和processId不能同时为空",null);
+        }
+        Alarm alarm = new Alarm();
+        alarm.setAlarmId(alarmId);
+        alarm.setProcessId(processId);
+        alarm.setAlarmStatus(alarmStatus);
+        alarm.setAlarmTime(new Date());
+        int result = alarmService.updateAlarm(alarm);
+        if(result == UPDATE_ERROR){
+            log.error("更新告警状态失败");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"更新告警状态失败",null);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新告警状态成功",null);
+    }
+
 
     @ApiOperation(value = "用告警id删除锁告警信息", notes = "alarmId和processId不能为空，时间若为空则取当前时间")
     @DeleteMapping(value = "/delLockAlarmById")
