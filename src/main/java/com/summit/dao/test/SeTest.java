@@ -17,6 +17,16 @@ public class SeTest {
         System.out.println(obj);
     }
     @Test
+    public void test4(){
+        Object obj = null;
+        bbb(obj);
+
+        System.out.println(obj);
+    }
+    void bbb(Object obj){
+        obj = new Object();
+    }
+    @Test
     public void test3(){
         String[] strs = {"1", "3", "5", "4"};
         List<String> ints = Arrays.asList(strs);

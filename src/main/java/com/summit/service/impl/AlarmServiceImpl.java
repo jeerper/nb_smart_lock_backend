@@ -74,13 +74,10 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     @Override
-    public List<Alarm> selectAll(Page page) {
+    public List<Alarm> selectAll(Date start, Date end, Page page) {
         PageConverter.convertPage(page);
         List<String> roles = LockAuthCtrl.getRoles();
-        List<Alarm> alarms = alarmDao.selectCondition(new Alarm(), null, null, page,roles);
-
-        LockAuthCtrl.toFilterAlarms(alarms);
-        return alarms;
+        return alarmDao.selectCondition(new Alarm(), start, end, page,roles);
     }
 
 
@@ -109,9 +106,7 @@ public class AlarmServiceImpl implements AlarmService {
         Alarm alarm = new Alarm();
         alarm.setAlarmName(alarmName);
         List<String> roles = LockAuthCtrl.getRoles();
-        List<Alarm> alarms = alarmDao.selectCondition(alarm, start, end, page, roles);
-        LockAuthCtrl.toFilterAlarms(alarms);
-        return alarms;
+        return alarmDao.selectCondition(alarm, start, end, page, roles);
     }
 
     @Override
@@ -133,9 +128,7 @@ public class AlarmServiceImpl implements AlarmService {
         Alarm alarm = new Alarm();
         alarm.setAlarmStatus(alarmStatus);
         List<String> roles = LockAuthCtrl.getRoles();
-        List<Alarm> alarms = alarmDao.selectCondition(alarm, start, end, page, roles);
-        LockAuthCtrl.toFilterAlarms(alarms);
-        return alarms;
+        return alarmDao.selectCondition(alarm, start, end, page, roles);
     }
 
     @Override
@@ -171,7 +164,6 @@ public class AlarmServiceImpl implements AlarmService {
 
             alarms.add(alarmDao.selectByProcessId(lockProcess.getProcessId(), roles));
         }
-//        LockAuthCtrl.toFilterAlarms(alarms);
         return alarms;
     }
 
@@ -199,7 +191,6 @@ public class AlarmServiceImpl implements AlarmService {
         for (LockProcess lockProcess: lockProcesses) {
             alarms.add(alarmDao.selectByProcessId(lockProcess.getProcessId(), roles));
         }
-//        LockAuthCtrl.toFilterAlarms(alarms);
         return alarms;
     }
 
@@ -232,7 +223,6 @@ public class AlarmServiceImpl implements AlarmService {
         for (LockProcess lockProcess: lockProcesses) {
             alarms.add(alarmDao.selectByProcessId(lockProcess.getProcessId(), roles));
         }
-//        LockAuthCtrl.toFilterAlarms(alarms);
         return alarms;
     }
 
@@ -253,9 +243,7 @@ public class AlarmServiceImpl implements AlarmService {
         }
         PageConverter.convertPage(page);
         List<String> roles = LockAuthCtrl.getRoles();
-        List<Alarm> alarms = alarmDao.selectCondition(alarm, start, end, page, roles);
-//        LockAuthCtrl.toFilterAlarms(alarms);
-        return alarms;
+        return alarmDao.selectCondition(alarm, start, end, page, roles);
     }
 
     @Override

@@ -57,12 +57,6 @@ public class LockInfoController {
 
         List<LockInfo> lockInfos = null;
         try {
-            if(current == null && pageSize == null){
-                lockInfos = lockInfoService.selectAll(null);
-
-                lockInfos = lockInfoService.selectAll(null);
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询锁操作记录成功", lockInfos);
-            }
             lockInfos = lockInfoService.selectAll(new Page(current,pageSize));
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询锁操作记录失败", lockInfos);

@@ -16,7 +16,7 @@ public interface AlarmService {
 
     //###告警查询
     //查询所有
-    List<Alarm> selectAll(Page page);
+    List<Alarm> selectAll(Date start, Date end, Page page);
     //根据告警Id查询告警
     Alarm selectAlarmById(String alarmId);
     //根据告警name（或者说类型）查询，用selectCondition实现，可指定时间段

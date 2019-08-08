@@ -63,11 +63,7 @@ public class LockRealTimeInfoController {
         List<LockRealTimeInfo> lockRealTimeInfos;
         List<LockInfo> lockInfos;
         try {
-            if(current == null && pageSize == null){
-                lockInfos = lockInfoService.selectAll(null);
-            }else{
-                lockInfos = lockInfoService.selectAll(new Page(current,pageSize));
-            }
+            lockInfos = lockInfoService.selectAll(new Page(current,pageSize));
             lockRealTimeInfos = getLockRealTimeInfo(lockInfos);
             Integer integer = alarmService.selectAlarmCountByStatus(AlarmStatus.UNPROCESSED.getCode());
             int allAlarmCount = integer == null ? 0 : integer;

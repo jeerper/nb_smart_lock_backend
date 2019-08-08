@@ -90,7 +90,7 @@ public class TestDao {
 
     @Test
     public void testFilterAlarm(){
-        List<Alarm> alarms = alarmService.selectAll(null);
+        List<Alarm> alarms = alarmService.selectAll(null,null,null);
         System.out.println(alarms);
         LockAuthCtrl.toFilterAlarms(alarms);
 
