@@ -19,4 +19,7 @@ public interface AlarmDao  extends BaseMapper<Alarm> {
                                 @Param("end") Date end,
                                 @Param("page") Page page,
                                 @Param("roles") List<String> roles);
+
+    Integer selectAlarmCountByStatus(@Param("alarmStatus") Integer alarmStatus, @Param("roles") List<String> roles);
+
 }

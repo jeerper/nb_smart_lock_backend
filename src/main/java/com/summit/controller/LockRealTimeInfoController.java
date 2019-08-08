@@ -10,6 +10,7 @@ import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.LockProcess;
 import com.summit.dao.entity.Page;
 import com.summit.entity.LockRealTimeInfo;
+import com.summit.sdk.huawei.model.AlarmStatus;
 import com.summit.service.AlarmService;
 import com.summit.service.FaceInfoService;
 import com.summit.service.LockInfoService;
@@ -59,7 +60,7 @@ public class LockRealTimeInfoController {
     public RestfulEntityBySummit<Map<String,Object>> selectAllLockRealTimeInfo(@ApiParam(value = "当前页，大于等于1")  @RequestParam("current") Integer current,
                                                            @ApiParam(value = "每页条数，大于等于1")  @RequestParam("pageSize") Integer pageSize) {
         Map<String,Object> data = new HashMap<>();
-        List<LockRealTimeInfo> lockRealTimeInfos = new ArrayList<>();
+        List<LockRealTimeInfo> lockRealTimeInfos;
         List<LockInfo> lockInfos;
         try {
             if(current == null && pageSize == null){
@@ -68,10 +69,8 @@ public class LockRealTimeInfoController {
                 lockInfos = lockInfoService.selectAll(new Page(current,pageSize));
             }
             lockRealTimeInfos = getLockRealTimeInfo(lockInfos);
-            List<Alarm> alarmList = alarmService.selectAlarmByStatus(1,null);
-            int allAlarmCount = 0;
-            if(alarmList != null)
-                allAlarmCount = alarmList.size();
+            Integer integer = alarmService.selectAlarmCountByStatus(AlarmStatus.UNPROCESSED.getCode());
+            int allAlarmCount = integer == null ? 0 : integer;
             data.put("allAlarmCount",allAlarmCount);
             data.put("lockRealTimeInfos",lockRealTimeInfos);
         } catch (Exception e) {
@@ -99,25 +98,6 @@ public class LockRealTimeInfoController {
                 if(lockProcesses == null || lockProcesses.isEmpty()){
                     continue;
                 }
-                /*
-                //改为在sql中排序
-                Collections.sort(lockProcesses, new Comparator<LockProcess>() {
-                    @Override
-                    public int compare(LockProcess lockProcessOne, LockProcess lockProcessTwo) {
-                        Date processOneTime = lockProcessOne.getProcessTime();
-                        Date processTwoTime = lockProcessTwo.getProcessTime();
-                        if(processOneTime != null  && processTwoTime != null){
-                            if(processOneTime.getTime() < processTwoTime.getTime()){
-                                return 1;
-                            }else if(processOneTime.getTime() == processTwoTime.getTime()){
-                                return 0;
-                            }else {
-                                return -1;
-                            }
-                        }
-                        return 0;
-                    }
-                });*/
                 //取最新的一条操作记录
                 LockProcess lockProcess = lockProcesses.get(0);
                 lockRealTimeInfo.setLockId(lock.getLockId());

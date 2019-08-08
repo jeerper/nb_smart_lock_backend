@@ -17,6 +17,7 @@ import com.summit.service.AlarmService;
 import com.summit.service.LockInfoService;
 import com.summit.service.LockRecordService;
 import com.summit.util.LockAuthCtrl;
+import io.swagger.models.auth.In;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +95,13 @@ public class TestDao {
         LockAuthCtrl.toFilterAlarms(alarms);
 
         System.out.println(alarms);
+    }
+
+    @Test
+    public void testQueryAlarmCount(){
+        List<String> roles = LockAuthCtrl.getRoles();
+        Integer alarmCount = alarmDao.selectAlarmCountByStatus(1, roles);
+        System.out.println(alarmCount);
     }
 
     @Test

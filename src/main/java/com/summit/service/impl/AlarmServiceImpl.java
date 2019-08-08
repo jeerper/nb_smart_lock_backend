@@ -148,6 +148,16 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     @Override
+    public Integer selectAlarmCountByStatus(Integer alarmStatus) {
+        if(alarmStatus == null){
+            log.error("告警状态为空");
+            return null;
+        }
+        List<String> roles = LockAuthCtrl.getRoles();
+        return alarmDao.selectAlarmCountByStatus(alarmStatus,roles);
+    }
+
+    @Override
     public List<Alarm> selectAlarmByLockCode(String lockCode, Date start, Date end, Page page) {
         if(lockCode == null){
             log.error("锁编号为空");

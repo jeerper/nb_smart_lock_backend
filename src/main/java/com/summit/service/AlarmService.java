@@ -27,6 +27,8 @@ public interface AlarmService {
     List<Alarm> selectAlarmByStatus(Integer alarmStatus, Date start, Date end, Page page);
     //不带时间重载
     List<Alarm> selectAlarmByStatus(Integer alarmStatus, Page page);
+    //根据状态查询告警数量
+    Integer selectAlarmCountByStatus(Integer alarmStatus);
     //根据锁操作记录对应的锁编号查询告警，可指定时间段
     List<Alarm> selectAlarmByLockCode(String lockCode, Date start, Date end, Page page);
     //不带时间重载

@@ -62,6 +62,11 @@ public class AlarmServiceImplTest {
         Alarm alarm = alarmService.selectAlarmById("1158360061051932674");
         System.out.println(alarm);
     }
+    @Test
+    public void selectAlarmCountByStatus() {
+        Integer count = alarmService.selectAlarmCountByStatus(1);
+        System.out.println(count);
+    }
 
     @Test
     public void selectAlarmByName() {
