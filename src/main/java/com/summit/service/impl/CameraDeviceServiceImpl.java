@@ -23,6 +23,11 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
     @Autowired
     private LockInfoDao lockInfoDao;
 
+    /**
+     * 插入摄像头信息
+     * @param cameraDevice 设备对象
+     * @return 不为-1则为成功
+     */
     @Override
     public int insertDevice(CameraDevice cameraDevice) {
         if(cameraDevice == null){
@@ -36,6 +41,11 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
         return cameraDeviceDao.insert(cameraDevice);
     }
 
+    /**
+     * 更新摄像头信息
+     * @param cameraDevice 设备对象
+     * @return 不为-1则为成功
+     */
     @Override
     public int updateDevice(CameraDevice cameraDevice) {
         if(cameraDevice == null){
@@ -56,6 +66,11 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
         .or().eq("dev_id", devId));
     }
 
+    /**
+     * 根据设备id地址删除
+     * @param devId 设备id
+     * @return 不为-1则为成功
+     */
     @Override
     public int delDeviceByDevId(String devId) {
         if(devId == null){
@@ -66,6 +81,11 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
         return cameraDeviceDao.delete(wrapper.eq("dev_id", devId));
     }
 
+    /**
+     * 根据设备ip地址删除
+     * @param deviceIp 设备ip地址
+     * @return 不为-1则为成功
+     */
     @Override
     public int delDeviceByIpAddress(String deviceIp) {
         if(deviceIp == null){
@@ -76,6 +96,11 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
         return cameraDeviceDao.delete(wrapper.eq("device_ip", deviceIp));
     }
 
+    /**
+     * 根据摄像头设备id查询唯一确定设备
+     * @param devId 设备id
+     * @return 设备对象
+     */
     @Override
     public CameraDevice selectDeviceById(String devId) {
         if(devId == null){
@@ -85,6 +110,11 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
         return cameraDeviceDao.selectDeviceById(devId);
     }
 
+    /**
+     * 根据摄像头设备ip地址查询唯一确定设备
+     * @param deviceIp 设备ip地址
+     * @return 设备对象
+     */
     @Override
     public CameraDevice selectDeviceByIpAddress(String deviceIp) {
         if(deviceIp == null){
@@ -101,6 +131,12 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
         return devices.get(0);
     }
 
+    /**
+     * 根据锁编号查询多个设备
+     * @param lockCode 锁编号
+     * @param page 分页对象
+     * @return 设备列表
+     */
     @Override
     public List<CameraDevice> selectDeviceByLockCode(String lockCode, Page page) {
         if(lockCode == null){
@@ -113,6 +149,12 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
         return cameraDeviceDao.selectCondition(cameraDevice, page);
     }
 
+    /**
+     * 条件查询多个设备
+     * @param cameraDevice 设备对象
+     * @param page 分页对象
+     * @return 设备列表
+     */
     @Override
     public List<CameraDevice> selectCondition(CameraDevice cameraDevice, Page page) {
         PageConverter.convertPage(page);
@@ -123,6 +165,11 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
         return cameraDeviceDao.selectCondition(cameraDevice, page);
     }
 
+    /**
+     * 分页查询所有设备
+     * @param page 分页对象
+     * @return 设备列表
+     */
     @Override
     public List<CameraDevice> selectAll(Page page) {
         PageConverter.convertPage(page);

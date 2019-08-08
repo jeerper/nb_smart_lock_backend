@@ -22,6 +22,11 @@ public class LockInfoServiceImpl implements LockInfoService {
     @Autowired
     private LockInfoDao lockInfoDao;
 
+    /**
+     * 根据锁id查询唯一锁信息
+     * @param lockId 锁id
+     * @return 唯一锁信息对象
+     */
     @Override
     public LockInfo selectLockById(String lockId) {
         List<String> rolesList = LockAuthCtrl.getRoles();
@@ -32,7 +37,11 @@ public class LockInfoServiceImpl implements LockInfoService {
         return lockInfo;
     }
 
-
+    /**
+     * 根据锁编号查询唯一锁信息
+     * @param lockCode 锁编号
+     * @return 唯一锁信息对象
+     */
     @Override
     public LockInfo selectBylockCode(String lockCode) {
         List<String> rolesList = LockAuthCtrl.getRoles();
@@ -43,6 +52,11 @@ public class LockInfoServiceImpl implements LockInfoService {
         return lockInfo;
     }
 
+    /**
+     * 分页查询全部锁信息
+     * @param page 分页对象
+     * @return 锁信息列表
+     */
     @Override
     public List<LockInfo> selectAll(Page page) {
         List<String> rolesList = LockAuthCtrl.getRoles();
@@ -53,6 +67,11 @@ public class LockInfoServiceImpl implements LockInfoService {
         return lockInfos;
     }
 
+    /**
+     * 分页查询全部有操作记录的锁信息
+     * @param page 分页对象
+     * @return 锁信息列表
+     */
     @Override
     public List<LockInfo> selectAllHaveHistory(Page page) {
         List<String> rolesList = LockAuthCtrl.getRoles();
@@ -62,7 +81,12 @@ public class LockInfoServiceImpl implements LockInfoService {
         return lockInfos;
     }
 
-
+    /**
+     * 条件查询锁信息
+     * @param lockInfo 锁信息对象
+     * @param page 分页对象
+     * @return 锁信息列表
+     */
     @Override
     public List<LockInfo> selectCondition(LockInfo lockInfo, Page page) {
         if(lockInfo == null){
@@ -76,6 +100,11 @@ public class LockInfoServiceImpl implements LockInfoService {
         return lockInfos;
     }
 
+    /**
+     * 插入锁信息
+     * @param lockInfo 锁信息对象
+     * @return 返回不为-1则为成功
+     */
     @Override
     public int insertLock(LockInfo lockInfo) {
         if(lockInfo == null){
@@ -85,6 +114,11 @@ public class LockInfoServiceImpl implements LockInfoService {
         return lockInfoDao.insert(lockInfo);
     }
 
+    /**
+     * 更新锁信息
+     * @param lockInfo 锁信息对象
+     * @return 返回不为-1则为成功
+     */
     @Override
     public int updateLock(LockInfo lockInfo) {
         if(lockInfo == null){
@@ -102,6 +136,11 @@ public class LockInfoServiceImpl implements LockInfoService {
                 .or().eq("lock_code", lockCode));
     }
 
+    /**
+     * 根据id删除锁信息
+     * @param lockId 锁id
+     * @return 返回不为-1则为成功
+     */
     @Override
     public int delLockByLockId(String lockId) {
         if(lockId == null){
@@ -112,6 +151,11 @@ public class LockInfoServiceImpl implements LockInfoService {
         return lockInfoDao.delete(wrapper.eq("lock_id", lockId));
     }
 
+    /**
+     * 根据锁编号删除锁信息
+     * @param lockCode 锁编号
+     * @return 返回不为-1则为成功
+     */
     @Override
     public int delLockByLockCod(String lockCode) {
         if(lockCode == null){

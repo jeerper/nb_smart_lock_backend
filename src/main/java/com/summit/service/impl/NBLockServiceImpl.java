@@ -23,6 +23,11 @@ public class NBLockServiceImpl {
     @Autowired
     private HttpClient httpClient;
 
+    /**
+     * 开锁操作
+     * @param lockRequest 开锁请求信息对象
+     * @return RestfulEntityBySummit对象
+     */
     public RestfulEntityBySummit toUnLock(LockRequest lockRequest) {
         if(lockRequest == null || lockRequest.getTerminalNum() == null
                 || lockRequest.getOperName() == null){
@@ -71,7 +76,11 @@ public class NBLockServiceImpl {
         return ResultBuilder.buildError(resultCode[0] ,backLockInfos[0]);
     }
 
-
+    /**
+     * 查询锁状态
+     * @param lockRequest 开锁请求信息对象
+     * @return RestfulEntityBySummit对象
+     */
     public RestfulEntityBySummit toQueryLockStatus(LockRequest lockRequest) {
         if(lockRequest == null || lockRequest.getTerminalNum() == null
                 || lockRequest.getOperName() == null){
@@ -120,7 +129,11 @@ public class NBLockServiceImpl {
         return ResultBuilder.buildError(resultCode[0] , queryBackLockInfo[0]);
     }
 
-
+    /**
+     * 查询平安报信息
+     * @param reportParam 平安报请求信息对象
+     * @return RestfulEntityBySummit对象
+     */
     public RestfulEntityBySummit toSafeReport(ReportParam reportParam) {
         if(reportParam == null || reportParam.getTerminalNum() == null
                 || reportParam.getStartTime() == null || reportParam.getEndTime() == null){
