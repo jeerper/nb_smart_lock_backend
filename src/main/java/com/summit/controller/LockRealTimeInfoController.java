@@ -63,7 +63,8 @@ public class LockRealTimeInfoController {
         List<LockRealTimeInfo> lockRealTimeInfos;
         List<LockInfo> lockInfos;
         try {
-            lockInfos = lockInfoService.selectAll(new Page(current,pageSize));
+            //查出有操作记录的锁并再分页
+            lockInfos = lockInfoService.selectAllHaveHistory(new Page(current,pageSize));
             lockRealTimeInfos = getLockRealTimeInfo(lockInfos);
             Integer integer = alarmService.selectAlarmCountByStatus(AlarmStatus.UNPROCESSED.getCode());
             int allAlarmCount = integer == null ? 0 : integer;

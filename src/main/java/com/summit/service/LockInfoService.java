@@ -13,6 +13,8 @@ public interface LockInfoService {
 
     List<LockInfo> selectAll(Page page);
 
+    List<LockInfo> selectAllHaveHistory(Page page);
+
     List<LockInfo> selectCondition(LockInfo lockInfo, Page page);
 
     int insertLock(LockInfo lockInfo);

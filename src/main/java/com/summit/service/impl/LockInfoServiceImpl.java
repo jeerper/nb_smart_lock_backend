@@ -53,6 +53,15 @@ public class LockInfoServiceImpl implements LockInfoService {
         return lockInfos;
     }
 
+    @Override
+    public List<LockInfo> selectAllHaveHistory(Page page) {
+        List<String> rolesList = LockAuthCtrl.getRoles();
+        PageConverter.convertPage(page);
+        List<LockInfo> lockInfos = lockInfoDao.selectAllHaveHistory(page, rolesList);
+
+        return lockInfos;
+    }
+
 
     @Override
     public List<LockInfo> selectCondition(LockInfo lockInfo, Page page) {
