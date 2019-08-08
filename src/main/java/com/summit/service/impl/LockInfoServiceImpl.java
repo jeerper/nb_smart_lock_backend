@@ -30,11 +30,7 @@ public class LockInfoServiceImpl implements LockInfoService {
     @Override
     public LockInfo selectLockById(String lockId) {
         List<String> rolesList = LockAuthCtrl.getRoles();
-        LockInfo lockInfo = lockInfoDao.selectLockById(lockId, rolesList);
-        if(!LockAuthCtrl.toFilter(lockInfo)){
-            return null;
-        }
-        return lockInfo;
+        return lockInfoDao.selectLockById(lockId, rolesList);
     }
 
     /**
@@ -45,11 +41,7 @@ public class LockInfoServiceImpl implements LockInfoService {
     @Override
     public LockInfo selectBylockCode(String lockCode) {
         List<String> rolesList = LockAuthCtrl.getRoles();
-        LockInfo lockInfo = lockInfoDao.selectBylockCode(lockCode, rolesList);
-        if(!LockAuthCtrl.toFilter(lockInfo)){
-            return null;
-        }
-        return lockInfo;
+        return lockInfoDao.selectBylockCode(lockCode, rolesList);
     }
 
     /**
@@ -95,9 +87,7 @@ public class LockInfoServiceImpl implements LockInfoService {
         }
         List<String> rolesList = LockAuthCtrl.getRoles();
         PageConverter.convertPage(page);
-        List<LockInfo> lockInfos = lockInfoDao.selectCondition(lockInfo, page,rolesList);
-        LockAuthCtrl.toFilterLocks(lockInfos);
-        return lockInfos;
+        return lockInfoDao.selectCondition(lockInfo, page,rolesList);
     }
 
     /**

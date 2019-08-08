@@ -114,11 +114,7 @@ public class AlarmServiceImpl implements AlarmService {
             return null;
         }
         List<String> roles = LockAuthCtrl.getRoles();
-        Alarm alarm = alarmDao.selectAlarmById(alarmId, roles);
-        if(!LockAuthCtrl.toFilter(alarm)){
-            return null;
-        }
-        return alarm;
+        return alarmDao.selectAlarmById(alarmId, roles);
     }
 
     /**

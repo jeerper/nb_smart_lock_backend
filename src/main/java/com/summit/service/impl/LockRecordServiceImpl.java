@@ -153,9 +153,6 @@ public class LockRecordServiceImpl implements LockRecordService {
         }
         List<String> roles = LockAuthCtrl.getRoles();
         LockProcess lockProcess = lockProcessDao.selectLockProcessById(processId, roles);
-        if(!LockAuthCtrl.toFilter(lockProcess)){
-            return null;
-        }
         return lockProcess;
     }
 
