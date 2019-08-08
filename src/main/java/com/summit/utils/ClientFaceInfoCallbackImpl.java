@@ -189,6 +189,11 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
 
     }
 
+    /**
+     * 根据锁操作记录信息组装告警信息入库信息对象
+     * @param lockProcess 锁操作记录对象
+     * @return 锁告警对象
+     */
     private Alarm getAlarm(LockProcess lockProcess) {
         Alarm alarm = new Alarm();
         alarm.setProcessId(lockProcess.getProcessId());
@@ -197,6 +202,16 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
         return alarm;
     }
 
+    /**
+     * 根据人脸识别结果信息及其他信息组装需要入库的锁操作信息
+     * @param faceInfo 识别的人脸信息
+     * @param type 人脸识别结果类型
+     * @param facePanoramaFile 人脸全景图对象
+     * @param facePicFile 人脸识别抠图对象
+     * @param processResult 锁操作结果返回码
+     * @param failReason 人脸识别或锁操作识别原因
+     * @return 组装好的锁操作记录信息对象
+     */
     private LockProcess getLockProcess(FaceInfo faceInfo, String type, FileInfo facePanoramaFile, FileInfo facePicFile, String processResult,String failReason) {
         LockProcess lockProcess = new LockProcess();
         String deviceIp = faceInfo.getDeviceIp();

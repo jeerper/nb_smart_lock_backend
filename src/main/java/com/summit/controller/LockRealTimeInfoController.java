@@ -81,8 +81,11 @@ public class LockRealTimeInfoController {
     }
 
 
-
-
+    /**
+     * 根据锁信息列表查询组装锁实时信息列表
+     * @param lockInfos 锁信息列表
+     * @return 锁实时信息列表
+     */
     private List<LockRealTimeInfo> getLockRealTimeInfo(List<LockInfo> lockInfos) {
         List<LockRealTimeInfo> lockRealTimeInfos = new ArrayList<>();
         for (LockInfo lock : lockInfos){
