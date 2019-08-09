@@ -50,10 +50,8 @@ public class LockInfoController {
 
     @ApiOperation(value = "查询全部锁信息", notes = "分页参数为空则查全部，不合法则取第一条")
     @GetMapping(value = "/selectAllLockInfo")
-    public RestfulEntityBySummit<List<LockInfo>> selectAllLockInfo(@ApiParam(value = "当前页，大于等于1")  @RequestParam("alarmName") Integer current,
-                                                                           @ApiParam(value = "每页条数，大于等于1")  @RequestParam("alarmName") Integer pageSize) {
-
-
+    public RestfulEntityBySummit<List<LockInfo>> selectAllLockInfo(@ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "alarmName", required = false) Integer current,
+                                                                   @ApiParam(value = "每页条数，大于等于1")  @RequestParam(value = "alarmName", required = false) Integer pageSize) {
 
         List<LockInfo> lockInfos = null;
         try {
@@ -62,7 +60,7 @@ public class LockInfoController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询锁操作记录失败", lockInfos);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询锁操作记录成功", lockInfos);
-
     }
+
 
 }

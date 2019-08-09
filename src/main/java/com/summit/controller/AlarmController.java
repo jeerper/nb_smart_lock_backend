@@ -9,6 +9,7 @@ import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.LockProcess;
 import com.summit.dao.entity.Page;
 import com.summit.service.AlarmService;
+import com.summit.util.CommonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -38,16 +39,6 @@ public class AlarmController {
 
     @Autowired
     private AlarmService alarmService;
-
-    /**
-     * 开始时间标志
-     */
-    private static final String STARTTIMEMARK = "s";
-
-    /**
-     * 结束时间标志
-     */
-    private static final String ENDTIMEMARK = "e";
 
     /**
      * 增删改操作异常
@@ -147,8 +138,8 @@ public class AlarmController {
                                                              @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current",required = false) Integer current,
                                                              @ApiParam(value = "每页条数，大于等于1")  @RequestParam(value = "pageSize",required = false) Integer pageSize) {
         List<Alarm> alarms = null;
-        Date start = parseStrToDate(startTime,STARTTIMEMARK);
-        Date end = parseStrToDate(endTime,ENDTIMEMARK);
+        Date start = CommonUtil.parseStrToDate(startTime,CommonUtil.STARTTIMEMARK);
+        Date end = CommonUtil.parseStrToDate(endTime,CommonUtil.ENDTIMEMARK);
         try {
             alarms = alarmService.selectAll(start,end,new Page(current,pageSize));
             filterInfo(alarms);
@@ -158,24 +149,7 @@ public class AlarmController {
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询告警信息成功", alarms);
     }
 
-    /**
-     * 过滤设备ip、锁关联的用户角色等敏感信息
-     * @param alarms
-     */
-    private void filterInfo(List<Alarm> alarms) {
-        for (Alarm al :alarms){
-            LockProcess lockProRecord = al.getLockProRecord();
-            if(lockProRecord != null){
-                LockInfo lockInfo = lockProRecord.getLockInfo();
-                if(lockInfo != null){
-                    lockInfo.setRoles(null);
-                    lockInfo.setDevices(null);
-                }
-            }
-        }
-    }
-
-    @ApiOperation(value = "根据告警status查询告警信息", notes = "alarmStatus不能为空，0已处理，1未处理，传其他值则无法查到记录。时间信息为空或不合法则无时间限制。分页参数为空则查全部，不合法则取第一条")
+    @ApiOperation(value = "根据告警状态查询告警信息", notes = "alarmStatus不能为空，0已处理，1未处理，传其他值则无法查到记录。时间信息为空或不合法则无时间限制。分页参数为空则查全部，不合法则取第一条")
     @GetMapping(value = "/queryAlarmByStatus")
     public RestfulEntityBySummit<List<Alarm>> queryAlarmByStatus(@ApiParam(value = "锁告警状态，0已处理，1未处理", required = true)  @RequestParam(value = "alarmStatus") Integer alarmStatus,
                                                                  @ApiParam(value = "起始时间")  @RequestParam(value = "startTime") String startTime,
@@ -187,8 +161,8 @@ public class AlarmController {
             return null;
         }
         List<Alarm> alarms = null;
-        Date start = parseStrToDate(startTime,STARTTIMEMARK);
-        Date end = parseStrToDate(endTime,ENDTIMEMARK);
+        Date start = CommonUtil.parseStrToDate(startTime,CommonUtil.STARTTIMEMARK);
+        Date end = CommonUtil.parseStrToDate(endTime,CommonUtil.ENDTIMEMARK);
         
         try {
             alarms = alarmService.selectAlarmByStatus(alarmStatus,start,end,new Page(current,pageSize));
@@ -247,8 +221,8 @@ public class AlarmController {
             log.error("告警名称为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警名称为空",null);
         }
-        Date start = parseStrToDate(startTime,STARTTIMEMARK);
-        Date end = parseStrToDate(endTime,ENDTIMEMARK);
+        Date start = CommonUtil.parseStrToDate(startTime,CommonUtil.STARTTIMEMARK);
+        Date end = CommonUtil.parseStrToDate(endTime,CommonUtil.ENDTIMEMARK);
 
         return null;
     }
@@ -265,8 +239,8 @@ public class AlarmController {
             log.error("锁编号为空");
             return null;
         }
-        Date start = parseStrToDate(startTime,STARTTIMEMARK);
-        Date end = parseStrToDate(endTime,ENDTIMEMARK);
+        Date start = CommonUtil.parseStrToDate(startTime,CommonUtil.STARTTIMEMARK);
+        Date end = CommonUtil.parseStrToDate(endTime,CommonUtil.ENDTIMEMARK);
 
         return null;
     }
@@ -282,8 +256,8 @@ public class AlarmController {
             log.error("设备ip地址为空");
             return null;
         }
-        Date start = parseStrToDate(startTime,STARTTIMEMARK);
-        Date end = parseStrToDate(endTime,ENDTIMEMARK);
+        Date start = CommonUtil.parseStrToDate(startTime,CommonUtil.STARTTIMEMARK);
+        Date end = CommonUtil.parseStrToDate(endTime,CommonUtil.ENDTIMEMARK);
 
         return null;
     }
@@ -299,8 +273,8 @@ public class AlarmController {
             log.error("设备id为空");
             return null;
         }
-        Date start = parseStrToDate(startTime,STARTTIMEMARK);
-        Date end = parseStrToDate(endTime,ENDTIMEMARK);
+        Date start = CommonUtil.parseStrToDate(startTime, CommonUtil.STARTTIMEMARK);
+        Date end = CommonUtil.parseStrToDate(endTime, CommonUtil.ENDTIMEMARK);
 
         return null;
     }
@@ -316,34 +290,26 @@ public class AlarmController {
             log.error("告警信息为空");
             return null;
         }
-        Date start = parseStrToDate(startTime,STARTTIMEMARK);
-        Date end = parseStrToDate(endTime,ENDTIMEMARK);
+        Date start = CommonUtil.parseStrToDate(startTime, CommonUtil.STARTTIMEMARK);
+        Date end = CommonUtil.parseStrToDate(endTime, CommonUtil.ENDTIMEMARK);
 
         return null;
     }
 
     /**
-     * string类型时间转换为Date
-     * @param time 待转换string类型时间
-     * @param mark 开始或结束时间标志，用于打印日志
-     * @return Date类型的时间
+     * 过滤设备ip、锁关联的用户角色等敏感信息
+     * @param alarms 待过滤告警对象列表
      */
-    private Date parseStrToDate(String time,String mark){
-
-        if(time != null){
-            try {
-                return dateFormat.parse(time);
-            } catch (ParseException e) {
-                String msg = "";
-                if(STARTTIMEMARK.equalsIgnoreCase(mark)){
-                    msg = "开始";
-                }else if(ENDTIMEMARK.equalsIgnoreCase(mark)){
-                    msg = "结束";
+    private void filterInfo(List<Alarm> alarms) {
+        for (Alarm al : alarms){
+            LockProcess lockProRecord = al.getLockProRecord();
+            if(lockProRecord != null){
+                LockInfo lockInfo = lockProRecord.getLockInfo();
+                if(lockInfo != null){
+                    lockInfo.setRoles(null);
+                    lockInfo.setDevices(null);
                 }
-                log.warn(msg+ "时间不合法");
             }
         }
-        return null;
     }
-
 }
