@@ -3,6 +3,7 @@ package com.summit.controller;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
+import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.LockInfo;
@@ -40,10 +41,7 @@ public class AlarmController {
     @Autowired
     private AlarmService alarmService;
 
-    /**
-     * 增删改操作异常
-     */
-    private static final Integer UPDATE_ERROR = -1;
+
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -60,7 +58,7 @@ public class AlarmController {
         }
 
         int result = alarmService.insertAlarm(alarm);
-        if(result == UPDATE_ERROR){
+        if(result == CommonConstants.UPDATE_ERROR){
             log.error("插入告警信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"告警信息为空",null);
         }
@@ -79,7 +77,7 @@ public class AlarmController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"alarmId和processId不能同时为空",null);
         }
         int result = alarmService.updateAlarm(alarm);
-        if(result == UPDATE_ERROR){
+        if(result == CommonConstants.UPDATE_ERROR){
             log.error("更新告警信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"告警信息为空",null);
         }
@@ -108,7 +106,7 @@ public class AlarmController {
         alarm.setAlarmStatus(alarmStatus);
         alarm.setAlarmTime(new Date());
         int result = alarmService.updateAlarm(alarm);
-        if(result == UPDATE_ERROR){
+        if(result == CommonConstants.UPDATE_ERROR){
             log.error("更新告警状态失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"更新告警状态失败",null);
         }
@@ -124,7 +122,7 @@ public class AlarmController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警id为空",null);
         }
         int result = alarmService.delLockAlarmById(alarmId);
-        if(result == UPDATE_ERROR){
+        if(result == CommonConstants.UPDATE_ERROR){
             log.error("删除告警信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"删除告警信息失败",null);
         }
@@ -136,10 +134,10 @@ public class AlarmController {
     public RestfulEntityBySummit<List<Alarm>> queryAllAlarms(@ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
                                                              @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
                                                              @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current",required = false) Integer current,
-                                                             @ApiParam(value = "每页条数，大于等于1")  @RequestParam(value = "pageSize",required = false) Integer pageSize) {
+                                                             @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize",required = false) Integer pageSize) {
         List<Alarm> alarms = null;
-        Date start = CommonUtil.parseStrToDate(startTime,CommonUtil.STARTTIMEMARK);
-        Date end = CommonUtil.parseStrToDate(endTime,CommonUtil.ENDTIMEMARK);
+        Date start = CommonUtil.parseStrToDate(startTime,CommonConstants.STARTTIMEMARK);
+        Date end = CommonUtil.parseStrToDate(endTime,CommonConstants.ENDTIMEMARK);
         try {
             alarms = alarmService.selectAll(start,end,new Page(current,pageSize));
             filterInfo(alarms);
@@ -155,14 +153,14 @@ public class AlarmController {
                                                                  @ApiParam(value = "起始时间")  @RequestParam(value = "startTime") String startTime,
                                                                  @ApiParam(value = "结束时间")  @RequestParam(value = "endTime") String endTime,
                                                                  @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current") Integer current,
-                                                                 @ApiParam(value = "每页条数，大于等于1")  @RequestParam(value = "pageSize") Integer pageSize) {
+                                                                 @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize") Integer pageSize) {
         if(alarmStatus == null){
             log.error("告警状态为空");
             return null;
         }
         List<Alarm> alarms = null;
-        Date start = CommonUtil.parseStrToDate(startTime,CommonUtil.STARTTIMEMARK);
-        Date end = CommonUtil.parseStrToDate(endTime,CommonUtil.ENDTIMEMARK);
+        Date start = CommonUtil.parseStrToDate(startTime,CommonConstants.STARTTIMEMARK);
+        Date end = CommonUtil.parseStrToDate(endTime,CommonConstants.ENDTIMEMARK);
         
         try {
             alarms = alarmService.selectAlarmByStatus(alarmStatus,start,end,new Page(current,pageSize));
@@ -178,7 +176,7 @@ public class AlarmController {
     public RestfulEntityBySummit<List<Alarm>> queryUntreatedAlarm(@ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
                                                                  @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
                                                                  @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
-                                                                 @ApiParam(value = "每页条数，大于等于1")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+                                                                 @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         return queryAlarmByStatus(1,startTime,endTime,current,pageSize);
     }
 
@@ -187,7 +185,7 @@ public class AlarmController {
     public RestfulEntityBySummit<Integer> queryUntreatedAlarmCount(@ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
                                                               @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
                                                               @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
-                                                              @ApiParam(value = "每页条数，大于等于1")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+                                                              @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
 
         RestfulEntityBySummit<List<Alarm>> alarms = queryAlarmByStatus(1,startTime,endTime,current,pageSize);
         if(alarms == null || alarms.getData() == null){
@@ -216,13 +214,13 @@ public class AlarmController {
                                                                @ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
                                                                @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
                                                                @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
-                                                               @ApiParam(value = "每页条数，大于等于1")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+                                                               @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         if(alarmName == null){
             log.error("告警名称为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警名称为空",null);
         }
-        Date start = CommonUtil.parseStrToDate(startTime,CommonUtil.STARTTIMEMARK);
-        Date end = CommonUtil.parseStrToDate(endTime,CommonUtil.ENDTIMEMARK);
+        Date start = CommonUtil.parseStrToDate(startTime,CommonConstants.STARTTIMEMARK);
+        Date end = CommonUtil.parseStrToDate(endTime,CommonConstants.ENDTIMEMARK);
 
         return null;
     }
@@ -234,13 +232,13 @@ public class AlarmController {
                                                                    @ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
                                                                    @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
                                                                    @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
-                                                                   @ApiParam(value = "每页条数，大于等于1")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+                                                                   @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         if(lockCode == null){
             log.error("锁编号为空");
             return null;
         }
-        Date start = CommonUtil.parseStrToDate(startTime,CommonUtil.STARTTIMEMARK);
-        Date end = CommonUtil.parseStrToDate(endTime,CommonUtil.ENDTIMEMARK);
+        Date start = CommonUtil.parseStrToDate(startTime,CommonConstants.STARTTIMEMARK);
+        Date end = CommonUtil.parseStrToDate(endTime,CommonConstants.ENDTIMEMARK);
 
         return null;
     }
@@ -251,13 +249,13 @@ public class AlarmController {
                                                                    @ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
                                                                    @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
                                                                    @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
-                                                                   @ApiParam(value = "每页条数，大于等于1")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+                                                                   @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         if(deviceIp == null){
             log.error("设备ip地址为空");
             return null;
         }
-        Date start = CommonUtil.parseStrToDate(startTime,CommonUtil.STARTTIMEMARK);
-        Date end = CommonUtil.parseStrToDate(endTime,CommonUtil.ENDTIMEMARK);
+        Date start = CommonUtil.parseStrToDate(startTime,CommonConstants.STARTTIMEMARK);
+        Date end = CommonUtil.parseStrToDate(endTime,CommonConstants.ENDTIMEMARK);
 
         return null;
     }
@@ -268,13 +266,13 @@ public class AlarmController {
                                                                 @ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
                                                                 @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
                                                                 @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
-                                                                @ApiParam(value = "每页条数，大于等于1")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+                                                                @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         if(devId == null){
             log.error("设备id为空");
             return null;
         }
-        Date start = CommonUtil.parseStrToDate(startTime, CommonUtil.STARTTIMEMARK);
-        Date end = CommonUtil.parseStrToDate(endTime, CommonUtil.ENDTIMEMARK);
+        Date start = CommonUtil.parseStrToDate(startTime, CommonConstants.STARTTIMEMARK);
+        Date end = CommonUtil.parseStrToDate(endTime, CommonConstants.ENDTIMEMARK);
 
         return null;
     }
@@ -285,13 +283,13 @@ public class AlarmController {
                                                                   @ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
                                                                   @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
                                                                   @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
-                                                                  @ApiParam(value = "每页条数，大于等于1")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+                                                                  @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         if(alarm == null){
             log.error("告警信息为空");
             return null;
         }
-        Date start = CommonUtil.parseStrToDate(startTime, CommonUtil.STARTTIMEMARK);
-        Date end = CommonUtil.parseStrToDate(endTime, CommonUtil.ENDTIMEMARK);
+        Date start = CommonUtil.parseStrToDate(startTime, CommonConstants.STARTTIMEMARK);
+        Date end = CommonUtil.parseStrToDate(endTime, CommonConstants.ENDTIMEMARK);
 
         return null;
     }

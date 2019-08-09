@@ -1,6 +1,7 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.LockInfo;
@@ -45,7 +46,7 @@ public class LockRecordServiceImpl implements LockRecordService {
     public int insertLockProcess(LockProcess lockProcess) {
         if(lockProcess == null){
             log.error("锁操作信息为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         FileInfo facePanorama = lockProcess.getFacePanorama();
         if(facePanorama != null){
@@ -80,10 +81,10 @@ public class LockRecordServiceImpl implements LockRecordService {
     public int updateLockProcess(LockProcess lockProcess) {
         if(lockProcess == null){
             log.error("锁操作信息为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         int result = lockProcessDao.updateRecord(lockProcess);
-        if(result != -1){
+        if(result != CommonConstants.UPDATE_ERROR){
             UpdateWrapper<FileInfo> updateWrapper = new UpdateWrapper<>();
             FileInfo facePanorama = lockProcess.getFacePanorama();
             if(facePanorama != null){
@@ -110,14 +111,14 @@ public class LockRecordServiceImpl implements LockRecordService {
     public int delLockProcess(String processId) {
         if(processId == null){
             log.error("锁操作信息id为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         List<String> roles = LockAuthCtrl.getRoles();
         LockProcess lockProcess = lockProcessDao.selectLockProcessById(processId, roles);
         UpdateWrapper<LockProcess> wrapper = new UpdateWrapper<>();
         UpdateWrapper<FileInfo> fileWrapper = new UpdateWrapper<>();
         int result = lockProcessDao.delete(wrapper.eq("process_id", processId));
-        if(result != 1){
+        if(result != CommonConstants.UPDATE_ERROR){
             fileInfoDao.delete(fileWrapper.eq("file_id",lockProcess.getFacePanorama().getFileId()));
             fileInfoDao.delete(fileWrapper.eq("file_id",lockProcess.getFacePic().getFileId()));
             fileInfoDao.delete(fileWrapper.eq("file_id",lockProcess.getFaceMatch().getFileId()));
@@ -134,10 +135,7 @@ public class LockRecordServiceImpl implements LockRecordService {
     public List<LockProcess> selectAll(Page page) {
         PageConverter.convertPage(page);
         List<String> roles = LockAuthCtrl.getRoles();
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(new LockProcess(), null, null, page,roles);
-
-//        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
-        return lockProcesses;
+        return lockProcessDao.selectCondition(new LockProcess(), null, null, page,roles);
     }
 
     /**
@@ -152,8 +150,7 @@ public class LockRecordServiceImpl implements LockRecordService {
             return null;
         }
         List<String> roles = LockAuthCtrl.getRoles();
-        LockProcess lockProcess = lockProcessDao.selectLockProcessById(processId, roles);
-        return lockProcess;
+        return lockProcessDao.selectLockProcessById(processId, roles);
     }
 
     /**
@@ -174,9 +171,7 @@ public class LockRecordServiceImpl implements LockRecordService {
         LockProcess lockProcess = new LockProcess();
         lockProcess.setLockCode(lockCode);
         List<String> roles = LockAuthCtrl.getRoles();
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
-//        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
-        return lockProcesses;
+        return lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
     }
 
     /**
@@ -193,9 +188,7 @@ public class LockRecordServiceImpl implements LockRecordService {
         }
         PageConverter.convertPage(page);
         List<String> roles = LockAuthCtrl.getRoles();
-        List<LockProcess> lockProcesses = lockProcessDao.selectByLockCode(lockCode, page, roles);
-//        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
-        return lockProcesses;
+        return lockProcessDao.selectByLockCode(lockCode, page, roles);
     }
 
     /**
@@ -216,9 +209,7 @@ public class LockRecordServiceImpl implements LockRecordService {
         LockProcess lockProcess = new LockProcess();
         lockProcess.setDeviceIp(deviceIp);
         List<String> roles = LockAuthCtrl.getRoles();
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
-//        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
-        return lockProcesses;
+        return lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
     }
 
     /**
@@ -255,9 +246,7 @@ public class LockRecordServiceImpl implements LockRecordService {
         LockProcess lp = new LockProcess();
         lp.setDeviceIp(device.getDeviceIp());
         List<String> roles = LockAuthCtrl.getRoles();
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lp, start, end, page, roles);
-//        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
-        return lockProcesses;
+        return lockProcessDao.selectCondition(lp, start, end, page, roles);
     }
 
     /**
@@ -293,9 +282,7 @@ public class LockRecordServiceImpl implements LockRecordService {
         LockProcess lockProcess = new LockProcess();
         lockProcess.setUserName(userName);
         List<String> roles = LockAuthCtrl.getRoles();
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
-//        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
-        return lockProcesses;
+        return lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
     }
 
     /**
@@ -331,9 +318,7 @@ public class LockRecordServiceImpl implements LockRecordService {
         LockProcess lockProcess = new LockProcess();
         lockProcess.setProcessType(processType);
         List<String> roles = LockAuthCtrl.getRoles();
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
-//        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
-        return lockProcesses;
+        return lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
     }
 
     /**
@@ -369,9 +354,7 @@ public class LockRecordServiceImpl implements LockRecordService {
         LockProcess lockProcess = new LockProcess();
         lockProcess.setProcessResult(processResult);
         List<String> roles = LockAuthCtrl.getRoles();
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
-//        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
-        return lockProcesses;
+        return lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
     }
 
     /**
@@ -405,9 +388,7 @@ public class LockRecordServiceImpl implements LockRecordService {
         }
         PageConverter.convertPage(page);
         List<String> roles = LockAuthCtrl.getRoles();
-        List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lockProcess, start, end, page,roles);
-//        LockAuthCtrl.toFilterLockProcesses(lockProcesses);
-        return lockProcesses;
+        return lockProcessDao.selectCondition(lockProcess, start, end, page,roles);
     }
 
     /**

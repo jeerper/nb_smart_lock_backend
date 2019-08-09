@@ -1,6 +1,7 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.LockProcess;
@@ -40,7 +41,7 @@ public class AlarmServiceImpl implements AlarmService {
     public int insertAlarm(Alarm alarm) {
         if(alarm == null){
             log.error("告警信息为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         List<String> roles = LockAuthCtrl.getRoles();
         if(lockProcessDao.selectLockProcessById(alarm.getProcessId(),roles) == null){
@@ -59,7 +60,7 @@ public class AlarmServiceImpl implements AlarmService {
     public int updateAlarm(Alarm alarm) {
         if(alarm == null){
             log.error("告警信息为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         List<String> roles = LockAuthCtrl.getRoles();
         if(lockProcessDao.selectLockProcessById(alarm.getProcessId(),roles) == null){
@@ -82,7 +83,7 @@ public class AlarmServiceImpl implements AlarmService {
     public int delLockAlarmById(String alarmId) {
         if(alarmId == null){
             log.error("告警id为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         UpdateWrapper<Alarm> wrapper = new UpdateWrapper<>();
         return alarmDao.delete(wrapper.eq("alarm_id" , alarmId));

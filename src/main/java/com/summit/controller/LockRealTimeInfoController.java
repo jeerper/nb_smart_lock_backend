@@ -3,6 +3,7 @@ package com.summit.controller;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
+import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.FaceInfoEntity;
 import com.summit.dao.entity.FileInfo;
@@ -46,19 +47,11 @@ public class LockRealTimeInfoController {
     @Autowired
     private AlarmService alarmService;
 
-    /**
-     * 增删改操作异常
-     */
-    private static final Integer UPDATE_ERROR = -1;
-
-    private static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     @ApiOperation(value = "查询全部锁信息及其对应的最新操作历史", notes = "分页参数为空则查全部，不合法则取第一条")
     @GetMapping(value = "/selectAllLockRealTimeInfo")
     public RestfulEntityBySummit<Map<String,Object>> selectAllLockRealTimeInfo(@ApiParam(value = "当前页，大于等于1")  @RequestParam("current") Integer current,
-                                                           @ApiParam(value = "每页条数，大于等于1")  @RequestParam("pageSize") Integer pageSize) {
+                                                                               @ApiParam(value = "每页条数，大于等于0")  @RequestParam("pageSize") Integer pageSize) {
         Map<String,Object> data = new HashMap<>();
         List<LockRealTimeInfo> lockRealTimeInfos;
         List<LockInfo> lockInfos;
@@ -76,7 +69,6 @@ public class LockRealTimeInfoController {
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询锁操作记录成功", data);
 
     }
-
 
     /**
      * 根据锁信息列表查询组装锁实时信息列表
@@ -98,7 +90,7 @@ public class LockRealTimeInfoController {
                 if(lockProcesses == null || lockProcesses.isEmpty()){
                     continue;
                 }
-                //取最新的一条操作记录
+                //取最新的一条操作记录(dao sql已排好序)
                 LockProcess lockProcess = lockProcesses.get(0);
                 lockRealTimeInfo.setLockId(lock.getLockId());
 
@@ -109,7 +101,7 @@ public class LockRealTimeInfoController {
 
                     lockRealTimeInfo.setGender(lockProcess.getGender());
                     if(lockProcess.getBirthday() != null)
-                        lockRealTimeInfo.setBirthday(dateFormat.format(lockProcess.getBirthday()));
+                        lockRealTimeInfo.setBirthday(CommonConstants.dateFormat.format(lockProcess.getBirthday()));
                     lockRealTimeInfo.setProvince(lockProcess.getProvince());
                     lockRealTimeInfo.setCity(lockProcess.getCity());
                     lockRealTimeInfo.setCardId(lockProcess.getCardId());
@@ -119,7 +111,7 @@ public class LockRealTimeInfoController {
                     lockRealTimeInfo.setFaceLibType(lockProcess.getFaceLibType());
 
                     if(lockProcess.getProcessTime() != null)
-                        lockRealTimeInfo.setPicSnapshotTime(dateTimeFormat.format(lockProcess.getProcessTime()));
+                        lockRealTimeInfo.setPicSnapshotTime(CommonConstants.timeFormat.format(lockProcess.getProcessTime()));
                     FileInfo facePanorama = lockProcess.getFacePanorama();
                     if(facePanorama != null){
                         lockRealTimeInfo.setFacePanoramaUrl(facePanorama.getFilePath());
@@ -128,13 +120,10 @@ public class LockRealTimeInfoController {
                     if(facePic != null){
                         lockRealTimeInfo.setFacePicUrl(facePic.getFilePath());
                     }
-
                 }
-
             }
             lockRealTimeInfos.add(lockRealTimeInfo);
         }
         return lockRealTimeInfos;
     }
-
 }

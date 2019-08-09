@@ -6,6 +6,7 @@ import cn.hutool.system.SystemUtil;
 import com.summit.MainAction;
 
 import com.summit.common.entity.RestfulEntityBySummit;
+import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.FileInfo;
@@ -46,9 +47,6 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
     @Autowired
     private CameraDeviceService cameraDeviceService;
 
-    private static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     public void invoke(Object object) {
@@ -69,8 +67,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                     type = "Unlock";
                 }
                 String deviceIp = faceInfo.getDeviceIp();
-                String snapshotTime = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date());
-                String snapshotDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                String snapshotTime = CommonConstants.snapshotTimeFormat.format(new Date());
+                String snapshotDate = CommonConstants.dateFormat.format(new Date());
                 String picturePathFacePanorama = new StringBuilder()
                         .append(SystemUtil.getUserInfo().getCurrentDir())
                         .append(File.separator)
@@ -83,7 +81,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                         .append(type)
                         .append(File.separator)
                         .append(snapshotDate)
-                        .append("_FacePanorama.jpg")
+                        .append(CommonConstants.FACE_PANORAMA_SUFFIX)
                         .toString();
 
                 String picturePathFacePic = new StringBuilder()
@@ -98,38 +96,37 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                         .append(type)
                         .append(File.separator)
                         .append(snapshotDate)
-                        .append("_FacePic.jpg")
+                        .append(CommonConstants.FACE_PIC_SUFFIX)
                         .toString();
-
 
                 String facePanoramaUrl = new StringBuilder()
                         .append(MainAction.SnapshotFileName)
-                        .append("/")
+                        .append(CommonConstants.URL_SEPARATOR)
                         .append(deviceIp)
-                        .append("/")
+                        .append(CommonConstants.URL_SEPARATOR)
                         .append(snapshotTime)
-                        .append("/")
+                        .append(CommonConstants.URL_SEPARATOR)
                         .append(type)
-                        .append("/")
+                        .append(CommonConstants.URL_SEPARATOR)
                         .append(snapshotDate)
-                        .append("_FacePanorama.jpg")
+                        .append(CommonConstants.FACE_PANORAMA_SUFFIX)
                         .toString();
 
                 String facePicUrl = new StringBuilder()
                         .append(MainAction.SnapshotFileName)
-                        .append("/")
+                        .append(CommonConstants.URL_SEPARATOR)
                         .append(deviceIp)
-                        .append("/")
+                        .append(CommonConstants.URL_SEPARATOR)
                         .append(snapshotTime)
-                        .append("/")
+                        .append(CommonConstants.URL_SEPARATOR)
                         .append(type)
-                        .append("/")
+                        .append(CommonConstants.URL_SEPARATOR)
                         .append(snapshotDate)
-                        .append("_FacePic.jpg")
+                        .append(CommonConstants.FACE_PIC_SUFFIX)
                         .toString();
 
-                FileInfo facePanoramaFile = new FileInfo(snapshotTime + "_FacePanorama.jpg", facePanoramaUrl, "人脸全景图");
-                FileInfo facePicFile = new FileInfo(snapshotTime + "_FacePic.jpg", facePicUrl, "人脸识别抠图");
+                FileInfo facePanoramaFile = new FileInfo(snapshotTime + CommonConstants.FACE_PANORAMA_SUFFIX, facePanoramaUrl, "人脸全景图");
+                FileInfo facePicFile = new FileInfo(snapshotTime + CommonConstants.FACE_PIC_SUFFIX, facePicUrl, "人脸识别抠图");
 
                 FaceLibType faceLibType = faceInfo.getFaceLibType();
                 String processResult = null;
@@ -168,7 +165,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                 FileUtil.writeBytes(faceInfo.getFacePic(), picturePathFacePic);
 
                 LockProcess lockProcess = getLockProcess(faceInfo, type, facePanoramaFile, facePicFile, processResult, failReason);
-                if (lockRecordService.insertLockProcess(lockProcess) != -1) {
+                if (lockRecordService.insertLockProcess(lockProcess) != CommonConstants.UPDATE_ERROR) {
                     log.info("锁操作记录信息入库成功");
                 } else {
                     log.error("锁操作记录信息入库失败");
@@ -176,7 +173,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                 //如果是告警类型需要同时插入告警表
                 if ("Alarm".equals(type)) {
                     Alarm alarm = getAlarm(lockProcess);
-                    if (alarmService.insertAlarm(alarm) != -1) {
+                    if (alarmService.insertAlarm(alarm) != CommonConstants.UPDATE_ERROR) {
                         log.info("锁操作告警信息入库成功");
                     } else {
                         log.error("锁操作告警信息入库失败");
@@ -221,7 +218,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             lockProcess.setGender(faceInfo.getGender().getGenderCode());
         try {
             if(faceInfo.getBirthday() != null)
-                lockProcess.setBirthday(dateFormat.parse(faceInfo.getBirthday()));
+                lockProcess.setBirthday(CommonConstants.dateFormat.parse(faceInfo.getBirthday()));
         } catch (ParseException e) {
             log.error("生日格式有误");
         }

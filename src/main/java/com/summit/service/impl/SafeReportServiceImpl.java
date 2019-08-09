@@ -1,6 +1,7 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.Page;
 import com.summit.dao.entity.SafeReport;
 import com.summit.dao.repository.LockRoleDao;
@@ -32,7 +33,7 @@ public class SafeReportServiceImpl implements SafeReportService {
     public int insertSafeReport(SafeReport safeReport) {
         if(safeReport == null){
             log.error("工况信息为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         return safeReportDao.insert(safeReport);
     }
@@ -46,7 +47,7 @@ public class SafeReportServiceImpl implements SafeReportService {
     public int updateSafeReport(SafeReport safeReport) {
         if(safeReport == null){
             log.error("工况信息为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         UpdateWrapper<SafeReport> updateWrapper = new UpdateWrapper<>();
         return safeReportDao.update(safeReport,updateWrapper.eq("safe_rep_id",safeReport.getSafeRepId()));
@@ -61,7 +62,7 @@ public class SafeReportServiceImpl implements SafeReportService {
     public int delSafeReport(SafeReport safeReport) {
         if(safeReport == null){
             log.error("工况信息为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         UpdateWrapper<SafeReport> wrapper = new UpdateWrapper<>();
         return safeReportDao.delete(wrapper.eq("safe_rep_id",safeReport.getSafeRepId()));

@@ -1,6 +1,7 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.Page;
 import com.summit.dao.repository.CameraDeviceDao;
@@ -32,7 +33,7 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
     public int insertDevice(CameraDevice cameraDevice) {
         if(cameraDevice == null){
             log.error("设备信息为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         List<String> roles = LockAuthCtrl.getRoles();
         if(lockInfoDao.selectBylockCode(cameraDevice.getLockCode(),roles) == null){
@@ -50,7 +51,7 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
     public int updateDevice(CameraDevice cameraDevice) {
         if(cameraDevice == null){
             log.error("设备信息为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         String devId = cameraDevice.getDevId();
         String deviceIp = cameraDevice.getDeviceIp();
@@ -75,7 +76,7 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
     public int delDeviceByDevId(String devId) {
         if(devId == null){
             log.error("设备id地址为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         UpdateWrapper<CameraDevice> wrapper = new UpdateWrapper<>();
         return cameraDeviceDao.delete(wrapper.eq("dev_id", devId));
@@ -90,7 +91,7 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
     public int delDeviceByIpAddress(String deviceIp) {
         if(deviceIp == null){
             log.error("设备ip地址为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         UpdateWrapper<CameraDevice> wrapper = new UpdateWrapper<>();
         return cameraDeviceDao.delete(wrapper.eq("device_ip", deviceIp));

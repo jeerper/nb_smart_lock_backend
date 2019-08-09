@@ -1,6 +1,7 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.FaceInfoEntity;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.Page;
@@ -32,10 +33,10 @@ public class FaceInfoServiceImpl implements FaceInfoService {
     public int insertFaceInfo(FaceInfoEntity faceInfo) {
         if(faceInfo == null){
             log.error("人脸信息为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         int result = faceInfoDao.insertFace(faceInfo);
-        if(result != -1){
+        if(result != CommonConstants.UPDATE_ERROR){
             fileInfoDao.insert(faceInfo.getFacePanorama());
             fileInfoDao.insert(faceInfo.getFacePic());
             fileInfoDao.insert(faceInfo.getFaceMatch());
@@ -52,10 +53,10 @@ public class FaceInfoServiceImpl implements FaceInfoService {
     public int updateFaceInfo(FaceInfoEntity faceInfo) {
         if(faceInfo == null){
             log.error("人脸信息为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         int result = faceInfoDao.updateFace(faceInfo);
-        if(result != -1){
+        if(result != CommonConstants.UPDATE_ERROR){
             UpdateWrapper<FileInfo> updateWrapper = new UpdateWrapper<>();
             fileInfoDao.update(faceInfo.getFacePanorama(),updateWrapper.eq("file_id",faceInfo.getFacePanorama().getFileId()));
             fileInfoDao.update(faceInfo.getFacePic(),updateWrapper.eq("file_id",faceInfo.getFacePic().getFileId()));
@@ -73,14 +74,14 @@ public class FaceInfoServiceImpl implements FaceInfoService {
     public int delFaceInfoById(String faceId) {
         if(faceId == null){
             log.error("人脸信息id为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         FaceInfoEntity faceInfo = faceInfoDao.selectFaceById(faceId);
         UpdateWrapper<FaceInfoEntity> wrapper = new UpdateWrapper<>();
         UpdateWrapper<FileInfo> fileWrapper = new UpdateWrapper<>();
         int result = faceInfoDao.delete(wrapper.eq("face_d", faceId));
 
-        if(result != -1){
+        if(result != CommonConstants.UPDATE_ERROR){
             fileInfoDao.delete(fileWrapper.eq("file_id",faceInfo.getFacePanorama().getFileId()));
             fileInfoDao.delete(fileWrapper.eq("file_id",faceInfo.getFacePic().getFileId()));
             fileInfoDao.delete(fileWrapper.eq("file_id",faceInfo.getFaceMatch().getFileId()));
@@ -97,14 +98,14 @@ public class FaceInfoServiceImpl implements FaceInfoService {
     public int delFaceInfoByUserName(String userName) {
         if(userName == null){
             log.error("操作人名称为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         FaceInfoEntity faceInfo = faceInfoDao.selectByName(userName);
         UpdateWrapper<FaceInfoEntity> wrapper = new UpdateWrapper<>();
         UpdateWrapper<FileInfo> fileWrapper = new UpdateWrapper<>();
         int result = faceInfoDao.delete(wrapper.eq("user_name", userName));
 
-        if(result != -1){
+        if(result != CommonConstants.UPDATE_ERROR){
             fileInfoDao.delete(fileWrapper.eq("file_id",faceInfo.getFacePanorama().getFileId()));
             fileInfoDao.delete(fileWrapper.eq("file_id",faceInfo.getFacePic().getFileId()));
             fileInfoDao.delete(fileWrapper.eq("file_id",faceInfo.getFaceMatch().getFileId()));

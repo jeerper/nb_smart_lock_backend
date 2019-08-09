@@ -1,8 +1,7 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.summit.common.entity.UserInfo;
-import com.summit.common.web.filter.UserContextHolder;
+import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.Page;
 import com.summit.dao.repository.LockInfoDao;
@@ -13,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -53,10 +51,7 @@ public class LockInfoServiceImpl implements LockInfoService {
     public List<LockInfo> selectAll(Page page) {
         List<String> rolesList = LockAuthCtrl.getRoles();
         PageConverter.convertPage(page);
-        List<LockInfo> lockInfos = lockInfoDao.selectCondition(new LockInfo(), page, rolesList);
-//        LockAuthCtrl.toFilterLocks(lockInfos);
-
-        return lockInfos;
+        return lockInfoDao.selectCondition(new LockInfo(), page, rolesList);
     }
 
     /**
@@ -68,9 +63,7 @@ public class LockInfoServiceImpl implements LockInfoService {
     public List<LockInfo> selectAllHaveHistory(Page page) {
         List<String> rolesList = LockAuthCtrl.getRoles();
         PageConverter.convertPage(page);
-        List<LockInfo> lockInfos = lockInfoDao.selectAllHaveHistory(page, rolesList);
-
-        return lockInfos;
+        return lockInfoDao.selectAllHaveHistory(page, rolesList);
     }
 
     /**
@@ -99,7 +92,7 @@ public class LockInfoServiceImpl implements LockInfoService {
     public int insertLock(LockInfo lockInfo) {
         if(lockInfo == null){
             log.error("锁信息为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         return lockInfoDao.insert(lockInfo);
     }
@@ -113,7 +106,7 @@ public class LockInfoServiceImpl implements LockInfoService {
     public int updateLock(LockInfo lockInfo) {
         if(lockInfo == null){
             log.error("锁信息为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         String lockCode = lockInfo.getLockCode();
         String lockId = lockInfo.getLockId();
@@ -135,7 +128,7 @@ public class LockInfoServiceImpl implements LockInfoService {
     public int delLockByLockId(String lockId) {
         if(lockId == null){
             log.error("锁id为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         UpdateWrapper<LockInfo> wrapper = new UpdateWrapper<>();
         return lockInfoDao.delete(wrapper.eq("lock_id", lockId));
@@ -150,7 +143,7 @@ public class LockInfoServiceImpl implements LockInfoService {
     public int delLockByLockCod(String lockCode) {
         if(lockCode == null){
             log.error("锁id为空");
-            return -1;
+            return CommonConstants.UPDATE_ERROR;
         }
         UpdateWrapper<LockInfo> wrapper = new UpdateWrapper<>();
         return lockInfoDao.delete(wrapper.eq("lock_code", lockCode));
