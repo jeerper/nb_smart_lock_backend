@@ -16,4 +16,6 @@ public interface LockInfoDao  extends BaseMapper<LockInfo> {
     List<LockInfo> selectCondition(@Param("lockInfo") LockInfo lockInfo,
                                    @Param("page") Page page,
                                    @Param("roles") List<String> roles);
+
+    List<LockInfo> selectAllHaveHistory(@Param("page") Page page,@Param("roles") List<String> roles);
 }

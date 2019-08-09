@@ -6,6 +6,7 @@ import cn.hutool.system.SystemUtil;
 import com.summit.MainAction;
 
 import com.summit.common.entity.RestfulEntityBySummit;
+import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.FileInfo;
@@ -17,6 +18,7 @@ import com.summit.sdk.huawei.callback.ClientFaceInfoCallback;
 import com.summit.sdk.huawei.model.AlarmStatus;
 import com.summit.sdk.huawei.model.FaceInfo;
 import com.summit.sdk.huawei.model.FaceLibType;
+import com.summit.sdk.huawei.model.LcokProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessType;
 import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.service.AlarmService;
@@ -45,9 +47,6 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
     @Autowired
     private CameraDeviceService cameraDeviceService;
 
-    private static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     public void invoke(Object object) {
@@ -68,8 +67,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                     type = "Unlock";
                 }
                 String deviceIp = faceInfo.getDeviceIp();
-                String snapshotTime = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date());
-                String snapshotDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                String snapshotTime = CommonConstants.snapshotTimeFormat.format(new Date());
+                String snapshotDate = CommonConstants.dateFormat.format(new Date());
                 String picturePathFacePanorama = new StringBuilder()
                         .append(SystemUtil.getUserInfo().getCurrentDir())
                         .append(File.separator)
@@ -82,7 +81,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                         .append(type)
                         .append(File.separator)
                         .append(snapshotDate)
-                        .append("_FacePanorama.jpg")
+                        .append(CommonConstants.FACE_PANORAMA_SUFFIX)
                         .toString();
 
                 String picturePathFacePic = new StringBuilder()
@@ -97,43 +96,76 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                         .append(type)
                         .append(File.separator)
                         .append(snapshotDate)
-                        .append("_FacePic.jpg")
+                        .append(CommonConstants.FACE_PIC_SUFFIX)
                         .toString();
-
 
                 String facePanoramaUrl = new StringBuilder()
                         .append(MainAction.SnapshotFileName)
-                        .append("/")
+                        .append(CommonConstants.URL_SEPARATOR)
                         .append(deviceIp)
-                        .append("/")
+                        .append(CommonConstants.URL_SEPARATOR)
                         .append(snapshotTime)
-                        .append("/")
+                        .append(CommonConstants.URL_SEPARATOR)
                         .append(type)
-                        .append("/")
+                        .append(CommonConstants.URL_SEPARATOR)
                         .append(snapshotDate)
-                        .append("_FacePanorama.jpg")
+                        .append(CommonConstants.FACE_PANORAMA_SUFFIX)
                         .toString();
 
                 String facePicUrl = new StringBuilder()
                         .append(MainAction.SnapshotFileName)
-                        .append("/")
+                        .append(CommonConstants.URL_SEPARATOR)
                         .append(deviceIp)
-                        .append("/")
+                        .append(CommonConstants.URL_SEPARATOR)
                         .append(snapshotTime)
-                        .append("/")
+                        .append(CommonConstants.URL_SEPARATOR)
                         .append(type)
-                        .append("/")
+                        .append(CommonConstants.URL_SEPARATOR)
                         .append(snapshotDate)
-                        .append("_FacePic.jpg")
+                        .append(CommonConstants.FACE_PIC_SUFFIX)
                         .toString();
-                FileInfo facePanoramaFile = new FileInfo(snapshotTime + "_FacePanorama.jpg", facePanoramaUrl, "人脸全景图");
-                FileInfo facePicFile = new FileInfo(snapshotTime + "_FacePic.jpg", facePicUrl, "人脸识别抠图");
 
+                FileInfo facePanoramaFile = new FileInfo(snapshotTime + CommonConstants.FACE_PANORAMA_SUFFIX, facePanoramaUrl, "人脸全景图");
+                FileInfo facePicFile = new FileInfo(snapshotTime + CommonConstants.FACE_PIC_SUFFIX, facePicUrl, "人脸识别抠图");
+
+                FaceLibType faceLibType = faceInfo.getFaceLibType();
+                String processResult = null;
+                String failReason = null;
+                if(faceLibType.equals(FaceLibType.FACE_LIB_WHITE)){
+                    CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
+                    if(cameraDevice != null) {
+                        String lockCode = cameraDevice.getLockCode();
+                        if (lockCode != null) {
+                            RestfulEntityBySummit result = unLockService.toUnLock(new LockRequest(lockCode, faceInfo.getName()));
+                            BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
+                            if(backLockInfo != null){
+                                String backLockInfoType = backLockInfo.getType();
+                                String content = backLockInfo.getContent();
+                                log.debug("rmid={},type={},content={},objx={},time={}",
+                                        backLockInfo.getRmid(), backLockInfoType, content, backLockInfo.getObjx(), backLockInfo.getTime());
+                                processResult = backLockInfoType;
+                                if(!LcokProcessResultType.SUCCESS.getCode().equals(backLockInfoType)){
+                                    failReason = content;
+                                }
+                            }else{
+                                log.error("开锁时返回记录为空");
+                                failReason = "开锁时返回记录为空";
+                            }
+                        }else{
+                            log.error("没有找到ip地址为{}的摄像头对应的锁编号",deviceIp);
+                            failReason = "没有找到ip地址为" + deviceIp + "的摄像头对应的锁编号";
+                        }
+                    }else {
+                        log.error("没有找到ip地址为{}的摄像头记录",deviceIp);
+                        failReason = "没有找到ip地址为" + deviceIp + "的摄像头记录";
+                    }
+
+                }
                 FileUtil.writeBytes(faceInfo.getFacePanorama(), picturePathFacePanorama);
                 FileUtil.writeBytes(faceInfo.getFacePic(), picturePathFacePic);
 
-                LockProcess lockProcess = getLockProcess(faceInfo, type, facePanoramaFile, facePicFile);
-                if (lockRecordService.insertLockProcess(lockProcess) != -1) {
+                LockProcess lockProcess = getLockProcess(faceInfo, type, facePanoramaFile, facePicFile, processResult, failReason);
+                if (lockRecordService.insertLockProcess(lockProcess) != CommonConstants.UPDATE_ERROR) {
                     log.info("锁操作记录信息入库成功");
                 } else {
                     log.error("锁操作记录信息入库失败");
@@ -141,37 +173,12 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                 //如果是告警类型需要同时插入告警表
                 if ("Alarm".equals(type)) {
                     Alarm alarm = getAlarm(lockProcess);
-                    if (alarmService.insertAlarm(alarm) != -1) {
-//                log.info("锁操作告警信息入库成功");
+                    if (alarmService.insertAlarm(alarm) != CommonConstants.UPDATE_ERROR) {
+                        log.info("锁操作告警信息入库成功");
                     } else {
                         log.error("锁操作告警信息入库失败");
                     }
                 }
-
-
-//            log.debug("名字:" + faceInfo.getName());
-//            log.debug("性别:{}", faceInfo.getGender().getGenderDescription());
-//            log.debug("生日:" + faceInfo.getBirthday());
-//            log.debug("省级:" + faceInfo.getProvince());
-//            log.debug("地市:" + faceInfo.getCity());
-//            log.debug("证件类型:{}", faceInfo.getCardType().getCardTypeDescription());
-//            log.debug("证件号:" + faceInfo.getCardId());
-//            log.debug("人脸匹配率:{}%", faceInfo.getFaceMatchRate());
-//            log.debug("名单库名称:{}", faceInfo.getFaceLibName());
-//            log.debug("名单库类型:{}", faceInfo.getFaceLibType().getFaceLibTypeDescription());
-            FaceLibType faceLibType = faceInfo.getFaceLibType();
-            if(faceLibType.equals(FaceLibType.FACE_LIB_WHITE)){
-                CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
-                if(cameraDevice != null) {
-                    String lockCode = cameraDevice.getLockCode();
-                    if (lockCode != null) {
-                        RestfulEntityBySummit result = unLockService.toUnLock(new LockRequest(lockCode, faceInfo.getName()));
-                        BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
-                        log.debug("rmid={},type={},content={},objx={},time={}",
-                                backLockInfo.getRmid(), backLockInfo.getType(), backLockInfo.getContent(), backLockInfo.getObjx(), backLockInfo.getTime());
-                    }
-                }
-            }
             }
         }catch (Exception e){
             log.error("摄像头上报信息处理异常",e);
@@ -179,6 +186,11 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
 
     }
 
+    /**
+     * 根据锁操作记录信息组装告警信息入库信息对象
+     * @param lockProcess 锁操作记录对象
+     * @return 锁告警对象
+     */
     private Alarm getAlarm(LockProcess lockProcess) {
         Alarm alarm = new Alarm();
         alarm.setProcessId(lockProcess.getProcessId());
@@ -187,7 +199,17 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
         return alarm;
     }
 
-    private LockProcess getLockProcess(FaceInfo faceInfo, String type, FileInfo facePanoramaFile, FileInfo facePicFile) {
+    /**
+     * 根据人脸识别结果信息及其他信息组装需要入库的锁操作信息
+     * @param faceInfo 识别的人脸信息
+     * @param type 人脸识别结果类型
+     * @param facePanoramaFile 人脸全景图对象
+     * @param facePicFile 人脸识别抠图对象
+     * @param processResult 锁操作结果返回码
+     * @param failReason 人脸识别或锁操作识别原因
+     * @return 组装好的锁操作记录信息对象
+     */
+    private LockProcess getLockProcess(FaceInfo faceInfo, String type, FileInfo facePanoramaFile, FileInfo facePicFile, String processResult,String failReason) {
         LockProcess lockProcess = new LockProcess();
         String deviceIp = faceInfo.getDeviceIp();
         lockProcess.setDeviceIp(deviceIp);
@@ -196,7 +218,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             lockProcess.setGender(faceInfo.getGender().getGenderCode());
         try {
             if(faceInfo.getBirthday() != null)
-                lockProcess.setBirthday(dateFormat.parse(faceInfo.getBirthday()));
+                lockProcess.setBirthday(CommonConstants.dateFormat.parse(faceInfo.getBirthday()));
         } catch (ParseException e) {
             log.error("生日格式有误");
         }
@@ -226,12 +248,13 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
         if("Unlock".equals(type)){
             lockInfo.setStatus(LockStatus.UNLOCK.getCode());
             lockProcess.setProcessType(LockProcessType.UNLOCK.getCode());
-            lockProcess.setProcessResult("success");
-
+            lockProcess.setProcessResult(processResult);
+            //刷脸成功后开锁操作也有可能失败,成功则failReason=null
+            lockProcess.setFailReason(failReason);
         }else if("Alarm".equals(type)){
             lockInfo.setStatus(LockStatus.LOCK_ALARM.getCode());
             lockProcess.setProcessType(LockProcessType.LOCK_ALARM.getCode());
-            lockProcess.setProcessResult("fail");
+            lockProcess.setProcessResult(LcokProcessResultType.ERROR.getCode());
             lockProcess.setFailReason("匹配度过低");
 
         }else{

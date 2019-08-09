@@ -15,7 +15,7 @@ public class PageConverter {
         }
         if(current < 1 || pageSize < 0){
             //若current 或 pageSize不合法，则只取第一条记录
-            page.setCurrent(1);
+            page.setCurrent(0);
             page.setPageSize(1);
             return;
         }

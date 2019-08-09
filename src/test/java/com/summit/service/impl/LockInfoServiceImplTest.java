@@ -64,6 +64,12 @@ public class LockInfoServiceImplTest {
         lockInfoService.selectCondition(lockInfo,page);
     }
 
+    @Test
+    public void selectAllHaveHistory() {
+        List<LockInfo> lockInfos = lockInfoService.selectAllHaveHistory(new Page(1,1));
+        System.out.println(lockInfos);
+    }
+
 
     @Test
     public void delLockByLockCod() {

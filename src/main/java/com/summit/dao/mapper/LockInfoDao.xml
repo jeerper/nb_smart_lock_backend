@@ -90,6 +90,33 @@
     </where>
   </select>
 
+
+  <select id="selectAllHaveHistory" resultMap="BaseResultMap">
+    select
+    <include refid="Lock_Have_Alias_List" />,
+    <include refid="Device_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />
+    from
+    (select <include refid="Lock_Have_Alias_List" /> from lock_info li
+    inner join lock_process lo on li.lock_code = lo.lock_code
+    inner join (
+    select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
+    <where>
+      au.role_id in
+      <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+        #{role}
+      </foreach>
+    </where>
+    ) au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
+    <if test="page != null and page.current != null and  page.pageSize != null ">
+      limit #{page.current},#{page.pageSize}
+    </if>
+    ) li
+    left join camera_device cd on li.lock_code = cd.lock_code
+    left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
+
+  </select>
+
   <select id="selectCondition" parameterType="com.summit.dao.entity.LockInfo" resultMap="BaseResultMap">
     select
     <include refid="Lock_Have_Alias_List" />,

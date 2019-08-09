@@ -135,7 +135,7 @@
     left join file_info fi3 on lo.face_match_id=fi3.file_id
     left join lock_info li on li.lock_code = lo.lock_code
     left join camera_device cd on li.lock_code = cd.lock_code
-    left join role_lock_auth au on (li.lock_id = au.lock_id and li.lock_code = au.lock_code)
+    left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
     <where>
       al.alarm_id=#{alarmId}
     </where>
@@ -161,7 +161,7 @@
         #{role}
       </foreach>
     </where>
-    ) au on (<!--lo.lock_id = au.lock_id and -->lo.lock_code = au.lock_code)
+    ) au on (lo.lock_id = au.lock_id or lo.lock_code = au.lock_code)
     ) al
     left join lock_process lo on al.process_id=lo.process_id
     left join file_info fi1 on lo.face_panorama_id=fi1.file_id
@@ -169,11 +169,33 @@
     left join file_info fi3 on lo.face_match_id=fi3.file_id
     left join lock_info li on li.lock_code = lo.lock_code
     left join camera_device cd on li.lock_code = cd.lock_code
-    left join role_lock_auth au on (li.lock_id = au.lock_id and li.lock_code = au.lock_code)
+    left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
     <where>
       al.process_id=#{processId}
     </where>
   </select>
+
+  <select id="selectAlarmCountByStatus"  resultType="java.lang.Integer">
+    select  count(alarm_id)
+    from (
+        select al.alarm_id, al.alarm_status from alarm al
+        left join lock_process lo on al.process_id=lo.process_id
+        inner join (
+        select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
+        <where>
+            au.role_id in
+            <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+                #{role}
+            </foreach>
+        </where>
+        ) au on (lo.lock_id = au.lock_id or lo.lock_code = au.lock_code)
+    ) al
+
+    <where>
+        al.alarm_status=#{alarmStatus}
+    </where>
+  </select>
+
 
   <select id="selectCondition" resultMap="BaseResultMap">
     select
@@ -206,7 +228,7 @@
     left join file_info fi3 on lo.face_match_id=fi3.file_id
     left join lock_info li on li.lock_code = lo.lock_code
     left join camera_device cd on li.lock_code = cd.lock_code
-    left join role_lock_auth au on (li.lock_id = au.lock_id and li.lock_code = au.lock_code)
+    left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
     <where>
       <if test="alarm.alarmId != null">
         al.alarm_id = #{alarm.alarmId}
