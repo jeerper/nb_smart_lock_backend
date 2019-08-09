@@ -54,4 +54,9 @@ public class CommonConstants {
      */
     public static final String URL_SEPARATOR = "/";
 
+    /**
+     * 人脸库根目录名称
+     */
+    public static final String FACE_LIB_ROOT = "faceLibRoot";
+
 }
