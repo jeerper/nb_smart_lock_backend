@@ -67,4 +67,4 @@ cp -rf lib ${fileStoragePath}/${projectName}/bin/
 cp -rf config ${fileStoragePath}/${projectName}/bin/
 
 echo "推送组件信息到组件货架上"
-curl -X POST "http://${Cbb_Store_Server_Url}/api/component/pushComponentInfo" -H "accept: */*" -H "Content-Type: application/json;charset=UTF-8" -d "{ \"description\": \"${component_description}\", \"name\": \"${component_name}\", \"tag\": \"${component_tag}\"}"
+curl -X POST "http://${Cbb_Store_Server_Url}/api/component/pushComponentInfo" -H "accept: */*" -H "Content-Type: application/json;charset=UTF-8" -d "{ \"description\": \"${component_description}\", \"name\": \"${component_name}\", \"tag\": \"${component_tag}\", \"type\": \"business\"}"
