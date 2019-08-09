@@ -32,17 +32,16 @@ fi
 
 
 
-cd ${WORKSPACE}/deploy
 
-echo "部署"${projectName}"(Docker版本)"
-
-
-docker-compose -p ${projectName} down  --rmi all
-
-docker-compose -p ${projectName} up  -d
 
 if [ ! -d ${java_service_wrapper_template_path} ]
 then
+    echo "部署"${projectName}"(Docker版本)"
+
+    cd ${WORKSPACE}/deploy
+
+    docker-compose -p ${projectName} down  --rmi all
+    docker-compose -p ${projectName} up  -d
     exit 0
 fi
 
