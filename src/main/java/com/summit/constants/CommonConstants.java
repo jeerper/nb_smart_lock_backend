@@ -10,6 +10,11 @@ public class CommonConstants {
     public static final Integer UPDATE_ERROR = -1;
 
     /**
+     * 增删改操作成功
+     */
+    public static final Integer UPDATE_SUS = 0;
+
+    /**
      * 开始时间标志
      */
     public static final String STARTTIMEMARK = "s";

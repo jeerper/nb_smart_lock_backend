@@ -50,8 +50,8 @@ public class LockRealTimeInfoController {
 
     @ApiOperation(value = "查询全部锁信息及其对应的最新操作历史", notes = "分页参数为空则查全部，不合法则取第一条")
     @GetMapping(value = "/selectAllLockRealTimeInfo")
-    public RestfulEntityBySummit<Map<String,Object>> selectAllLockRealTimeInfo(@ApiParam(value = "当前页，大于等于1")  @RequestParam("current") Integer current,
-                                                                               @ApiParam(value = "每页条数，大于等于0")  @RequestParam("pageSize") Integer pageSize) {
+    public RestfulEntityBySummit<Map<String,Object>> selectAllLockRealTimeInfo(@ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
+                                                                               @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         Map<String,Object> data = new HashMap<>();
         List<LockRealTimeInfo> lockRealTimeInfos;
         List<LockInfo> lockInfos;

@@ -140,7 +140,7 @@ public class LockInfoServiceImpl implements LockInfoService {
      * @return 返回不为-1则为成功
      */
     @Override
-    public int delLockByLockCod(String lockCode) {
+    public int delLockByLockCode(String lockCode) {
         if(lockCode == null){
             log.error("锁id为空");
             return CommonConstants.UPDATE_ERROR;

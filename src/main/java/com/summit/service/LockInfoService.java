@@ -72,6 +72,6 @@ public interface LockInfoService {
      * @param lockCode 锁编号
      * @return 返回不为-1则为成功
      */
-    int delLockByLockCod(String lockCode);
+    int delLockByLockCode(String lockCode);
 
 }
