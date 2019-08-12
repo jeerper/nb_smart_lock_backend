@@ -4,6 +4,8 @@ import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
 import com.summit.constants.CommonConstants;
+import com.summit.dao.entity.AccCtrlProcess;
+import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.LockInfo;
@@ -48,7 +50,7 @@ public class AlarmController {
             log.error("告警信息为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警信息为空",null);
         }
-        if(alarm.getProcessId() == null){
+        if(alarm.getAccCtrlProId() == null){
             log.error("告警对应所操作记录id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警对应所操作记录id为空",null);
         }
@@ -69,7 +71,7 @@ public class AlarmController {
             log.error("告警信息为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警信息为空",null);
         }
-        if(alarm.getAlarmId() == null && alarm.getProcessId() == null){
+        if(alarm.getAlarmId() == null && alarm.getAccCtrlProId() == null){
             log.error("alarmId和processId不能同时为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"alarmId和processId不能同时为空",null);
         }
@@ -99,7 +101,7 @@ public class AlarmController {
         if(alarmId != null){
             alarm.setAlarmId(alarmId);
         }else{
-            alarm.setProcessId(processId);
+            alarm.setAccCtrlProId(processId);
         }
         alarm.setAlarmStatus(alarmStatus);
         alarm.setAlarmTime(new Date());
@@ -300,17 +302,16 @@ public class AlarmController {
 
 
     /**
-     * 过滤设备ip、锁关联的用户角色等敏感信息
+     * 过滤门禁关联的用户角色等敏感信息
      * @param alarms 待过滤告警对象列表
      */
     private void filterInfo(List<Alarm> alarms) {
         for (Alarm al : alarms){
-            LockProcess lockProRecord = al.getLockProRecord();
-            if(lockProRecord != null){
-                LockInfo lockInfo = lockProRecord.getLockInfo();
-                if(lockInfo != null){
-                    lockInfo.setRoles(null);
-                    lockInfo.setDevices(null);
+            AccCtrlProcess accCtrlProcess = al.getAccCtrlProcess();
+            if(accCtrlProcess != null){
+                AccessControlInfo accessControlInfo = accCtrlProcess.getAccessControlInfo();
+                if(accessControlInfo != null){
+                    accessControlInfo.setRoles(null);
                 }
             }
         }

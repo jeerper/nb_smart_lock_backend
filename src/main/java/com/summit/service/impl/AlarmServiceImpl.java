@@ -44,7 +44,7 @@ public class AlarmServiceImpl implements AlarmService {
             return CommonConstants.UPDATE_ERROR;
         }
         List<String> roles = LockAuthCtrl.getRoles();
-        if(lockProcessDao.selectLockProcessById(alarm.getProcessId(),roles) == null){
+        if(lockProcessDao.selectLockProcessById(alarm.getAccCtrlProId(),roles) == null){
             log.warn("此告警对应锁操作记录不存在");
 //            return -1;
         }
@@ -63,7 +63,7 @@ public class AlarmServiceImpl implements AlarmService {
             return CommonConstants.UPDATE_ERROR;
         }
         List<String> roles = LockAuthCtrl.getRoles();
-        if(lockProcessDao.selectLockProcessById(alarm.getProcessId(),roles) == null){
+        if(lockProcessDao.selectLockProcessById(alarm.getAccCtrlProId(),roles) == null){
             log.warn("此告警对应锁操作记录不存在");
 //            return -1;
         }
@@ -71,7 +71,7 @@ public class AlarmServiceImpl implements AlarmService {
         if(alarm.getAlarmId() != null){
             return alarmDao.update(alarm , updateWrapper.eq("alarm_id" , alarm.getAlarmId()));
         }
-        return alarmDao.update(alarm , updateWrapper.eq("process_id" , alarm.getProcessId()));
+        return alarmDao.update(alarm , updateWrapper.eq("process_id" , alarm.getAccCtrlProId()));
     }
 
     /**
@@ -225,7 +225,7 @@ public class AlarmServiceImpl implements AlarmService {
         List<LockProcess> lockProcesses = lockProcessDao.selectByLockCode(lockCode, page,roles);
         for (LockProcess lockProcess: lockProcesses) {
 
-            alarms.add(alarmDao.selectByProcessId(lockProcess.getProcessId(), roles));
+            alarms.add(alarmDao.selectByAccCtrlProId(lockProcess.getProcessId(), roles));
         }
         return alarms;
     }
@@ -266,7 +266,7 @@ public class AlarmServiceImpl implements AlarmService {
         List<String> roles = LockAuthCtrl.getRoles();
         List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lp, start, end, page,roles);
         for (LockProcess lockProcess: lockProcesses) {
-            alarms.add(alarmDao.selectByProcessId(lockProcess.getProcessId(), roles));
+            alarms.add(alarmDao.selectByAccCtrlProId(lockProcess.getProcessId(), roles));
         }
         return alarms;
     }
@@ -312,7 +312,7 @@ public class AlarmServiceImpl implements AlarmService {
         List<String> roles = LockAuthCtrl.getRoles();
         List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lp, start, end, page,roles);
         for (LockProcess lockProcess: lockProcesses) {
-            alarms.add(alarmDao.selectByProcessId(lockProcess.getProcessId(), roles));
+            alarms.add(alarmDao.selectByAccCtrlProId(lockProcess.getProcessId(), roles));
         }
         return alarms;
     }

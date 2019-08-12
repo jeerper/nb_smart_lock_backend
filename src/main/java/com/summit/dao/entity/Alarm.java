@@ -22,11 +22,11 @@ public class Alarm {
     @TableField(value = "alarm_name")
     private String alarmName;
     @ApiModelProperty(value="邮件附件，可传多个 ",name="processId")
-    @TableField(value = "process_id")
-    private String processId;
-    //告警对应的锁操作记录
+    @TableField(value = "acc_ctrl_pro_id")
+    private String accCtrlProId;
+    //告警对应的门禁操作记录
     @TableField(exist = false)
-    private LockProcess lockProRecord;
+    private AccCtrlProcess accCtrlProcess;
     @ApiModelProperty(value="告警发生时间 ",name="alarmTime")
     @TableField(value = "alarm_time")
     private Date alarmTime;

@@ -143,7 +143,7 @@ public class test {
 
     private Alarm getAlarm(LockProcess lockProcess) {
         Alarm alarm = new Alarm();
-        alarm.setProcessId(lockProcess.getProcessId());
+        alarm.setAccCtrlProId(lockProcess.getProcessId());
         alarm.setAlarmTime(lockProcess.getProcessTime());
         alarm.setAlarmStatus(1);
         return alarm;

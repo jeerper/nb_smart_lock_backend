@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.summit.dao.repository.AccCtrlProcessDao">
+  <resultMap id="BaseResultMap" type="com.summit.dao.entity.AccCtrlProcess">
+    <result column="acc_ctrl_pro_id" jdbcType="VARCHAR" property="accCtrlProId" />
+    <result column="access_control_id" jdbcType="VARCHAR" property="accessControlId" />
+    <result column="access_control_name" jdbcType="VARCHAR" property="accessControlName" />
+    <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
+    <result column="device_ip" jdbcType="VARCHAR" property="deviceIp" />
+    <result column="lock_id" jdbcType="VARCHAR" property="lockId" />
+    <result column="lock_code" jdbcType="VARCHAR" property="lockCode" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="gender" jdbcType="INTEGER" property="gender" />
+    <result column="birthday" jdbcType="TIMESTAMP" property="birthday" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="card_type" jdbcType="INTEGER" property="cardType" />
+    <result column="card_id" jdbcType="VARCHAR" property="cardId" />
+    <result column="face_match_rate" jdbcType="REAL" property="faceMatchRate" />
+    <result column="face_lib_name" jdbcType="VARCHAR" property="faceLibName" />
+    <result column="face_lib_type" jdbcType="INTEGER" property="faceLibType" />
+
+    <result column="process_type" jdbcType="INTEGER" property="processType" />
+    <result column="process_result" jdbcType="VARCHAR" property="processResult" />
+    <result column="fail_reason" jdbcType="VARCHAR" property="failReason" />
+    <result column="panorama_pic_id" jdbcType="VARCHAR" property="panoramaPicId" />
+    <result column="face_panorama_id" jdbcType="VARCHAR" property="facePanoramaId" />
+    <result column="face_pic_id" jdbcType="VARCHAR" property="facePicId" />
+    <result column="face_match_id" jdbcType="VARCHAR" property="faceMatchId" />
+    <result column="process_time" jdbcType="TIMESTAMP" property="processTime" />
+
+    <association property="accessControlInfo" javaType="com.summit.dao.entity.AccessControlInfo">
+      <result column="ac_access_control_id" jdbcType="VARCHAR" property="accessControlId" />
+      <result column="ac_access_control_name" jdbcType="VARCHAR" property="accessControlName" />
+      <result column="ac_lock_id" jdbcType="VARCHAR" property="lockId" />
+      <result column="ac_lock_code" jdbcType="VARCHAR" property="lockCode" />
+      <result column="ac_entry_camera_id" jdbcType="VARCHAR" property="entryCameraId" />
+      <result column="ac_entry_camera_ip" jdbcType="VARCHAR" property="entryCameraIp" />
+      <result column="ac_exit_camera_id" jdbcType="VARCHAR" property="exitCameraId" />
+      <result column="ac_exit_camera_ip" jdbcType="VARCHAR" property="exitCameraIp" />
+      <result column="ac_status" jdbcType="INTEGER" property="status" />
+      <result column="ac_createby" jdbcType="VARCHAR" property="createby" />
+      <result column="ac_createtime" jdbcType="TIMESTAMP" property="createtime" />
+      <result column="ac_updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+
+      <collection property="roles" resultMap="rolesResult"  />
+    </association>
+
+    <association property="facePanorama" javaType="com.summit.dao.entity.FileInfo">
+      <result column="fi1_id" jdbcType="VARCHAR" property="fileId" />
+      <result column="fi1_name" jdbcType="VARCHAR" property="filenName" />
+      <result column="fi1_path" jdbcType="LONGVARCHAR" property="filePath" />
+      <result column="fi1_des" jdbcType="LONGVARCHAR" property="description" />
+    </association>
+    <association property="facePic" javaType="com.summit.dao.entity.FileInfo">
+      <result column="fi2_id" jdbcType="VARCHAR" property="fileId" />
+      <result column="fi2_name" jdbcType="VARCHAR" property="filenName" />
+      <result column="fi2_path" jdbcType="LONGVARCHAR" property="filePath" />
+      <result column="fi2_des" jdbcType="LONGVARCHAR" property="description" />
+    </association>
+    <association property="faceMatch" javaType="com.summit.dao.entity.FileInfo">
+      <result column="fi3_id" jdbcType="VARCHAR" property="fileId" />
+      <result column="fi3_name" jdbcType="VARCHAR" property="filenName" />
+      <result column="fi3_path" jdbcType="LONGVARCHAR" property="filePath" />
+      <result column="fi3_des" jdbcType="LONGVARCHAR" property="description" />
+    </association>
+
+  </resultMap>
+
+  <resultMap id="rolesResult" type="com.summit.dao.entity.AccCtrlRole">
+    <result column="au_id" jdbcType="VARCHAR" property="id" />
+    <result column="au_role_id" jdbcType="VARCHAR" property="roleCode" />
+    <result column="au_access_control_id" jdbcType="VARCHAR" property="accessControlId" />
+  </resultMap>
+
+
+  <sql id="Base_Column_List">
+    acc_ctrl_pro_id, access_control_id, access_control_name, device_id, device_ip, lock_id,lock_code, user_id, user_name, gender, birthday, province, city,
+    card_type, card_id, face_match_rate, face_lib_name, face_lib_type,process_type, process_result,fail_reason,
+    panorama_pic_id, face_panorama_id, face_pic_id, face_match_id, process_time
+  </sql>
+  <sql id="AccCtrl_Have_Alias_List">
+    acp.acc_ctrl_pro_id, acp.access_control_id, acp.access_control_name, acp.device_id, acp.device_ip, acp.lock_id,
+    acp.lock_code,
+    acp.user_id, acp.user_name, acp.gender, acp.birthday, acp.province, acp.city, acp.card_type, acp.card_id,
+    acp.face_match_rate, acp.face_lib_name, acp.face_lib_type, acp.process_type, acp.process_result,acp.fail_reason,
+    acp.panorama_pic_id, acp.face_panorama_id, acp.face_pic_id, acp.face_match_id, acp.process_time
+  </sql>
+  <sql id="AccCtrlInfo_Have_Alias_List">
+    ac.access_control_id ac_access_control_id, ac.access_control_name ac_access_control_name,
+    ac.lock_id ac_lock_id, ac.lock_code ac_lock_code,
+    ac.entry_camera_id ac_entry_camera_id, ac.entry_camera_ip ac_entry_camera_ip, ac.exit_camera_id ac_exit_camera_id,
+    ac.exit_camera_ip ac_exit_camera_ip, ac.status ac_status, ac.createby ac_createby,
+    ac.createtime ac_createtime, ac.updatetime ac_updatetime
+  </sql>
+  <sql id="Auth_Have_Alias_List">
+    au.id au_id, au.role_id au_role_id, au.access_control_id au_access_control_id
+  </sql>
+  <sql id="Auth_No_Alias_List">
+    au.id , au.role_id , au.access_control_id
+  </sql>
+  <sql id="Face_Panorama_Alias_List">
+    fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des
+  </sql>
+  <sql id="Face_Pic_Alias_List">
+    fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des
+  </sql>
+  <sql id="Face_Match_Alias_List">
+    fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+  </sql>
+
+
+  <select id="selectAccCtrlProcessById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="AccCtrl_Have_Alias_List" />,
+    <include refid="AccCtrlInfo_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />,
+    <include refid="Face_Panorama_Alias_List" />,
+    <include refid="Face_Pic_Alias_List" />,
+    <include refid="Face_Match_Alias_List" />
+    from (
+    select <include refid="AccCtrl_Have_Alias_List" /> from acc_ctrl_process acp
+    inner join (
+    select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
+    <where>
+      au.role_id in
+      <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+        #{role}
+      </foreach>
+    </where>
+    ) au on au.access_control_id = acp.access_control_id
+    ) acp
+    left join file_info fi1 on acp.face_panorama_id=fi1.file_id
+    left join file_info fi2 on acp.face_pic_id=fi2.file_id
+    left join file_info fi3 on acp.face_match_id=fi3.file_id
+    left join access_control ac on ac.access_control_id = acp.access_control_id
+    left join role_accesscontrol_auth au on au.access_control_id = acp.access_control_id
+    <where>
+      acp.acc_ctrl_pro_id=#{accCtrlProId}
+    </where>
+  </select>
+
+  <select id="selectAccCtrlProcessByLockCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="AccCtrl_Have_Alias_List" />,
+    <include refid="AccCtrlInfo_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />,
+    <include refid="Face_Panorama_Alias_List" />,
+    <include refid="Face_Pic_Alias_List" />,
+    <include refid="Face_Match_Alias_List" />
+    from (
+      select <include refid="AccCtrl_Have_Alias_List" /> from acc_ctrl_process acp
+      inner join (
+      select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
+      <where>
+        au.role_id in
+        <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+          #{role}
+        </foreach>
+      </where>
+    ) au on au.access_control_id = acp.access_control_id
+    <if test="page != null and page.current != null and  page.pageSize != null ">
+      limit #{page.current},#{page.pageSize}
+    </if>
+    ) acp
+    left join file_info fi1 on acp.face_panorama_id=fi1.file_id
+    left join file_info fi2 on acp.face_pic_id=fi2.file_id
+    left join file_info fi3 on acp.face_match_id=fi3.file_id
+    left join access_control ac on ac.access_control_id = acp.access_control_id
+    left join role_accesscontrol_auth au on au.access_control_id = acp.access_control_id
+    <where>
+      acp.lock_code=#{lockCode}
+    </where>
+    order by process_time desc
+  </select>
+
+  <select id="selectCondition"  resultMap="BaseResultMap">
+    select
+    <include refid="AccCtrl_Have_Alias_List" />,
+    <include refid="AccCtrlInfo_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />,
+    <include refid="Face_Panorama_Alias_List" />,
+    <include refid="Face_Pic_Alias_List" />,
+    <include refid="Face_Match_Alias_List" />
+    from (
+    select <include refid="AccCtrl_Have_Alias_List" /> from acc_ctrl_process acp
+    inner join (
+    select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
+    <where>
+      au.role_id in
+      <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+        #{role}
+      </foreach>
+    </where>
+    ) au on au.access_control_id = acp.access_control_id
+    <if test="page != null and page.current != null and  page.pageSize != null ">
+      limit #{page.current},#{page.pageSize}
+    </if>
+    ) acp
+    left join file_info fi1 on acp.face_panorama_id=fi1.file_id
+    left join file_info fi2 on acp.face_pic_id=fi2.file_id
+    left join file_info fi3 on acp.face_match_id=fi3.file_id
+    left join access_control ac on ac.access_control_id = acp.access_control_id
+    left join role_accesscontrol_auth au on au.access_control_id = acp.access_control_id
+    <where>
+      <if test="accCtrlProcess.accCtrlProId != null">
+        acp.acc_ctrl_pro_id = #{accCtrlProcess.accCtrlProId}
+      </if>
+      <if test="accCtrlProcess.accessControlId != null">
+        acp.access_control_id = #{accCtrlProcess.accessControlId}
+      </if>
+      <if test="accCtrlProcess.accessControlName != null">
+        acp.access_control_name = #{accCtrlProcess.accessControlName}
+      </if>
+      <if test="accCtrlProcess.deviceId != null">
+        and acp.device_id = #{accCtrlProcess.deviceId}
+      </if>
+      <if test="accCtrlProcess.deviceIp != null">
+        and acp.device_ip = #{accCtrlProcess.deviceIp}
+      </if>
+      <if test="accCtrlProcess.lockId != null">
+        and acp.lock_cd = #{accCtrlProcess.lockId}
+      </if>
+      <if test="accCtrlProcess.lockCode != null">
+        and acp.lock_code = #{accCtrlProcess.lockCode}
+      </if>
+      <if test="accCtrlProcess.userId != null">
+        and acp.user_id = #{accCtrlProcess.userId}
+      </if>
+      <if test="accCtrlProcess.userName != null">
+        and acp.user_name = #{accCtrlProcess.userName}
+      </if>
+      <if test="accCtrlProcess.gender != null">
+        and acp.gender = #{accCtrlProcess.gender}
+      </if>
+      <if test="accCtrlProcess.birthday != null">
+        and acp.birthday = #{accCtrlProcess.birthday}
+      </if>
+      <if test="accCtrlProcess.province != null">
+        and acp.province = #{accCtrlProcess.province}
+      </if>
+      <if test="accCtrlProcess.city != null">
+        and acp.city = #{accCtrlProcess.city}
+      </if>
+      <if test="accCtrlProcess.cardType != null">
+        and acp.card_type = #{accCtrlProcess.cardType}
+      </if>
+      <if test="accCtrlProcess.cardId != null">
+        and acp.card_id = #{accCtrlProcess.cardId}
+      </if>
+      <if test="accCtrlProcess.faceMatchRate != null">
+        and acp.face_match_rate = #{accCtrlProcess.faceMatchRate}
+      </if>
+      <if test="accCtrlProcess.faceLibName != null">
+        and acp.face_lib_name = #{accCtrlProcess.faceLibName}
+      </if>
+      <if test="accCtrlProcess.faceLibType != null">
+        and acp.face_lib_type = #{accCtrlProcess.faceLibType}
+      </if>
+      <if test="accCtrlProcess.processType != null">
+        and acp.process_type = #{accCtrlProcess.processType}
+      </if>
+      <if test="accCtrlProcess.processResult != null">
+        and acp.process_result = #{accCtrlProcess.processResult}
+      </if>
+      <if test="accCtrlProcess.failReason != null">
+        and acp.fail_reason = #{accCtrlProcess.failReason}
+      </if>
+      <if test="start != null">
+        and acp.process_time &gt;= #{start}
+      </if>
+      <if test="end != null">
+        and acp.process_time &lt;= #{end}
+      </if>
+    </where>
+    order by process_time desc
+  </select>
+
+  <insert id="insertRecord" parameterType="com.summit.dao.entity.AccCtrlProcess">
+    insert into acc_ctrl_process
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="accCtrlProId != null">
+          acc_ctrl_pro_id,
+        </if>
+        <if test="accessControlId != null">
+          access_control_id,
+        </if>
+        <if test="accessControlName != null">
+          access_control_name,
+        </if>
+        <if test="deviceId != null">
+          device_id,
+        </if>
+        <if test="deviceIp != null">
+          device_ip,
+        </if>
+        <if test="lockId != null">
+          lock_id,
+        </if>
+        <if test="lockCode != null">
+          lock_code,
+        </if>
+        <if test="userId != null">
+          user_id,
+        </if>
+        <if test="userName != null">
+          user_name,
+        </if>
+        <if test="gender != null">
+          gender,
+        </if>
+        <if test="birthday != null">
+          birthday,
+        </if>
+        <if test="province != null">
+          province,
+        </if>
+        <if test="city != null">
+          city,
+        </if>
+        <if test="cardType != null">
+          card_type,
+        </if>
+        <if test="cardId != null">
+          card_id,
+        </if>
+        <if test="faceMatchRate != null">
+          face_match_rate,
+        </if>
+        <if test="faceLibName != null">
+          face_lib_name,
+        </if>
+        <if test="faceLibType != null">
+          face_lib_type,
+        </if>
+        <if test="processType != null">
+          process_type,
+        </if>
+        <if test="processResult != null">
+          process_result,
+        </if>
+        <if test="failReason != null">
+          fail_reason,
+        </if>
+        <if test="panoramaPic != null and panoramaPic.fileId != null">
+          panorama_pic_id,
+        </if>
+        <if test="facePanorama != null and facePanorama.fileId != null">
+          face_panorama_id,
+        </if>
+        <if test="facePic != null and facePic.fileId != null">
+          face_pic_id,
+        </if>
+        <if test="faceMatch != null and faceMatch.fileId != null">
+          face_match_id,
+        </if>
+        <if test="processTime != null">
+          process_time,
+        </if>
+      </trim>
+      <trim prefix="values (" suffix=")" suffixOverrides=",">
+        <if test="accCtrlProId != null">
+          #{accCtrlProId},
+        </if>
+        <if test="accessControlId != null">
+          #{accessControlId},
+        </if>
+        <if test="accessControlName != null">
+          #{accessControlName},
+        </if>
+        <if test="deviceId != null">
+          #{deviceId},
+        </if>
+        <if test="deviceIp != null">
+          #{deviceIp},
+        </if>
+        <if test="lockId != null">
+          #{lockId},
+        </if>
+        <if test="lockCode != null">
+          #{lockCode},
+        </if>
+        <if test="userId != null">
+          #{userId},
+        </if>
+        <if test="userName != null">
+          #{userName},
+        </if>
+        <if test="gender != null">
+          #{gender},
+        </if>
+        <if test="birthday != null">
+          #{birthday},
+        </if>
+        <if test="province != null">
+          #{province},
+        </if>
+        <if test="city != null">
+          #{city},
+        </if>
+        <if test="cardType != null">
+          #{cardType},
+        </if>
+        <if test="cardId != null">
+          #{cardId},
+        </if>
+        <if test="faceMatchRate != null">
+          #{faceMatchRate},
+        </if>
+        <if test="faceLibName != null">
+          #{faceLibName},
+        </if>
+        <if test="faceLibType != null">
+          #{faceLibType},
+        </if>
+        <if test="processType != null">
+          #{processType},
+        </if>
+        <if test="processResult != null">
+          #{processResult},
+        </if>
+        <if test="failReason != null">
+          #{failReason},
+        </if>
+        <if test="panoramaPic != null and panoramaPic.fileId != null">
+          #{panoramaPic.fileId},
+        </if>
+        <if test="facePanorama != null and facePanorama.fileId != null">
+          #{facePanorama.fileId},
+        </if>
+        <if test="facePic != null and facePic.fileId != null">
+          #{facePic.fileId},
+        </if>
+        <if test="faceMatch != null and faceMatch.fileId != null">
+          #{faceMatch.fileId},
+        </if>
+        <if test="processTime != null">
+          #{processTime},
+        </if>
+      </trim>
+  </insert>
+
+    <update id="updateRecord" parameterType="com.summit.dao.entity.AccCtrlProcess">
+      update acc_ctrl_process
+      <set>
+        <if test="accCtrlProId != null">
+          acc_ctrl_pro_id = #{accCtrlProId},
+        </if>
+        <if test="accessControlId != null">
+          access_control_id = #{accessControlId},
+        </if>
+        <if test="accessControlName != null">
+          access_control_name = #{accessControlName},
+        </if>
+        <if test="deviceId != null">
+          device_id = #{deviceId},
+        </if>
+        <if test="deviceIp != null">
+          device_ip = #{deviceIp},
+        </if>
+        <if test="lockId != null">
+          lock_id = #{lockId},
+        </if>
+        <if test="lockCode != null">
+          lock_code = #{lockCode},
+        </if>
+        <if test="userId != null">
+          user_id = #{userId},
+        </if>
+        <if test="userName != null">
+          user_name = #{userName},
+        </if>
+        <if test="gender != null">
+          gender = #{gender},
+        </if>
+        <if test="birthday != null">
+          birthday = #{birthday},
+        </if>
+        <if test="province != null">
+          province = #{province},
+        </if>
+        <if test="city != null">
+          city = #{city},
+        </if>
+        <if test="cardType != null">
+          card_type = #{cardType},
+        </if>
+        <if test="cardId != null">
+          card_id = #{cardId},
+        </if>
+        <if test="faceMatchRate != null">
+          face_match_rate = #{faceMatchRate},
+        </if>
+        <if test="faceLibName != null">
+          face_lib_name = #{faceLibName},
+        </if>
+        <if test="faceLibType != null">
+          face_lib_type = #{faceLibType},
+        </if>
+        <if test="processType != null">
+          process_type = #{processType},
+        </if>
+        <if test="processResult != null">
+          process_result = #{processResult},
+        </if>
+        <if test="failReason != null">
+          fail_reason = #{failReason},
+        </if>
+        <if test="panoramaPic != null and panoramaPic.fileId != null">
+          panorama_pic_id = #{panoramaPic.fileId},
+        </if>
+        <if test="facePanorama != null and facePanorama.fileId != null">
+          face_panorama_id = #{facePanorama.fileId},
+        </if>
+        <if test="facePic != null and facePic.fileId != null">
+          face_pic_id = #{facePic.fileId},
+        </if>
+        <if test="faceMatch != null and faceMatch.fileId != null">
+          face_match_id = #{faceMatch.fileId},
+        </if>
+        <if test="processTime != null">
+          process_time = #{processTime}
+        </if>
+      </set>
+      <where>
+        acc_ctrl_pro_id = #{accCtrlProId}
+      </where>
+    </update>
+
+</mapper>

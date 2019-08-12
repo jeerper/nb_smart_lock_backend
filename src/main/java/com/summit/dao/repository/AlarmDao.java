@@ -12,7 +12,7 @@ public interface AlarmDao  extends BaseMapper<Alarm> {
 
     Alarm selectAlarmById(@Param("alarmId") String alarmId, @Param("roles") List<String> roles);
 
-    Alarm selectByProcessId(@Param("processId") String processId, @Param("roles") List<String> roles);
+    Alarm selectByAccCtrlProId(@Param("accCtrlProId") String accCtrlProId, @Param("roles") List<String> roles);
 
     List<Alarm> selectCondition(@Param("alarm") Alarm alarm,
                                 @Param("start") Date start,

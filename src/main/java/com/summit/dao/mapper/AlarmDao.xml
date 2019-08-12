@@ -8,8 +8,11 @@
     <result column="alarm_time" jdbcType="TIMESTAMP" property="alarmTime" />
     <result column="alarm_status" jdbcType="INTEGER" property="alarmStatus" />
 
-    <association property="lockProRecord" javaType="com.summit.dao.entity.LockProcess">
-        <result column="process_id" jdbcType="VARCHAR" property="processId" />
+    <association property="accCtrlProcess" javaType="com.summit.dao.entity.AccCtrlProcess">
+        <result column="acc_ctrl_pro_id" jdbcType="VARCHAR" property="accCtrlProId" />
+        <result column="access_control_id" jdbcType="VARCHAR" property="accessControlId" />
+        <result column="access_control_name" jdbcType="VARCHAR" property="accessControlName" />
+        <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
         <result column="device_ip" jdbcType="VARCHAR" property="deviceIp" />
         <result column="lock_id" jdbcType="VARCHAR" property="lockId" />
         <result column="lock_code" jdbcType="VARCHAR" property="lockCode" />
@@ -28,19 +31,26 @@
         <result column="process_type" jdbcType="INTEGER" property="processType" />
         <result column="process_result" jdbcType="VARCHAR" property="processResult" />
         <result column="fail_reason" jdbcType="VARCHAR" property="failReason" />
+        <result column="panorama_pic_id" jdbcType="VARCHAR" property="panoramaPicId" />
         <result column="face_panorama_id" jdbcType="VARCHAR" property="facePanoramaId" />
         <result column="face_pic_id" jdbcType="VARCHAR" property="facePicId" />
         <result column="face_match_id" jdbcType="VARCHAR" property="faceMatchId" />
         <result column="process_time" jdbcType="TIMESTAMP" property="processTime" />
 
-        <association property="lockInfo" javaType="com.summit.dao.entity.LockInfo">
-            <result column="li_lock_id" jdbcType="VARCHAR" property="lockId" />
-            <result column="li_lock_code" jdbcType="VARCHAR" property="lockCode" />
-            <result column="li_status" jdbcType="INTEGER" property="status" />
-            <result column="li_createby" jdbcType="VARCHAR" property="createby" />
-            <result column="li_updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+        <association property="accessControlInfo" javaType="com.summit.dao.entity.AccessControlInfo">
+            <result column="ac_access_control_id" jdbcType="VARCHAR" property="accessControlId" />
+            <result column="ac_access_control_name" jdbcType="VARCHAR" property="accessControlName" />
+            <result column="ac_lock_id" jdbcType="VARCHAR" property="lockId" />
+            <result column="ac_lock_code" jdbcType="VARCHAR" property="lockCode" />
+            <result column="ac_entry_camera_id" jdbcType="VARCHAR" property="entryCameraId" />
+            <result column="ac_entry_camera_ip" jdbcType="VARCHAR" property="entryCameraIp" />
+            <result column="ac_exit_camera_id" jdbcType="VARCHAR" property="exitCameraId" />
+            <result column="ac_exit_camera_ip" jdbcType="VARCHAR" property="exitCameraIp" />
+            <result column="ac_status" jdbcType="INTEGER" property="status" />
+            <result column="ac_createby" jdbcType="VARCHAR" property="createby" />
+            <result column="ac_createtime" jdbcType="TIMESTAMP" property="createtime" />
+            <result column="ac_updatetime" jdbcType="TIMESTAMP" property="updatetime" />
 
-            <collection property="devices" resultMap="devicesResult"  />
             <collection property="roles" resultMap="rolesResult"  />
         </association>
 
@@ -65,113 +75,110 @@
     </association>
 
   </resultMap>
-  <resultMap id="devicesResult" type="com.summit.dao.entity.CameraDevice">
-      <result column="cd_dev_id" jdbcType="VARCHAR" property="devId" />
-      <result column="cd_device_ip" jdbcType="VARCHAR" property="deviceIp" />
-      <result column="cd_lock_id" jdbcType="VARCHAR" property="lockId" />
-      <result column="cd_lock_code" jdbcType="VARCHAR" property="lockCode" />
-      <result column="cd_status" jdbcType="VARCHAR" property="status" />
-  </resultMap>
-  <resultMap id="rolesResult" type="com.summit.dao.entity.LockRole">
-      <result column="au_id" jdbcType="VARCHAR" property="id" />
-      <result column="au_role_id" jdbcType="VARCHAR" property="roleCode" />
-      <result column="au_lock_id" jdbcType="VARCHAR" property="lockId" />
-      <result column="au_lock_code" jdbcType="VARCHAR" property="lockCode" />
-  </resultMap>
+    <resultMap id="rolesResult" type="com.summit.dao.entity.AccCtrlRole">
+        <result column="au_id" jdbcType="VARCHAR" property="id" />
+        <result column="au_role_id" jdbcType="VARCHAR" property="roleCode" />
+        <result column="au_access_control_id" jdbcType="VARCHAR" property="accessControlId" />
+    </resultMap>
 
 
   <sql id="Base_Column_List">
     alarm_id, alarm_name, process_id, alarm_time, alarm_status
   </sql>
   <sql id="Alarm_Have_Alias_List">
-    al.alarm_id, al.alarm_name, al.process_id, al.alarm_time, al.alarm_status
+    al.alarm_id, al.alarm_name, al.acc_ctrl_pro_id, al.alarm_time, al.alarm_status
   </sql>
-  <sql id="Lock_Have_Alias_List">
-      lo.process_id, lo.device_ip, lo.lock_id, lo.lock_code, lo.user_id, lo.user_name, lo.gender, lo.birthday,
-      lo.province, lo.city, lo.card_type, lo.card_id,lo.face_match_rate, lo.face_lib_name, lo.face_lib_type,
-      lo.process_type, lo.process_result,lo.fail_reason, lo.face_panorama_id, lo.face_pic_id, lo.face_match_id,
-      lo.process_time
-  </sql>
-  <sql id="LockInfo_Have_Alias_List">
-    li.lock_id li_lock_id, li.lock_code li_lock_code, li.status li_status,
-    li.createby li_createby, li.updatetime li_updatetime
-  </sql>
-  <sql id="Device_Have_Alias_List">
-      cd.dev_id cd_dev_id, cd.device_ip cd_device_ip, cd.lock_id cd_lock_id,
-      cd.lock_code cd_lock_code, cd.status cd_status
-  </sql>
-  <sql id="Auth_Have_Alias_List">
-    au.id au_id, au.role_id au_role_id, au.lock_id au_lock_id, au.lock_code au_lock_code
-  </sql>
-  <sql id="Auth_No_Alias_List">
-    au.id , au.role_id , au.lock_id , au.lock_code
-  </sql>
+    <sql id="AccCtrl_Have_Alias_List">
+        acp.acc_ctrl_pro_id, acp.access_control_id, acp.access_control_name, acp.device_id, acp.device_ip, acp.lock_id,
+        acp.lock_code,
+        acp.user_id, acp.user_name, acp.gender, acp.birthday, acp.province, acp.city, acp.card_type, acp.card_id,
+        acp.face_match_rate, acp.face_lib_name, acp.face_lib_type, acp.process_type, acp.process_result,acp.fail_reason,
+        acp.panorama_pic_id, acp.face_panorama_id, acp.face_pic_id, acp.face_match_id, acp.process_time
+    </sql>
+    <sql id="AccCtrlInfo_Have_Alias_List">
+        ac.access_control_id ac_access_control_id, ac.access_control_name ac_access_control_name,
+        ac.lock_id ac_lock_id, ac.lock_code ac_lock_code,
+        ac.entry_camera_id ac_entry_camera_id, ac.entry_camera_ip ac_entry_camera_ip, ac.exit_camera_id ac_exit_camera_id,
+        ac.exit_camera_ip ac_exit_camera_ip, ac.status ac_status, ac.createby ac_createby,
+        ac.createtime ac_createtime, ac.updatetime ac_updatetime
+    </sql>
+    <sql id="Auth_Have_Alias_List">
+        au.id au_id, au.role_id au_role_id, au.access_control_id au_access_control_id
+    </sql>
+    <sql id="Auth_No_Alias_List">
+        au.id , au.role_id , au.access_control_id
+    </sql>
+    <sql id="Face_Panorama_Alias_List">
+        fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des
+    </sql>
+    <sql id="Face_Pic_Alias_List">
+        fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des
+    </sql>
+    <sql id="Face_Match_Alias_List">
+        fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    </sql>
 
   <select id="selectAlarmById" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Alarm_Have_Alias_List" />,
-    <include refid="Lock_Have_Alias_List" />,
-    <include refid="LockInfo_Have_Alias_List" />,
-    <include refid="Device_Have_Alias_List" />,
+    <include refid="AccCtrl_Have_Alias_List" />,
+    <include refid="AccCtrlInfo_Have_Alias_List" />,
     <include refid="Auth_Have_Alias_List" />,
-    fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
-    fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
-    fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    <include refid="Face_Panorama_Alias_List" />,
+    <include refid="Face_Pic_Alias_List" />,
+    <include refid="Face_Match_Alias_List" />
     from (select <include refid="Alarm_Have_Alias_List" /> from
-    alarm al left join lock_process lo on al.process_id=lo.process_id
+    alarm al left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
     inner join (
-    select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
+    select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
     <where>
       au.role_id in
       <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
         #{role}
       </foreach>
     </where>
-    ) au on (lo.lock_id = au.lock_id or lo.lock_code = au.lock_code)
+    ) au on au.access_control_id = acp.access_control_id
     ) al
-    left join lock_process lo on al.process_id=lo.process_id
-    left join file_info fi1 on lo.face_panorama_id=fi1.file_id
-    left join file_info fi2 on lo.face_pic_id=fi2.file_id
-    left join file_info fi3 on lo.face_match_id=fi3.file_id
-    left join lock_info li on li.lock_code = lo.lock_code
-    left join camera_device cd on li.lock_code = cd.lock_code
-    left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
+    left join acc_ctrl_process acp on acp.acc_ctrl_pro_id=al.acc_ctrl_pro_id
+    left join file_info fi1 on acp.face_panorama_id=fi1.file_id
+    left join file_info fi2 on acp.face_pic_id=fi2.file_id
+    left join file_info fi3 on acp.face_match_id=fi3.file_id
+    left join access_control ac on ac.access_control_id = acp.access_control_id
+    left join role_accesscontrol_auth au on au.access_control_id = acp.access_control_id
     <where>
       al.alarm_id=#{alarmId}
     </where>
   </select>
 
-  <select id="selectByProcessId" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByAccCtrlProId" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Alarm_Have_Alias_List" />,
-    <include refid="Lock_Have_Alias_List" />,
-    <include refid="LockInfo_Have_Alias_List" />,
-    <include refid="Device_Have_Alias_List" />,
+    <include refid="AccCtrl_Have_Alias_List" />,
+    <include refid="AccCtrlInfo_Have_Alias_List" />,
     <include refid="Auth_Have_Alias_List" />,
-    fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
-    fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
-    fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    <include refid="Face_Panorama_Alias_List" />,
+    <include refid="Face_Pic_Alias_List" />,
+    <include refid="Face_Match_Alias_List" />
     from (select <include refid="Alarm_Have_Alias_List" /> from
-    alarm al left join lock_process lo on al.process_id=lo.process_id
+    alarm al left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
     inner join (
-    select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
+    select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
     <where>
       au.role_id in
       <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
         #{role}
       </foreach>
     </where>
-    ) au on (lo.lock_id = au.lock_id or lo.lock_code = au.lock_code)
+    ) au on au.access_control_id = acp.access_control_id
     ) al
-    left join lock_process lo on al.process_id=lo.process_id
-    left join file_info fi1 on lo.face_panorama_id=fi1.file_id
-    left join file_info fi2 on lo.face_pic_id=fi2.file_id
-    left join file_info fi3 on lo.face_match_id=fi3.file_id
-    left join lock_info li on li.lock_code = lo.lock_code
-    left join camera_device cd on li.lock_code = cd.lock_code
-    left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
+    left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
+    left join file_info fi1 on acp.face_panorama_id=fi1.file_id
+    left join file_info fi2 on acp.face_pic_id=fi2.file_id
+    left join file_info fi3 on acp.face_match_id=fi3.file_id
+    left join access_control ac on ac.access_control_id = acp.access_control_id
+    left join role_accesscontrol_auth au on au.access_control_id = acp.access_control_id
     <where>
-      al.process_id=#{processId}
+      al.acc_ctrl_pro_id=#{accCtrlProId}
     </where>
   </select>
 
@@ -179,16 +186,16 @@
     select  count(alarm_id)
     from (
         select al.alarm_id, al.alarm_status from alarm al
-        left join lock_process lo on al.process_id=lo.process_id
+        left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
         inner join (
-        select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
+        select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
         <where>
             au.role_id in
             <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
                 #{role}
             </foreach>
         </where>
-        ) au on (lo.lock_id = au.lock_id or lo.lock_code = au.lock_code)
+        ) au on au.access_control_id = acp.access_control_id
     ) al
 
     <where>
@@ -200,35 +207,33 @@
   <select id="selectCondition" resultMap="BaseResultMap">
     select
     <include refid="Alarm_Have_Alias_List" />,
-    <include refid="Lock_Have_Alias_List" />,
-    <include refid="LockInfo_Have_Alias_List" />,
-    <include refid="Device_Have_Alias_List" />,
+    <include refid="AccCtrl_Have_Alias_List" />,
+    <include refid="AccCtrlInfo_Have_Alias_List" />,
     <include refid="Auth_Have_Alias_List" />,
-    fi1.file_id fi1_id, fi1.file_name fi1_name, fi1.file_path fi1_path, fi1.description fi1_des,
-    fi2.file_id fi2_id, fi2.file_name fi2_name, fi2.file_path fi2_path, fi2.description fi2_des,
-    fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    <include refid="Face_Panorama_Alias_List" />,
+    <include refid="Face_Pic_Alias_List" />,
+    <include refid="Face_Match_Alias_List" />
     from (select <include refid="Alarm_Have_Alias_List" /> from
-        alarm al left join lock_process lo on al.process_id=lo.process_id
+        alarm al left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
         inner join (
-        select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
+        select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
         <where>
           au.role_id in
           <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
             #{role}
           </foreach>
         </where>
-      ) au on (lo.lock_id = au.lock_id or lo.lock_code = au.lock_code)
+      ) au on au.access_control_id = acp.access_control_id
       <if test="page != null and page.current != null and  page.pageSize != null ">
         limit #{page.current},#{page.pageSize}
       </if>
     ) al
-    left join lock_process lo on al.process_id=lo.process_id
-    left join file_info fi1 on lo.face_panorama_id=fi1.file_id
-    left join file_info fi2 on lo.face_pic_id=fi2.file_id
-    left join file_info fi3 on lo.face_match_id=fi3.file_id
-    left join lock_info li on li.lock_code = lo.lock_code
-    left join camera_device cd on li.lock_code = cd.lock_code
-    left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
+    left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
+    left join file_info fi1 on acp.face_panorama_id=fi1.file_id
+    left join file_info fi2 on acp.face_pic_id=fi2.file_id
+    left join file_info fi3 on acp.face_match_id=fi3.file_id
+    left join access_control ac on ac.access_control_id = acp.access_control_id
+    left join role_accesscontrol_auth au on au.access_control_id = acp.access_control_id
     <where>
       <if test="alarm.alarmId != null">
         al.alarm_id = #{alarm.alarmId}
@@ -236,8 +241,11 @@
       <if test="alarm.alarmName != null">
         and al.alarm_name = #{alarm.alarmName}
       </if>
-      <if test="alarm.processId != null">
-        and al.process_id = #{alarm.processId}
+      <if test="alarm.accCtrlProId != null">
+        and al.acc_ctrl_pro_id = #{alarm.accCtrlProId}
+      </if>
+      <if test="alarm.accCtrlProcess != null and alarm.accCtrlProcess.accessControlName != null">
+        and ac.access_control_name = #{alarm.accCtrlProcess.accessControlName}
       </if>
       <if test="alarm.alarmStatus != null">
         and al.alarm_status = #{alarm.alarmStatus}

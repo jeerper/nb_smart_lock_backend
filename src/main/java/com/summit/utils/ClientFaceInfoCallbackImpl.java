@@ -193,7 +193,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
      */
     private Alarm getAlarm(LockProcess lockProcess) {
         Alarm alarm = new Alarm();
-        alarm.setProcessId(lockProcess.getProcessId());
+        alarm.setAccCtrlProId(lockProcess.getProcessId());
         alarm.setAlarmTime(lockProcess.getProcessTime());
         alarm.setAlarmStatus(AlarmStatus.UNPROCESSED.getCode());
         return alarm;

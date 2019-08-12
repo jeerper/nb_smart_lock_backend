@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.summit.dao.repository.AccessControlDao">
+  <resultMap id="BaseResultMap" type="com.summit.dao.entity.AccessControlInfo">
+    <result column="access_control_id" jdbcType="VARCHAR" property="accessControlId" />
+    <result column="access_control_name" jdbcType="VARCHAR" property="accessControlName" />
+    <result column="lock_id" jdbcType="VARCHAR" property="lockId" />
+    <result column="lock_code" jdbcType="VARCHAR" property="lockCode" />
+    <result column="entry_camera_id" jdbcType="VARCHAR" property="entryCameraId" />
+    <result column="entry_camera_ip" jdbcType="VARCHAR" property="entryCameraIp" />
+    <result column="exit_camera_id" jdbcType="VARCHAR" property="exitCameraId" />
+    <result column="exit_camera_ip" jdbcType="VARCHAR" property="exitCameraIp" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="createby" jdbcType="VARCHAR" property="createby" />
+    <result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+
+    <collection property="roles" resultMap="rolesResult"  />
+  </resultMap>
+
+  <resultMap id="rolesResult" type="com.summit.dao.entity.AccCtrlRole">
+    <result column="au_id" jdbcType="VARCHAR" property="id" />
+    <result column="au_role_id" jdbcType="VARCHAR" property="roleCode" />
+    <result column="au_access_control_id" jdbcType="VARCHAR" property="accessControlId" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    access_control_id, access_control_name, lock_code, entry_camera_id, entry_camera_ip,
+    exit_camera_id, exit_camera_ip, status, createby, createtime, updatetime
+  </sql>
+  <sql id="AccCtrl_Have_Alias_List">
+    ac.access_control_id, ac.access_control_name, ac.lock_code, ac.entry_camera_id,
+    ac.entry_camera_ip, ac.exit_camera_id, ac.exit_camera_ip, ac.status, ac.createby, ac.createtime, ac.updatetime
+  </sql>
+  <sql id="Auth_Have_Alias_List">
+    au.id au_id, au.role_id au_role_id, au.access_control_id au_access_control_id
+  </sql>
+  <sql id="Auth_No_Alias_List">
+    au.id, au.role_id, au.access_control_id
+  </sql>
+
+  <select id="selectAccCtrlById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="AccCtrl_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />
+    from
+    (select <include refid="AccCtrl_Have_Alias_List" /> from access_control ac
+    inner join (
+    select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
+    <where>
+      au.role_id in
+      <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+        #{role}
+      </foreach>
+    </where>
+    ) au on ac.access_control_id = au.access_control_id
+    ) ac
+    left join role_accesscontrol_auth au on ac.access_control_id = au.access_control_id
+    <where>
+      ac.access_control_id=#{accessControlId}
+    </where>
+  </select>
+
+  <select id="selectAccCtrlByLockCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="AccCtrl_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />
+    from
+    (select <include refid="AccCtrl_Have_Alias_List" /> from access_control ac
+    inner join (
+    select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
+    <where>
+      au.role_id in
+      <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+        #{role}
+      </foreach>
+    </where>
+    ) au on ac.access_control_id = au.access_control_id
+    ) ac
+    left join role_accesscontrol_auth au on ac.access_control_id = au.access_control_id
+    <where>
+      ac.lock_code=#{lockCode}
+
+    </where>
+  </select>
+
+
+  <select id="selectAllHaveHistory" resultMap="BaseResultMap">
+    select
+    <include refid="AccCtrl_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />
+    from
+    (select <include refid="AccCtrl_Have_Alias_List" /> from access_control ac
+    inner join acc_ctrl_process acp on acp.access_control_id = ac.access_control_id
+    inner join (
+    select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
+    <where>
+      au.role_id in
+      <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+        #{role}
+      </foreach>
+    </where>
+    ) au on ac.access_control_id = au.access_control_id
+    <if test="page != null and page.current != null and  page.pageSize != null ">
+      limit #{page.current},#{page.pageSize}
+    </if>
+    ) ac
+    left join role_accesscontrol_auth au on ac.access_control_id = au.access_control_id
+
+  </select>
+
+
+  <select id="selectCondition" parameterType="com.summit.dao.entity.AccessControlInfo" resultMap="BaseResultMap">
+    select
+    <include refid="AccCtrl_Have_Alias_List" />,
+    <include refid="Auth_Have_Alias_List" />
+    from
+    (select <include refid="AccCtrl_Have_Alias_List" /> from access_control ac
+    inner join (
+      select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
+        <where>
+          au.role_id in
+          <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+            #{role}
+          </foreach>
+        </where>
+    ) au on ac.access_control_id = au.access_control_id
+      <if test="page != null and page.current != null and  page.pageSize != null ">
+        limit #{page.current},#{page.pageSize}
+      </if>
+    ) ac
+    left join role_accesscontrol_auth au on ac.access_control_id = au.access_control_id
+    <where>
+      <if test="accessControlInfo.accessControlId != null">
+        ac.access_control_id = #{accessControlInfo.accessControlId}
+      </if>
+      <if test="accessControlInfo.accessControlName != null">
+        and ac.access_control_name = #{accessControlInfo.accessControlName}
+      </if>
+      <if test="accessControlInfo.lockId != null">
+        and ac.lock_id = #{accessControlInfo.lockId}
+      </if>
+      <if test="accessControlInfo.lockCode != null">
+        and ac.lock_code = #{accessControlInfo.lockCode}
+      </if>
+      <if test="accessControlInfo.status != null">
+        and ac.status = #{accessControlInfo.status}
+      </if>
+      <if test="accessControlInfo.createby != null">
+        and ac.createby = #{accessControlInfo.createby}
+      </if>
+      <if test="accessControlInfo.createtime != null">
+        and ac.createtime = #{accessControlInfo.createtime}
+      </if>
+      <if test="accessControlInfo.updatetime != null">
+        and ac.updatetime = #{accessControlInfo.updatetime}
+      </if>
+    </where>
+    order by updatetime desc
+
+  </select>
+
+</mapper>
