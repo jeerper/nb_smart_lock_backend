@@ -5,6 +5,7 @@ import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
 import com.summit.constants.CommonConstants;
+import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.FaceInfoEntity;
 import com.summit.dao.entity.FileInfo;
@@ -55,6 +56,7 @@ public class LockRealTimeInfoController {
         Map<String,Object> data = new HashMap<>();
         List<LockRealTimeInfo> lockRealTimeInfos;
         List<LockInfo> lockInfos;
+        List<AccessControlInfo> accessControlInfos;
         try {
             //查出有操作记录的锁并再分页
             lockInfos = lockInfoService.selectAllHaveHistory(new Page(current,pageSize));
