@@ -14,13 +14,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import retrofit2.HttpException;
 import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 
 @Slf4j
-@Component
+@Service
 public class NBLockServiceImpl {
     @Autowired
     private HttpClient httpClient;
