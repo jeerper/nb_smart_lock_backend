@@ -1,12 +1,19 @@
 package com.summit.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
  * 封装开锁和查询锁状态post请求参数
  */
 @Data
+@AllArgsConstructor
 public class LockRequest {
+
+    /**
+     * 锁终端id
+     */
+    private String terminalId;
 
     /**
      * 锁终端标号
@@ -20,8 +27,4 @@ public class LockRequest {
 
     public LockRequest(){}
 
-    public LockRequest(String terminalNum, String operName) {
-        this.terminalNum = terminalNum;
-        this.operName = operName;
-    }
 }

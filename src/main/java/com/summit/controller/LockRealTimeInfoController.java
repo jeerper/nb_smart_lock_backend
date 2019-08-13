@@ -59,7 +59,7 @@ public class LockRealTimeInfoController {
                                                                                @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         Map<String,Object> data = new HashMap<>();
         List<LockRealTimeInfo> lockRealTimeInfos;
-        List<LockInfo> lockInfos;
+//        List<LockInfo> lockInfos;
         List<AccessControlInfo> accessControlInfos;
         try {
             //查出有操作记录的门禁并再分页
@@ -98,6 +98,7 @@ public class LockRealTimeInfoController {
                 lockRealTimeInfo.setAccessControlName(accCtrl.getAccessControlName());
                 lockRealTimeInfo.setAccCtrlStatus(accCtrl.getStatus());
                 lockRealTimeInfo.setLockId(accCtrl.getLockId());
+//                lockRealTimeInfo.setLockCode(accCtrl.getLockCode());
                 List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessService.selectAccCtrlProcessByAccCtrlId(accessControlId,null);
 
                 if(accCtrlProcesses == null || accCtrlProcesses.isEmpty()){

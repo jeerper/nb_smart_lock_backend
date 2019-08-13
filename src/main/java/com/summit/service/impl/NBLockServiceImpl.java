@@ -3,10 +3,12 @@ package com.summit.service.impl;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
+import com.summit.dao.entity.LockInfo;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.entity.ReportParam;
 import com.summit.entity.SafeReportInfo;
+import com.summit.service.LockInfoService;
 import com.summit.util.HttpClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ import rx.functions.Func1;
 public class NBLockServiceImpl {
     @Autowired
     private HttpClient httpClient;
+    @Autowired
+    private LockInfoService lockInfoService;
 
     /**
      * 开锁操作
@@ -29,9 +33,15 @@ public class NBLockServiceImpl {
      * @return RestfulEntityBySummit对象
      */
     public RestfulEntityBySummit toUnLock(LockRequest lockRequest) {
-        if(lockRequest == null || lockRequest.getTerminalNum() == null
+        String terminalId = "";
+        String terminalNum;
+        if(lockRequest == null || ((terminalNum = lockRequest.getTerminalNum()) == null && (terminalId = lockRequest.getTerminalId()) == null)
                 || lockRequest.getOperName() == null){
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993 );
+        }
+        if(terminalNum == null){
+            LockInfo lockInfo = lockInfoService.selectLockById(terminalId);
+            lockRequest.setTerminalNum(lockInfo.getLockCode());
         }
         final BackLockInfo[] backLockInfos = {null};
         final ResponseCodeEnum[] resultCode = {ResponseCodeEnum.CODE_0000};
@@ -82,9 +92,15 @@ public class NBLockServiceImpl {
      * @return RestfulEntityBySummit对象
      */
     public RestfulEntityBySummit toQueryLockStatus(LockRequest lockRequest) {
-        if(lockRequest == null || lockRequest.getTerminalNum() == null
+        String terminalId = "";
+        String terminalNum;
+        if(lockRequest == null || ((terminalNum = lockRequest.getTerminalNum()) == null && (terminalId = lockRequest.getTerminalId()) == null)
                 || lockRequest.getOperName() == null){
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993 );
+        }
+        if(terminalNum == null){
+            LockInfo lockInfo = lockInfoService.selectLockById(terminalId);
+            lockRequest.setTerminalNum(lockInfo.getLockCode());
         }
         final BackLockInfo[] queryBackLockInfo = {null};
         final ResponseCodeEnum[] resultCode = {ResponseCodeEnum.CODE_0000};

@@ -1,7 +1,9 @@
 package com.summit.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
+import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AccessControlDao;
@@ -109,7 +111,11 @@ public class AccessControlServiceImpl implements AccessControlService {
      */
     @Override
     public int insertAccCtrl(AccessControlInfo accessControlInfo) {
-        return 0;
+        if(accessControlInfo == null){
+            log.error("门禁信息为空");
+            return CommonConstants.UPDATE_ERROR;
+        }
+        return accessControlDao.insert(accessControlInfo);
     }
 
     /**
@@ -119,7 +125,13 @@ public class AccessControlServiceImpl implements AccessControlService {
      */
     @Override
     public int updateAccCtrl(AccessControlInfo accessControlInfo) {
-        return 0;
+        if(accessControlInfo == null){
+            log.error("门禁信息为空");
+            return CommonConstants.UPDATE_ERROR;
+        }
+
+        UpdateWrapper<AccessControlInfo> updateWrapper = new UpdateWrapper<>();
+        return accessControlDao.update(accessControlInfo, updateWrapper.eq("access_control_id", accessControlInfo.getAccessControlId()));
     }
 
     /**
@@ -129,7 +141,12 @@ public class AccessControlServiceImpl implements AccessControlService {
      */
     @Override
     public int delAccCtrlByAccCtrlId(String accessControlId) {
-        return 0;
+        if(accessControlId == null){
+            log.error("门禁id为空");
+            return CommonConstants.UPDATE_ERROR;
+        }
+        UpdateWrapper<AccessControlInfo> wrapper = new UpdateWrapper<>();
+        return accessControlDao.delete(wrapper.eq("access_control_id",accessControlId));
     }
 
     /**
@@ -139,6 +156,11 @@ public class AccessControlServiceImpl implements AccessControlService {
      */
     @Override
     public int delAccCtrlByLockCode(String lockCode) {
-        return 0;
+        if(lockCode == null){
+            log.error("锁编号为空");
+            return CommonConstants.UPDATE_ERROR;
+        }
+        UpdateWrapper<AccessControlInfo> wrapper = new UpdateWrapper<>();
+        return accessControlDao.delete(wrapper.eq("lock_code",lockCode));
     }
 }

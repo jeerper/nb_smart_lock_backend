@@ -1,9 +1,17 @@
 package com.summit.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
+import com.summit.dao.entity.AccessControlInfo;
+import com.summit.dao.entity.FileInfo;
+import com.summit.dao.entity.LockProcess;
 import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AccCtrlProcessDao;
+import com.summit.dao.repository.AccessControlDao;
+import com.summit.dao.repository.FileInfoDao;
 import com.summit.service.AccCtrlProcessService;
+import com.summit.service.AccessControlService;
 import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +27,10 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
 
     @Autowired
     private AccCtrlProcessDao accCtrlProcessDao;
+    @Autowired
+    private AccessControlService accessControlService;
+    @Autowired
+    private FileInfoDao fileInfoDao;
 
     /**
      * 门禁操作记录插入
@@ -27,7 +39,31 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
      */
     @Override
     public int insertAccCtrlProcess(AccCtrlProcess accCtrlProcess) {
-        return 0;
+        if(accCtrlProcess == null){
+            log.error("锁操作信息为空");
+            return CommonConstants.UPDATE_ERROR;
+        }
+        FileInfo facePanorama = accCtrlProcess.getFacePanorama();
+        if(facePanorama != null){
+            fileInfoDao.insert(facePanorama);
+            accCtrlProcess.setFacePanoramaId(facePanorama.getFileId());
+        }
+        FileInfo facePic = accCtrlProcess.getFacePic();
+        if(facePic != null) {
+            fileInfoDao.insert(facePic);
+            accCtrlProcess.setFacePicId(facePic.getFileId());
+        }
+        FileInfo faceMatch = accCtrlProcess.getFaceMatch();
+        if(faceMatch != null) {
+            fileInfoDao.insert(faceMatch);
+            accCtrlProcess.setFaceMatchId(faceMatch.getFileId());
+        }
+
+        AccessControlInfo accessControlInfo = accCtrlProcess.getAccessControlInfo();
+        if(accessControlInfo != null){
+            accessControlService.updateAccCtrl(accessControlInfo);
+        }
+        return accCtrlProcessDao.insert(accCtrlProcess);
     }
 
     /**
@@ -37,17 +73,51 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
      */
     @Override
     public int updateAccCtrlProcess(AccCtrlProcess accCtrlProcess) {
-        return 0;
+        if(accCtrlProcess == null){
+            log.error("门禁操作信息为空");
+            return CommonConstants.UPDATE_ERROR;
+        }
+        int result = accCtrlProcessDao.updateRecord(accCtrlProcess);
+        if(result != CommonConstants.UPDATE_ERROR){
+            UpdateWrapper<FileInfo> updateWrapper = new UpdateWrapper<>();
+            FileInfo facePanorama = accCtrlProcess.getFacePanorama();
+            if(facePanorama != null){
+                fileInfoDao.update(accCtrlProcess.getFacePanorama(),updateWrapper.eq("file_id", facePanorama.getFileId()));
+            }
+            FileInfo facePic = accCtrlProcess.getFacePic();
+            if(facePic != null){
+                fileInfoDao.update(accCtrlProcess.getFacePic(),updateWrapper.eq("file_id",facePic.getFileId()));
+            }
+            FileInfo faceMatch = accCtrlProcess.getFaceMatch();
+            if(faceMatch != null){
+                fileInfoDao.update(accCtrlProcess.getFaceMatch(),updateWrapper.eq("file_id", faceMatch.getFileId()));
+            }
+        }
+        return result;
     }
 
     /**
      * 门禁操作记录删除
-     * @param processId 门禁操作记录id
+     * @param accCtrlProId 门禁操作记录id
      * @return 不为-1则成功
      */
     @Override
-    public int delAccCtrlProcess(String processId) {
-        return 0;
+    public int delAccCtrlProcess(String accCtrlProId) {
+        if(accCtrlProId == null){
+            log.error("锁操作信息id为空");
+            return CommonConstants.UPDATE_ERROR;
+        }
+        List<String> roles = LockAuthCtrl.getRoles();
+        AccCtrlProcess accCtrlProcess = accCtrlProcessDao.selectAccCtrlProcessById(accCtrlProId, roles);
+        UpdateWrapper<AccCtrlProcess> wrapper = new UpdateWrapper<>();
+        UpdateWrapper<FileInfo> fileWrapper = new UpdateWrapper<>();
+        int result = accCtrlProcessDao.delete(wrapper.eq("acc_ctrl_pro_id", accCtrlProId));
+        if(result != CommonConstants.UPDATE_ERROR && accCtrlProcess != null){
+            fileInfoDao.delete(fileWrapper.eq("file_id",accCtrlProcess.getFacePanorama().getFileId()));
+            fileInfoDao.delete(fileWrapper.eq("file_id",accCtrlProcess.getFacePic().getFileId()));
+            fileInfoDao.delete(fileWrapper.eq("file_id",accCtrlProcess.getFaceMatch().getFileId()));
+        }
+        return result;
     }
 
     /**

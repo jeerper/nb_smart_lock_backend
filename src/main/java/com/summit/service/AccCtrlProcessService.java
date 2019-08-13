@@ -26,10 +26,10 @@ public interface AccCtrlProcessService {
 
     /**
      * 门禁操作记录删除
-     * @param processId 门禁操作记录id
+     * @param accCtrlProId 门禁操作记录id
      * @return 不为-1则成功
      */
-    int delAccCtrlProcess(String processId);
+    int delAccCtrlProcess(String accCtrlProId);
 
 
     //###门禁操作记录查询------------------------------

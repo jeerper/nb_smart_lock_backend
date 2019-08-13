@@ -117,7 +117,7 @@ public class LockRecordServiceImpl implements LockRecordService {
         UpdateWrapper<LockProcess> wrapper = new UpdateWrapper<>();
         UpdateWrapper<FileInfo> fileWrapper = new UpdateWrapper<>();
         int result = lockProcessDao.delete(wrapper.eq("process_id", processId));
-        if(result != CommonConstants.UPDATE_ERROR){
+        if(result != CommonConstants.UPDATE_ERROR && lockProcess != null){
             fileInfoDao.delete(fileWrapper.eq("file_id",lockProcess.getFacePanorama().getFileId()));
             fileInfoDao.delete(fileWrapper.eq("file_id",lockProcess.getFacePic().getFileId()));
             fileInfoDao.delete(fileWrapper.eq("file_id",lockProcess.getFaceMatch().getFileId()));

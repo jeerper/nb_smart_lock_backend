@@ -20,6 +20,9 @@ public class PageConverter {
     }
 
     public static int getPageCount(int pageSize, int rowsCount) {
+        if(pageSize <= 0){
+            pageSize = 1;
+        }
         return rowsCount % pageSize == 0 ? rowsCount / pageSize : rowsCount / pageSize + 1;
     }
 
