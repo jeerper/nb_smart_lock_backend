@@ -2,12 +2,13 @@ sdk:
   port: 6060
   userName: "admin"
   password: "HuaWei123"
-  localhost: "${Registry_Center_IP:192.168.141.222}"
+#  localhost: "${Registry_Center_IP:192.168.141.222}"
+  localhost: "${Registry_Center_IP:192.168.141.155}"
 server:
   port: 22233
 spring:
   profiles:
-    active: pro
+    active: dev
     include: common
   application:
     name: "cbb-nb-smart-lock"
