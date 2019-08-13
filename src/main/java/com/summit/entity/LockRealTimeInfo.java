@@ -10,7 +10,7 @@ import lombok.Data;
 @AllArgsConstructor
 @ApiModel(value="锁实时信息类", description="封装所需要的实时信息")
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LockRealTimeInfo {
 
     @ApiModelProperty(value="门禁id",name="accessControlId")
@@ -19,16 +19,20 @@ public class LockRealTimeInfo {
     private String accessControlName;
     @ApiModelProperty(value="锁id",name="lockId")
     private String lockId;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @ApiModelProperty(value="锁编号",name="lockCode")
     private String lockCode;
     //1打开，2锁定，3告警
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @ApiModelProperty(value="门禁状态",name="accCtrlStatus",notes = "1打开，2锁定，3告警")
     private Integer accCtrlStatus;
     //1开锁，2锁定，3告警
-//    @ApiModelProperty(value="锁状态",name="lockStatus",notes = "1开锁，2锁定，3告警")
-//    private Integer lockStatus;
-//    @ApiModelProperty(value="摄像头id",name="devId")
-//    private String devId;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @ApiModelProperty(value="锁状态",name="lockStatus",notes = "1开锁，2锁定，3告警")
+    private Integer lockStatus;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @ApiModelProperty(value="摄像头id",name="devId")
+    private String devId;
     @ApiModelProperty(value="摄像头ip地址",name="deviceIp")
     private String deviceIp;
     //0正常，1异常
@@ -36,10 +40,13 @@ public class LockRealTimeInfo {
 //    private Integer deviceStatus;
 
     //最近锁操作记录对应的人脸信息
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @ApiModelProperty(value="对应人脸信息id",name="faceId")
     private String faceId;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @ApiModelProperty(value="用户名",name="userName")
     private String userName;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @ApiModelProperty(value="用户id",name="userId")
     private String userId;
     @ApiModelProperty(value="姓名",name="name")
@@ -62,6 +69,7 @@ public class LockRealTimeInfo {
     private String faceLibName;
     @ApiModelProperty(value="人脸库类型",name="faceLibType")
     private Integer faceLibType;
+
     @ApiModelProperty(value="全景图url",name="facePanoramaUrl")
     private String facePanoramaUrl;
     @ApiModelProperty(value="人脸识别抠图url",name="facePicUrl")
@@ -72,6 +80,7 @@ public class LockRealTimeInfo {
     private String picSnapshotTime;
 
     //当前锁告警数量
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @ApiModelProperty(value="锁当前告警数量",name="alarmCount")
     private Integer alarmCount;
 
