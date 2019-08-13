@@ -122,7 +122,7 @@ public class AlarmController {
     }
 
 
-    @ApiOperation(value = "查询全部告警信息", notes = "分页参数为空则查全部，不合法则取第一条")
+    @ApiOperation(value = "查询全部告警信息", notes = "分页参数为空则查全部，不合法则查询不到结果")
     @GetMapping(value = "/queryAllAlarms")
     public RestfulEntityBySummit<List<Alarm>> queryAllAlarms(@ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
                                                              @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
@@ -141,7 +141,7 @@ public class AlarmController {
     }
 
 
-    @ApiOperation(value = "根据告警状态查询告警信息", notes = "alarmStatus不能为空，0已处理，1未处理，传其他值则无法查到记录。时间信息为空或不合法则无时间限制。分页参数为空则查全部，不合法则取第一条")
+    @ApiOperation(value = "根据告警状态查询告警信息", notes = "alarmStatus不能为空，0已处理，1未处理，传其他值则无法查到记录。时间信息为空或不合法则无时间限制。分页参数为空则查全部，不合法则查询不到结果")
     @GetMapping(value = "/queryAlarmByStatus")
     public RestfulEntityBySummit<List<Alarm>> queryAlarmByStatus(@ApiParam(value = "锁告警状态，0已处理，1未处理", required = true)  @RequestParam(value = "alarmStatus") Integer alarmStatus,
                                                                  @ApiParam(value = "起始时间")  @RequestParam(value = "startTime") String startTime,
@@ -165,7 +165,7 @@ public class AlarmController {
     }
 
 
-    @ApiOperation(value = "根据告警status查询告警信息", notes = "时间信息为空或不合法则无时间限制。分页参数为空则查全部，不合法则取第一条")
+    @ApiOperation(value = "根据告警status查询告警信息", notes = "时间信息为空或不合法则无时间限制。分页参数为空则查全部，不合法则查询不到结果")
     @GetMapping(value = "/queryUntreatedAlarm")
     public RestfulEntityBySummit<List<Alarm>> queryUntreatedAlarm(@ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
                                                                  @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
@@ -174,7 +174,7 @@ public class AlarmController {
         return queryAlarmByStatus(1,startTime,endTime,current,pageSize);
     }
 
-    @ApiOperation(value = "根据告警status查询告警信息", notes = "时间信息为空或不合法则无时间限制。分页参数为空则查全部，不合法则取第一条")
+    @ApiOperation(value = "根据告警status查询告警信息", notes = "时间信息为空或不合法则无时间限制。分页参数为空则查全部，不合法则查询不到结果")
     @GetMapping(value = "/queryUntreatedAlarmCount")
     public RestfulEntityBySummit<Integer> queryUntreatedAlarmCount(@ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
                                                               @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
@@ -203,7 +203,7 @@ public class AlarmController {
     }
 
 
-    @ApiOperation(value = "根据告警名称查询告警信息", notes = "alarmName不能为空。时间信息为空或不合法则无时间限制。分页参数为空则查全部，不合法则取第一条")
+    @ApiOperation(value = "根据告警名称查询告警信息", notes = "alarmName不能为空。时间信息为空或不合法则无时间限制。分页参数为空则查全部，不合法则查询不到结果")
     @GetMapping(value = "/queryAlarmByName")
     public RestfulEntityBySummit<List<Alarm>> queryAlarmByName(@ApiParam(value = "锁告警名称", required = true)  @RequestParam(value = "alarmName") String alarmName,
                                                                @ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
@@ -221,7 +221,7 @@ public class AlarmController {
     }
 
 
-    @ApiOperation(value = "根据锁编号查询告警信息", notes = "lockCode不能为空。时间信息为空或不合法则无时间限制。分页参数为空则查全部，不合法则取第一条")
+    @ApiOperation(value = "根据锁编号查询告警信息", notes = "lockCode不能为空。时间信息为空或不合法则无时间限制。分页参数为空则查全部，不合法则查询不到结果")
     @GetMapping(value = "/queryAlarmByLockCode")
     public RestfulEntityBySummit<List<Alarm>> queryAlarmByLockCode(@ApiParam(value = "锁编号", required = true)  @RequestParam(value = "lockCode") String lockCode,
                                                                    @ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
@@ -239,7 +239,7 @@ public class AlarmController {
     }
 
 
-    @ApiOperation(value = "根据告警对应的设备ip地址查询告警信息", notes = "deviceIp不能为空。时间信息为空或不合法则无时间限制。分页参数为空则查全部，不合法则取第一条")
+    @ApiOperation(value = "根据告警对应的设备ip地址查询告警信息", notes = "deviceIp不能为空。时间信息为空或不合法则无时间限制。分页参数为空则查全部，不合法则查询不到结果")
     @GetMapping(value = "/queryAlarmByDeviceIp")
     public RestfulEntityBySummit<List<Alarm>> queryAlarmByDeviceIp(@ApiParam(value = "设备ip地址", required = true)  @RequestParam(value = "deviceIp") String deviceIp,
                                                                    @ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
@@ -257,7 +257,7 @@ public class AlarmController {
     }
 
 
-    @ApiOperation(value = "根据告警对应的设备id查询告警信息", notes = "devId不能为空。时间信息为空或不合法则无时间限制。分页参数为空则查全部，不合法则取第一条")
+    @ApiOperation(value = "根据告警对应的设备id查询告警信息", notes = "devId不能为空。时间信息为空或不合法则无时间限制。分页参数为空则查全部，不合法则查询不到结果")
     @GetMapping(value = "/queryAlarmByDevId")
     public RestfulEntityBySummit<List<Alarm>> queryAlarmByDevId(@ApiParam(value = "设备id", required = true)  @RequestParam(value = "devId") String devId,
                                                                 @ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
@@ -275,7 +275,7 @@ public class AlarmController {
     }
 
 
-    @ApiOperation(value = "根据所传一个或多个条件组合查询告警信息", notes = "alarm为空或各字段都为空则查询全部。时间信息为空或不合法则无时间限制。分页参数为空则查全部，不合法则取第一条")
+    @ApiOperation(value = "根据所传一个或多个条件组合查询告警信息", notes = "alarm为空或各字段都为空则查询全部。时间信息为空或不合法则无时间限制。分页参数为空则查全部，不合法则查询不到结果")
     @GetMapping(value = "/queryAlarmCondition")
     public RestfulEntityBySummit<List<Alarm>> queryAlarmCondition(@ApiParam(value = "锁告警信息") Alarm alarm,
                                                                   @ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,

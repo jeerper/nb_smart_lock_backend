@@ -53,7 +53,7 @@ public class LockInfoServiceImplTest {
 
     @Test
     public void selectAll() {
-        List<LockInfo> lockInfos = lockInfoService.selectAll(page);
+        List<LockInfo> lockInfos = lockInfoService.selectLockInfoByPage(page).getContent();
         System.out.println(lockInfos);
     }
 
@@ -66,7 +66,7 @@ public class LockInfoServiceImplTest {
 
     @Test
     public void selectAllHaveHistory() {
-        List<LockInfo> lockInfos = lockInfoService.selectAllHaveHistory(new SimplePage(1,1));
+        List<LockInfo> lockInfos = lockInfoService.selectHaveHistoryByPage(new SimplePage(1,1)).getContent();
         System.out.println(lockInfos);
     }
 

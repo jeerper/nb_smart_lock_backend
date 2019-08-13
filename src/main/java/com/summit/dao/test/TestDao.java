@@ -186,7 +186,7 @@ public class TestDao {
     }
     @Test
     public void testFilter(){
-        List<LockInfo> lockInfos = lockInfoService.selectAll(null);
+        List<LockInfo> lockInfos = lockInfoService.selectLockInfoByPage(null).getContent();
         System.out.println(lockInfos);
 //        LockAuthCtrl.toFilterLocks(lockInfos);
 

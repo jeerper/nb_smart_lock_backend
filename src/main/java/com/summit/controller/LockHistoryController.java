@@ -27,7 +27,7 @@ public class LockHistoryController {
     @Autowired
     private LockRecordService lockRecordService;
 
-    @ApiOperation(value = "查询全部锁操作记录", notes = "分页参数为空则查全部，不合法则取第一条")
+    @ApiOperation(value = "查询全部锁操作记录", notes = "分页参数为空则查全部，不合法则查询不到结果")
     @GetMapping(value = "/selectAllLockHistory")
     public RestfulEntityBySummit<List<LockProcess>> selectAllLockHistory(@ApiParam(value = "当前页，大于等于1")  @RequestParam("current") Integer current,
                                                                           @ApiParam(value = "每页条数，大于等于0")  @RequestParam("pageSize") Integer pageSize) {

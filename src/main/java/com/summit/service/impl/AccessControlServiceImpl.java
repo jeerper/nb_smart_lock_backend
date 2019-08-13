@@ -69,20 +69,14 @@ public class AccessControlServiceImpl implements AccessControlService {
      */
     @Override
     public Page<AccessControlInfo> selectHaveHistoryByPage(SimplePage page) {
-        Pageable pageable = new Pageable();
         //转换当前页之前设置当前页
-        pageable.setCurPage(page.getCurrent());
-        PageConverter.convertPage(page);
         List<String> roles = LockAuthCtrl.getRoles();
+        Integer rowsCount = accessControlDao.selectHaveHistoryCountByPage(null, roles);
+        Pageable pageable = PageConverter.getPageable(page,rowsCount);
+        PageConverter.convertPage(page);
         List<AccessControlInfo> accessControlInfos = accessControlDao.selectHaveHistoryByPage(page, roles);
         Page<AccessControlInfo> backPage = new Page<>();
         backPage.setContent(accessControlInfos);
-        Integer pageSize = page.getPageSize();
-        pageable.setPageSize(pageSize);
-        Integer rowsCount = accessControlDao.selectHaveHistoryCountByPage(null, roles);
-        pageable.setRowsCount(rowsCount);
-        pageable.setPageCount(PageConverter.getPageCount(pageSize, rowsCount));
-        pageable.setPageRowsCount(accessControlInfos == null ? 0 : accessControlInfos.size());
         backPage.setPageable(pageable);
         return backPage;
     }

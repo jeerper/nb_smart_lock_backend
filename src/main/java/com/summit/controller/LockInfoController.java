@@ -1,5 +1,7 @@
 package com.summit.controller;
 
+import com.summit.cbb.utils.page.Page;
+import com.summit.cbb.utils.page.Pageable;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
@@ -38,14 +40,15 @@ public class LockInfoController {
     private FaceInfoService faceInfoService;
 
 
-    @ApiOperation(value = "查询全部锁信息", notes = "分页参数为空则查全部，不合法则取第一条")
-    @GetMapping(value = "/selectAllLockInfo")
-    public RestfulEntityBySummit<List<LockInfo>> selectAllLockInfo(@ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
+    @ApiOperation(value = "分页查询全部锁信息", notes = "分页参数为空则查全部，不合法则查询不到结果")
+    @GetMapping(value = "/selectLockInfoByPage")
+    public RestfulEntityBySummit<Page<LockInfo>> selectLockInfoByPage(@ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
                                                                    @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
 
-        List<LockInfo> lockInfos = null;
+        Page<LockInfo> lockInfos = null;
         try {
-            lockInfos = lockInfoService.selectAll(new SimplePage(current,pageSize));
+            lockInfos = lockInfoService.selectLockInfoByPage(new SimplePage(current, pageSize));
+            filterInfo(lockInfos);
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询全部锁信息失败", lockInfos);
         }
@@ -62,6 +65,7 @@ public class LockInfoController {
         LockInfo lockInfo = null;
         try {
             lockInfo = lockInfoService.selectLockById(lockId);
+            filterInfo(lockInfo);
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询锁信息失败", lockInfo);
         }
@@ -77,7 +81,8 @@ public class LockInfoController {
         }
         LockInfo lockInfo = null;
         try {
-            lockInfo = lockInfoService.selectLockById(lockCode);
+            lockInfo = lockInfoService.selectBylockCode(lockCode);
+            filterInfo(lockInfo);
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询锁信息失败", lockInfo);
         }
@@ -86,13 +91,14 @@ public class LockInfoController {
 
 
     @ApiOperation(value = "分页查询全部有操作记录的锁信息", notes = "分页查询全部有操作记录的锁信息")
-    @GetMapping(value = "/selectAllHaveHistory")
-    public RestfulEntityBySummit<List<LockInfo>> selectAllHaveHistory(@ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
+    @GetMapping(value = "/selectHaveHistoryByPage")
+    public RestfulEntityBySummit<Page<LockInfo>> selectHaveHistoryByPage(@ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
                                                                       @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
 
-        List<LockInfo> lockInfos = null;
+        Page<LockInfo> lockInfos = null;
         try {
-            lockInfos = lockInfoService.selectAllHaveHistory(new SimplePage(current, pageSize));
+            lockInfos = lockInfoService.selectHaveHistoryByPage(new SimplePage(current, pageSize));
+            filterInfo(lockInfos);
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"分页查询全部有操作记录的锁信息失败", lockInfos);
         }
@@ -102,20 +108,39 @@ public class LockInfoController {
 
     @ApiOperation(value = "条件查询锁信息", notes = "条件查询锁信息")
     @GetMapping(value = "/selectCondition")
-    public RestfulEntityBySummit<List<LockInfo>> selectCondition(@ApiParam(value = "锁信息参数")  LockInfo lockInfo,
+    public RestfulEntityBySummit<Page<LockInfo>> selectCondition(@ApiParam(value = "锁信息参数")  LockInfo lockInfo,
                                                                  @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
                                                                  @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         if(lockInfo == null){
             log.error("锁信息为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"锁信息为空", null);
         }
-        List<LockInfo> lockInfos = null;
+        Page<LockInfo> lockInfos = null;
         try {
             lockInfos = lockInfoService.selectCondition(lockInfo, new SimplePage(current,pageSize));
+            filterInfo(lockInfos);
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"条件查询锁信息失败", lockInfos);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"条件查询锁信息成功", lockInfos);
+    }
+
+    private void filterInfo(Page<LockInfo> lockInfos) {
+        if(lockInfos == null)
+            return;
+        List<LockInfo> infoList = lockInfos.getContent();
+        if(infoList == null)
+            return;
+        for(LockInfo lock : infoList) {
+            lock.setDevices(null);
+            lock.setRoles(null);
+        }
+    }
+    private void filterInfo(LockInfo lockInfo) {
+        if(lockInfo == null)
+            return;
+        lockInfo.setDevices(null);
+        lockInfo.setRoles(null);
     }
 
 

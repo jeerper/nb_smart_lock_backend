@@ -53,7 +53,7 @@ public class LockRealTimeInfoController {
     private AccessControlService accessControlService;
 
 
-    @ApiOperation(value = "分页查询门禁操作实时信息", notes = "分页参数为空则查全部，不合法则取第一条")
+    @ApiOperation(value = "分页查询门禁操作实时信息", notes = "分页参数为空则查全部，不合法则查询不到结果")
     @GetMapping(value = "/selectAccCtrlRealTimeByPage")
     public RestfulEntityBySummit<Map<String,Object>> selectAllLockRealTimeInfo(@ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
                                                                                @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {

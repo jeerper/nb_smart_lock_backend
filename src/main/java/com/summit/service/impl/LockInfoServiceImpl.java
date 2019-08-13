@@ -1,7 +1,10 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.summit.cbb.utils.page.Page;
+import com.summit.cbb.utils.page.Pageable;
 import com.summit.constants.CommonConstants;
+import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.LockInfoDao;
@@ -48,10 +51,17 @@ public class LockInfoServiceImpl implements LockInfoService {
      * @return 锁信息列表
      */
     @Override
-    public List<LockInfo> selectAll(SimplePage page) {
+    public Page<LockInfo> selectLockInfoByPage(SimplePage page) {
         List<String> rolesList = LockAuthCtrl.getRoles();
+        List<LockInfo> infoList = lockInfoDao.selectCondition(new LockInfo(), null, rolesList);
+        Integer rowsCount = infoList == null ? 0 : infoList.size();
+        Pageable pageable = PageConverter.getPageable(page, rowsCount);
         PageConverter.convertPage(page);
-        return lockInfoDao.selectCondition(new LockInfo(), page, rolesList);
+        List<LockInfo> lockInfos = lockInfoDao.selectCondition(new LockInfo(), page, rolesList);
+        Page<LockInfo> backPage = new Page<>();
+        backPage.setContent(lockInfos);
+        backPage.setPageable(pageable);
+        return backPage;
     }
 
     /**
@@ -60,10 +70,17 @@ public class LockInfoServiceImpl implements LockInfoService {
      * @return 锁信息列表
      */
     @Override
-    public List<LockInfo> selectAllHaveHistory(SimplePage page) {
+    public Page<LockInfo> selectHaveHistoryByPage(SimplePage page) {
         List<String> rolesList = LockAuthCtrl.getRoles();
+        List<LockInfo> infoList = lockInfoDao.selectAllHaveHistory(null, rolesList);
+        Integer rowsCount = infoList == null ? 0 : infoList.size();
+        Pageable pageable = PageConverter.getPageable(page,rowsCount);
         PageConverter.convertPage(page);
-        return lockInfoDao.selectAllHaveHistory(page, rolesList);
+        List<LockInfo> lockInfos = lockInfoDao.selectAllHaveHistory(page, rolesList);
+        Page<LockInfo> backPage = new Page<>();
+        backPage.setContent(lockInfos);
+        backPage.setPageable(pageable);
+        return backPage;
     }
 
     /**
@@ -73,14 +90,21 @@ public class LockInfoServiceImpl implements LockInfoService {
      * @return 锁信息列表
      */
     @Override
-    public List<LockInfo> selectCondition(LockInfo lockInfo, SimplePage page) {
+    public Page<LockInfo> selectCondition(LockInfo lockInfo, SimplePage page) {
         if(lockInfo == null){
             log.error("锁信息为空");
             return null;
         }
         List<String> rolesList = LockAuthCtrl.getRoles();
+        List<LockInfo> lockList = lockInfoDao.selectCondition(lockInfo, null, rolesList);
+        Integer rowsCount = lockList == null ? 0 : lockList.size();
+        Pageable pageable = PageConverter.getPageable(page, rowsCount);
         PageConverter.convertPage(page);
-        return lockInfoDao.selectCondition(lockInfo, page,rolesList);
+        List<LockInfo> lockInfos = lockInfoDao.selectCondition(lockInfo, page, rolesList);
+        Page<LockInfo> backPage = new Page<>();
+        backPage.setContent(lockInfos);
+        backPage.setPageable(pageable);
+        return backPage;
     }
 
     /**
