@@ -1,7 +1,7 @@
 package com.summit.service.impl;
 
 import com.summit.dao.entity.CameraDevice;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 import com.summit.service.CameraDeviceService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +17,7 @@ public class CameraDeviceServiceImplTest {
 
     @Autowired
     private CameraDeviceService cameraDeviceService;
-    Page page = new Page(1, 3);
+    SimplePage page = new SimplePage(1, 3);
     @Test
     public void insertDevice() {
         CameraDevice cameraDevice = new CameraDevice("did02","devip02","lid04","lc04",1);

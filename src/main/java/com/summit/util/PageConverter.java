@@ -1,13 +1,10 @@
 package com.summit.util;
 
-import com.summit.dao.entity.LockInfo;
-import com.summit.dao.entity.Page;
-
-import java.util.List;
+import com.summit.dao.entity.SimplePage;
 
 public class PageConverter {
 
-    public static void convertPage(Page page) {
+    public static void convertPage(SimplePage page) {
         Integer current;
         Integer pageSize;
         if(page == null || (pageSize = page.getPageSize()) == null || (current = page.getCurrent()) == null){
@@ -20,6 +17,10 @@ public class PageConverter {
             return;
         }
         page.setCurrent((current - 1) * pageSize);
+    }
+
+    public static int getPageCount(int pageSize, int rowsCount) {
+        return rowsCount % pageSize == 0 ? rowsCount / pageSize : rowsCount / pageSize + 1;
     }
 
 }

@@ -3,7 +3,7 @@ package com.summit.service.impl;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.LockInfo;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.service.LockInfoService;
 import com.summit.util.LockAuthCtrl;
@@ -48,7 +48,7 @@ public class LockInfoServiceImpl implements LockInfoService {
      * @return 锁信息列表
      */
     @Override
-    public List<LockInfo> selectAll(Page page) {
+    public List<LockInfo> selectAll(SimplePage page) {
         List<String> rolesList = LockAuthCtrl.getRoles();
         PageConverter.convertPage(page);
         return lockInfoDao.selectCondition(new LockInfo(), page, rolesList);
@@ -60,7 +60,7 @@ public class LockInfoServiceImpl implements LockInfoService {
      * @return 锁信息列表
      */
     @Override
-    public List<LockInfo> selectAllHaveHistory(Page page) {
+    public List<LockInfo> selectAllHaveHistory(SimplePage page) {
         List<String> rolesList = LockAuthCtrl.getRoles();
         PageConverter.convertPage(page);
         return lockInfoDao.selectAllHaveHistory(page, rolesList);
@@ -73,7 +73,7 @@ public class LockInfoServiceImpl implements LockInfoService {
      * @return 锁信息列表
      */
     @Override
-    public List<LockInfo> selectCondition(LockInfo lockInfo, Page page) {
+    public List<LockInfo> selectCondition(LockInfo lockInfo, SimplePage page) {
         if(lockInfo == null){
             log.error("锁信息为空");
             return null;

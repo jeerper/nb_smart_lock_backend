@@ -1,7 +1,7 @@
 package com.summit.service.impl;
 
 import com.summit.dao.entity.LockInfo;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 import com.summit.service.LockInfoService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +20,7 @@ public class LockInfoServiceImplTest {
 
     @Autowired
     private LockInfoService lockInfoService;
-    Page page = new Page(1, 8);
+    SimplePage page = new SimplePage(1, 8);
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -66,7 +66,7 @@ public class LockInfoServiceImplTest {
 
     @Test
     public void selectAllHaveHistory() {
-        List<LockInfo> lockInfos = lockInfoService.selectAllHaveHistory(new Page(1,1));
+        List<LockInfo> lockInfos = lockInfoService.selectAllHaveHistory(new SimplePage(1,1));
         System.out.println(lockInfos);
     }
 

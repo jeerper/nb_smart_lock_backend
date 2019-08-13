@@ -3,7 +3,7 @@ package com.summit.service.impl;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.CameraDevice;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.service.CameraDeviceService;
@@ -139,7 +139,7 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
      * @return 设备列表
      */
     @Override
-    public List<CameraDevice> selectDeviceByLockCode(String lockCode, Page page) {
+    public List<CameraDevice> selectDeviceByLockCode(String lockCode, SimplePage page) {
         if(lockCode == null){
             log.error("锁编号为空");
             return null;
@@ -157,7 +157,7 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
      * @return 设备列表
      */
     @Override
-    public List<CameraDevice> selectCondition(CameraDevice cameraDevice, Page page) {
+    public List<CameraDevice> selectCondition(CameraDevice cameraDevice, SimplePage page) {
         PageConverter.convertPage(page);
         if(cameraDevice == null){
             log.error("设备信息为空");
@@ -172,7 +172,7 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
      * @return 设备列表
      */
     @Override
-    public List<CameraDevice> selectAll(Page page) {
+    public List<CameraDevice> selectAll(SimplePage page) {
         PageConverter.convertPage(page);
         return cameraDeviceDao.selectCondition(new CameraDevice(), page);
     }

@@ -9,6 +9,7 @@ import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.LockProcess;
 import com.summit.dao.entity.LockRole;
 import com.summit.dao.entity.SafeReport;
+import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AccCtrlProcessDao;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.AlarmDao;
@@ -71,6 +72,12 @@ public class TestDao {
     List<String> roles = LockAuthCtrl.getRoles();
 
     @Test
+    public void selectHaveHistoryCountByPage() throws ParseException {
+        int  count = accessControlDao.selectHaveHistoryCountByPage(null,roles);
+
+        System.out.println(count);
+    }
+    @Test
     public void selectAlarmById() throws ParseException {
         Alarm alarm = alarmDao.selectAlarmById("1159043604048580609",roles);
 
@@ -131,8 +138,8 @@ public class TestDao {
 
     @Test
     public void insertACRecord() throws ParseException {
-        AccessControlInfo accessControlInfo = new AccessControlInfo("ac01","acn01","lid05","NB100002","did03","192.168.141.141","did04","192.168.141.155",2,"un01",
-                temeFormat.parse("2019-08-12 15:10:10"),temeFormat.parse("2019-08-12 15:11:10") ,null);
+        AccessControlInfo accessControlInfo = new AccessControlInfo("ac02","门禁2","lid06","lc06","did01","devip01","did02","devip02",2,"un02",
+                temeFormat.parse("2019-08-13 11:10:10"),temeFormat.parse("2019-08-13 12:11:10") ,null);
         int record = accessControlDao.insert(accessControlInfo);
         System.out.println(record);
     }
@@ -157,7 +164,7 @@ public class TestDao {
 
     @Test
     public void selectAllHaveHistory() throws ParseException {
-        List<AccessControlInfo> records = accessControlDao.selectAllHaveHistory(null, roles);
+        List<AccessControlInfo> records = accessControlDao.selectHaveHistoryByPage(null, roles);
         System.out.println(records);
     }
 

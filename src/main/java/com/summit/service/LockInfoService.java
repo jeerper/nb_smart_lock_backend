@@ -1,7 +1,7 @@
 package com.summit.service;
 
 import com.summit.dao.entity.LockInfo;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 
 import java.util.List;
 
@@ -29,14 +29,14 @@ public interface LockInfoService {
      * @param page 分页对象
      * @return 锁信息列表
      */
-    List<LockInfo> selectAll(Page page);
+    List<LockInfo> selectAll(SimplePage page);
 
     /**
      * 分页查询全部有操作记录的锁信息
      * @param page 分页对象
      * @return 锁信息列表
      */
-    List<LockInfo> selectAllHaveHistory(Page page);
+    List<LockInfo> selectAllHaveHistory(SimplePage page);
 
     /**
      * 条件查询锁信息
@@ -44,7 +44,7 @@ public interface LockInfoService {
      * @param page 分页对象
      * @return 锁信息列表
      */
-    List<LockInfo> selectCondition(LockInfo lockInfo, Page page);
+    List<LockInfo> selectCondition(LockInfo lockInfo, SimplePage page);
 
     /**
      * 插入锁信息

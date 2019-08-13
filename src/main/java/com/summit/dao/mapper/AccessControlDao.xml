@@ -25,11 +25,11 @@
   </resultMap>
 
   <sql id="Base_Column_List">
-    access_control_id, access_control_name, lock_code, entry_camera_id, entry_camera_ip,
+    access_control_id, access_control_name, lock_id, lock_code, entry_camera_id, entry_camera_ip,
     exit_camera_id, exit_camera_ip, status, createby, createtime, updatetime
   </sql>
   <sql id="AccCtrl_Have_Alias_List">
-    ac.access_control_id, ac.access_control_name, ac.lock_code, ac.entry_camera_id,
+    ac.access_control_id, ac.access_control_name, ac.lock_id, ac.lock_code, ac.entry_camera_id,
     ac.entry_camera_ip, ac.exit_camera_id, ac.exit_camera_ip, ac.status, ac.createby, ac.createtime, ac.updatetime
   </sql>
   <sql id="Auth_Have_Alias_List">
@@ -85,7 +85,7 @@
   </select>
 
 
-  <select id="selectAllHaveHistory" resultMap="BaseResultMap">
+  <select id="selectHaveHistoryByPage" resultMap="BaseResultMap">
     select
     <include refid="AccCtrl_Have_Alias_List" />,
     <include refid="Auth_Have_Alias_List" />
@@ -106,6 +106,24 @@
     </if>
     ) ac
     left join role_accesscontrol_auth au on ac.access_control_id = au.access_control_id
+
+  </select>
+
+  <select id="selectHaveHistoryCountByPage" resultType="java.lang.Integer">
+    select count(distinct ac.access_control_id) from access_control ac
+    inner join acc_ctrl_process acp on acp.access_control_id = ac.access_control_id
+    inner join (
+    select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
+    <where>
+      au.role_id in
+      <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+        #{role}
+      </foreach>
+    </where>
+    ) au on ac.access_control_id = au.access_control_id
+    <if test="page != null and page.current != null and  page.pageSize != null ">
+      limit #{page.current},#{page.pageSize}
+    </if>
 
   </select>
 

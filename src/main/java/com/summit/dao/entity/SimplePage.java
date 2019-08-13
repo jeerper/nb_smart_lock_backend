@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Page {
+public class SimplePage {
     private Integer current;
     private Integer pageSize;
-    public Page(){}
+    public SimplePage(){}
 }

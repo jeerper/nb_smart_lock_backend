@@ -1,7 +1,7 @@
 package com.summit.service;
 
 import com.summit.dao.entity.FaceInfoEntity;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 
 import java.util.Date;
 import java.util.List;
@@ -65,7 +65,7 @@ public interface FaceInfoService {
      * @param page 分页对象
      * @return 人脸信息列表
      */
-    List<FaceInfoEntity> selectAll(Page page);
+    List<FaceInfoEntity> selectAll(SimplePage page);
 
     /**
      * 条件查询人脸信息，不带时间重载
@@ -73,7 +73,7 @@ public interface FaceInfoService {
      * @param page 分页对象
      * @return 人脸信息列表
      */
-    List<FaceInfoEntity> selectCondition(FaceInfoEntity faceInfo, Page page);
+    List<FaceInfoEntity> selectCondition(FaceInfoEntity faceInfo, SimplePage page);
 
     /**
      * 条件查询人脸信息,可指定时间段
@@ -83,6 +83,6 @@ public interface FaceInfoService {
      * @param page 分页对象
      * @return 人脸信息列表
      */
-    List<FaceInfoEntity> selectCondition(FaceInfoEntity faceInfo, Date start, Date end, Page page);
+    List<FaceInfoEntity> selectCondition(FaceInfoEntity faceInfo, Date start, Date end, SimplePage page);
 
 }

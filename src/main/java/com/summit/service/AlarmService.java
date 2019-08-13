@@ -1,7 +1,7 @@
 package com.summit.service;
 
 import com.summit.dao.entity.Alarm;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 
 import java.util.Date;
 import java.util.List;
@@ -41,7 +41,7 @@ public interface AlarmService {
      * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm> selectAll(Date start, Date end, Page page);
+    List<Alarm> selectAll(Date start, Date end, SimplePage page);
 
     /**
      * 根据告警Id查询唯一告警记录
@@ -58,7 +58,7 @@ public interface AlarmService {
      * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm> selectAlarmByName(String alarmName, Date start, Date end, Page page);
+    List<Alarm> selectAlarmByName(String alarmName, Date start, Date end, SimplePage page);
 
     /**
      * 根据告警name（或者说类型）查询，用selectCondition实现，不带时间重载
@@ -66,7 +66,7 @@ public interface AlarmService {
      * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm> selectAlarmByName(String alarmName, Page page);
+    List<Alarm> selectAlarmByName(String alarmName, SimplePage page);
 
     /**
      * 根据告警状态查询，用selectCondition实现，可指定时间段
@@ -76,7 +76,7 @@ public interface AlarmService {
      * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm> selectAlarmByStatus(Integer alarmStatus, Date start, Date end, Page page);
+    List<Alarm> selectAlarmByStatus(Integer alarmStatus, Date start, Date end, SimplePage page);
     //不带时间重载
 
     /**
@@ -85,7 +85,7 @@ public interface AlarmService {
      * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm> selectAlarmByStatus(Integer alarmStatus, Page page);
+    List<Alarm> selectAlarmByStatus(Integer alarmStatus, SimplePage page);
 
 
     /**
@@ -103,7 +103,7 @@ public interface AlarmService {
      * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm> selectAlarmByLockCode(String lockCode, Date start, Date end, Page page);
+    List<Alarm> selectAlarmByLockCode(String lockCode, Date start, Date end, SimplePage page);
 
     /**
      * 根据锁操作记录对应的锁编号查询告警，不带时间重载
@@ -111,7 +111,7 @@ public interface AlarmService {
      * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm> selectAlarmByLockCode(String lockCode, Page page);
+    List<Alarm> selectAlarmByLockCode(String lockCode, SimplePage page);
 
     /**
      * 根据锁操作记录对应的设备ip地址查询告警，可指定时间段
@@ -121,7 +121,7 @@ public interface AlarmService {
      * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm>  selectAlarmByDeviceIp(String deviceIp, Date start, Date end, Page page);
+    List<Alarm>  selectAlarmByDeviceIp(String deviceIp, Date start, Date end, SimplePage page);
 
     /**
      * 根据锁操作记录对应的设备ip地址查询告警，不带时间重载
@@ -129,7 +129,7 @@ public interface AlarmService {
      * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm>  selectAlarmByDeviceIp(String deviceIp, Page page);
+    List<Alarm>  selectAlarmByDeviceIp(String deviceIp, SimplePage page);
 
     /**
      * 根据锁操作记录对应的设备id查询告警，可指定时间段
@@ -139,7 +139,7 @@ public interface AlarmService {
      * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm> selectAlarmByDevId(String devId, Date start, Date end, Page page);
+    List<Alarm> selectAlarmByDevId(String devId, Date start, Date end, SimplePage page);
 
     /**
      * 根据锁操作记录对应的设备id查询告警，不带时间重载
@@ -147,7 +147,7 @@ public interface AlarmService {
      * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm> selectAlarmByDevId(String devId, Page page);
+    List<Alarm> selectAlarmByDevId(String devId, SimplePage page);
 
     /**
      * 根据alarm对象所带条件查询，可指定时间段
@@ -157,7 +157,7 @@ public interface AlarmService {
      * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm> selectAlarmCondition(Alarm alarm, Date start, Date end, Page page);
+    List<Alarm> selectAlarmCondition(Alarm alarm, Date start, Date end, SimplePage page);
 
     /**
      * 根据alarm对象所带条件查询，不带时间段重载
@@ -165,5 +165,5 @@ public interface AlarmService {
      * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm> selectAlarmCondition(Alarm alarm, Page page);
+    List<Alarm> selectAlarmCondition(Alarm alarm, SimplePage page);
 }

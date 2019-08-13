@@ -1,16 +1,20 @@
 package com.summit.service.impl;
 
+import com.summit.cbb.utils.page.Page;
+import com.summit.cbb.utils.page.Pageable;
 import com.summit.dao.entity.AccessControlInfo;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.service.AccessControlService;
 import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 @Slf4j
 public class AccessControlServiceImpl implements AccessControlService {
 
@@ -51,7 +55,7 @@ public class AccessControlServiceImpl implements AccessControlService {
      * @return 门禁信息列表
      */
     @Override
-    public List<AccessControlInfo> selectAll(Page page) {
+    public List<AccessControlInfo> selectAll(SimplePage page) {
         PageConverter.convertPage(page);
         return accessControlDao.selectCondition(new AccessControlInfo(), page, LockAuthCtrl.getRoles());
     }
@@ -62,10 +66,26 @@ public class AccessControlServiceImpl implements AccessControlService {
      * @return 门禁信息列表
      */
     @Override
-    public List<AccessControlInfo> selectAllHaveHistory(Page page) {
+    public Page<AccessControlInfo> selectHaveHistoryByPage(SimplePage page) {
+        Pageable pageable = new Pageable();
+        //转换当前页之前设置当前页
+        pageable.setCurPage(page.getCurrent());
         PageConverter.convertPage(page);
-        return accessControlDao.selectAllHaveHistory(page, LockAuthCtrl.getRoles());
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<AccessControlInfo> accessControlInfos = accessControlDao.selectHaveHistoryByPage(page, roles);
+        Page<AccessControlInfo> backPage = new Page<>();
+        backPage.setContent(accessControlInfos);
+        Integer pageSize = page.getPageSize();
+        pageable.setPageSize(pageSize);
+        Integer rowsCount = accessControlDao.selectHaveHistoryCountByPage(null, roles);
+        pageable.setRowsCount(rowsCount);
+        pageable.setPageCount(PageConverter.getPageCount(pageSize, rowsCount));
+        pageable.setPageRowsCount(accessControlInfos == null ? 0 : accessControlInfos.size());
+        backPage.setPageable(pageable);
+        return backPage;
     }
+
+
 
     /**
      * 条件查询门禁信息
@@ -74,7 +94,7 @@ public class AccessControlServiceImpl implements AccessControlService {
      * @return 门禁信息列表
      */
     @Override
-    public List<AccessControlInfo> selectCondition(AccessControlInfo accessControlInfo, Page page) {
+    public List<AccessControlInfo> selectCondition(AccessControlInfo accessControlInfo, SimplePage page) {
         PageConverter.convertPage(page);
         if(accessControlInfo == null){
             accessControlInfo = new AccessControlInfo();

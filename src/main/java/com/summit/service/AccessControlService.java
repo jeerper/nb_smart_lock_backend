@@ -1,7 +1,8 @@
 package com.summit.service;
 
+import com.summit.cbb.utils.page.Page;
 import com.summit.dao.entity.AccessControlInfo;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 
 import java.util.List;
 
@@ -28,14 +29,14 @@ public interface AccessControlService {
      * @param page 分页对象
      * @return 门禁信息列表
      */
-    List<AccessControlInfo> selectAll(Page page);
+    List<AccessControlInfo> selectAll(SimplePage page);
 
     /**
      * 分页查询全部有操作记录的门禁信息
      * @param page 分页对象
-     * @return 门禁信息列表
+     * @return 门禁信息列表分页对象
      */
-    List<AccessControlInfo> selectAllHaveHistory(Page page);
+    Page<AccessControlInfo> selectHaveHistoryByPage(SimplePage page);
 
     /**
      * 条件查询门禁信息
@@ -43,7 +44,7 @@ public interface AccessControlService {
      * @param page 分页对象
      * @return 门禁信息列表
      */
-    List<AccessControlInfo> selectCondition(AccessControlInfo accessControlInfo, Page page);
+    List<AccessControlInfo> selectCondition(AccessControlInfo accessControlInfo, SimplePage page);
 
     /**
      * 插入门禁信息

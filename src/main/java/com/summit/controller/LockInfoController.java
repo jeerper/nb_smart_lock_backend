@@ -4,12 +4,8 @@ import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
 import com.summit.constants.CommonConstants;
-import com.summit.dao.entity.FaceInfoEntity;
 import com.summit.dao.entity.LockInfo;
-import com.summit.dao.entity.LockProcess;
-import com.summit.dao.entity.Page;
-import com.summit.entity.LockRealTimeInfo;
-import com.summit.sdk.huawei.model.CardType;
+import com.summit.dao.entity.SimplePage;
 import com.summit.service.FaceInfoService;
 import com.summit.service.LockInfoService;
 import com.summit.service.LockRecordService;
@@ -26,8 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -51,7 +45,7 @@ public class LockInfoController {
 
         List<LockInfo> lockInfos = null;
         try {
-            lockInfos = lockInfoService.selectAll(new Page(current,pageSize));
+            lockInfos = lockInfoService.selectAll(new SimplePage(current,pageSize));
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询全部锁信息失败", lockInfos);
         }
@@ -98,7 +92,7 @@ public class LockInfoController {
 
         List<LockInfo> lockInfos = null;
         try {
-            lockInfos = lockInfoService.selectAllHaveHistory(new Page(current, pageSize));
+            lockInfos = lockInfoService.selectAllHaveHistory(new SimplePage(current, pageSize));
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"分页查询全部有操作记录的锁信息失败", lockInfos);
         }
@@ -117,7 +111,7 @@ public class LockInfoController {
         }
         List<LockInfo> lockInfos = null;
         try {
-            lockInfos = lockInfoService.selectCondition(lockInfo, new Page(current,pageSize));
+            lockInfos = lockInfoService.selectCondition(lockInfo, new SimplePage(current,pageSize));
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"条件查询锁信息失败", lockInfos);
         }

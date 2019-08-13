@@ -2,7 +2,7 @@ package com.summit.dao.repository;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.summit.dao.entity.Alarm;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -17,7 +17,7 @@ public interface AlarmDao  extends BaseMapper<Alarm> {
     List<Alarm> selectCondition(@Param("alarm") Alarm alarm,
                                 @Param("start") Date start,
                                 @Param("end") Date end,
-                                @Param("page") Page page,
+                                @Param("page") SimplePage page,
                                 @Param("roles") List<String> roles);
 
     Integer selectAlarmCountByStatus(@Param("alarmStatus") Integer alarmStatus, @Param("roles") List<String> roles);

@@ -5,7 +5,7 @@ import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.LockProcess;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.LockProcessDao;
@@ -97,7 +97,7 @@ public class AlarmServiceImpl implements AlarmService {
      * @return 告警记录列表
      */
     @Override
-    public List<Alarm> selectAll(Date start, Date end, Page page) {
+    public List<Alarm> selectAll(Date start, Date end, SimplePage page) {
         PageConverter.convertPage(page);
         List<String> roles = LockAuthCtrl.getRoles();
         return alarmDao.selectCondition(new Alarm(), start, end, page,roles);
@@ -127,7 +127,7 @@ public class AlarmServiceImpl implements AlarmService {
      * @return 告警记录列表
      */
     @Override
-    public List<Alarm> selectAlarmByName(String alarmName, Date start, Date end, Page page) {
+    public List<Alarm> selectAlarmByName(String alarmName, Date start, Date end, SimplePage page) {
         if(alarmName == null){
             log.error("告警名称为空");
             return null;
@@ -146,7 +146,7 @@ public class AlarmServiceImpl implements AlarmService {
      * @return 告警记录列表
      */
     @Override
-    public List<Alarm> selectAlarmByName(String alarmName, Page page) {
+    public List<Alarm> selectAlarmByName(String alarmName, SimplePage page) {
         if(alarmName == null){
             log.error("告警名称为空");
             return null;
@@ -163,7 +163,7 @@ public class AlarmServiceImpl implements AlarmService {
      * @return 告警记录列表
      */
     @Override
-    public List<Alarm> selectAlarmByStatus(Integer alarmStatus, Date start, Date end, Page page) {
+    public List<Alarm> selectAlarmByStatus(Integer alarmStatus, Date start, Date end, SimplePage page) {
         if(alarmStatus == null){
             log.error("告警状态为空");
             return null;
@@ -182,7 +182,7 @@ public class AlarmServiceImpl implements AlarmService {
      * @return 告警记录列表
      */
     @Override
-    public List<Alarm> selectAlarmByStatus(Integer alarmStatus, Page page) {
+    public List<Alarm> selectAlarmByStatus(Integer alarmStatus, SimplePage page) {
         if(alarmStatus == null){
             log.error("告警状态为空");
             return null;
@@ -214,7 +214,7 @@ public class AlarmServiceImpl implements AlarmService {
      * @return 告警记录列表
      */
     @Override
-    public List<Alarm> selectAlarmByLockCode(String lockCode, Date start, Date end, Page page) {
+    public List<Alarm> selectAlarmByLockCode(String lockCode, Date start, Date end, SimplePage page) {
         if(lockCode == null){
             log.error("锁编号为空");
             return null;
@@ -237,7 +237,7 @@ public class AlarmServiceImpl implements AlarmService {
      * @return 告警记录列表
      */
     @Override
-    public List<Alarm> selectAlarmByLockCode(String lockCode, Page page) {
+    public List<Alarm> selectAlarmByLockCode(String lockCode, SimplePage page) {
         if(lockCode == null){
             log.error("锁编号为空");
             return null;
@@ -254,7 +254,7 @@ public class AlarmServiceImpl implements AlarmService {
      * @return 告警记录列表
      */
     @Override
-    public List<Alarm> selectAlarmByDeviceIp(String deviceIp, Date start, Date end, Page page) {
+    public List<Alarm> selectAlarmByDeviceIp(String deviceIp, Date start, Date end, SimplePage page) {
         if(deviceIp == null){
             log.error("设备ip地址为空");
             return null;
@@ -278,7 +278,7 @@ public class AlarmServiceImpl implements AlarmService {
      * @return 告警记录列表
      */
     @Override
-    public List<Alarm> selectAlarmByDeviceIp(String deviceIp, Page page) {
+    public List<Alarm> selectAlarmByDeviceIp(String deviceIp, SimplePage page) {
         if(deviceIp == null){
             log.error("设备ip地址为空");
             return null;
@@ -295,7 +295,7 @@ public class AlarmServiceImpl implements AlarmService {
      * @return 告警记录列表
      */
     @Override
-    public List<Alarm> selectAlarmByDevId(String devId, Date start, Date end, Page page) {
+    public List<Alarm> selectAlarmByDevId(String devId, Date start, Date end, SimplePage page) {
         if(devId == null){
             log.error("设备id为空");
             return null;
@@ -324,7 +324,7 @@ public class AlarmServiceImpl implements AlarmService {
      * @return 告警记录列表
      */
     @Override
-    public List<Alarm> selectAlarmByDevId(String devId, Page page) {
+    public List<Alarm> selectAlarmByDevId(String devId, SimplePage page) {
         if(devId == null){
             log.error("设备id为空");
             return null;
@@ -341,7 +341,7 @@ public class AlarmServiceImpl implements AlarmService {
      * @return 告警记录列表
      */
     @Override
-    public List<Alarm> selectAlarmCondition(Alarm alarm, Date start, Date end, Page page) {
+    public List<Alarm> selectAlarmCondition(Alarm alarm, Date start, Date end, SimplePage page) {
         if(alarm == null){
             log.error("告警信息为空");
             return null;
@@ -358,7 +358,7 @@ public class AlarmServiceImpl implements AlarmService {
      * @return 告警记录列表
      */
     @Override
-    public List<Alarm> selectAlarmCondition(Alarm alarm, Page page) {
+    public List<Alarm> selectAlarmCondition(Alarm alarm, SimplePage page) {
         if(alarm == null){
             log.error("告警信息为空");
             return null;

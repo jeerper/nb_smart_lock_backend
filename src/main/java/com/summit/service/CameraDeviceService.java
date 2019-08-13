@@ -1,7 +1,7 @@
 package com.summit.service;
 
 import com.summit.dao.entity.CameraDevice;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public interface CameraDeviceService {
      * @param page 分页对象
      * @return 设备列表
      */
-    List<CameraDevice> selectDeviceByLockCode(String lockCode,Page page);
+    List<CameraDevice> selectDeviceByLockCode(String lockCode, SimplePage page);
 
     /**
      * 条件查询多个设备
@@ -38,14 +38,14 @@ public interface CameraDeviceService {
      * @param page 分页对象
      * @return 设备列表
      */
-    List<CameraDevice> selectCondition(CameraDevice cameraDevice,Page page);
+    List<CameraDevice> selectCondition(CameraDevice cameraDevice, SimplePage page);
 
     /**
      * 分页查询所有设备
      * @param page 分页对象
      * @return 设备列表
      */
-    List<CameraDevice> selectAll(Page page);
+    List<CameraDevice> selectAll(SimplePage page);
 
     /**
      * 插入摄像头信息

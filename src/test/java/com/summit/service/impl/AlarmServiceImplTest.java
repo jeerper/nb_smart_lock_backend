@@ -1,7 +1,7 @@
 package com.summit.service.impl;
 
 import com.summit.dao.entity.Alarm;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 import com.summit.service.AlarmService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +21,7 @@ public class AlarmServiceImplTest {
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    Page page = new Page(1, 3);
+    SimplePage page = new SimplePage(1, 3);
 
     @Test
     public void insertAlarm() throws ParseException {

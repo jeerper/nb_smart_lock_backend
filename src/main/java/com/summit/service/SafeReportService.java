@@ -1,7 +1,6 @@
 package com.summit.service;
 
-import com.summit.dao.entity.Alarm;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 import com.summit.dao.entity.SafeReport;
 
 import java.util.Date;
@@ -40,7 +39,7 @@ public interface SafeReportService {
      * @param page 分页对象
      * @return 平安报信息列表
      */
-    List<SafeReport> selectAll(Page page);
+    List<SafeReport> selectAll(SimplePage page);
 
     /**
      * 根据Id查询平安报信息
@@ -57,7 +56,7 @@ public interface SafeReportService {
      * @param page 分页对象
      * @return 平安报信息列表
      */
-    List<SafeReport> selectReportByLockCode(String lockCode, Date start, Date end, Page page);
+    List<SafeReport> selectReportByLockCode(String lockCode, Date start, Date end, SimplePage page);
 
     /**
      * 根据锁编号查询，不带时间重载
@@ -65,7 +64,7 @@ public interface SafeReportService {
      * @param page 分页对象
      * @return 平安报信息列表
      */
-    List<SafeReport> selectReportByLockCode(String lockCode, Page page);
+    List<SafeReport> selectReportByLockCode(String lockCode, SimplePage page);
 
     /**
      * 指定条件查询，可指定时间段
@@ -75,7 +74,7 @@ public interface SafeReportService {
      * @param page 分页对象
      * @return 平安报信息列表
      */
-    List<SafeReport> selectReportCondition(SafeReport safeReport, Date start, Date end, Page page);
+    List<SafeReport> selectReportCondition(SafeReport safeReport, Date start, Date end, SimplePage page);
 
     /**
      * 指定条件查询，不带日期的重载
@@ -83,7 +82,7 @@ public interface SafeReportService {
      * @param page 分页对象
      * @return 平安报信息列表
      */
-    List<SafeReport> selectReportCondition(SafeReport safeReport, Page page);
+    List<SafeReport> selectReportCondition(SafeReport safeReport, SimplePage page);
 
     /**
      * 根据锁编号查询当前用户具有权限的平安报
@@ -93,7 +92,7 @@ public interface SafeReportService {
      * @param page 分页对象
      * @return 平安报信息列表
      */
-    List<SafeReport> selectReportByRoles(List<String> roles, Date start, Date end, Page page);
+    List<SafeReport> selectReportByRoles(List<String> roles, Date start, Date end, SimplePage page);
 
     /**
      * 根据锁编号查询当前用户具有权限的平安报，不带时间重载
@@ -101,6 +100,6 @@ public interface SafeReportService {
      * @param page 分页对象
      * @return 平安报信息列表
      */
-    List<SafeReport> selectReportByRoles(List<String> roles, Page page);
+    List<SafeReport> selectReportByRoles(List<String> roles, SimplePage page);
 
 }

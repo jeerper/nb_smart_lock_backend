@@ -183,7 +183,7 @@
   </select>
 
   <select id="selectAlarmCountByStatus"  resultType="java.lang.Integer">
-    select  count(alarm_id)
+    select  count(distinct alarm_id)
     from (
         select al.alarm_id, al.alarm_status from alarm al
         left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id

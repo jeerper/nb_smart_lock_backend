@@ -1,7 +1,7 @@
 package com.summit.service;
 
 import com.summit.dao.entity.LockProcess;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 
 import java.util.Date;
 import java.util.List;
@@ -40,7 +40,7 @@ public interface LockRecordService {
      * @param page 分页对象
      * @return 锁操作记录列表
      */
-    List<LockProcess> selectAll(Page page);
+    List<LockProcess> selectAll(SimplePage page);
 
     /**
      * 根据Id查询
@@ -57,7 +57,7 @@ public interface LockRecordService {
      * @param page 分页对象
      * @return 锁操作记录列表
      */
-    List<LockProcess> selectLockProcessByLockCode(String lockCode, Date start, Date end, Page page);
+    List<LockProcess> selectLockProcessByLockCode(String lockCode, Date start, Date end, SimplePage page);
 
     /**
      * 根据锁编号查询，不带时间重载
@@ -65,7 +65,7 @@ public interface LockRecordService {
      * @param page 分页对象
      * @return 锁操作记录列表
      */
-    List<LockProcess> selectLockProcessByLockCode(String lockCode, Page page);
+    List<LockProcess> selectLockProcessByLockCode(String lockCode, SimplePage page);
 
     /**
      * 根据设备ip地址查询，可指定时间段
@@ -75,7 +75,7 @@ public interface LockRecordService {
      * @param page 分页对象
      * @return 锁操作记录列表
      */
-    List<LockProcess> selectLockProcessByDeviceIp(String deviceIp, Date start, Date end, Page page);
+    List<LockProcess> selectLockProcessByDeviceIp(String deviceIp, Date start, Date end, SimplePage page);
 
     /**
      * 根据设备ip地址查询，不带时间重载
@@ -83,7 +83,7 @@ public interface LockRecordService {
      * @param page 分页对象
      * @return 锁操作记录列表
      */
-    List<LockProcess> selectLockProcessByDeviceIp(String deviceIp, Page page);
+    List<LockProcess> selectLockProcessByDeviceIp(String deviceIp, SimplePage page);
 
     /**
      * 根据锁操作记录对应的设备id查询，可指定时间段
@@ -93,7 +93,7 @@ public interface LockRecordService {
      * @param page 分页对象
      * @return 锁操作记录列表
      */
-    List<LockProcess> selectLockProcessByDevId(String devId, Date start, Date end, Page page);
+    List<LockProcess> selectLockProcessByDevId(String devId, Date start, Date end, SimplePage page);
 
     /**
      * 根据锁操作记录对应的设备id查询，不带时间重载
@@ -101,7 +101,7 @@ public interface LockRecordService {
      * @param page 分页对象
      * @return 锁操作记录列表
      */
-    List<LockProcess> selectLockProcessByDevId(String devId, Page page);
+    List<LockProcess> selectLockProcessByDevId(String devId, SimplePage page);
 
     /**
      * 根据操作人名称查询，可指定时间段
@@ -111,7 +111,7 @@ public interface LockRecordService {
      * @param page 分页对象
      * @return 锁操作记录列表
      */
-    List<LockProcess> selectLockProcessByUserName(String userName, Date start, Date end, Page page);
+    List<LockProcess> selectLockProcessByUserName(String userName, Date start, Date end, SimplePage page);
 
     /**
      * 根据操作人名称查询，不带时间重载
@@ -119,7 +119,7 @@ public interface LockRecordService {
      * @param page 分页对象
      * @return 锁操作记录列表
      */
-    List<LockProcess> selectLockProcessByUserName(String userName, Page page);
+    List<LockProcess> selectLockProcessByUserName(String userName, SimplePage page);
 
     /**
      * 根据操作类型查询（开锁或关锁），可指定时间段
@@ -129,7 +129,7 @@ public interface LockRecordService {
      * @param page 分页对象
      * @return 锁操作记录列表
      */
-    List<LockProcess> selectLockProcessByType(Integer processType, Date start, Date end, Page page);
+    List<LockProcess> selectLockProcessByType(Integer processType, Date start, Date end, SimplePage page);
 
     /**
      * 根据操作类型查询（开锁或关锁），不带时间重载
@@ -137,7 +137,7 @@ public interface LockRecordService {
      * @param page 分页对象
      * @return 锁操作记录列表
      */
-    List<LockProcess> selectLockProcessByType(Integer processType, Page page);
+    List<LockProcess> selectLockProcessByType(Integer processType, SimplePage page);
 
     /**
      * 根据操作结果类型查询（成功或失败），可指定时间段
@@ -147,7 +147,7 @@ public interface LockRecordService {
      * @param page 分页对象
      * @return 锁操作记录列表
      */
-    List<LockProcess> selectLockProcessByResult(String processResult, Date start, Date end, Page page);
+    List<LockProcess> selectLockProcessByResult(String processResult, Date start, Date end, SimplePage page);
 
     /**
      * 根据操作结果类型查询（成功或失败），不带时间重载
@@ -155,7 +155,7 @@ public interface LockRecordService {
      * @param page 分页对象
      * @return 锁操作记录列表
      */
-    List<LockProcess> selectLockProcessByResult(String processResult, Page page);
+    List<LockProcess> selectLockProcessByResult(String processResult, SimplePage page);
 
     /**
      * 指定条件查询，可指定时间段
@@ -165,7 +165,7 @@ public interface LockRecordService {
      * @param page 分页对象
      * @return 锁操作记录列表
      */
-    List<LockProcess> selectLockProcessCondition(LockProcess lockProcess, Date start, Date end, Page page);
+    List<LockProcess> selectLockProcessCondition(LockProcess lockProcess, Date start, Date end, SimplePage page);
 
     /**
      * 指定条件查询，不带日期的重载
@@ -173,5 +173,5 @@ public interface LockRecordService {
      * @param page 分页对象
      * @return 锁操作记录列表
      */
-    List<LockProcess> selectLockProcessCondition(LockProcess lockProcess, Page page);
+    List<LockProcess> selectLockProcessCondition(LockProcess lockProcess, SimplePage page);
 }

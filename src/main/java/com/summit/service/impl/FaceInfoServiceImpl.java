@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.FaceInfoEntity;
 import com.summit.dao.entity.FileInfo;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.FaceInfoDao;
 import com.summit.dao.repository.FileInfoDao;
 import com.summit.service.FaceInfoService;
@@ -161,7 +161,7 @@ public class FaceInfoServiceImpl implements FaceInfoService {
      * @return 人脸信息列表
      */
     @Override
-    public List<FaceInfoEntity> selectAll(Page page) {
+    public List<FaceInfoEntity> selectAll(SimplePage page) {
         PageConverter.convertPage(page);
         return faceInfoDao.selectCondition(new FaceInfoEntity(),null,null,page);
     }
@@ -173,7 +173,7 @@ public class FaceInfoServiceImpl implements FaceInfoService {
      * @return 人脸信息列表
      */
     @Override
-    public List<FaceInfoEntity> selectCondition(FaceInfoEntity faceInfo, Page page) {
+    public List<FaceInfoEntity> selectCondition(FaceInfoEntity faceInfo, SimplePage page) {
         if(faceInfo == null){
             log.error("人脸信息为空");
             return null;
@@ -190,7 +190,7 @@ public class FaceInfoServiceImpl implements FaceInfoService {
      * @return 人脸信息列表
      */
     @Override
-    public List<FaceInfoEntity> selectCondition(FaceInfoEntity faceInfo, Date start, Date end, Page page) {
+    public List<FaceInfoEntity> selectCondition(FaceInfoEntity faceInfo, Date start, Date end, SimplePage page) {
         if(faceInfo == null){
             log.error("人脸信息为空");
             return null;

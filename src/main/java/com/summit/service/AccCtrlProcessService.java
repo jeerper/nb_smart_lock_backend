@@ -1,7 +1,7 @@
 package com.summit.service;
 
 import com.summit.dao.entity.AccCtrlProcess;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 
 import java.util.Date;
 import java.util.List;
@@ -39,7 +39,7 @@ public interface AccCtrlProcessService {
      * @param page 分页对象
      * @return 门禁操作记录列表
      */
-    List<AccCtrlProcess> selectAll(Page page);
+    List<AccCtrlProcess> selectAll(SimplePage page);
 
     /**
      * 根据Id查询
@@ -49,6 +49,25 @@ public interface AccCtrlProcessService {
     AccCtrlProcess selectAccCtrlProcessById(String accCtrlProId);
 
     /**
+     * 根据门禁id查询，可指定时间段
+     * @param accessControlId 门禁id
+     * @param start 开始时间
+     * @param end 截止时间
+     * @param page 分页对象
+     * @return 门禁操作记录列表
+     */
+    List<AccCtrlProcess>  selectAccCtrlProcessByAccCtrlId(String accessControlId, Date start, Date end, SimplePage page);
+
+    /**
+     * 根据门禁id查询，不带时间重载
+     * @param accessControlId 门禁id
+     * @param page 分页对象
+     * @return 门禁操作记录列表
+     */
+    List<AccCtrlProcess>  selectAccCtrlProcessByAccCtrlId(String accessControlId, SimplePage page);
+
+
+    /**
      * 根据门禁名查询，可指定时间段
      * @param accessControlName 门禁名称
      * @param start 开始时间
@@ -56,7 +75,7 @@ public interface AccCtrlProcessService {
      * @param page 分页对象
      * @return 门禁操作记录列表
      */
-    List<AccCtrlProcess>  selectAccCtrlProcessByName(String accessControlName, Date start, Date end, Page page);
+    List<AccCtrlProcess>  selectAccCtrlProcessByName(String accessControlName, Date start, Date end, SimplePage page);
 
     /**
      * 根据门禁名查询，不带时间重载
@@ -64,7 +83,7 @@ public interface AccCtrlProcessService {
      * @param page 分页对象
      * @return 门禁操作记录列表
      */
-    List<AccCtrlProcess>  selectAccCtrlProcessByName(String accessControlName, Page page);
+    List<AccCtrlProcess>  selectAccCtrlProcessByName(String accessControlName, SimplePage page);
 
     /**
      * 根据锁编号查询，可指定时间段
@@ -74,7 +93,7 @@ public interface AccCtrlProcessService {
      * @param page 分页对象
      * @return 门禁操作记录列表
      */
-    List<AccCtrlProcess> selectAccCtrlProcessByLockCode(String lockCode, Date start, Date end, Page page);
+    List<AccCtrlProcess> selectAccCtrlProcessByLockCode(String lockCode, Date start, Date end, SimplePage page);
 
     /**
      * 根据锁编号查询，不带时间重载
@@ -82,7 +101,7 @@ public interface AccCtrlProcessService {
      * @param page 分页对象
      * @return 门禁操作记录列表
      */
-    List<AccCtrlProcess> selectAccCtrlProcessByLockCode(String lockCode, Page page);
+    List<AccCtrlProcess> selectAccCtrlProcessByLockCode(String lockCode, SimplePage page);
 
     /**
      * 根据操作类型查询（开门禁或关门禁），可指定时间段
@@ -92,7 +111,7 @@ public interface AccCtrlProcessService {
      * @param page 分页对象
      * @return 门禁操作记录列表
      */
-    List<AccCtrlProcess> selectAccCtrlProcessByType(Integer processType, Date start, Date end, Page page);
+    List<AccCtrlProcess> selectAccCtrlProcessByType(Integer processType, Date start, Date end, SimplePage page);
 
     /**
      * 根据操作类型查询（开门禁或关门禁），不带时间重载
@@ -100,7 +119,7 @@ public interface AccCtrlProcessService {
      * @param page 分页对象
      * @return 门禁操作记录列表
      */
-    List<AccCtrlProcess> selectAccCtrlProcessByType(Integer processType, Page page);
+    List<AccCtrlProcess> selectAccCtrlProcessByType(Integer processType, SimplePage page);
 
 
     /**
@@ -111,7 +130,7 @@ public interface AccCtrlProcessService {
      * @param page 分页对象
      * @return 门禁操作记录列表
      */
-    List<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, Date start, Date end, Page page);
+    List<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, Date start, Date end, SimplePage page);
 
     /**
      * 指定条件查询，不带日期的重载
@@ -119,5 +138,5 @@ public interface AccCtrlProcessService {
      * @param page 分页对象
      * @return 门禁操作记录列表
      */
-    List<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, Page page);
+    List<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, SimplePage page);
 }

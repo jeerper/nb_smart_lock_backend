@@ -1,5 +1,6 @@
 package com.summit.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -8,22 +9,31 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @ApiModel(value="锁实时信息类", description="封装所需要的实时信息")
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LockRealTimeInfo {
 
+    @ApiModelProperty(value="门禁id",name="accessControlId")
+    private String accessControlId;
+    @ApiModelProperty(value="门禁名称",name="accessControlName")
+    private String accessControlName;
     @ApiModelProperty(value="锁id",name="lockId")
     private String lockId;
     @ApiModelProperty(value="锁编号",name="lockCode")
     private String lockCode;
+    //1打开，2锁定，3告警
+    @ApiModelProperty(value="门禁状态",name="accCtrlStatus",notes = "1打开，2锁定，3告警")
+    private Integer accCtrlStatus;
     //1开锁，2锁定，3告警
-    @ApiModelProperty(value="锁状态",name="lockStatus",notes = "1开锁，2锁定，3告警")
-    private Integer lockStatus;
-    @ApiModelProperty(value="摄像头id",name="devId")
-    private String devId;
+//    @ApiModelProperty(value="锁状态",name="lockStatus",notes = "1开锁，2锁定，3告警")
+//    private Integer lockStatus;
+//    @ApiModelProperty(value="摄像头id",name="devId")
+//    private String devId;
     @ApiModelProperty(value="摄像头ip地址",name="deviceIp")
     private String deviceIp;
     //0正常，1异常
-    @ApiModelProperty(value="摄像头状态",name="deviceStatus",notes = "0正常，1异常")
-    private Integer deviceStatus;
+//    @ApiModelProperty(value="摄像头状态",name="deviceStatus",notes = "0正常，1异常")
+//    private Integer deviceStatus;
 
     //最近锁操作记录对应的人脸信息
     @ApiModelProperty(value="对应人脸信息id",name="faceId")

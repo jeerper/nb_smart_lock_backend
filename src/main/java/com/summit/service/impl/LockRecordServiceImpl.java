@@ -6,11 +6,10 @@ import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.LockProcess;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.FileInfoDao;
-import com.summit.dao.repository.LockInfoDao;
 import com.summit.dao.repository.LockProcessDao;
 import com.summit.service.LockInfoService;
 import com.summit.service.LockRecordService;
@@ -132,7 +131,7 @@ public class LockRecordServiceImpl implements LockRecordService {
      * @return 锁操作记录列表
      */
     @Override
-    public List<LockProcess> selectAll(Page page) {
+    public List<LockProcess> selectAll(SimplePage page) {
         PageConverter.convertPage(page);
         List<String> roles = LockAuthCtrl.getRoles();
         return lockProcessDao.selectCondition(new LockProcess(), null, null, page,roles);
@@ -162,7 +161,7 @@ public class LockRecordServiceImpl implements LockRecordService {
      * @return 锁操作记录列表
      */
     @Override
-    public List<LockProcess> selectLockProcessByLockCode(String lockCode, Date start, Date end, Page page) {
+    public List<LockProcess> selectLockProcessByLockCode(String lockCode, Date start, Date end, SimplePage page) {
         if(lockCode == null){
             log.error("锁编号为空");
             return null;
@@ -181,7 +180,7 @@ public class LockRecordServiceImpl implements LockRecordService {
      * @return 锁操作记录列表
      */
     @Override
-    public List<LockProcess> selectLockProcessByLockCode(String lockCode, Page page) {
+    public List<LockProcess> selectLockProcessByLockCode(String lockCode, SimplePage page) {
         if(lockCode == null){
             log.error("锁编号为空");
             return null;
@@ -200,7 +199,7 @@ public class LockRecordServiceImpl implements LockRecordService {
      * @return 锁操作记录列表
      */
     @Override
-    public List<LockProcess> selectLockProcessByDeviceIp(String deviceIp, Date start, Date end, Page page) {
+    public List<LockProcess> selectLockProcessByDeviceIp(String deviceIp, Date start, Date end, SimplePage page) {
         if(deviceIp == null){
             log.error("设备ip地址为空");
             return null;
@@ -219,7 +218,7 @@ public class LockRecordServiceImpl implements LockRecordService {
      * @return 锁操作记录列表
      */
     @Override
-    public List<LockProcess> selectLockProcessByDeviceIp(String deviceIp, Page page) {
+    public List<LockProcess> selectLockProcessByDeviceIp(String deviceIp, SimplePage page) {
         if(deviceIp == null){
             log.error("设备ip地址为空");
             return null;
@@ -236,7 +235,7 @@ public class LockRecordServiceImpl implements LockRecordService {
      * @return 锁操作记录列表
      */
     @Override
-    public List<LockProcess> selectLockProcessByDevId(String devId, Date start, Date end, Page page) {
+    public List<LockProcess> selectLockProcessByDevId(String devId, Date start, Date end, SimplePage page) {
         if(devId == null){
             log.error("设备id为空");
             return null;
@@ -256,7 +255,7 @@ public class LockRecordServiceImpl implements LockRecordService {
      * @return 锁操作记录列表
      */
     @Override
-    public List<LockProcess> selectLockProcessByDevId(String devId, Page page) {
+    public List<LockProcess> selectLockProcessByDevId(String devId, SimplePage page) {
         if(devId == null){
             log.error("设备id为空");
             return null;
@@ -273,7 +272,7 @@ public class LockRecordServiceImpl implements LockRecordService {
      * @return 锁操作记录列表
      */
     @Override
-    public List<LockProcess> selectLockProcessByUserName(String userName, Date start, Date end, Page page) {
+    public List<LockProcess> selectLockProcessByUserName(String userName, Date start, Date end, SimplePage page) {
         if(userName == null){
             log.error("操作人为空");
             return null;
@@ -292,7 +291,7 @@ public class LockRecordServiceImpl implements LockRecordService {
      * @return 锁操作记录列表
      */
     @Override
-    public List<LockProcess> selectLockProcessByUserName(String userName, Page page) {
+    public List<LockProcess> selectLockProcessByUserName(String userName, SimplePage page) {
         if(userName == null){
             log.error("操作人为空");
             return null;
@@ -309,7 +308,7 @@ public class LockRecordServiceImpl implements LockRecordService {
      * @return 锁操作记录列表
      */
     @Override
-    public List<LockProcess> selectLockProcessByType(Integer processType, Date start, Date end, Page page) {
+    public List<LockProcess> selectLockProcessByType(Integer processType, Date start, Date end, SimplePage page) {
         if(processType == null){
             log.error("操作类型为空");
             return null;
@@ -328,7 +327,7 @@ public class LockRecordServiceImpl implements LockRecordService {
      * @return 锁操作记录列表
      */
     @Override
-    public List<LockProcess> selectLockProcessByType(Integer processType, Page page) {
+    public List<LockProcess> selectLockProcessByType(Integer processType, SimplePage page) {
         if(processType == null){
             log.error("操作类型为空");
             return null;
@@ -345,7 +344,7 @@ public class LockRecordServiceImpl implements LockRecordService {
      * @return 锁操作记录列表
      */
     @Override
-    public List<LockProcess> selectLockProcessByResult(String processResult, Date start, Date end, Page page) {
+    public List<LockProcess> selectLockProcessByResult(String processResult, Date start, Date end, SimplePage page) {
         if(processResult == null){
             log.error("操作结果为空");
             return null;
@@ -364,7 +363,7 @@ public class LockRecordServiceImpl implements LockRecordService {
      * @return 锁操作记录列表
      */
     @Override
-    public List<LockProcess> selectLockProcessByResult(String processResult, Page page) {
+    public List<LockProcess> selectLockProcessByResult(String processResult, SimplePage page) {
         if(processResult == null){
             log.error("操作结果为空");
             return null;
@@ -381,7 +380,7 @@ public class LockRecordServiceImpl implements LockRecordService {
      * @return 锁操作记录列表
      */
     @Override
-    public List<LockProcess> selectLockProcessCondition(LockProcess lockProcess, Date start, Date end, Page page) {
+    public List<LockProcess> selectLockProcessCondition(LockProcess lockProcess, Date start, Date end, SimplePage page) {
         if(lockProcess == null){
             log.error("锁操作信息为空");
             return null;
@@ -398,7 +397,7 @@ public class LockRecordServiceImpl implements LockRecordService {
      * @return 锁操作记录列表
      */
     @Override
-    public List<LockProcess> selectLockProcessCondition(LockProcess lockProcess, Page page) {
+    public List<LockProcess> selectLockProcessCondition(LockProcess lockProcess, SimplePage page) {
         if(lockProcess == null){
             log.error("锁操作信息为空");
             return null;

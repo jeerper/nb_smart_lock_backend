@@ -2,7 +2,7 @@ package com.summit.service.impl;
 
 import com.summit.dao.entity.FaceInfoEntity;
 import com.summit.dao.entity.FileInfo;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 import com.summit.service.FaceInfoService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +20,7 @@ public class FaceInfoServiceImplTest {
     @Autowired
     private FaceInfoService faceInfoService;
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    Page page = new Page(1, 3);
+    SimplePage page = new SimplePage(1, 3);
     @Test
     public void insertFaceInfo() throws ParseException {
         FileInfo facePanorama = new FileInfo("10","10n","10p","10d");

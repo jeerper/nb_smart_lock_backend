@@ -2,7 +2,7 @@ package com.summit.service.impl;
 
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.LockProcess;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 import com.summit.service.LockRecordService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +23,7 @@ public class LockRecordServiceImplTest {
 
     SimpleDateFormat temeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    Page page = new Page(1, 1);
+    SimplePage page = new SimplePage(1, 1);
 
     @Test
     public void insertLockProcess() throws ParseException {

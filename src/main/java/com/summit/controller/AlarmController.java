@@ -7,30 +7,22 @@ import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.Alarm;
-import com.summit.dao.entity.CameraDevice;
-import com.summit.dao.entity.LockInfo;
-import com.summit.dao.entity.LockProcess;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 import com.summit.service.AlarmService;
 import com.summit.util.CommonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -140,7 +132,7 @@ public class AlarmController {
         Date start = CommonUtil.parseStrToDate(startTime,CommonConstants.STARTTIMEMARK);
         Date end = CommonUtil.parseStrToDate(endTime,CommonConstants.ENDTIMEMARK);
         try {
-            alarms = alarmService.selectAll(start,end,new Page(current,pageSize));
+            alarms = alarmService.selectAll(start,end,new SimplePage(current,pageSize));
             filterInfo(alarms);
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询告警信息失败", alarms);
@@ -165,7 +157,7 @@ public class AlarmController {
         Date end = CommonUtil.parseStrToDate(endTime,CommonConstants.ENDTIMEMARK);
         
         try {
-            alarms = alarmService.selectAlarmByStatus(alarmStatus,start,end,new Page(current,pageSize));
+            alarms = alarmService.selectAlarmByStatus(alarmStatus,start,end,new SimplePage(current,pageSize));
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询告警信息失败", alarms);
         }

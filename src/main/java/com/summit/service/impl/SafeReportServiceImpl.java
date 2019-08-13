@@ -2,7 +2,7 @@ package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.constants.CommonConstants;
-import com.summit.dao.entity.Page;
+import com.summit.dao.entity.SimplePage;
 import com.summit.dao.entity.SafeReport;
 import com.summit.dao.repository.LockRoleDao;
 import com.summit.dao.repository.SafeReportDao;
@@ -74,7 +74,7 @@ public class SafeReportServiceImpl implements SafeReportService {
      * @return 平安报信息列表
      */
     @Override
-    public List<SafeReport> selectAll(Page page) {
+    public List<SafeReport> selectAll(SimplePage page) {
         PageConverter.convertPage(page);
         return safeReportDao.selectCondition(new SafeReport(),null,null,page);
     }
@@ -102,7 +102,7 @@ public class SafeReportServiceImpl implements SafeReportService {
      * @return 平安报信息列表
      */
     @Override
-    public List<SafeReport> selectReportByLockCode(String lockCode, Date start, Date end, Page page) {
+    public List<SafeReport> selectReportByLockCode(String lockCode, Date start, Date end, SimplePage page) {
         if(lockCode == null){
             log.error("锁编号为空");
             return null;
@@ -118,7 +118,7 @@ public class SafeReportServiceImpl implements SafeReportService {
      * @return 平安报信息列表
      */
     @Override
-    public List<SafeReport> selectReportByLockCode(String lockCode, Page page) {
+    public List<SafeReport> selectReportByLockCode(String lockCode, SimplePage page) {
         if(lockCode == null){
             log.error("锁编号为空");
             return null;
@@ -135,7 +135,7 @@ public class SafeReportServiceImpl implements SafeReportService {
      * @return 平安报信息列表
      */
     @Override
-    public List<SafeReport> selectReportCondition(SafeReport safeReport, Date start, Date end, Page page) {
+    public List<SafeReport> selectReportCondition(SafeReport safeReport, Date start, Date end, SimplePage page) {
         if(safeReport == null){
             log.error("工况信息为空");
             return null;
@@ -151,7 +151,7 @@ public class SafeReportServiceImpl implements SafeReportService {
      * @return 平安报信息列表
      */
     @Override
-    public List<SafeReport> selectReportCondition(SafeReport safeReport, Page page) {
+    public List<SafeReport> selectReportCondition(SafeReport safeReport, SimplePage page) {
         if(safeReport == null){
             log.error("工况信息为空");
             return null;
@@ -168,7 +168,7 @@ public class SafeReportServiceImpl implements SafeReportService {
      * @return 平安报信息列表
      */
     @Override
-    public List<SafeReport> selectReportByRoles(List<String> roles, Date start, Date end, Page page) {
+    public List<SafeReport> selectReportByRoles(List<String> roles, Date start, Date end, SimplePage page) {
         if(roles == null || roles.size() == 0){
             log.error("角色信息为空");
             return null;
@@ -184,7 +184,7 @@ public class SafeReportServiceImpl implements SafeReportService {
      * @return 平安报信息列表
      */
     @Override
-    public List<SafeReport> selectReportByRoles(List<String> roles, Page page) {
+    public List<SafeReport> selectReportByRoles(List<String> roles, SimplePage page) {
         if(roles == null || roles.size() == 0){
             log.error("角色信息为空");
             return null;
