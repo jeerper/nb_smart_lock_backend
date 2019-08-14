@@ -218,6 +218,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         String deviceIp = faceInfo.getDeviceIp();
         accCtrlProcess.setDeviceIp(deviceIp);
+        //先设一默认值防止报错
+        accCtrlProcess.setLockCode("");
         accCtrlProcess.setUserName(faceInfo.getName());
         if(faceInfo.getGender() != null)
             accCtrlProcess.setGender(faceInfo.getGender().getGenderCode());

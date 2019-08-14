@@ -27,9 +27,9 @@ public interface AccessControlService {
     /**
      * 分页查询全部门禁信息
      * @param page 分页对象
-     * @return 门禁信息列表
+     * @return 门禁信息列表分页对象
      */
-    List<AccessControlInfo> selectAll(SimplePage page);
+    Page<AccessControlInfo> selectAccCtrlByPage(SimplePage page);
 
     /**
      * 分页查询全部有操作记录的门禁信息

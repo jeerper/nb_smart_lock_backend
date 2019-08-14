@@ -7,17 +7,20 @@ import com.summit.common.util.ResultBuilder;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.LockInfo;
+import com.summit.dao.entity.SimplePage;
 import com.summit.service.AccessControlService;
 import com.summit.service.CameraDeviceService;
 import com.summit.service.LockInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
@@ -38,15 +41,21 @@ public class AccessControlInfoController {
     @Autowired
     private CameraDeviceService cameraDeviceService;
 
-    private static final SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
     @ApiOperation(value = "分页查询全部门禁信息", notes = "分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
-    @GetMapping(value = "/queryAccessControlsByPage")
-    public RestfulEntityBySummit<Page<AccessControlInfo>> queryAccessControlsByPage(){
-
-
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"录入门禁信息成功", null);
+    @GetMapping(value = "/selectAccCtrlByPage")
+    public RestfulEntityBySummit<Page<AccessControlInfo>> selectAccCtrlByPage(@ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current",required = false) Integer current,
+                                                                                    @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize",required = false) Integer pageSize){
+        Page<AccessControlInfo> controlInfoPage = null;
+        try {
+            controlInfoPage = accessControlService.selectAccCtrlByPage(new SimplePage(current, pageSize));
+        } catch (Exception e) {
+            log.error("分页查询全部门禁信息失败");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"分页查询全部门禁信息失败", controlInfoPage);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"分页查询全部门禁信息成功", controlInfoPage);
     }
+
+
     @ApiOperation(value = "录入门禁信息", notes = "录入门禁信息时同时录入锁信息和设备信息")
     @PostMapping(value = "/insertAccessControl")
     public RestfulEntityBySummit<String> insertAccessControl(@RequestBody AccessControlInfo accessControlInfo){

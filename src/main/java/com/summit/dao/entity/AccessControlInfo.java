@@ -53,7 +53,7 @@ public class AccessControlInfo {
     private CameraDevice exitCamera;
 
     //1开启，2锁定，3告警
-    @ApiModelProperty(value="门禁状态",name="status",notes = "1开启，2锁定，3告警")
+    @ApiModelProperty(value="门禁状态,1开启，2锁定，3告警",name="status",notes = "1开启，2锁定，3告警")
     @TableField(value = "status")
     private Integer status;
     @ApiModelProperty(value="创建人名称",name="createby")
