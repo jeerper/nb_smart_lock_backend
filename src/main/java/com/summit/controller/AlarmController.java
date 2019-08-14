@@ -150,7 +150,7 @@ public class AlarmController {
                                                                  @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize") Integer pageSize) {
         if(alarmStatus == null){
             log.error("告警状态为空");
-            return null;
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警状态为空",null);
         }
         List<Alarm> alarms = null;
         Date start = CommonUtil.parseStrToDate(startTime,CommonConstants.STARTTIMEMARK);

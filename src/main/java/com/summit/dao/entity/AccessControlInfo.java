@@ -62,15 +62,15 @@ public class AccessControlInfo {
     @ApiModelProperty(hidden = true)
     @TableField(value = "createtime")
     private Date createtime;
-    @ApiModelProperty(value="门禁创建时间",name="createtime")
-    @TableField(exist = false)
-    private String createtimeStr;
+//    @ApiModelProperty(value="门禁创建时间",name="createtimeStr",notes = "格式为yyyy-MM-dd HH:mm:ss")
+//    @TableField(exist = false)
+//    private String createtimeStr;
     @ApiModelProperty(hidden = true)
     @TableField(value = "updatetime")
     private Date updatetime;
-    @ApiModelProperty(value="门禁更新时间",name="updatetime")
-    @TableField(exist = false)
-    private String updatetimeStr;
+//    @ApiModelProperty(value="门禁更新时间",name="updatetimeStr",notes = "格式为yyyy-MM-dd HH:mm:ss")
+//    @TableField(exist = false)
+//    private String updatetimeStr;
 
     @ApiModelProperty(hidden = true)
     @TableField(exist = false)
