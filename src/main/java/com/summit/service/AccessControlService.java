@@ -18,6 +18,13 @@ public interface AccessControlService {
     AccessControlInfo selectAccCtrlById(String accessControlId);
 
     /**
+     * 根据门禁id查询唯一门禁信息,不考虑权限
+     * @param accessControlId 门禁id
+     * @return 唯一门禁信息对象
+     */
+    AccessControlInfo selectAccCtrlByIdBeyondAuthority(String accessControlId);
+
+    /**
      * 根据锁编号查询唯一门禁信息
      * @param lockCode 锁编号
      * @return 唯一门禁信息对象
