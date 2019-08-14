@@ -20,16 +20,16 @@ public class PageConverter {
         }
         //若当前页和页大小只有一个为null，参数不合法
         if(current == null || pageSize == null){
-            page.setCurrent(0);
+            page.setCurrent(1);
             page.setPageSize(0);
             return;
         }
-        //若current 或 pageSize不合法，则查不到记录
-        if(current < 1 || pageSize < 0){
-            page.setCurrent(0);
+        //若current < 0 则置为1
+        if(current < 1)
+            page.setCurrent(1);
+        //pageSize < 0，则查不到记录
+        if(pageSize < 0)
             page.setPageSize(0);
-            return;
-        }
         page.setCurrent((current - 1) * pageSize);
     }
 
@@ -44,9 +44,8 @@ public class PageConverter {
         if(rowsCount == null || pageSize == null){
             return 1;
         }
-        //若rowsCount 或 pageSize不合法，则总页数为0
-        if(rowsCount < 0 || pageSize <= 0){
-            return 0;
+        if(rowsCount <= 0 || pageSize <= 0){
+            return 1;
         }
         return rowsCount % pageSize == 0 ? rowsCount / pageSize : rowsCount / pageSize + 1;
     }
@@ -71,10 +70,17 @@ public class PageConverter {
         if(current == null || pageSize == null){
             return 0;
         }
-        //若current 或 pageSize不合法，则查不到记录
-        if(current < 1 || pageSize < 0){
+        //若current < 0 则置为1
+        if(current < 1){
+            page.setCurrent(1);
+            current = 1;
+        }
+        //pageSize < 0，则查不到记录
+        if(pageSize < 0){
+            page.setPageSize(0);
             return 0;
         }
+
         return current * pageSize > rowsCount ? rowsCount % pageSize : pageSize;
     }
 
@@ -88,6 +94,8 @@ public class PageConverter {
         Pageable pageable = new Pageable();
         if(page == null){
             pageable.setPageCount(1);
+            pageable.setCurPage(1);
+            pageable.setPageSize(rowsCount);
             pageable.setRowsCount(rowsCount);
             pageable.setPageRowsCount(rowsCount);
             return pageable;
@@ -97,24 +105,41 @@ public class PageConverter {
         //若当前页和页大小都为null，说明无分页
         if(current == null && pageSize == null){
             pageable.setPageCount(1);
+            pageable.setCurPage(1);
+            pageable.setPageSize(rowsCount);
             pageable.setRowsCount(rowsCount);
             pageable.setPageRowsCount(rowsCount);
             return pageable;
         }
         //若当前页和页大小只有一个为null，参数不合法
         if(current == null || pageSize == null){
+            page.setCurrent(1);
+            page.setPageSize(0);
             pageable.setPageCount(1);
             pageable.setRowsCount(0);
+            pageable.setCurPage(1);
+            pageable.setPageSize(0);
             pageable.setPageRowsCount(0);
             return pageable;
         }
-        //current 或 pageSize不合法
-        if(current < 1 || pageSize < 0){
+
+        //若current < 0 则置为1
+        if(current < 1){
+            page.setCurrent(1);
+            pageable.setCurPage(1);
+            current = 1;
+        }
+        //pageSize < 0，则查不到记录
+        if(pageSize < 0){
+            page.setPageSize(0);
             pageable.setPageCount(1);
             pageable.setRowsCount(0);
+            pageable.setCurPage(1);
+            pageable.setPageSize(0);
             pageable.setPageRowsCount(0);
             return pageable;
         }
+
         if(rowsCount == null || rowsCount < 0)
             rowsCount = 0;
 
@@ -128,4 +153,31 @@ public class PageConverter {
         return pageable;
     }
 
+    /**
+     * 前端传入分页和数据库limit转换
+     * @param page 简单分页对象，其中含有页大小和当前页
+     */
+    public static SimplePage filterPage(SimplePage page) {
+        if(page == null)
+            return null;
+        Integer current = page.getCurrent();
+        Integer pageSize = page.getPageSize();
+        //若当前页和页大小都为null，说明无分页
+        if(current == null && pageSize == null){
+            return null;
+        }
+        //若当前页和页大小只有一个为null，参数不合法
+        if(current == null || pageSize == null){
+            page.setCurrent(1);
+            page.setPageSize(0);
+            return page;
+        }
+        //若current < 0 则置为1
+        if(current < 1)
+            page.setCurrent(1);
+        //pageSize < 0，则查不到记录
+        if(pageSize < 0)
+            page.setPageSize(0);
+        return page;
+    }
 }

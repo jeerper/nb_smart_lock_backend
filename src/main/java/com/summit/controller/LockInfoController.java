@@ -40,7 +40,7 @@ public class LockInfoController {
     private FaceInfoService faceInfoService;
 
 
-    @ApiOperation(value = "分页查询全部锁信息", notes = "分页参数为空则查全部，不合法则查询不到结果")
+    @ApiOperation(value = "分页查询全部锁信息", notes = "分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
     @GetMapping(value = "/selectLockInfoByPage")
     public RestfulEntityBySummit<Page<LockInfo>> selectLockInfoByPage(@ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
                                                                    @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {

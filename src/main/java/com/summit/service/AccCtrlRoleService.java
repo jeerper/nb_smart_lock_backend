@@ -43,9 +43,10 @@ public interface AccCtrlRoleService {
     /**
      * 根据角色code分页查询门禁角色权限
      * @param roleCode 角色code
+     * @param page 简单分页对象
      * @return 门禁角色权限分页对象
      */
-    Page<AccCtrlRole> selectAccCtrlRolesByRoleCode(String roleCode);
+    Page<AccCtrlRole> selectAccCtrlRolesByRoleCode(String roleCode,SimplePage page);
 
     /**
      * 分页查询门禁角色权限
