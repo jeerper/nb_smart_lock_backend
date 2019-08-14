@@ -40,12 +40,12 @@ public class LockInfo {
     @TableField(value = "updatetime")
     private Date updatetime;
 
-    @ApiModelProperty(value="锁关联的摄像头列表",name="devices",notes = "为null则json中不返回此字段")
+    @ApiModelProperty(value="锁关联的摄像头列表",name="devices",notes = "为null则json中不返回此字段",hidden = true)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @TableField(exist = false)
     private List<CameraDevice> devices;
 
-    @ApiModelProperty(value="锁关联的角色列表",name="devices",notes = "此字段不返回前台")
+    @ApiModelProperty(value="锁关联的角色列表",name="devices",notes = "此字段不返回前台",hidden = true)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @TableField(exist = false)
     private List<LockRole> roles;

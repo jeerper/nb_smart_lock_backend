@@ -24,22 +24,28 @@ public class AccessControlInfo {
     @TableField(value = "access_control_name")
     private String accessControlName;
 
+    @ApiModelProperty(hidden = true)
     @TableField(value = "lock_id")
     private String lockId;
+    @ApiModelProperty(hidden = true)
     @TableField(value = "lock_code")
     private String lockCode;
     @ApiModelProperty(value="锁信息",name="lockInfo")
     @TableField(exist = false)
     private LockInfo lockInfo;
+    @ApiModelProperty(hidden = true)
     @TableField(value = "entry_camera_id")
     private String entryCameraId;
+    @ApiModelProperty(hidden = true)
     @TableField(value = "entry_camera_ip")
     private String entryCameraIp;
     @ApiModelProperty(value="入口摄像头信息",name="entryCamera")
     @TableField(exist = false)
     private CameraDevice entryCamera;
+    @ApiModelProperty(hidden = true)
     @TableField(value = "exit_camera_id")
     private String exitCameraId;
+    @ApiModelProperty(hidden = true)
     @TableField(value = "exit_camera_ip")
     private String exitCameraIp;
     @ApiModelProperty(value="出口摄像头信息",name="exitCamera")
@@ -60,6 +66,7 @@ public class AccessControlInfo {
     @TableField(value = "updatetime")
     private Date updatetime;
 
+    @ApiModelProperty(hidden = true)
     @TableField(exist = false)
     private List<LockRole> roles;
 
