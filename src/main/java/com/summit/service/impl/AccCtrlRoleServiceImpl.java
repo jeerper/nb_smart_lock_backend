@@ -72,17 +72,38 @@ public class AccCtrlRoleServiceImpl implements AccCtrlRoleService {
      */
     @Override
     public int refreshAccCtrlRoleBatch(List<String> accessControlIds, String roleCode) {
+        if(accessControlIds == null || roleCode == null){
+            return CommonConstants.UPDATE_ERROR;
+        }
         //查出角色当前关联的角色
         List<AccCtrlRole> ctrlRoles = selectAccCtrlRolesByRoleCode(roleCode);
-        if(ctrlRoles != null){
+        if(ctrlRoles != null && !ctrlRoles.isEmpty()){
 
-
-            List<AccCtrlRole>  accCtrlRoles = new ArrayList<>();
-            for(String accCtrlId : accessControlIds) {
-                AccCtrlRole accCtrlRole = new AccCtrlRole(null,null,roleCode,accCtrlId);
-                accCtrlRoles.add(accCtrlRole);
+            //先删除数据库在传入列表中找不到的门禁授权
+            for(AccCtrlRole ctrlRole : ctrlRoles) {
+                boolean needDel = true;
+                for(String acId : accessControlIds) {
+                    if(acId != null && acId.equals(ctrlRole.getAccessControlId())){
+                        needDel = false;
+                    }
+                }
+                if(needDel){
+                    accCtrlRoleDao.deleteById(ctrlRole.getId());
+                }
             }
 
+            //再添加传入列表在数据库在中找不到的门禁授权
+            for(String acId : accessControlIds) {
+                boolean needAdd = true;
+                for(AccCtrlRole ctrlRole : ctrlRoles) {
+                    if(acId != null && acId.equals(ctrlRole.getAccessControlId())){
+                        needAdd = false;
+                    }
+                }
+                if(needAdd){
+                    accCtrlRoleDao.insert(new AccCtrlRole(null,null,roleCode,acId));
+                }
+            }
         }else{
             //若之前无此角色对应的门禁权限，则直接添加
             List<AccCtrlRole>  accCtrlRoles = new ArrayList<>();
