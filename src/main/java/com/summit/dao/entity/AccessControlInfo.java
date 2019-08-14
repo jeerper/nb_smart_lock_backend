@@ -59,12 +59,18 @@ public class AccessControlInfo {
     @ApiModelProperty(value="创建人名称",name="createby")
     @TableField(value = "createby")
     private String createby;
-    @ApiModelProperty(value="创建时间",name="createtime")
+    @ApiModelProperty(hidden = true)
     @TableField(value = "createtime")
     private Date createtime;
-    @ApiModelProperty(value="更新时间",name="updatetime")
+    @ApiModelProperty(value="门禁创建时间",name="createtime")
+    @TableField(exist = false)
+    private String createtimeStr;
+    @ApiModelProperty(hidden = true)
     @TableField(value = "updatetime")
     private Date updatetime;
+    @ApiModelProperty(value="门禁更新时间",name="updatetime")
+    @TableField(exist = false)
+    private String updatetimeStr;
 
     @ApiModelProperty(hidden = true)
     @TableField(exist = false)

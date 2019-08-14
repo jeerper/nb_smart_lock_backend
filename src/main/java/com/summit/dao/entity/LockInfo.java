@@ -32,13 +32,19 @@ public class LockInfo {
     @ApiModelProperty(value="锁创建人",name="createby",notes = "这里填name")
     @TableField(value = "createby")
     private String createby;
-    @ApiModelProperty(value="锁创建时间",name="createtime")
+    @ApiModelProperty(hidden = true)
     @TableField(value = "createtime")
     private Date createtime;
+    @ApiModelProperty(value="锁创建时间",name="createtime")
+    @TableField(exist = false)
+    private String createtimeStr;
 
-    @ApiModelProperty(value="锁更新时间",name="updatetime")
+    @ApiModelProperty(hidden = true)
     @TableField(value = "updatetime")
     private Date updatetime;
+    @ApiModelProperty(value="锁更新时间",name="updatetime")
+    @TableField(exist = false)
+    private String updatetimeStr;
 
     @ApiModelProperty(value="锁关联的摄像头列表",name="devices",notes = "为null则json中不返回此字段",hidden = true)
     @JsonInclude(JsonInclude.Include.NON_NULL)
