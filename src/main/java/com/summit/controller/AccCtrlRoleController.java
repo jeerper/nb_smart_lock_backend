@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -35,7 +34,7 @@ public class AccCtrlRoleController {
 
     @ApiOperation(value = "批量刷新指定角色关联的门禁", notes = "为指定角色更新门禁权限，所传角色之前没有关联某门禁且所传列表中有则添加，之前已关联某门禁权限而所传列表中有则不添加，之前已关联某门禁权限而所传列表中没有则删除")
     @PostMapping(value = "/refreshAccCtrlRoleBatch")
-    public RestfulEntityBySummit<String> refreshAccCtrlRoleBatch(@ApiParam(value = "门禁角色信息", required = true) @RequestParam(value = "accessControlIds") List<String> accessControlIds,
+    public RestfulEntityBySummit<String> refreshAccCtrlRoleBatch(@ApiParam(value = "门禁id列表", required = true) @RequestParam(value = "accessControlIds") List<String> accessControlIds,
                                                            @ApiParam(value = "角色code", required = true) @RequestParam(value = "roleCode") String roleCode) {
         if(accessControlIds == null || accessControlIds.isEmpty()){
             log.error("门禁id列表为空");
