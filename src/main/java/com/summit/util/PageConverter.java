@@ -154,7 +154,7 @@ public class PageConverter {
     }
 
     /**
-     * 前端传入分页和数据库limit转换
+     * 过滤、校正分页信息
      * @param page 简单分页对象，其中含有页大小和当前页
      */
     public static SimplePage filterPage(SimplePage page) {

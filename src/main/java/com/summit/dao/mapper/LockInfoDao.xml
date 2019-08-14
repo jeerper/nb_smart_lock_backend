@@ -6,6 +6,7 @@
     <result column="lock_code" jdbcType="VARCHAR" property="lockCode" />
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="createby" jdbcType="VARCHAR" property="createby" />
+    <result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
     <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
 
     <collection property="devices" resultMap="devicesResult"  />
@@ -26,10 +27,10 @@
   </resultMap>
 
   <sql id="Base_Column_List">
-    lock_id, lock_code, status, createby, updatetime
+    lock_id, lock_code, status, createby, createtime, updatetime
   </sql>
   <sql id="Lock_Have_Alias_List">
-    li.lock_id, li.lock_code, li.status, li.createby, li.updatetime
+    li.lock_id, li.lock_code, li.status, li.createby, li.createtime, li.updatetime
   </sql>
   <sql id="Device_Have_Alias_List">
     cd.dev_id cd_dev_id, cd.device_ip cd_device_ip, cd.lock_code cd_lock_code, cd.status cd_status

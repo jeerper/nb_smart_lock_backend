@@ -31,6 +31,7 @@
       <result column="li_lock_code" jdbcType="VARCHAR" property="lockCode" />
       <result column="li_status" jdbcType="INTEGER" property="status" />
       <result column="li_createby" jdbcType="VARCHAR" property="createby" />
+      <result column="li_createtime" jdbcType="VARCHAR" property="createtime" />
       <result column="li_updatetime" jdbcType="TIMESTAMP" property="updatetime" />
 
       <collection property="devices" resultMap="devicesResult"  />
@@ -86,7 +87,7 @@
   </sql>
   <sql id="LockInfo_Have_Alias_List">
     li.lock_id li_lock_id, li.lock_code li_lock_code, li.status li_status,
-    li.createby li_createby, li.updatetime li_updatetime
+    li.createby li_createby, li.createtime li_createtime, li.updatetime li_updatetime
   </sql>
   <sql id="Auth_Have_Alias_List">
     au.id au_id, au.role_id au_role_id, au.lock_id au_lock_id, au.lock_code au_lock_code

@@ -20,6 +20,21 @@ public interface AccCtrlRoleService {
     int insertAccCtrlRole(AccCtrlRole accCtrlRole);
 
     /**
+     * 批量插入门禁角色权限信息
+     * @param accCtrlRoles 门禁角色权限对象列表
+     * @return 返回不为-1则为成功
+     */
+    int insertAccCtrlRoleBatch(List<AccCtrlRole> accCtrlRoles);
+
+    /**
+     * 批量刷新门禁角色权限信息，，所传角色之前没有关联某门禁且所传列表中有则添加，之前已关联某门禁权限而所传列表中有则不添加，之前已关联某门禁权限而所传列表中没有则删除
+     * @param accessControlIds 角色关联的所有门禁id
+     * @param roleCode 角色code
+     * @return 返回不为-1则为成功
+     */
+    int refreshAccCtrlRoleBatch(List<String> accessControlIds,String roleCode);
+
+    /**
      * 更新门禁角色权限信息
      * @param accCtrlRole 门禁角色权限对象
      * @return 返回不为-1则为成功
@@ -39,6 +54,13 @@ public interface AccCtrlRoleService {
      * @return 查询门禁角色权限对象
      */
     AccCtrlRole selectAccCtrlRoleById(String id);
+
+    /**
+     * 根据角色code查询所有门禁角色权限
+     * @param roleCode 角色code
+     * @return 门禁角色权限列表
+     */
+    List<AccCtrlRole> selectAccCtrlRolesByRoleCode(String roleCode);
 
     /**
      * 根据角色code分页查询门禁角色权限

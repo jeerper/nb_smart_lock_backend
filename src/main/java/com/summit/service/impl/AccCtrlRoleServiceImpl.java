@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -38,6 +39,59 @@ public class AccCtrlRoleServiceImpl implements AccCtrlRoleService {
             return CommonConstants.UPDATE_ERROR;
         }
         return accCtrlRoleDao.insert(accCtrlRole);
+    }
+
+    @Override
+    public int insertAccCtrlRoleBatch(List<AccCtrlRole>  accCtrlRoles) {
+        if(accCtrlRoles == null || accCtrlRoles.isEmpty()){
+            log.error("门禁角色权限对象数组为空");
+            return CommonConstants.UPDATE_ERROR;
+        }
+        int result = 0;
+        int failCount = 0;
+        for(AccCtrlRole accRole : accCtrlRoles) {
+            try {
+                if(accCtrlRoleDao.insert(accRole) == CommonConstants.UPDATE_ERROR){
+                    failCount++;
+                }
+            } catch (Exception e) {
+                log.error("为角色添加门禁{}时失败",accRole.getAccessControlId());
+            }
+        }
+        //全部失败才算失败
+        if(failCount == accCtrlRoles.size())
+            result = CommonConstants.UPDATE_ERROR;
+        return result;
+    }
+
+    /**
+     * 批量刷新门禁角色权限信息，，所传角色之前没有关联某门禁且所传列表中有则添加，之前已关联某门禁权限而所传列表中有则不添加，之前已关联某门禁权限而所传列表中没有则删除
+     * @param accessControlIds 角色关联的所有门禁id
+     * @param roleCode 角色code
+     * @return 返回不为-1则为成功
+     */
+    @Override
+    public int refreshAccCtrlRoleBatch(List<String> accessControlIds, String roleCode) {
+        //查出角色当前关联的角色
+        List<AccCtrlRole> ctrlRoles = selectAccCtrlRolesByRoleCode(roleCode);
+        if(ctrlRoles != null){
+
+
+            List<AccCtrlRole>  accCtrlRoles = new ArrayList<>();
+            for(String accCtrlId : accessControlIds) {
+                AccCtrlRole accCtrlRole = new AccCtrlRole(null,null,roleCode,accCtrlId);
+                accCtrlRoles.add(accCtrlRole);
+            }
+
+        }else{
+            //若之前无此角色对应的门禁权限，则直接添加
+            List<AccCtrlRole>  accCtrlRoles = new ArrayList<>();
+            for(String accessControlId : accessControlIds) {
+                accCtrlRoles.add(new AccCtrlRole(null,null,roleCode,accessControlId));
+            }
+            return insertAccCtrlRoleBatch(accCtrlRoles);
+        }
+        return 0;
     }
 
     /**
@@ -82,6 +136,21 @@ public class AccCtrlRoleServiceImpl implements AccCtrlRoleService {
             return null;
         }
         return accCtrlRoleDao.selectById(id);
+    }
+
+    /**
+     * 根据角色code查询所有门禁角色权限
+     * @param roleCode 角色code
+     * @return 门禁角色权限列表
+     */
+    @Override
+    public List<AccCtrlRole> selectAccCtrlRolesByRoleCode(String roleCode) {
+        if(roleCode == null){
+            log.error("角色code为空");
+            return null;
+        }
+        QueryWrapper<AccCtrlRole> wrapper = new QueryWrapper<>();
+        return accCtrlRoleDao.selectList(wrapper.eq("role_id",roleCode));
     }
 
     /**
