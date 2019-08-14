@@ -53,7 +53,7 @@ public class AlarmServiceImplTest {
     @Test
     public void selectAll() {
 
-        List<Alarm> alarms = alarmService.selectAll(null,null,null);
+        List<Alarm> alarms = alarmService.selectAll(null,null,new SimplePage(14,2));
         System.out.println(alarms);
     }
 

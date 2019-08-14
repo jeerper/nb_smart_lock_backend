@@ -80,7 +80,10 @@ public class PageConverter {
             page.setPageSize(0);
             return 0;
         }
-
+        //若当前页大于总页数，则当前页总数为0
+        if(current > getPageCount(pageSize, rowsCount)){
+            return 0;
+        }
         return current * pageSize > rowsCount ? rowsCount % pageSize : pageSize;
     }
 

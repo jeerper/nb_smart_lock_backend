@@ -120,7 +120,7 @@
     <include refid="Face_Pic_Alias_List" />,
     <include refid="Face_Match_Alias_List" />
     from (
-    select <include refid="AccCtrl_Have_Alias_List" /> from acc_ctrl_process acp
+    select distinct <include refid="AccCtrl_Have_Alias_List" /> from acc_ctrl_process acp
     inner join (
     select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
     <where>
@@ -150,7 +150,7 @@
     <include refid="Face_Pic_Alias_List" />,
     <include refid="Face_Match_Alias_List" />
     from (
-      select <include refid="AccCtrl_Have_Alias_List" /> from acc_ctrl_process acp
+      select distinct <include refid="AccCtrl_Have_Alias_List" /> from acc_ctrl_process acp
       inner join (
       select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
       <where>
@@ -184,7 +184,7 @@
     <include refid="Face_Pic_Alias_List" />,
     <include refid="Face_Match_Alias_List" />
     from (
-    select <include refid="AccCtrl_Have_Alias_List" /> from acc_ctrl_process acp
+    select distinct <include refid="AccCtrl_Have_Alias_List" /> from acc_ctrl_process acp
     inner join (
     select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
     <where>

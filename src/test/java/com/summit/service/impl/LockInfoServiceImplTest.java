@@ -1,5 +1,6 @@
 package com.summit.service.impl;
 
+import com.summit.cbb.utils.page.Page;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.SimplePage;
 import com.summit.service.LockInfoService;
@@ -54,7 +55,8 @@ public class LockInfoServiceImplTest {
 
     @Test
     public void selectAll() {
-        List<LockInfo> lockInfos = lockInfoService.selectLockInfoByPage(page).getContent();
+        Page<LockInfo> lockInfoPage = lockInfoService.selectLockInfoByPage(new SimplePage(2, 3));
+        List<LockInfo> lockInfos = lockInfoPage.getContent();
         System.out.println(lockInfos);
     }
 

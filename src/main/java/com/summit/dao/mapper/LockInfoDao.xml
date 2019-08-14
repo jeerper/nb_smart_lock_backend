@@ -48,7 +48,7 @@
     <include refid="Device_Have_Alias_List" />,
     <include refid="Auth_Have_Alias_List" />
     from
-    (select <include refid="Lock_Have_Alias_List" /> from lock_info li
+    (select distinct <include refid="Lock_Have_Alias_List" /> from lock_info li
     inner join (
     select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
     <where>
@@ -72,7 +72,7 @@
     <include refid="Device_Have_Alias_List" />,
     <include refid="Auth_Have_Alias_List" />
     from
-    (select <include refid="Lock_Have_Alias_List" /> from lock_info li
+    (select distinct <include refid="Lock_Have_Alias_List" /> from lock_info li
     inner join (
     select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
     <where>
@@ -98,7 +98,7 @@
     <include refid="Device_Have_Alias_List" />,
     <include refid="Auth_Have_Alias_List" />
     from
-    (select <include refid="Lock_Have_Alias_List" /> from lock_info li
+    (select distinct <include refid="Lock_Have_Alias_List" /> from lock_info li
     inner join lock_process lo on li.lock_code = lo.lock_code
     inner join (
     select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
@@ -124,7 +124,7 @@
     <include refid="Device_Have_Alias_List" />,
     <include refid="Auth_Have_Alias_List" />
     from
-    (select <include refid="Lock_Have_Alias_List" /> from lock_info li
+    (select distinct <include refid="Lock_Have_Alias_List" /> from lock_info li
     inner join (
       select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
         <where>

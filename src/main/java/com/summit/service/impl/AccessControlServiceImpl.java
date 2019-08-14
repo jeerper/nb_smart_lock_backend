@@ -81,8 +81,6 @@ public class AccessControlServiceImpl implements AccessControlService {
         return backPage;
     }
 
-
-
     /**
      * 条件查询门禁信息
      * @param accessControlInfo 门禁信息对象
