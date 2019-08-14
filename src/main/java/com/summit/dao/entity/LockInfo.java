@@ -26,10 +26,10 @@ public class LockInfo {
     private String lockCode;
 
     //1开锁，2锁定，3告警
-    @ApiModelProperty(value="锁状态",name="status",notes = "1开锁，2锁定，3告警")
+    @ApiModelProperty(value="锁状态,1开锁，2锁定，3告警",name="status",notes = "1开锁，2锁定，3告警")
     @TableField(value = "status")
     private Integer status;
-    @ApiModelProperty(value="锁创建人",name="createby",notes = "这里填name")
+    @ApiModelProperty(value="锁创建人,这里填name",name="createby",notes = "这里填name")
     @TableField(value = "createby")
     private String createby;
     @ApiModelProperty(hidden = true)
@@ -46,12 +46,12 @@ public class LockInfo {
 //    @TableField(exist = false)
 //    private String updatetimeStr;
 
-    @ApiModelProperty(value="锁关联的摄像头列表",name="devices",notes = "为null则json中不返回此字段",hidden = true)
+    @ApiModelProperty(value="锁关联的摄像头列表,为null则json中不返回此字段",name="devices",hidden = true)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @TableField(exist = false)
     private List<CameraDevice> devices;
 
-    @ApiModelProperty(value="锁关联的角色列表",name="devices",notes = "此字段不返回前台",hidden = true)
+    @ApiModelProperty(value="锁关联的角色列表,此字段不返回前台",name="devices",hidden = true)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @TableField(exist = false)
     private List<LockRole> roles;
