@@ -55,8 +55,7 @@ public class LockInfoServiceImplTest {
 
     @Test
     public void selectAll() {
-        Page<LockInfo> lockInfoPage = lockInfoService.selectLockInfoByPage(new SimplePage(2, 3));
-        List<LockInfo> lockInfos = lockInfoPage.getContent();
+        List<LockInfo> lockInfos = lockInfoService.selectLockInfoByPage(new SimplePage(2, 3)).getContent();
         System.out.println(lockInfos);
     }
 
