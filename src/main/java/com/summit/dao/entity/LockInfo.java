@@ -26,9 +26,9 @@ public class LockInfo {
     private String lockCode;
 
     //1开锁，2锁定，3告警
-    @ApiModelProperty(value="锁状态,1开锁，2锁定，3告警，默认为锁定状态",name="status",notes = "1开锁，2锁定，3告警")
+    @ApiModelProperty(value="锁状态,1开锁，2锁定，3告警，录入时默认为2锁定状态",name="status",notes = "1开锁，2锁定，3告警")
     @TableField(value = "status")
-    private Integer status = 2;
+    private Integer status;
     @ApiModelProperty(value="锁创建人,取当前用户名称",name="createby",notes = "这里填name",hidden = true)
     @TableField(value = "createby")
     private String createby;

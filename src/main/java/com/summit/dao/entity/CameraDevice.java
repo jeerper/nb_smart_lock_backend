@@ -28,9 +28,9 @@ public class CameraDevice {
     private String lockCode;
 
     //0正常，1异常
-    @ApiModelProperty(value="摄像头状态,0正常，1异常，不传默认为0",name="deviceIp",notes = "0正常，1异常，不传默认为0")
+    @ApiModelProperty(value="摄像头状态,0正常，1异常，录入时默认为0",name="deviceIp",notes = "0正常，1异常，不传默认为0")
     @TableField(value = "status")
-    private Integer status = 0;
+    private Integer status;
 
     public CameraDevice(){}
 }

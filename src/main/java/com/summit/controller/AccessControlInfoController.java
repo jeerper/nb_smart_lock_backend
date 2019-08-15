@@ -70,6 +70,8 @@ public class AccessControlInfoController {
         }
         Date time = new Date();
         accessControlInfo.setAccessControlId(null);
+        if(accessControlInfo.getStatus() == null)
+            accessControlInfo.setStatus(2);
         accessControlInfo.setCreatetime(time);
         accessControlInfo.setUpdatetime(time);
         UserInfo uerInfo = UserContextHolder.getUserInfo();
@@ -84,6 +86,8 @@ public class AccessControlInfoController {
         String lockCode = null;
         if(lockInfo != null){
             lockInfo.setLockId(null);
+            if(lockInfo.getStatus() == null)
+                lockInfo.setStatus(2);
             lockInfo.setCreateby(name);
             lockId = lockInfo.getLockId();
             lockCode = lockInfo.getLockCode();
@@ -101,6 +105,8 @@ public class AccessControlInfoController {
         CameraDevice entryCamera = accessControlInfo.getEntryCamera();
         if(entryCamera != null){
             entryCamera.setDevId(null);
+            if(entryCamera.getStatus() == null)
+                entryCamera.setStatus(0);
             entryCamera.setLockId(lockId);
             entryCamera.setLockCode(lockCode);
             accessControlInfo.setEntryCameraIp(entryCamera.getDeviceIp());
@@ -114,6 +120,8 @@ public class AccessControlInfoController {
         CameraDevice exitCamera = accessControlInfo.getExitCamera();
         if(exitCamera != null){
             exitCamera.setDevId(null);
+            if(exitCamera.getStatus() == null)
+                exitCamera.setStatus(0);
             exitCamera.setLockId(lockId);
             exitCamera.setLockCode(lockCode);
             accessControlInfo.setExitCameraIp(exitCamera.getDeviceIp());

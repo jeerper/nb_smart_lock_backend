@@ -4,9 +4,11 @@
   <resultMap id="BaseResultMap" type="com.summit.dao.entity.Alarm">
     <result column="alarm_id" jdbcType="VARCHAR" property="alarmId" />
     <result column="alarm_name" jdbcType="VARCHAR" property="alarmName" />
-    <result column="process_id" jdbcType="VARCHAR" property="processId" />
+    <result column="acc_ctrl_pro_id" jdbcType="VARCHAR" property="accCtrlProId" />
     <result column="alarm_time" jdbcType="TIMESTAMP" property="alarmTime" />
     <result column="alarm_status" jdbcType="INTEGER" property="alarmStatus" />
+    <result column="access_control_id" jdbcType="VARCHAR" property="accessControlId" />
+    <result column="access_control_name" jdbcType="VARCHAR" property="accessControlName" />
 
     <association property="accCtrlProcess" javaType="com.summit.dao.entity.AccCtrlProcess">
         <result column="acc_ctrl_pro_id" jdbcType="VARCHAR" property="accCtrlProId" />
@@ -130,7 +132,7 @@
     from (select distinct <include refid="Alarm_Have_Alias_List" /> from
     alarm al left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
     inner join (
-    select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
+    select distinct <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
     <where>
       au.role_id in
       <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
@@ -162,7 +164,7 @@
     from (select distinct <include refid="Alarm_Have_Alias_List" /> from
     alarm al left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
     inner join (
-    select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
+    select distinct <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
     <where>
       au.role_id in
       <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
@@ -188,7 +190,7 @@
         select al.alarm_id, al.alarm_status from alarm al
         left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
         inner join (
-        select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
+        select distinct <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
         <where>
             au.role_id in
             <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
@@ -216,7 +218,7 @@
     from (select distinct <include refid="Alarm_Have_Alias_List" /> from
         alarm al left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
         inner join (
-        select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
+        select distinct <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
         <where>
           au.role_id in
           <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
@@ -243,9 +245,6 @@
       </if>
       <if test="alarm.accCtrlProId != null">
         and al.acc_ctrl_pro_id = #{alarm.accCtrlProId}
-      </if>
-      <if test="alarm.accCtrlProcess != null and alarm.accCtrlProcess.accessControlName != null">
-        and ac.access_control_name = #{alarm.accCtrlProcess.accessControlName}
       </if>
 <!--      <if test="alarm.accCtrlProcess != null and alarm.accCtrlProcess.accessControlName != null">-->
 <!--        and ac.access_control_name = #{alarm.accCtrlProcess.accessControlName}-->
