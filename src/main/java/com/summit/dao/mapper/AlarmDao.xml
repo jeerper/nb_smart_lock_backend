@@ -85,7 +85,7 @@
 
 
   <sql id="Base_Column_List">
-    alarm_id, alarm_name, process_id, alarm_time, alarm_status
+    alarm_id, alarm_name, acc_ctrl_pro_id, alarm_time, alarm_status
   </sql>
   <sql id="Alarm_Have_Alias_List">
     al.alarm_id, al.alarm_name, al.acc_ctrl_pro_id, al.alarm_time, al.alarm_status
@@ -249,6 +249,9 @@
 <!--      <if test="alarm.accCtrlProcess != null and alarm.accCtrlProcess.accessControlName != null">-->
 <!--        and ac.access_control_name = #{alarm.accCtrlProcess.accessControlName}-->
 <!--      </if>-->
+      <if test="alarm.accessControlId != null ">
+        and ac.access_control_id = #{alarm.accessControlId}
+      </if>
       <if test="alarm.accessControlName != null ">
         and ac.access_control_name = #{alarm.accessControlName}
       </if>

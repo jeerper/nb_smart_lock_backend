@@ -60,12 +60,12 @@ public class AlarmController {
     @PutMapping(value = "/updateAlarmStatus")
         public RestfulEntityBySummit<String> updateAlarmStatus(@ApiParam(value = "门禁告警状态", required = true) @RequestParam(value = "alarmStatus") Integer alarmStatus,
                                                            @ApiParam(value = "门禁告警状态") @RequestParam(value = "alarmId",required = false) String alarmId,
-                                                           @ApiParam(value = "门禁告警状态") @RequestParam(value = "processId",required = false) String processId) {
+                                                           @ApiParam(value = "门禁告警状态") @RequestParam(value = "accCtrlProId",required = false) String accCtrlProId) {
         if(alarmStatus == null){
             log.error("门禁告警状态为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁告警状态为空",null);
         }
-        if(alarmId == null && processId == null){
+        if(alarmId == null && accCtrlProId == null){
             log.error("alarmId和processId不能同时为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"alarmId和processId不能同时为空",null);
         }
@@ -73,7 +73,7 @@ public class AlarmController {
         if(alarmId != null){
             alarm.setAlarmId(alarmId);
         }else{
-            alarm.setAccCtrlProId(processId);
+            alarm.setAccCtrlProId(accCtrlProId);
         }
         alarm.setAlarmStatus(alarmStatus);
         alarm.setAlarmTime(new Date());
