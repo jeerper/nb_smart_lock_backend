@@ -68,6 +68,7 @@ public class AccessControlInfoController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁信息为空",null);
         }
         Date time = new Date();
+        accessControlInfo.setAccessControlId(null);
         accessControlInfo.setCreatetime(time);
         accessControlInfo.setUpdatetime(time);
         UserInfo uerInfo = UserContextHolder.getUserInfo();
@@ -81,39 +82,43 @@ public class AccessControlInfoController {
         String lockId = null;
         String lockCode = null;
         if(lockInfo != null){
+            lockInfo.setLockId(null);
             lockInfo.setCreateby(name);
             lockId = lockInfo.getLockId();
-            accessControlInfo.setLockId(lockId);
             lockCode = lockInfo.getLockCode();
             accessControlInfo.setLockCode(lockCode);
             lockInfo.setCreatetime(time);
             lockInfo.setUpdatetime(time);
             try {
                 lockInfoService.insertLock(lockInfo);
+                lockId = lockInfo.getLockId();
+                accessControlInfo.setLockId(lockId);
             } catch (Exception e) {
                 log.error("插入锁信息失败");
             }
         }
         CameraDevice entryCamera = accessControlInfo.getEntryCamera();
         if(entryCamera != null){
+            entryCamera.setDevId(null);
             entryCamera.setLockId(lockId);
             entryCamera.setLockCode(lockCode);
-            accessControlInfo.setEntryCameraId(entryCamera.getDevId());
             accessControlInfo.setEntryCameraIp(entryCamera.getDeviceIp());
             try {
                 cameraDeviceService.insertDevice(entryCamera);
+                accessControlInfo.setEntryCameraId(entryCamera.getDevId());
             } catch (Exception e) {
                 log.error("插入入口摄像头信息失败");
             }
         }
         CameraDevice exitCamera = accessControlInfo.getExitCamera();
         if(exitCamera != null){
+            exitCamera.setDevId(null);
             exitCamera.setLockId(lockId);
             exitCamera.setLockCode(lockCode);
-            accessControlInfo.setExitCameraId(exitCamera.getDevId());
             accessControlInfo.setExitCameraIp(exitCamera.getDeviceIp());
             try {
                 cameraDeviceService.insertDevice(exitCamera);
+                accessControlInfo.setExitCameraId(exitCamera.getDevId());
             } catch (Exception e) {
                 log.error("插入出口摄像头信息失败");
             }
