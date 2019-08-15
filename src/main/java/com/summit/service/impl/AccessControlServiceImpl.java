@@ -1,5 +1,6 @@
 package com.summit.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
@@ -101,6 +102,18 @@ public class AccessControlServiceImpl implements AccessControlService {
         backPage.setContent(accessControlInfos);
         backPage.setPageable(pageable);
         return backPage;
+    }
+
+    /**
+     * 越权查询所有门禁
+     * @param page 分页对象
+     * @return 门禁信息列表
+     */
+    @Override
+    public List<AccessControlInfo> selectAllAccessControl(SimplePage page) {
+        //分页参数暂时不用
+        QueryWrapper<AccessControlInfo> wrapper = new QueryWrapper<>();
+        return accessControlDao.selectList(wrapper);
     }
 
     /**

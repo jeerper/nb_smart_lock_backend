@@ -70,4 +70,5 @@ public class AccCtrlRoleController {
         log.error("分页查询角色门禁权限成功");
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"分页查询角色门禁权限成功",accCtrlRolePage);
     }
+
 }

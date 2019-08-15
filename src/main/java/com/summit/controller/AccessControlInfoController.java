@@ -6,10 +6,13 @@ import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.entity.UserInfo;
 import com.summit.common.util.ResultBuilder;
 import com.summit.common.web.filter.UserContextHolder;
+import com.summit.dao.entity.AccCtrlRole;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.LockInfo;
+import com.summit.dao.entity.SimpleAccCtrlInfo;
 import com.summit.dao.entity.SimplePage;
+import com.summit.service.AccCtrlRoleService;
 import com.summit.service.AccessControlService;
 import com.summit.service.CameraDeviceService;
 import com.summit.service.LockInfoService;
@@ -29,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -44,6 +48,8 @@ public class AccessControlInfoController {
     private LockInfoService lockInfoService;
     @Autowired
     private CameraDeviceService cameraDeviceService;
+    @Autowired
+    private AccCtrlRoleService accCtrlRoleService;
 
     @ApiOperation(value = "分页查询全部门禁信息", notes = "分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
     @GetMapping(value = "/selectAccCtrlByPage")
@@ -59,7 +65,6 @@ public class AccessControlInfoController {
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"分页查询全部门禁信息成功", controlInfoPage);
     }
-
 
     @ApiOperation(value = "录入门禁信息", notes = "录入门禁信息时同时录入锁信息和设备信息")
     @PostMapping(value = "/insertAccessControl")
@@ -250,6 +255,46 @@ public class AccessControlInfoController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"删除门禁信息失败", null);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"删除门禁信息成功", null);
+    }
+
+    @ApiOperation(value = "根据角色code查询已授权的门禁id列表", notes = "查询角色关联的已授权的门禁id列表")
+    @GetMapping(value = "/selectAccCtrlIdsByRoleCode")
+    public RestfulEntityBySummit<List<String>> selectAccCtrlIdsByRoleCode(@ApiParam(value = "角色code")  @RequestParam(value = "roleCode", required = false) String roleCode){
+        if(roleCode == null){
+            log.error("角色code为空");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"角色code为空",null);
+        }
+        List<String> ids = new ArrayList<>();
+        try {
+            List<AccCtrlRole> accCtrlRoles = accCtrlRoleService.selectAccCtrlRolesByRoleCode(roleCode);
+            if(accCtrlRoles != null){
+                for(AccCtrlRole role : accCtrlRoles) {
+                    ids.add(role.getAccessControlId());
+                }
+            }
+        } catch (Exception e) {
+            log.error("查询门禁id列表失败");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询门禁id列表失败",ids);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询门禁id列表成功",ids);
+    }
+
+    @ApiOperation(value = "查询全部门禁信息，包括门禁id和name", notes = "无论有无门禁权限都查询全部")
+    @GetMapping(value = "/selectAllAccessControl")
+    public RestfulEntityBySummit<List<SimpleAccCtrlInfo>> selectAllAccessControl(){
+        List<SimpleAccCtrlInfo> simpleAccCtrlInfos = new ArrayList<>();
+        try {
+            List<AccessControlInfo> accessControlInfos = accessControlService.selectAllAccessControl(null);
+            if(accessControlInfos != null){
+                for(AccessControlInfo acInfo : accessControlInfos) {
+                    simpleAccCtrlInfos.add(new SimpleAccCtrlInfo(acInfo.getAccessControlId(),acInfo.getAccessControlName()));
+                }
+            }
+        } catch (Exception e) {
+            log.error("分页查询全部门禁信息失败");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询全部门禁信息失败", simpleAccCtrlInfos);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询全部门禁信息成功", simpleAccCtrlInfos);
     }
 
 
