@@ -59,8 +59,8 @@ public class AlarmController {
     @ApiOperation(value = "更新门禁告警状态", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间取当前时间")
     @PutMapping(value = "/updateAlarmStatus")
         public RestfulEntityBySummit<String> updateAlarmStatus(@ApiParam(value = "门禁告警状态", required = true) @RequestParam(value = "alarmStatus") Integer alarmStatus,
-                                                           @ApiParam(value = "门禁告警状态") @RequestParam(value = "alarmId",required = false) String alarmId,
-                                                           @ApiParam(value = "门禁告警状态") @RequestParam(value = "accCtrlProId",required = false) String accCtrlProId) {
+                                                           @ApiParam(value = "门禁告警id") @RequestParam(value = "alarmId",required = false) String alarmId,
+                                                           @ApiParam(value = "门禁告警对应操作记录id") @RequestParam(value = "accCtrlProId",required = false) String accCtrlProId) {
         if(alarmStatus == null){
             log.error("门禁告警状态为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁告警状态为空",null);
