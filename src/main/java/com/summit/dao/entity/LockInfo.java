@@ -18,7 +18,7 @@ import java.util.List;
 @TableName(value = "lock_info")
 @ApiModel(value="锁信息类", description="封装锁信息")
 public class LockInfo {
-    @ApiModelProperty(value="锁id",name="lockId")
+    @ApiModelProperty(value="锁id,录入时不传，传了则忽略，仍用系统自动生成id。更新时锁id和锁编号至少传入一个，两个都传则用id更新",name="lockId")
     @TableId(value = "lock_id", type = IdType.ID_WORKER_STR)
     private String lockId;
     @ApiModelProperty(value="锁编号",name="lockCode",required = true)

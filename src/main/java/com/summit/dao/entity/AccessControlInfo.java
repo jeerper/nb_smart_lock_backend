@@ -17,7 +17,7 @@ import java.util.List;
 @TableName(value = "access_control")
 @ApiModel(value="门禁信息类", description="封装门禁信息")
 public class AccessControlInfo {
-    @ApiModelProperty(value="门禁id",name="accessControlId")
+    @ApiModelProperty(value="门禁id,录入时不传，传了则忽略，仍用系统自动生成id。更新时需要传入",name="accessControlId")
     @TableId(value = "access_control_id", type = IdType.ID_WORKER_STR)
     private String accessControlId;
     @ApiModelProperty(value="门禁名称",name="accessControlName",required = true)

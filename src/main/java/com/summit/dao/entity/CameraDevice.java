@@ -14,7 +14,7 @@ import lombok.Data;
 @TableName(value = "camera_device")
 @ApiModel(value="摄像头信息类", description="封装摄像头信息")
 public class CameraDevice {
-    @ApiModelProperty(value="摄像头id",name="devId")
+    @ApiModelProperty(value="摄像头id,录入时不传，传了则忽略，仍用系统自动生成id。更新时设备id和设备ip至少传入一个，两个都传则用id更新",name="devId")
     @TableId(value = "dev_id", type = IdType.ID_WORKER_STR)
     private String devId;
     @ApiModelProperty(value="摄像头ip地址",name="deviceIp",required = true)
