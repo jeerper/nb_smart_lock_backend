@@ -25,6 +25,7 @@ public class Alarm {
     @TableField(value = "acc_ctrl_pro_id")
     private String accCtrlProId;
     //告警对应的门禁操作记录
+    @ApiModelProperty(value="告警对应门禁信息 ",name="accCtrlProcess",hidden = true)
     @TableField(exist = false)
     private AccCtrlProcess accCtrlProcess;
     @ApiModelProperty(value="告警对应门禁id ",name="accessControlId")

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -72,6 +73,7 @@ public class AccessControlInfo {
 //    @TableField(exist = false)
 //    private String updatetimeStr;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @ApiModelProperty(hidden = true)
     @TableField(exist = false)
     private List<LockRole> roles;

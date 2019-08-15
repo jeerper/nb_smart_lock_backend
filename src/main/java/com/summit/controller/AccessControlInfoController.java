@@ -52,6 +52,7 @@ public class AccessControlInfoController {
         Page<AccessControlInfo> controlInfoPage = null;
         try {
             controlInfoPage = accessControlService.selectAccCtrlByPage(new SimplePage(current, pageSize));
+            filterAccCtrlInfo(controlInfoPage);
         } catch (Exception e) {
             log.error("分页查询全部门禁信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"分页查询全部门禁信息失败", controlInfoPage);
@@ -243,5 +244,16 @@ public class AccessControlInfoController {
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"删除门禁信息成功", null);
     }
 
+
+    private void filterAccCtrlInfo(Page<AccessControlInfo> controlInfoPage) {
+        if (controlInfoPage != null) {
+            List<AccessControlInfo> content = controlInfoPage.getContent();
+            if (content != null && !content.isEmpty()){
+                for(AccessControlInfo acInfos : content) {
+                    acInfos.setRoles(null);
+                }
+            }
+        }
+    }
 
 }

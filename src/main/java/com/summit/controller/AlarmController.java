@@ -101,9 +101,9 @@ public class AlarmController {
     }
 
 
-    @ApiOperation(value = "查询全部告警信息", notes = "分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
-    @GetMapping(value = "/queryAllAlarms")
-    public RestfulEntityBySummit<List<Alarm>> queryAllAlarms(@ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
+    @ApiOperation(value = "分页查询全部告警信息", notes = "分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
+    @GetMapping(value = "/queryAllAlarmsByPage")
+    public RestfulEntityBySummit<List<Alarm>> queryAllAlarmsByPage(@ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
                                                              @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
                                                              @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current",required = false) Integer current,
                                                              @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize",required = false) Integer pageSize) {
@@ -178,21 +178,24 @@ public class AlarmController {
     }
 
 
-    @ApiOperation(value = "根据所传一个或多个条件组合查询告警信息", notes = "alarm为空或各字段都为空则查询全部。时间信息为空或不合法则无时间限制。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
+    @ApiOperation(value = "根据所传一个或多个条件组合分页查询告警信息", notes = "alarm为空或各字段都为空则查询全部。时间信息为空或不合法则无时间限制。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
     @GetMapping(value = "/queryAlarmCondition")
     public RestfulEntityBySummit<List<Alarm>> queryAlarmCondition(@ApiParam(value = "门禁告警信息") Alarm alarm,
                                                                   @ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
                                                                   @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
                                                                   @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
                                                                   @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        if(alarm == null){
-            log.error("告警信息为空");
-            return null;
-        }
-        Date start = CommonUtil.parseStrToDate(startTime, CommonConstants.STARTTIMEMARK);
-        Date end = CommonUtil.parseStrToDate(endTime, CommonConstants.ENDTIMEMARK);
+        List<Alarm> alarms = null;
+        Date start = CommonUtil.parseStrToDate(startTime,CommonConstants.STARTTIMEMARK);
+        Date end = CommonUtil.parseStrToDate(endTime,CommonConstants.ENDTIMEMARK);
 
-        return null;
+        try {
+            alarms = alarmService.selectAlarmCondition(alarm, start, end, new SimplePage(current,pageSize));
+            filterInfo(alarms);
+        } catch (Exception e) {
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"条件查询告警信息失败", alarms);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"条件查询告警信息成功", alarms);
     }
 
 
