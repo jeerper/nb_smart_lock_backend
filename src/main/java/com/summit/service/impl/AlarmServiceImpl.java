@@ -1,6 +1,8 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.summit.cbb.utils.page.Page;
+import com.summit.cbb.utils.page.Pageable;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.CameraDevice;
@@ -338,31 +340,38 @@ public class AlarmServiceImpl implements AlarmService {
      * @param start 开始时间
      * @param end 截止时间
      * @param page 分页对象
-     * @return 告警记录列表
+     * @return 告警记录Page对象
      */
     @Override
-    public List<Alarm> selectAlarmCondition(Alarm alarm, Date start, Date end, SimplePage page) {
+    public Page<Alarm> selectAlarmConditionByPage(Alarm alarm, Date start, Date end, SimplePage page) {
         if(alarm == null){
             log.error("告警信息为空");
             return null;
         }
-        PageConverter.convertPage(page);
         List<String> roles = LockAuthCtrl.getRoles();
-        return alarmDao.selectCondition(alarm, start, end, page, roles);
+        List<Alarm> alarmList = alarmDao.selectCondition(alarm, start, end, null, roles);
+        int rowsCount = alarmList == null ? 0 : alarmList.size();
+        Pageable pageable = PageConverter.getPageable(page, rowsCount);
+        PageConverter.convertPage(page);
+        Page<Alarm> backPage = new Page<>();
+        List<Alarm> alarms = alarmDao.selectCondition(alarm, start, end, page, roles);
+        backPage.setContent(alarms);
+        backPage.setPageable(pageable);
+        return backPage;
     }
 
     /**
      * 根据alarm对象所带条件查询，不带时间段重载
      * @param alarm 告警对象
      * @param page 分页对象
-     * @return 告警记录列表
+     * @return 告警记录Page对象
      */
     @Override
-    public List<Alarm> selectAlarmCondition(Alarm alarm, SimplePage page) {
+    public Page<Alarm> selectAlarmConditionByPage(Alarm alarm, SimplePage page) {
         if(alarm == null){
             log.error("告警信息为空");
             return null;
         }
-        return selectAlarmCondition(alarm, null, null, page);
+        return selectAlarmConditionByPage(alarm, null, null, page);
     }
 }

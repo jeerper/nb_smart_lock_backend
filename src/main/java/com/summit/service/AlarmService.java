@@ -1,5 +1,6 @@
 package com.summit.service;
 
+import com.summit.cbb.utils.page.Page;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.SimplePage;
 
@@ -157,7 +158,7 @@ public interface AlarmService {
      * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm> selectAlarmCondition(Alarm alarm, Date start, Date end, SimplePage page);
+    Page<Alarm> selectAlarmConditionByPage(Alarm alarm, Date start, Date end, SimplePage page);
 
     /**
      * 根据alarm对象所带条件查询，不带时间段重载
@@ -165,5 +166,5 @@ public interface AlarmService {
      * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm> selectAlarmCondition(Alarm alarm, SimplePage page);
+    Page<Alarm> selectAlarmConditionByPage(Alarm alarm, SimplePage page);
 }

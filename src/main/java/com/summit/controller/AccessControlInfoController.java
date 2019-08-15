@@ -248,10 +248,11 @@ public class AccessControlInfoController {
     private void filterAccCtrlInfo(Page<AccessControlInfo> controlInfoPage) {
         if (controlInfoPage != null) {
             List<AccessControlInfo> content = controlInfoPage.getContent();
-            if (content != null && !content.isEmpty()){
-                for(AccessControlInfo acInfos : content) {
-                    acInfos.setRoles(null);
-                }
+            if (content == null){
+                return;
+            }
+            for(AccessControlInfo acInfos : content) {
+                acInfos.setRoles(null);
             }
         }
     }
