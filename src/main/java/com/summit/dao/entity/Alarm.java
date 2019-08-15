@@ -27,6 +27,12 @@ public class Alarm {
     //告警对应的门禁操作记录
     @TableField(exist = false)
     private AccCtrlProcess accCtrlProcess;
+    @ApiModelProperty(value="告警对应门禁id ",name="accessControlId")
+    @TableField(exist = false)
+    private String accessControlId;
+    @ApiModelProperty(value="告警对应门禁名称 ",name="accessControlName")
+    @TableField(exist = false)
+    private String accessControlName;
     @ApiModelProperty(value="告警发生时间 ",name="alarmTime")
     @TableField(value = "alarm_time")
     private Date alarmTime;

@@ -21,15 +21,15 @@ public class LockInfo {
     @ApiModelProperty(value="锁id",name="lockId")
     @TableId(value = "lock_id", type = IdType.ID_WORKER_STR)
     private String lockId;
-    @ApiModelProperty(value="锁编号",name="lockCode")
+    @ApiModelProperty(value="锁编号",name="lockCode",required = true)
     @TableField(value = "lock_code")
     private String lockCode;
 
     //1开锁，2锁定，3告警
-    @ApiModelProperty(value="锁状态,1开锁，2锁定，3告警",name="status",notes = "1开锁，2锁定，3告警")
+    @ApiModelProperty(value="锁状态,1开锁，2锁定，3告警",name="status",notes = "1开锁，2锁定，3告警",required = true)
     @TableField(value = "status")
     private Integer status;
-    @ApiModelProperty(value="锁创建人,这里填name",name="createby",notes = "这里填name")
+    @ApiModelProperty(value="锁创建人,取当前用户名称",name="createby",notes = "这里填name",hidden = true)
     @TableField(value = "createby")
     private String createby;
     @ApiModelProperty(hidden = true)

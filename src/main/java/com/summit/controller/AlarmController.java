@@ -35,24 +35,24 @@ public class AlarmController {
     @Autowired
     private AlarmService alarmService;
 
-    @ApiOperation(value = "更新门禁告警信息", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间若为空则取当前时间")
-    @PutMapping(value = "/updateAlarm")
-    public RestfulEntityBySummit<String> updateAlarm(@ApiParam(value = "门禁告警各字段", required = true) Alarm alarm) {
-        if(alarm == null){
-            log.error("告警信息为空");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警信息为空",null);
-        }
-        if(alarm.getAlarmId() == null && alarm.getAccCtrlProId() == null){
-            log.error("alarmId和processId不能同时为空");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"alarmId和processId不能同时为空",null);
-        }
-        int result = alarmService.updateAlarm(alarm);
-        if(result == CommonConstants.UPDATE_ERROR){
-            log.error("更新告警信息失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"告警信息为空",null);
-        }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新告警信息成功",null);
-    }
+//    @ApiOperation(value = "更新门禁告警信息", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间若为空则取当前时间")
+//    @PutMapping(value = "/updateAlarm")
+//    public RestfulEntityBySummit<String> updateAlarm(@ApiParam(value = "门禁告警各字段", required = true) Alarm alarm) {
+//        if(alarm == null){
+//            log.error("告警信息为空");
+//            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警信息为空",null);
+//        }
+//        if(alarm.getAlarmId() == null && alarm.getAccCtrlProId() == null){
+//            log.error("alarmId和processId不能同时为空");
+//            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"alarmId和processId不能同时为空",null);
+//        }
+//        int result = alarmService.updateAlarm(alarm);
+//        if(result == CommonConstants.UPDATE_ERROR){
+//            log.error("更新告警信息失败");
+//            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"告警信息为空",null);
+//        }
+//        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新告警信息成功",null);
+//    }
 
 
     @ApiOperation(value = "更新门禁告警状态", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间取当前时间")

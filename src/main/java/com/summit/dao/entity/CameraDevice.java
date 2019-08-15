@@ -17,7 +17,7 @@ public class CameraDevice {
     @ApiModelProperty(value="摄像头id",name="devId")
     @TableId(value = "dev_id", type = IdType.ID_WORKER_STR)
     private String devId;
-    @ApiModelProperty(value="摄像头ip地址",name="deviceIp")
+    @ApiModelProperty(value="摄像头ip地址",name="deviceIp",required = true)
     @TableField(value = "device_ip")
     private String deviceIp;
     @ApiModelProperty(hidden = true)

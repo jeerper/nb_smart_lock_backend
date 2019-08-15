@@ -20,7 +20,7 @@ public class AccessControlInfo {
     @ApiModelProperty(value="门禁id",name="accessControlId")
     @TableId(value = "access_control_id", type = IdType.ID_WORKER_STR)
     private String accessControlId;
-    @ApiModelProperty(value="门禁名称",name="accessControlName")
+    @ApiModelProperty(value="门禁名称",name="accessControlName",required = true)
     @TableField(value = "access_control_name")
     private String accessControlName;
 
@@ -53,10 +53,10 @@ public class AccessControlInfo {
     private CameraDevice exitCamera;
 
     //1开启，2锁定，3告警
-    @ApiModelProperty(value="门禁状态,1开启，2锁定，3告警",name="status",notes = "1开启，2锁定，3告警")
+    @ApiModelProperty(value="门禁状态,1开启，2锁定，3告警",name="status",notes = "1开启，2锁定，3告警",required = true)
     @TableField(value = "status")
     private Integer status;
-    @ApiModelProperty(value="创建人名称",name="createby")
+    @ApiModelProperty(value="创建人名称，取当前用户名称",name="createby",hidden = true)
     @TableField(value = "createby")
     private String createby;
     @ApiModelProperty(hidden = true)

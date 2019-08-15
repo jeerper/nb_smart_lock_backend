@@ -3,7 +3,9 @@ package com.summit.controller;
 import com.summit.cbb.utils.page.Page;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
+import com.summit.common.entity.UserInfo;
 import com.summit.common.util.ResultBuilder;
+import com.summit.common.web.filter.UserContextHolder;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.LockInfo;
@@ -68,17 +70,24 @@ public class AccessControlInfoController {
         Date time = new Date();
         accessControlInfo.setCreatetime(time);
         accessControlInfo.setUpdatetime(time);
+        UserInfo uerInfo = UserContextHolder.getUserInfo();
+        String name = null;
+        if(uerInfo != null){
+            name = uerInfo.getName();
+            accessControlInfo.setCreateby(name);
+        }
         LockInfo lockInfo = accessControlInfo.getLockInfo();
         String lockId = null;
         String lockCode = null;
         if(lockInfo != null){
+            lockInfo.setCreateby(name);
             lockId = lockInfo.getLockId();
             accessControlInfo.setLockId(lockId);
             lockCode = lockInfo.getLockCode();
             accessControlInfo.setLockCode(lockCode);
+            lockInfo.setCreatetime(time);
+            lockInfo.setUpdatetime(time);
             try {
-                lockInfo.setCreatetime(time);
-                lockInfo.setUpdatetime(time);
                 lockInfoService.insertLock(lockInfo);
             } catch (Exception e) {
                 log.error("插入锁信息失败");
