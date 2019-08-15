@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 @Slf4j
-@Api(tags = "锁告警接口")
+@Api(tags = "门禁告警接口")
 @RestController
 @RequestMapping("/lockAlarm")
 public class AlarmController {
@@ -35,30 +35,9 @@ public class AlarmController {
     @Autowired
     private AlarmService alarmService;
 
-    @ApiOperation(value = "添加告警信息", notes = "alarmId和processId不能为空，时间若为空则取当前时间")
-    @PostMapping(value = "/insertAlarm")
-    public RestfulEntityBySummit<String> insertAlarm(@ApiParam(value = "锁告警信息", required = true) Alarm alarm) {
-        if(alarm == null){
-            log.error("告警信息为空");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警信息为空",null);
-        }
-        if(alarm.getAccCtrlProId() == null){
-            log.error("告警对应所操作记录id为空");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警对应所操作记录id为空",null);
-        }
-
-        int result = alarmService.insertAlarm(alarm);
-        if(result == CommonConstants.UPDATE_ERROR){
-            log.error("插入告警信息失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"告警信息为空",null);
-        }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"插入告警信息成功",null);
-    }
-
-
-    @ApiOperation(value = "更新锁告警信息", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间若为空则取当前时间")
+    @ApiOperation(value = "更新门禁告警信息", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间若为空则取当前时间")
     @PutMapping(value = "/updateAlarm")
-    public RestfulEntityBySummit<String> updateAlarm(@ApiParam(value = "锁告警各字段", required = true) Alarm alarm) {
+    public RestfulEntityBySummit<String> updateAlarm(@ApiParam(value = "门禁告警各字段", required = true) Alarm alarm) {
         if(alarm == null){
             log.error("告警信息为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警信息为空",null);
@@ -76,14 +55,14 @@ public class AlarmController {
     }
 
 
-    @ApiOperation(value = "更新锁告警状态", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间取当前时间")
+    @ApiOperation(value = "更新门禁告警状态", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间取当前时间")
     @PutMapping(value = "/updateAlarmStatus")
-        public RestfulEntityBySummit<String> updateAlarmStatus(@ApiParam(value = "锁告警状态", required = true) @RequestParam(value = "alarmStatus") Integer alarmStatus,
-                                                           @ApiParam(value = "锁告警状态") @RequestParam(value = "alarmId",required = false) String alarmId,
-                                                           @ApiParam(value = "锁告警状态") @RequestParam(value = "processId",required = false) String processId) {
+        public RestfulEntityBySummit<String> updateAlarmStatus(@ApiParam(value = "门禁告警状态", required = true) @RequestParam(value = "alarmStatus") Integer alarmStatus,
+                                                           @ApiParam(value = "门禁告警状态") @RequestParam(value = "alarmId",required = false) String alarmId,
+                                                           @ApiParam(value = "门禁告警状态") @RequestParam(value = "processId",required = false) String processId) {
         if(alarmStatus == null){
-            log.error("锁告警状态为空");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"锁告警状态为空",null);
+            log.error("门禁告警状态为空");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁告警状态为空",null);
         }
         if(alarmId == null && processId == null){
             log.error("alarmId和processId不能同时为空");
@@ -106,9 +85,9 @@ public class AlarmController {
     }
 
 
-    @ApiOperation(value = "用告警id删除锁告警信息", notes = "alarmId和processId不能为空，时间若为空则取当前时间")
+    @ApiOperation(value = "用告警id删除门禁告警信息", notes = "alarmId和processId不能为空，时间若为空则取当前时间")
     @DeleteMapping(value = "/delLockAlarmById")
-    public RestfulEntityBySummit<String> delLockAlarmById(@ApiParam(value = "锁告警id", required = true) @RequestParam(value = "alarmId") String alarmId) {
+    public RestfulEntityBySummit<String> delLockAlarmById(@ApiParam(value = "门禁告警id", required = true) @RequestParam(value = "alarmId") String alarmId) {
         if(alarmId == null){
             log.error("告警id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警id为空",null);
@@ -143,7 +122,7 @@ public class AlarmController {
 
     @ApiOperation(value = "根据告警状态查询告警信息", notes = "alarmStatus不能为空，0已处理，1未处理，传其他值则无法查到记录。时间信息为空或不合法则无时间限制。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
     @GetMapping(value = "/queryAlarmByStatus")
-    public RestfulEntityBySummit<List<Alarm>> queryAlarmByStatus(@ApiParam(value = "锁告警状态，0已处理，1未处理", required = true)  @RequestParam(value = "alarmStatus") Integer alarmStatus,
+    public RestfulEntityBySummit<List<Alarm>> queryAlarmByStatus(@ApiParam(value = "门禁告警状态，0已处理，1未处理", required = true)  @RequestParam(value = "alarmStatus") Integer alarmStatus,
                                                                  @ApiParam(value = "起始时间")  @RequestParam(value = "startTime") String startTime,
                                                                  @ApiParam(value = "结束时间")  @RequestParam(value = "endTime") String endTime,
                                                                  @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current") Integer current,
@@ -188,13 +167,9 @@ public class AlarmController {
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询未处理告警数量成功", alarms.getData().size());
     }
 
-
-
-    //TODO --------------------------------------------------------------------------------------
-    //TODO --------------------------------------------------------------------------------------
     @ApiOperation(value = "根据告警id查询告警信息", notes = "alarmId不能为空。查询唯一一条告警信息")
     @GetMapping(value = "/queryAlarmById")
-    public RestfulEntityBySummit<Alarm> queryAlarmById(@ApiParam(value = "锁告警id", required = true) @RequestParam(value = "alarmId") String alarmId){
+    public RestfulEntityBySummit<Alarm> queryAlarmById(@ApiParam(value = "门禁告警id", required = true) @RequestParam(value = "alarmId") String alarmId){
         if(alarmId == null){
             log.error("告警id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警id为空",null);
@@ -203,81 +178,9 @@ public class AlarmController {
     }
 
 
-    @ApiOperation(value = "根据告警名称查询告警信息", notes = "alarmName不能为空。时间信息为空或不合法则无时间限制。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
-    @GetMapping(value = "/queryAlarmByName")
-    public RestfulEntityBySummit<List<Alarm>> queryAlarmByName(@ApiParam(value = "锁告警名称", required = true)  @RequestParam(value = "alarmName") String alarmName,
-                                                               @ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
-                                                               @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
-                                                               @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
-                                                               @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        if(alarmName == null){
-            log.error("告警名称为空");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警名称为空",null);
-        }
-        Date start = CommonUtil.parseStrToDate(startTime,CommonConstants.STARTTIMEMARK);
-        Date end = CommonUtil.parseStrToDate(endTime,CommonConstants.ENDTIMEMARK);
-
-        return null;
-    }
-
-
-    @ApiOperation(value = "根据锁编号查询告警信息", notes = "lockCode不能为空。时间信息为空或不合法则无时间限制。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
-    @GetMapping(value = "/queryAlarmByLockCode")
-    public RestfulEntityBySummit<List<Alarm>> queryAlarmByLockCode(@ApiParam(value = "锁编号", required = true)  @RequestParam(value = "lockCode") String lockCode,
-                                                                   @ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
-                                                                   @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
-                                                                   @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
-                                                                   @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        if(lockCode == null){
-            log.error("锁编号为空");
-            return null;
-        }
-        Date start = CommonUtil.parseStrToDate(startTime,CommonConstants.STARTTIMEMARK);
-        Date end = CommonUtil.parseStrToDate(endTime,CommonConstants.ENDTIMEMARK);
-
-        return null;
-    }
-
-
-    @ApiOperation(value = "根据告警对应的设备ip地址查询告警信息", notes = "deviceIp不能为空。时间信息为空或不合法则无时间限制。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
-    @GetMapping(value = "/queryAlarmByDeviceIp")
-    public RestfulEntityBySummit<List<Alarm>> queryAlarmByDeviceIp(@ApiParam(value = "设备ip地址", required = true)  @RequestParam(value = "deviceIp") String deviceIp,
-                                                                   @ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
-                                                                   @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
-                                                                   @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
-                                                                   @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        if(deviceIp == null){
-            log.error("设备ip地址为空");
-            return null;
-        }
-        Date start = CommonUtil.parseStrToDate(startTime,CommonConstants.STARTTIMEMARK);
-        Date end = CommonUtil.parseStrToDate(endTime,CommonConstants.ENDTIMEMARK);
-
-        return null;
-    }
-
-
-    @ApiOperation(value = "根据告警对应的设备id查询告警信息", notes = "devId不能为空。时间信息为空或不合法则无时间限制。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
-    @GetMapping(value = "/queryAlarmByDevId")
-    public RestfulEntityBySummit<List<Alarm>> queryAlarmByDevId(@ApiParam(value = "设备id", required = true)  @RequestParam(value = "devId") String devId,
-                                                                @ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
-                                                                @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
-                                                                @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
-                                                                @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        if(devId == null){
-            log.error("设备id为空");
-            return null;
-        }
-        Date start = CommonUtil.parseStrToDate(startTime, CommonConstants.STARTTIMEMARK);
-        Date end = CommonUtil.parseStrToDate(endTime, CommonConstants.ENDTIMEMARK);
-
-        return null;
-    }
-
-
     @ApiOperation(value = "根据所传一个或多个条件组合查询告警信息", notes = "alarm为空或各字段都为空则查询全部。时间信息为空或不合法则无时间限制。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
     @GetMapping(value = "/queryAlarmCondition")
-    public RestfulEntityBySummit<List<Alarm>> queryAlarmCondition(@ApiParam(value = "锁告警信息") Alarm alarm,
+    public RestfulEntityBySummit<List<Alarm>> queryAlarmCondition(@ApiParam(value = "门禁告警信息") Alarm alarm,
                                                                   @ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
                                                                   @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
                                                                   @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,

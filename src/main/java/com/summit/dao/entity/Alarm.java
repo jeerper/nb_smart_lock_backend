@@ -15,13 +15,13 @@ import java.util.Date;
 @TableName(value = "alarm")
 @ApiModel(value="锁告警信息实体类", description="用来记录锁告警信息")
 public class Alarm {
-    @ApiModelProperty(value="锁id ",name="alarmId")
+    @ApiModelProperty(value="告警id ",name="alarmId")
     @TableId(value = "alarm_id", type = IdType.ID_WORKER_STR)
     private String alarmId;
-    @ApiModelProperty(value="邮件附件，可传多个 ",name="alarmName")
+    @ApiModelProperty(value="告警名称 ",name="alarmName")
     @TableField(value = "alarm_name")
     private String alarmName;
-    @ApiModelProperty(value="邮件附件，可传多个 ",name="processId")
+    @ApiModelProperty(value="告警对应门禁操作id ",name="accCtrlProId")
     @TableField(value = "acc_ctrl_pro_id")
     private String accCtrlProId;
     //告警对应的门禁操作记录
