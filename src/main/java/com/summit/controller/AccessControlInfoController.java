@@ -74,8 +74,9 @@ public class AccessControlInfoController {
         String name = null;
         if(uerInfo != null){
             name = uerInfo.getName();
-            accessControlInfo.setCreateby(name);
         }
+        //使前台传入创建人无效
+        accessControlInfo.setCreateby(name);
         LockInfo lockInfo = accessControlInfo.getLockInfo();
         String lockId = null;
         String lockCode = null;
