@@ -63,8 +63,8 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
             log.warn("所更新的锁编号在锁信息表中不存在");
         }
         UpdateWrapper<CameraDevice> updateWrapper = new UpdateWrapper<>();
-        return cameraDeviceDao.update(cameraDevice, updateWrapper.eq("device_ip", deviceIp)
-        .or().eq("dev_id", devId));
+        return cameraDeviceDao.update(cameraDevice, updateWrapper.eq("dev_id", devId)
+        .or().eq("device_ip", deviceIp));
     }
 
     /**
