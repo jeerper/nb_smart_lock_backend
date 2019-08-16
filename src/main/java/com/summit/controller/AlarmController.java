@@ -59,8 +59,10 @@ public class AlarmController {
     @ApiOperation(value = "更新门禁告警状态", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间取当前时间")
     @PutMapping(value = "/updateAlarmStatus")
         public RestfulEntityBySummit<String> updateAlarmStatus(@ApiParam(value = "门禁告警状态", required = true) @RequestParam(value = "alarmStatus") Integer alarmStatus,
-                                                           @ApiParam(value = "门禁告警id") @RequestParam(value = "alarmId",required = false) String alarmId,
-                                                           @ApiParam(value = "门禁告警对应操作记录id") @RequestParam(value = "accCtrlProId",required = false) String accCtrlProId) {
+                                                               @ApiParam(value = "门禁告警id") @RequestParam(value = "alarmId",required = false) String alarmId,
+                                                               @ApiParam(value = "门禁告警对应操作记录id") @RequestParam(value = "accCtrlProId",required = false) String accCtrlProId,
+                                                               @ApiParam(value = "告警处理人", required = true) @RequestParam(value = "processPerson",required = false) String processPerson,
+                                                               @ApiParam(value = "告警处理说明", required = true) @RequestParam(value = "processRemark",required = false) String processRemark) {
         if(alarmStatus == null){
             log.error("门禁告警状态为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁告警状态为空",null);
@@ -76,6 +78,8 @@ public class AlarmController {
             alarm.setAccCtrlProId(accCtrlProId);
         }
         alarm.setAlarmStatus(alarmStatus);
+        alarm.setProcessPerson(processPerson);
+        alarm.setProcessRemark(processRemark);
         alarm.setAlarmTime(new Date());
         int result = alarmService.updateAlarm(alarm);
         if(result == CommonConstants.UPDATE_ERROR){
@@ -87,14 +91,15 @@ public class AlarmController {
 
 
     @ApiOperation(value = "用告警id删除门禁告警信息", notes = "alarmId和processId不能为空，时间若为空则取当前时间")
-    @DeleteMapping(value = "/delLockAlarmById")
-    public RestfulEntityBySummit<String> delLockAlarmById(@ApiParam(value = "门禁告警id", required = true) @RequestParam(value = "alarmId") String alarmId) {
-        if(alarmId == null){
+    @DeleteMapping(value = "/delLockAlarmByIdBatch")
+    public RestfulEntityBySummit<String> delLockAlarmByIdBatch(@ApiParam(value = "门禁告警id数组", required = true) @RequestParam(value = "alarmIds") List<String> alarmIds) {
+        if(alarmIds == null || alarmIds.isEmpty()){
             log.error("告警id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警id为空",null);
         }
-        int result = alarmService.delLockAlarmById(alarmId);
-        if(result == CommonConstants.UPDATE_ERROR){
+        try {
+            alarmService.delLockAlarmByIdBatch(alarmIds);
+        } catch (Exception e) {
             log.error("删除告警信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"删除告警信息失败",null);
         }
@@ -127,6 +132,7 @@ public class AlarmController {
         Alarm alarm = null;
         try {
             alarm = alarmService.selectAlarmById(alarmId);
+            filterInfo(alarm);
         } catch (Exception e) {
             log.error("根据告警id查询告警信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"根据告警id查询告警信息失败", alarm);
@@ -161,6 +167,19 @@ public class AlarmController {
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"条件查询告警信息成功", alarms);
     }
 
+    /**
+     * 过滤门禁关联的用户角色等敏感信息
+     * @param alarm 待过滤告警对象
+     */
+    private void filterInfo(Alarm alarm){
+        AccCtrlProcess accCtrlProcess = alarm.getAccCtrlProcess();
+        if(accCtrlProcess != null){
+            AccessControlInfo accessControlInfo = accCtrlProcess.getAccessControlInfo();
+            if(accessControlInfo != null){
+                accessControlInfo.setRoles(null);
+            }
+        }
+    }
 
     /**
      * 过滤门禁关联的用户角色等敏感信息

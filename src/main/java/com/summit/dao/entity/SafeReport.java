@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
@@ -20,6 +21,7 @@ public class SafeReport {
     private String lockCode;
     @TableField(value = "type")
     private String type;
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @TableField(value = "report_time")
     private Date reportTime;
     @TableField(value = "content")

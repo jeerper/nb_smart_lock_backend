@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -32,7 +33,8 @@ public class AlarmServiceImplTest {
 //        LockProcess lockProcess = new LockProcess(processId,"devip01","lc01",null,"user01","un01",1,"sus","",
 //                facePanorama,facePic,faceMatch,dateFormat.parse("2019-7-24 00:00:00"));
         Alarm alarm = new Alarm("aid02","an02",processId,
-                null,null,null,dateFormat.parse("2019-8-03 00:03:00"),1);
+                null,null,null,dateFormat.parse("2019-8-03 00:03:00"),1,
+                "p1","d1",new Date(),"r1");
 
         alarmService.insertAlarm(alarm);
     }
@@ -41,7 +43,8 @@ public class AlarmServiceImplTest {
     public void updateAlarm() throws ParseException {
         String processId = "pid01";
         Alarm alarm = new Alarm("aid01","an01",processId,
-                null,null,null,dateFormat.parse("2019-7-24 00:01:01"),1);
+                null,null,null,dateFormat.parse("2019-7-24 00:01:01"),
+                1,"p2","d2",new Date(),"r2");
         alarmService.updateAlarm(alarm);
     }
 

@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
@@ -60,12 +61,14 @@ public class AccessControlInfo {
     @ApiModelProperty(value="创建人名称，取当前用户名称",name="createby",hidden = true)
     @TableField(value = "createby")
     private String createby;
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(hidden = true)
     @TableField(value = "createtime")
     private Date createtime;
 //    @ApiModelProperty(value="门禁创建时间",name="createtimeStr",notes = "格式为yyyy-MM-dd HH:mm:ss")
 //    @TableField(exist = false)
 //    private String createtimeStr;
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(hidden = true)
     @TableField(value = "updatetime")
     private Date updatetime;

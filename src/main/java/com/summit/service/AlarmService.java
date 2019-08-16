@@ -33,6 +33,13 @@ public interface AlarmService {
      */
     int delLockAlarmById(String alarmId);
 
+    /**
+     * 告警批量删除
+     * @param alarmIds 告警id列表
+     * @return 不为-1则成功
+     */
+    int delLockAlarmByIdBatch(List<String> alarmIds);
+
 
     //###告警查询------------------------
     /**
@@ -167,4 +174,5 @@ public interface AlarmService {
      * @return 告警记录列表
      */
     Page<Alarm> selectAlarmConditionByPage(Alarm alarm, SimplePage page);
+
 }

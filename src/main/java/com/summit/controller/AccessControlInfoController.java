@@ -12,6 +12,7 @@ import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.SimpleAccCtrlInfo;
 import com.summit.dao.entity.SimplePage;
+import com.summit.sdk.huawei.model.DeviceType;
 import com.summit.service.AccCtrlRoleService;
 import com.summit.service.AccessControlService;
 import com.summit.service.CameraDeviceService;
@@ -30,8 +31,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -104,12 +103,16 @@ public class AccessControlInfoController {
                 lockId = lockInfo.getLockId();
                 accessControlInfo.setLockId(lockId);
             } catch (Exception e) {
-                log.error("插入锁信息失败");
+                log.error("录入锁信息失败");
             }
         }
         CameraDevice entryCamera = accessControlInfo.getEntryCamera();
         if(entryCamera != null){
             entryCamera.setDevId(null);
+            entryCamera.setCreateby(name);
+            entryCamera.setType(DeviceType.ENTRY.getCode());
+            entryCamera.setCreatetime(time);
+            entryCamera.setUpdatetime(time);
             if(entryCamera.getStatus() == null)
                 entryCamera.setStatus(0);
             entryCamera.setLockId(lockId);
@@ -119,12 +122,16 @@ public class AccessControlInfoController {
                 cameraDeviceService.insertDevice(entryCamera);
                 accessControlInfo.setEntryCameraId(entryCamera.getDevId());
             } catch (Exception e) {
-                log.error("插入入口摄像头信息失败");
+                log.error("录入入口摄像头信息失败");
             }
         }
         CameraDevice exitCamera = accessControlInfo.getExitCamera();
         if(exitCamera != null){
             exitCamera.setDevId(null);
+            exitCamera.setCreateby(name);
+            exitCamera.setType(DeviceType.EXIT.getCode());
+            exitCamera.setCreatetime(time);
+            exitCamera.setUpdatetime(time);
             if(exitCamera.getStatus() == null)
                 exitCamera.setStatus(0);
             exitCamera.setLockId(lockId);
@@ -134,7 +141,7 @@ public class AccessControlInfoController {
                 cameraDeviceService.insertDevice(exitCamera);
                 accessControlInfo.setExitCameraId(exitCamera.getDevId());
             } catch (Exception e) {
-                log.error("插入出口摄像头信息失败");
+                log.error("录入出口摄像头信息失败");
             }
         }
         try {
@@ -182,6 +189,8 @@ public class AccessControlInfoController {
         if(entryCamera != null){
             entryCamera.setLockId(lockId);
             entryCamera.setLockCode(lockCode);
+            entryCamera.setType(DeviceType.ENTRY.getCode());
+            entryCamera.setUpdatetime(time);
             accessControlInfo.setEntryCameraId(entryCamera.getDevId());
             accessControlInfo.setEntryCameraIp(entryCamera.getDeviceIp());
             try {
@@ -194,6 +203,8 @@ public class AccessControlInfoController {
         if(exitCamera != null){
             exitCamera.setLockId(lockId);
             exitCamera.setLockCode(lockCode);
+            exitCamera.setType(DeviceType.EXIT.getCode());
+            exitCamera.setUpdatetime(time);
             accessControlInfo.setExitCameraId(exitCamera.getDevId());
             accessControlInfo.setExitCameraIp(exitCamera.getDeviceIp());
             try {

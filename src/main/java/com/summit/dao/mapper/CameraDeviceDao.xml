@@ -6,9 +6,13 @@
     <result column="device_ip" jdbcType="VARCHAR" property="deviceIp" />
     <result column="lock_code" jdbcType="VARCHAR" property="lockCode" />
     <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="createby" jdbcType="VARCHAR" property="createby" />
+    <result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
   </resultMap>
   <sql id="Base_Column_List">
-    dev_id, device_ip, lock_id, lock_code, status
+    dev_id, device_ip, lock_id, lock_code, status, type, createby, createtime, updatetime
   </sql>
   <select id="selectDeviceById" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
@@ -38,6 +42,18 @@
       </if>
       <if test="cameraDevice.status != null">
         and status = #{cameraDevice.status}
+      </if>
+      <if test="cameraDevice.type != null">
+        and type = #{cameraDevice.type}
+      </if>
+      <if test="cameraDevice.createby != null">
+        and createby = #{cameraDevice.createby}
+      </if>
+      <if test="cameraDevice.createtime != null">
+        and createtime = #{cameraDevice.createtime}
+      </if>
+      <if test="cameraDevice.updatetime != null">
+        and updatetime = #{cameraDevice.updatetime}
       </if>
     </where>
     <if test="page != null and page.current != null and  page.pageSize != null ">

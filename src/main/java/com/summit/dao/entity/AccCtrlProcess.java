@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -37,6 +38,7 @@ public class AccCtrlProcess {
     private String userName;
     @TableField(value = "gender")
     private Integer gender;
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     @TableField(value = "birthday")
     private Date birthday;
     @TableField(value = "province")
@@ -79,6 +81,7 @@ public class AccCtrlProcess {
     @TableField(exist = false)
     private FileInfo faceMatch;
 
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @TableField(value = "process_time")
     private Date processTime;
 

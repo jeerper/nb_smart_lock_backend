@@ -8,6 +8,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -31,6 +34,24 @@ public class CameraDevice {
     @ApiModelProperty(value="摄像头状态,0正常，1异常，录入时默认为0",name="deviceIp",notes = "0正常，1异常，不传默认为0")
     @TableField(value = "status")
     private Integer status;
+
+    @ApiModelProperty(value="摄像头类型,entry入口，exit出口",name="type",notes = "entry入口，exit出口")
+    @TableField(value = "type")
+    private String type;
+
+    @ApiModelProperty(value="创建人",name="createby")
+    @TableField(value = "createby")
+    private String createby;
+
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty(value="创建时间",name="createtime")
+    @TableField(value = "createtime")
+    private Date createtime;
+
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty(value="更新时间",name="updatetime")
+    @TableField(value = "updatetime")
+    private Date updatetime;
 
     public CameraDevice(){}
 }

@@ -299,6 +299,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
         alarm.setAccCtrlProId(accCtrlProcess.getAccCtrlProId());
         alarm.setAlarmTime(accCtrlProcess.getProcessTime());
         alarm.setAlarmStatus(AlarmStatus.UNPROCESSED.getCode());
+        alarm.setDescription(accCtrlProcess.getFailReason());
+        alarm.setUpdatetime(new Date());
         return alarm;
     }
 

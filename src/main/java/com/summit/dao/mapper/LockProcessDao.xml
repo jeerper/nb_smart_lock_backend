@@ -65,6 +65,10 @@
     <result column="cd_lock_id" jdbcType="VARCHAR" property="lockId" />
     <result column="cd_lock_code" jdbcType="VARCHAR" property="lockCode" />
     <result column="cd_status" jdbcType="VARCHAR" property="status" />
+    <result column="cd_type" jdbcType="VARCHAR" property="type" />
+    <result column="cd_createby" jdbcType="VARCHAR" property="createby" />
+    <result column="cd_createtime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="cd_updatetime" jdbcType="TIMESTAMP" property="updatetime" />
   </resultMap>
   <resultMap id="rolesResult" type="com.summit.dao.entity.LockRole">
     <result column="au_id" jdbcType="VARCHAR" property="id" />
@@ -93,7 +97,9 @@
     au.id au_id, au.role_id au_role_id, au.lock_id au_lock_id, au.lock_code au_lock_code
   </sql>
   <sql id="Device_Have_Alias_List">
-    cd.dev_id cd_dev_id, cd.device_ip cd_device_ip, cd.lock_id cd_lock_id, cd.lock_code cd_lock_code, cd.status cd_status
+    cd.dev_id cd_dev_id, cd.device_ip cd_device_ip, cd.lock_id cd_lock_id, cd.lock_code cd_lock_code,
+    cd.status cd_status, cd.type cd_type, cd.createby cd_createby, cd.createtime cd_createtime,
+    cd.updatetime cd_updatetime
   </sql>
   <sql id="Auth_No_Alias_List">
     au.id , au.role_id , au.lock_id , au.lock_code

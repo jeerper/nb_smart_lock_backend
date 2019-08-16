@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 @Data
@@ -34,12 +35,26 @@ public class Alarm {
     @ApiModelProperty(value="告警对应门禁名称 ",name="accessControlName")
     @TableField(exist = false)
     private String accessControlName;
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value="告警发生时间 ",name="alarmTime")
     @TableField(value = "alarm_time")
     private Date alarmTime;
     @ApiModelProperty(value="告警状态，0已处理，1未处理",name="alarmStatus")
     @TableField(value = "alarm_status")
     private Integer alarmStatus;
+    @ApiModelProperty(value="处理人",name="processPerson")
+    @TableField(value = "process_person")
+    private String processPerson;
+    @ApiModelProperty(value="告警描述信息",name="alarmStatus")
+    @TableField(value = "description")
+    private String description;
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty(value="告警最后更新时间，0已处理，1未处理",name="updatetime")
+    @TableField(value = "updatetime")
+    private Date updatetime;
+    @ApiModelProperty(value="告警处理内容",name="processRemark")
+    @TableField(value = "process_remark")
+    private String processRemark;
 
     public Alarm(){}
 }

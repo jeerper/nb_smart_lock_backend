@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
@@ -32,6 +33,7 @@ public class LockInfo {
     @ApiModelProperty(value="锁创建人,取当前用户名称",name="createby",notes = "这里填name",hidden = true)
     @TableField(value = "createby")
     private String createby;
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(hidden = true)
     @TableField(value = "createtime")
     private Date createtime;
@@ -39,6 +41,7 @@ public class LockInfo {
 //    @TableField(exist = false)
 //    private String createtimeStr;
 
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(hidden = true)
     @TableField(value = "updatetime")
     private Date updatetime;

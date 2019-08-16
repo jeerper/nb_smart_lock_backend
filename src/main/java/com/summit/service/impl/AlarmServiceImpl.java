@@ -65,15 +65,15 @@ public class AlarmServiceImpl implements AlarmService {
             return CommonConstants.UPDATE_ERROR;
         }
         List<String> roles = LockAuthCtrl.getRoles();
-        if(lockProcessDao.selectLockProcessById(alarm.getAccCtrlProId(),roles) == null){
-            log.warn("此告警对应锁操作记录不存在");
-//            return -1;
-        }
+//        if(lockProcessDao.selectLockProcessById(alarm.getAccCtrlProId(),roles) == null){
+//            log.warn("此告警对应锁操作记录不存在");
+////            return -1;
+//        }
         UpdateWrapper<Alarm> updateWrapper = new UpdateWrapper<>();
         if(alarm.getAlarmId() != null){
             return alarmDao.update(alarm , updateWrapper.eq("alarm_id" , alarm.getAlarmId()));
         }
-        return alarmDao.update(alarm , updateWrapper.eq("process_id" , alarm.getAccCtrlProId()));
+        return alarmDao.update(alarm , updateWrapper.eq("acc_ctrl_pro_id" , alarm.getAccCtrlProId()));
     }
 
     /**
@@ -89,6 +89,20 @@ public class AlarmServiceImpl implements AlarmService {
         }
         UpdateWrapper<Alarm> wrapper = new UpdateWrapper<>();
         return alarmDao.delete(wrapper.eq("alarm_id" , alarmId));
+    }
+
+    /**
+     * 告警批量删除
+     * @param alarmIds 告警id列表
+     * @return 不为-1则成功
+     */
+    @Override
+    public int delLockAlarmByIdBatch(List<String> alarmIds) {
+        if(alarmIds == null || alarmIds.isEmpty()){
+            log.error("告警id为空");
+            return CommonConstants.UPDATE_ERROR;
+        }
+        return alarmDao.deleteBatchIds(alarmIds);
     }
 
     /**

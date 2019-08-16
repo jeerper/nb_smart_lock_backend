@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Date;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -20,7 +21,8 @@ public class CameraDeviceServiceImplTest {
     SimplePage page = new SimplePage(1, 3);
     @Test
     public void insertDevice() {
-        CameraDevice cameraDevice = new CameraDevice("did02","devip02","lid04","lc04",1);
+        CameraDevice cameraDevice = new CameraDevice("did02","devip02","lid04",
+                "lc04",1,"entry","un01",new Date(),new Date());
 
         cameraDeviceService.insertDevice(cameraDevice);
 
