@@ -35,4 +35,10 @@ public class AccessControlServiceImplTest {
         List<AccessControlInfo> accessControlInfos = accessControlService.selectAllAccessControl(null);
         System.out.println(accessControlInfos);
     }
+
+    @Test
+    public void selectAllAccessControl2() {
+        List<AccessControlInfo> accessControlInfos = accessControlService.selectCondition(new AccessControlInfo(),null);
+        System.out.println(accessControlInfos);
+    }
 }

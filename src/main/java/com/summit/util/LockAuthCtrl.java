@@ -41,6 +41,9 @@ public class LockAuthCtrl {
         } else {
             rolesList = Arrays.asList("ROLE_1489581392504","ROLE_1565148602817","ROLE_SUPERUSER");
         }
+        if(rolesList.contains("ROLE_SUPERUSER")){
+            rolesList = null;
+        }
         return rolesList;
     }
 }
