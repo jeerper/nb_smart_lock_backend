@@ -49,7 +49,7 @@ public class LockInfoServiceImplTest {
 
     @Test
     public void selectBylockCode() {
-        LockInfo lockInfo = lockInfoService.selectBylockCode("lc07");
+        LockInfo lockInfo = lockInfoService.selectBylockCode("lc06");
         System.out.println(lockInfo);
     }
 

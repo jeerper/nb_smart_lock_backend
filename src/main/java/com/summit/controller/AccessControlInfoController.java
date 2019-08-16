@@ -141,9 +141,12 @@ public class AccessControlInfoController {
             accessControlService.insertAccCtrl(accessControlInfo);
             //录入后立即给当前用户授权改门禁
             String[] roles = uerInfo.getRoles();
-            if(roles != null & roles.length != 0)
+            //暂时取第一个角色
+            if(roles != null && roles.length != 0)
                 accCtrlRoleService.insertAccCtrlRole(new AccCtrlRole(null,null,roles[0],accessControlInfo.getAccessControlId()));
         } catch (Exception e) {
+
+
             log.error("录入门禁信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"录入门禁信息失败", null);
         }
