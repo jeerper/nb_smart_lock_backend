@@ -30,7 +30,7 @@ import java.util.List;
 @Slf4j
 @Api(tags = "门禁告警接口")
 @RestController
-@RequestMapping("/lockAlarm")
+@RequestMapping("/accessControlAlarm")
 public class AlarmController {
 
     @Autowired
