@@ -140,13 +140,13 @@ public class AccessControlInfoController {
         try {
             accessControlService.insertAccCtrl(accessControlInfo);
             //录入后立即给当前用户授权改门禁
-            String[] roles = uerInfo.getRoles();
-            //暂时取第一个角色
-            if(roles != null && roles.length != 0)
-                accCtrlRoleService.insertAccCtrlRole(new AccCtrlRole(null,null,roles[0],accessControlInfo.getAccessControlId()));
+            if(uerInfo != null){
+                String[] roles = uerInfo.getRoles();
+                //暂时取第一个角色
+                if(roles != null && roles.length != 0)
+                    accCtrlRoleService.insertAccCtrlRole(new AccCtrlRole(null,null,roles[0],accessControlInfo.getAccessControlId()));
+            }
         } catch (Exception e) {
-
-
             log.error("录入门禁信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"录入门禁信息失败", null);
         }
@@ -212,57 +212,23 @@ public class AccessControlInfoController {
     }
 
 
-    @ApiOperation(value = "删除门禁信息", notes = "根据门禁id删除门禁信息，时同删除锁关联的锁信息和设备信息")
-    @DeleteMapping(value = "/delAccessControl")
-    public RestfulEntityBySummit<String> delAccessControl(@ApiParam(value = "门禁id",required = true)  @RequestParam(value = "accessControlId",required = false) String accessControlId){
-        if(accessControlId == null){
+    @ApiOperation(value = "删除门禁信息，参数为id数组", notes = "根据门禁id删除门禁信息，时同删除锁关联的锁信息和设备信息")
+    @DeleteMapping(value = "/delAccessControlBatch")
+    public RestfulEntityBySummit<String> delAccessControlBatch(@ApiParam(value = "门禁id",required = true)  @RequestParam(value = "accessControlIds",required = false) List<String> accessControlIds){
+        if(accessControlIds == null || accessControlIds.isEmpty()){
             log.error("门禁id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁id为空",null);
         }
-        AccessControlInfo accessControlInfo = accessControlService.selectAccCtrlByIdBeyondAuthority(accessControlId);
-        if(accessControlInfo != null){
-            String lockId = accessControlInfo.getLockId();
-            try {
-                if(lockId != null){
-                    lockInfoService.delLockByLockId(lockId);
-                }else{
-                    String lockCode = accessControlInfo.getLockCode();
-                    lockInfoService.delLockByLockCode(lockCode);
-                }
-            } catch (Exception e) {
-                log.error("删除锁信息失败");
-            }
-            String entryCameraId = accessControlInfo.getEntryCameraId();
-            try {
-                if(entryCameraId != null){
-                    cameraDeviceService.delDeviceByDevId(entryCameraId);
-                }else{
-                    String entryCameraIp = accessControlInfo.getEntryCameraIp();
-                    cameraDeviceService.delDeviceByIpAddress(entryCameraIp);
-                }
-            } catch (Exception e) {
-                log.error("删除入口摄像头信息失败");
-            }
-            String exitCameraId = accessControlInfo.getExitCameraId();
-            try {
-                if(exitCameraId != null){
-                    cameraDeviceService.delDeviceByDevId(exitCameraId);
-                }else{
-                    String exitCameraIp = accessControlInfo.getExitCameraIp();
-                    cameraDeviceService.delDeviceByIpAddress(exitCameraIp);
-                }
-            } catch (Exception e) {
-                log.error("删除出口摄像头信息失败");
-            }
-        }
+
         try {
-            accessControlService.delAccCtrlByAccCtrlId(accessControlId);
+            accessControlService.delBatchAccCtrlByAccCtrlId(accessControlIds);
         } catch (Exception e) {
             log.error("删除门禁信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"删除门禁信息失败", null);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"删除门禁信息成功", null);
     }
+
 
     @ApiOperation(value = "根据角色code查询已授权的门禁id列表", notes = "查询角色关联的已授权的门禁id列表")
     @GetMapping(value = "/selectAccCtrlIdsByRoleCode")

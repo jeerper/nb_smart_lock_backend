@@ -5,16 +5,22 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
 import com.summit.constants.CommonConstants;
+import com.summit.dao.entity.AccCtrlRole;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.SimplePage;
+import com.summit.dao.repository.AccCtrlRoleDao;
 import com.summit.dao.repository.AccessControlDao;
+import com.summit.dao.repository.CameraDeviceDao;
+import com.summit.dao.repository.LockInfoDao;
 import com.summit.service.AccessControlService;
+import com.summit.util.CommonUtil;
 import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,6 +29,12 @@ public class AccessControlServiceImpl implements AccessControlService {
 
     @Autowired
     private AccessControlDao accessControlDao;
+    @Autowired
+    private LockInfoDao lockInfoDao;
+    @Autowired
+    private CameraDeviceDao cameraDeviceDao;
+    @Autowired
+    private AccCtrlRoleDao accCtrlRoleDao;
 
     /**
      * 根据门禁id查询唯一门禁信息
@@ -174,6 +186,58 @@ public class AccessControlServiceImpl implements AccessControlService {
         }
         UpdateWrapper<AccessControlInfo> wrapper = new UpdateWrapper<>();
         return accessControlDao.delete(wrapper.eq("access_control_id",accessControlId));
+    }
+
+    /**
+     * 根据id List批量删除门禁信息
+     * @param accessControlIds 门禁id列表
+     * @return 返回不为-1则为成功
+     */
+    @Override
+    public int delBatchAccCtrlByAccCtrlId(List<String> accessControlIds) {
+
+        List<String> lockIds = new ArrayList<>();
+        List<String> cameraIds = new ArrayList<>();
+        List<String> authIds = new ArrayList<>();
+        for(String acId : accessControlIds) {
+            AccessControlInfo accessControlInfo = selectAccCtrlByIdBeyondAuthority(acId);
+            if(accessControlInfo == null)
+                continue;
+            lockIds.add(accessControlInfo.getLockId());
+            cameraIds.add(accessControlInfo.getEntryCameraId());
+            cameraIds.add(accessControlInfo.getExitCameraId());
+            List<AccCtrlRole> accessControls = accCtrlRoleDao.selectList(new QueryWrapper<AccCtrlRole>().eq("access_control_id", acId));
+            if(accessControls != null){
+                for(AccCtrlRole ar : accessControls) {
+                    authIds.add(ar.getAccessControlId());
+                }
+            }
+            CommonUtil.removeDuplicate(authIds);
+        }
+
+        try {
+            lockInfoDao.deleteBatchIds(lockIds);
+        } catch (Exception e) {
+            log.error("批量删除锁信息失败");
+        }
+        try {
+            cameraDeviceDao.deleteBatchIds(cameraIds);
+        } catch (Exception e) {
+            log.error("批量删除摄像头信息失败");
+        }
+        int result = -1;
+        try {
+            result = accessControlDao.deleteBatchIds(accessControlIds);
+        } catch (Exception e) {
+            log.error("删除门禁信息失败");
+        }
+        //删除门禁授权信息
+        try {
+            accCtrlRoleDao.deleteBatchIds(authIds);
+        } catch (Exception e) {
+            log.error("删除门禁授权信息信息失败");
+        }
+        return result;
     }
 
     /**

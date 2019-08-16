@@ -82,6 +82,13 @@ public interface AccessControlService {
     int delAccCtrlByAccCtrlId(String accessControlId);
 
     /**
+     * 根据id List批量删除门禁信息
+     * @param accessControlIds 门禁id列表
+     * @return 返回不为-1则为成功
+     */
+    int delBatchAccCtrlByAccCtrlId(List<String> accessControlIds);
+
+    /**
      * 根据锁编号删除门禁信息
      * @param lockCode 锁编号
      * @return 返回不为-1则为成功

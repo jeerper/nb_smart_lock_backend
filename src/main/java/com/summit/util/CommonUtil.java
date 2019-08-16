@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 
 @Slf4j
 public class CommonUtil {
@@ -31,5 +33,12 @@ public class CommonUtil {
             }
         }
         return null;
+    }
+
+    public static List<String> removeDuplicate(List<String> list) {
+        HashSet<String> h = new HashSet<>(list);
+        list.clear();
+        list.addAll(h);
+        return list;
     }
 }
