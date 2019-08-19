@@ -1,6 +1,8 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.summit.cbb.utils.page.Page;
+import com.summit.cbb.utils.page.Pageable;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccessControlInfo;
@@ -278,13 +280,20 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
      * @return 门禁操作记录列表
      */
     @Override
-    public List<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, Date start, Date end, SimplePage page) {
+    public Page<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, Date start, Date end, SimplePage page) {
         if(accCtrlProcess == null) {
             log.error("门禁操作对象为空");
             return null;
         }
+        List<AccCtrlProcess> processList = accCtrlProcessDao.selectCondition(accCtrlProcess, start, end, null, LockAuthCtrl.getRoles());
+        int rowsCount = processList == null ? 0 : processList.size();
+        Pageable pageable = PageConverter.getPageable(page, rowsCount);
         PageConverter.convertPage(page);
-        return accCtrlProcessDao.selectCondition(accCtrlProcess,start,end,page,LockAuthCtrl.getRoles());
+        Page<AccCtrlProcess> backPage = new Page<>();
+        List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessDao.selectCondition(accCtrlProcess, start, end, page, LockAuthCtrl.getRoles());
+        backPage.setContent(accCtrlProcesses);
+        backPage.setPageable(pageable);
+        return backPage;
     }
 
     /**
@@ -294,7 +303,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
      * @return 门禁操作记录列表
      */
     @Override
-    public List<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, SimplePage page) {
+    public Page<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, SimplePage page) {
         return selectAccCtrlProcessCondition(accCtrlProcess,null,null,page);
     }
 }

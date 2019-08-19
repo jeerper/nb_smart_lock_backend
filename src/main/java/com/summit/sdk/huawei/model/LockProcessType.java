@@ -4,7 +4,7 @@ public enum LockProcessType {
 
     UNLOCK(1,"开锁"),
     CLOSE_LOCK(2,"关锁"),
-    LOCK_ALARM(3,"锁告警");
+    LOCK_ALARM(3,"告警");
 
     private int code;
     private String description;

@@ -208,10 +208,10 @@
         acp.acc_ctrl_pro_id = #{accCtrlProcess.accCtrlProId}
       </if>
       <if test="accCtrlProcess.accessControlId != null">
-        acp.access_control_id = #{accCtrlProcess.accessControlId}
+        and acp.access_control_id = #{accCtrlProcess.accessControlId}
       </if>
       <if test="accCtrlProcess.accessControlName != null">
-        acp.access_control_name like concat(concat('%', #{accCtrlProcess.accessControlName}), '%')
+        and acp.access_control_name like concat(concat('%', #{accCtrlProcess.accessControlName}), '%')
       </if>
       <if test="accCtrlProcess.deviceId != null">
         and acp.device_id = #{accCtrlProcess.deviceId}

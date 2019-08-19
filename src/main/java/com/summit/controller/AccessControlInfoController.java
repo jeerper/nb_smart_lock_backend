@@ -12,6 +12,7 @@ import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.SimpleAccCtrlInfo;
 import com.summit.dao.entity.SimplePage;
+import com.summit.sdk.huawei.model.AlarmType;
 import com.summit.sdk.huawei.model.DeviceType;
 import com.summit.service.AccCtrlRoleService;
 import com.summit.service.AccessControlService;
@@ -74,8 +75,13 @@ public class AccessControlInfoController {
         }
         Date time = new Date();
         accessControlInfo.setAccessControlId(null);
-        if(accessControlInfo.getStatus() == null)
+        Integer status = accessControlInfo.getStatus();
+        if(status == null){
             accessControlInfo.setStatus(2);
+        }else{
+            AlarmType alarmType = AlarmType.codeOf(status);
+            accessControlInfo.setStatus(alarmType == null ? null : alarmType.getAlarmCode());
+        }
         accessControlInfo.setCreatetime(time);
         accessControlInfo.setUpdatetime(time);
         UserInfo uerInfo = UserContextHolder.getUserInfo();

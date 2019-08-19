@@ -1,5 +1,6 @@
 package com.summit.service;
 
+import com.summit.cbb.utils.page.Page;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.SimplePage;
 
@@ -130,7 +131,7 @@ public interface AccCtrlProcessService {
      * @param page 分页对象
      * @return 门禁操作记录列表
      */
-    List<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, Date start, Date end, SimplePage page);
+    Page<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, Date start, Date end, SimplePage page);
 
     /**
      * 指定条件查询，不带日期的重载
@@ -138,5 +139,5 @@ public interface AccCtrlProcessService {
      * @param page 分页对象
      * @return 门禁操作记录列表
      */
-    List<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, SimplePage page);
+    Page<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, SimplePage page);
 }
