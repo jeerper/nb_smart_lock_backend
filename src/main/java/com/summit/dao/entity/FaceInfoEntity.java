@@ -59,7 +59,7 @@ public class FaceInfoEntity {
     @TableField(value = "device_ip")
     private String deviceIp;
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     @TableField(value = "pic_snapshot_time")
     private Date picSnapshotTime;
 

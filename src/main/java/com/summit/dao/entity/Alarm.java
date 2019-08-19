@@ -37,7 +37,7 @@ public class Alarm {
     @TableField(exist = false)
     private String accessControlName;
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     @ApiModelProperty(value="告警发生时间 ",name="alarmTime")
     @TableField(value = "alarm_time")
     private Date alarmTime;
@@ -51,7 +51,7 @@ public class Alarm {
     @TableField(value = "description")
     private String description;
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     @ApiModelProperty(value="告警最后更新时间，0已处理，1未处理",name="updatetime")
     @TableField(value = "updatetime")
     private Date updatetime;

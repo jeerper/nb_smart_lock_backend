@@ -161,13 +161,13 @@
         ac.access_control_id = #{accessControlInfo.accessControlId}
       </if>
       <if test="accessControlInfo.accessControlName != null">
-        and ac.access_control_name = #{accessControlInfo.accessControlName}
+        and ac.access_control_name like concat(concat('%', #{accessControlInfo.accessControlName}), '%')
       </if>
       <if test="accessControlInfo.lockId != null">
         and ac.lock_id = #{accessControlInfo.lockId}
       </if>
       <if test="accessControlInfo.lockCode != null">
-        and ac.lock_code = #{accessControlInfo.lockCode}
+        and ac.lock_code like concat(concat('%', #{accessControlInfo.lockCode}), '%')
       </if>
       <if test="accessControlInfo.status != null">
         and ac.status = #{accessControlInfo.status}

@@ -75,7 +75,7 @@ public class LockProcess {
     private FileInfo faceMatch;
 
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     @TableField(value = "process_time")
     private Date processTime;
 

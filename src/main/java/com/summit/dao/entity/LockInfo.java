@@ -37,7 +37,7 @@ public class LockInfo {
     @TableField(value = "createby")
     private String createby;
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     @ApiModelProperty(hidden = true)
     @TableField(value = "createtime")
     private Date createtime;
@@ -46,7 +46,7 @@ public class LockInfo {
 //    private String createtimeStr;
 
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     @ApiModelProperty(hidden = true)
     @TableField(value = "updatetime")
     private Date updatetime;
