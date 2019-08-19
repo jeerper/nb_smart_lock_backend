@@ -6,20 +6,24 @@ import com.summit.cbb.utils.page.Pageable;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccessControlInfo;
+import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.LockProcess;
 import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AccCtrlProcessDao;
 import com.summit.dao.repository.AccessControlDao;
+import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.FileInfoDao;
 import com.summit.service.AccCtrlProcessService;
 import com.summit.service.AccessControlService;
+import com.summit.service.AlarmService;
 import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +37,10 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
     private AccessControlService accessControlService;
     @Autowired
     private FileInfoDao fileInfoDao;
+    @Autowired
+    private AlarmService alarmService;
+    @Autowired
+    private AlarmDao alarmDao;
 
     /**
      * 门禁操作记录插入
@@ -118,6 +126,38 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
             fileInfoDao.delete(fileWrapper.eq("file_id",accCtrlProcess.getFacePanorama().getFileId()));
             fileInfoDao.delete(fileWrapper.eq("file_id",accCtrlProcess.getFacePic().getFileId()));
             fileInfoDao.delete(fileWrapper.eq("file_id",accCtrlProcess.getFaceMatch().getFileId()));
+        }
+        return result;
+    }
+
+    /**
+     * 门禁操作记录批量删除
+     * @param accCtrlProIds 门禁操作记录id列表
+     * @return 不为-1则成功
+     */
+    @Override
+    public int delAccCtrlProcessByIdBatch(List<String> accCtrlProIds) {
+        if(accCtrlProIds == null || accCtrlProIds.isEmpty()){
+            log.error("门禁操作记录id列表为空");
+            return CommonConstants.UPDATE_ERROR;
+        }
+        List<String> alarmIds = new ArrayList<>();
+        for(String accCtrlProId : accCtrlProIds) {
+            Alarm alarm = alarmService.selectAlarmByIdBeyondAuthority(accCtrlProId);
+            if(alarm == null || alarm.getAlarmId() == null)
+                continue;
+            alarmIds.add(alarm.getAlarmId());
+        }
+        try {
+            alarmDao.deleteBatchIds(alarmIds);
+        } catch (Exception e) {
+            log.error("删除门禁操作记录关联的告警信息失败");
+        }
+        int result = -1;
+        try {
+            result = accCtrlProcessDao.deleteBatchIds(accCtrlProIds);
+        } catch (Exception e) {
+            log.error("删除门禁操作记录失败");
         }
         return result;
     }

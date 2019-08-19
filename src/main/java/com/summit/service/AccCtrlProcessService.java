@@ -32,6 +32,13 @@ public interface AccCtrlProcessService {
      */
     int delAccCtrlProcess(String accCtrlProId);
 
+    /**
+     * 门禁操作记录批量删除
+     * @param accCtrlProIds 告警id列表
+     * @return 不为-1则成功
+     */
+    int delAccCtrlProcessByIdBatch(List<String> accCtrlProIds);
+
 
     //###门禁操作记录查询------------------------------
 

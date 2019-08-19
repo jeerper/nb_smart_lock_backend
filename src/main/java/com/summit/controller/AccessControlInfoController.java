@@ -14,8 +14,10 @@ import com.summit.dao.entity.SimpleAccCtrlInfo;
 import com.summit.dao.entity.SimplePage;
 import com.summit.sdk.huawei.model.AlarmType;
 import com.summit.sdk.huawei.model.DeviceType;
+import com.summit.service.AccCtrlProcessService;
 import com.summit.service.AccCtrlRoleService;
 import com.summit.service.AccessControlService;
+import com.summit.service.AlarmService;
 import com.summit.service.CameraDeviceService;
 import com.summit.service.LockInfoService;
 import io.swagger.annotations.Api;
@@ -45,11 +47,12 @@ public class AccessControlInfoController {
     @Autowired
     private AccessControlService accessControlService;
     @Autowired
-    private LockInfoService lockInfoService;
-    @Autowired
-    private CameraDeviceService cameraDeviceService;
-    @Autowired
     private AccCtrlRoleService accCtrlRoleService;
+    @Autowired
+    private AlarmService alarmService;
+    @Autowired
+    private AccCtrlProcessService accCtrlProcessService;
+
 
     @ApiOperation(value = "分页查询全部门禁信息", notes = "分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
     @GetMapping(value = "/selectAccCtrlByPage")
@@ -73,83 +76,7 @@ public class AccessControlInfoController {
             log.error("门禁信息为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁信息为空",null);
         }
-        Date time = new Date();
-        accessControlInfo.setAccessControlId(null);
-        Integer status = accessControlInfo.getStatus();
-        if(status == null){
-            accessControlInfo.setStatus(2);
-        }else{
-            AlarmType alarmType = AlarmType.codeOf(status);
-            accessControlInfo.setStatus(alarmType == null ? null : alarmType.getAlarmCode());
-        }
-        accessControlInfo.setCreatetime(time);
-        accessControlInfo.setUpdatetime(time);
         UserInfo uerInfo = UserContextHolder.getUserInfo();
-        String name = null;
-        if(uerInfo != null){
-            name = uerInfo.getName();
-        }
-        //使前台传入创建人无效
-        accessControlInfo.setCreateby(name);
-        LockInfo lockInfo = accessControlInfo.getLockInfo();
-        String lockId = null;
-        String lockCode = null;
-        if(lockInfo != null){
-            lockInfo.setLockId(null);
-            if(lockInfo.getStatus() == null)
-                lockInfo.setStatus(2);
-            lockInfo.setCreateby(name);
-            lockId = lockInfo.getLockId();
-            lockCode = lockInfo.getLockCode();
-            accessControlInfo.setLockCode(lockCode);
-            lockInfo.setCreatetime(time);
-            lockInfo.setUpdatetime(time);
-            try {
-                lockInfoService.insertLock(lockInfo);
-                lockId = lockInfo.getLockId();
-                accessControlInfo.setLockId(lockId);
-            } catch (Exception e) {
-                log.error("录入锁信息失败");
-            }
-        }
-        CameraDevice entryCamera = accessControlInfo.getEntryCamera();
-        if(entryCamera != null){
-            entryCamera.setDevId(null);
-            entryCamera.setCreateby(name);
-            entryCamera.setType(DeviceType.ENTRY.getCode());
-            entryCamera.setCreatetime(time);
-            entryCamera.setUpdatetime(time);
-            if(entryCamera.getStatus() == null)
-                entryCamera.setStatus(0);
-            entryCamera.setLockId(lockId);
-            entryCamera.setLockCode(lockCode);
-            accessControlInfo.setEntryCameraIp(entryCamera.getDeviceIp());
-            try {
-                cameraDeviceService.insertDevice(entryCamera);
-                accessControlInfo.setEntryCameraId(entryCamera.getDevId());
-            } catch (Exception e) {
-                log.error("录入入口摄像头信息失败");
-            }
-        }
-        CameraDevice exitCamera = accessControlInfo.getExitCamera();
-        if(exitCamera != null){
-            exitCamera.setDevId(null);
-            exitCamera.setCreateby(name);
-            exitCamera.setType(DeviceType.EXIT.getCode());
-            exitCamera.setCreatetime(time);
-            exitCamera.setUpdatetime(time);
-            if(exitCamera.getStatus() == null)
-                exitCamera.setStatus(0);
-            exitCamera.setLockId(lockId);
-            exitCamera.setLockCode(lockCode);
-            accessControlInfo.setExitCameraIp(exitCamera.getDeviceIp());
-            try {
-                cameraDeviceService.insertDevice(exitCamera);
-                accessControlInfo.setExitCameraId(exitCamera.getDevId());
-            } catch (Exception e) {
-                log.error("录入出口摄像头信息失败");
-            }
-        }
         try {
             accessControlService.insertAccCtrl(accessControlInfo);
             //录入后立即给当前用户授权改门禁
@@ -172,52 +99,6 @@ public class AccessControlInfoController {
         if(accessControlInfo == null){
             log.error("门禁信息为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁信息为空",null);
-        }
-
-        Date time = new Date();
-        accessControlInfo.setUpdatetime(time);
-        LockInfo lockInfo = accessControlInfo.getLockInfo();
-        String lockId = null;
-        String lockCode = null;
-        if(lockInfo != null){
-            lockId = lockInfo.getLockId();
-            accessControlInfo.setLockId(lockId);
-            lockCode = lockInfo.getLockCode();
-            accessControlInfo.setLockCode(lockCode);
-            try {
-                lockInfo.setUpdatetime(time);
-                lockInfoService.updateLock(lockInfo);
-            } catch (Exception e) {
-                log.error("更新锁信息失败");
-            }
-        }
-        CameraDevice entryCamera = accessControlInfo.getEntryCamera();
-        if(entryCamera != null){
-            entryCamera.setLockId(lockId);
-            entryCamera.setLockCode(lockCode);
-            entryCamera.setType(DeviceType.ENTRY.getCode());
-            entryCamera.setUpdatetime(time);
-            accessControlInfo.setEntryCameraId(entryCamera.getDevId());
-            accessControlInfo.setEntryCameraIp(entryCamera.getDeviceIp());
-            try {
-                cameraDeviceService.updateDevice(entryCamera);
-            } catch (Exception e) {
-                log.error("更新入口摄像头信息失败");
-            }
-        }
-        CameraDevice exitCamera = accessControlInfo.getExitCamera();
-        if(exitCamera != null){
-            exitCamera.setLockId(lockId);
-            exitCamera.setLockCode(lockCode);
-            exitCamera.setType(DeviceType.EXIT.getCode());
-            exitCamera.setUpdatetime(time);
-            accessControlInfo.setExitCameraId(exitCamera.getDevId());
-            accessControlInfo.setExitCameraIp(exitCamera.getDeviceIp());
-            try {
-                cameraDeviceService.updateDevice(exitCamera);
-            } catch (Exception e) {
-                log.error("更新出口摄像头信息失败");
-            }
         }
         try {
             accessControlService.updateAccCtrl(accessControlInfo);

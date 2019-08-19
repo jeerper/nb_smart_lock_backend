@@ -97,7 +97,7 @@ public class AlarmServiceImpl implements AlarmService {
      * @return 不为-1则成功
      */
     @Override
-    public int delLockAlarmByIdBatch(List<String> alarmIds) {
+    public int delAlarmByIdBatch(List<String> alarmIds) {
         if(alarmIds == null || alarmIds.isEmpty()){
             log.error("告警id为空");
             return CommonConstants.UPDATE_ERROR;
@@ -132,6 +132,20 @@ public class AlarmServiceImpl implements AlarmService {
         }
         List<String> roles = LockAuthCtrl.getRoles();
         return alarmDao.selectAlarmById(alarmId, roles);
+    }
+
+    /**
+     * 根据告警Idid查询唯一门禁信息,不考虑权限
+     * @param alarmId 告警id
+     * @return 唯一告警对象
+     */
+    @Override
+    public Alarm selectAlarmByIdBeyondAuthority(String alarmId) {
+        if(alarmId == null){
+            log.error("告警id为空");
+            return null;
+        }
+        return alarmDao.selectById(alarmId);
     }
 
     /**

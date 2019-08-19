@@ -4,15 +4,23 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
+import com.summit.common.entity.UserInfo;
+import com.summit.common.web.filter.UserContextHolder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlRole;
 import com.summit.dao.entity.AccessControlInfo;
+import com.summit.dao.entity.CameraDevice;
+import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AccCtrlRoleDao;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.LockInfoDao;
+import com.summit.sdk.huawei.model.AlarmType;
+import com.summit.sdk.huawei.model.DeviceType;
 import com.summit.service.AccessControlService;
+import com.summit.service.CameraDeviceService;
+import com.summit.service.LockInfoService;
 import com.summit.util.CommonUtil;
 import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
@@ -21,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -35,6 +44,11 @@ public class AccessControlServiceImpl implements AccessControlService {
     private CameraDeviceDao cameraDeviceDao;
     @Autowired
     private AccCtrlRoleDao accCtrlRoleDao;
+
+    @Autowired
+    private LockInfoService lockInfoService;
+    @Autowired
+    private CameraDeviceService cameraDeviceService;
 
     /**
      * 根据门禁id查询唯一门禁信息
@@ -154,6 +168,83 @@ public class AccessControlServiceImpl implements AccessControlService {
             log.error("门禁信息为空");
             return CommonConstants.UPDATE_ERROR;
         }
+        Date time = new Date();
+        accessControlInfo.setAccessControlId(null);
+        Integer status = accessControlInfo.getStatus();
+        if(status == null){
+            accessControlInfo.setStatus(2);
+        }else{
+            AlarmType alarmType = AlarmType.codeOf(status);
+            accessControlInfo.setStatus(alarmType == null ? null : alarmType.getAlarmCode());
+        }
+        accessControlInfo.setCreatetime(time);
+        accessControlInfo.setUpdatetime(time);
+        UserInfo uerInfo = UserContextHolder.getUserInfo();
+        String name = null;
+        if(uerInfo != null){
+            name = uerInfo.getName();
+        }
+        //使前台传入创建人无效
+        accessControlInfo.setCreateby(name);
+        LockInfo lockInfo = accessControlInfo.getLockInfo();
+        String lockId = null;
+        String lockCode = null;
+        if(lockInfo != null){
+            lockInfo.setLockId(null);
+            if(lockInfo.getStatus() == null)
+                lockInfo.setStatus(2);
+            lockInfo.setCreateby(name);
+            lockId = lockInfo.getLockId();
+            lockCode = lockInfo.getLockCode();
+            accessControlInfo.setLockCode(lockCode);
+            lockInfo.setCreatetime(time);
+            lockInfo.setUpdatetime(time);
+            try {
+                lockInfoService.insertLock(lockInfo);
+                lockId = lockInfo.getLockId();
+                accessControlInfo.setLockId(lockId);
+            } catch (Exception e) {
+                log.error("录入锁信息失败");
+            }
+        }
+        CameraDevice entryCamera = accessControlInfo.getEntryCamera();
+        if(entryCamera != null){
+            entryCamera.setDevId(null);
+            entryCamera.setCreateby(name);
+            entryCamera.setType(DeviceType.ENTRY.getCode());
+            entryCamera.setCreatetime(time);
+            entryCamera.setUpdatetime(time);
+            if(entryCamera.getStatus() == null)
+                entryCamera.setStatus(0);
+            entryCamera.setLockId(lockId);
+            entryCamera.setLockCode(lockCode);
+            accessControlInfo.setEntryCameraIp(entryCamera.getDeviceIp());
+            try {
+                cameraDeviceService.insertDevice(entryCamera);
+                accessControlInfo.setEntryCameraId(entryCamera.getDevId());
+            } catch (Exception e) {
+                log.error("录入入口摄像头信息失败");
+            }
+        }
+        CameraDevice exitCamera = accessControlInfo.getExitCamera();
+        if(exitCamera != null){
+            exitCamera.setDevId(null);
+            exitCamera.setCreateby(name);
+            exitCamera.setType(DeviceType.EXIT.getCode());
+            exitCamera.setCreatetime(time);
+            exitCamera.setUpdatetime(time);
+            if(exitCamera.getStatus() == null)
+                exitCamera.setStatus(0);
+            exitCamera.setLockId(lockId);
+            exitCamera.setLockCode(lockCode);
+            accessControlInfo.setExitCameraIp(exitCamera.getDeviceIp());
+            try {
+                cameraDeviceService.insertDevice(exitCamera);
+                accessControlInfo.setExitCameraId(exitCamera.getDevId());
+            } catch (Exception e) {
+                log.error("录入出口摄像头信息失败");
+            }
+        }
         return accessControlDao.insert(accessControlInfo);
     }
 
@@ -168,7 +259,51 @@ public class AccessControlServiceImpl implements AccessControlService {
             log.error("门禁信息为空");
             return CommonConstants.UPDATE_ERROR;
         }
-
+        Date time = new Date();
+        accessControlInfo.setUpdatetime(time);
+        LockInfo lockInfo = accessControlInfo.getLockInfo();
+        String lockId = null;
+        String lockCode = null;
+        if(lockInfo != null){
+            lockId = lockInfo.getLockId();
+            accessControlInfo.setLockId(lockId);
+            lockCode = lockInfo.getLockCode();
+            accessControlInfo.setLockCode(lockCode);
+            try {
+                lockInfo.setUpdatetime(time);
+                lockInfoService.updateLock(lockInfo);
+            } catch (Exception e) {
+                log.error("更新锁信息失败");
+            }
+        }
+        CameraDevice entryCamera = accessControlInfo.getEntryCamera();
+        if(entryCamera != null){
+            entryCamera.setLockId(lockId);
+            entryCamera.setLockCode(lockCode);
+            entryCamera.setType(DeviceType.ENTRY.getCode());
+            entryCamera.setUpdatetime(time);
+            accessControlInfo.setEntryCameraId(entryCamera.getDevId());
+            accessControlInfo.setEntryCameraIp(entryCamera.getDeviceIp());
+            try {
+                cameraDeviceService.updateDevice(entryCamera);
+            } catch (Exception e) {
+                log.error("更新入口摄像头信息失败");
+            }
+        }
+        CameraDevice exitCamera = accessControlInfo.getExitCamera();
+        if(exitCamera != null){
+            exitCamera.setLockId(lockId);
+            exitCamera.setLockCode(lockCode);
+            exitCamera.setType(DeviceType.EXIT.getCode());
+            exitCamera.setUpdatetime(time);
+            accessControlInfo.setExitCameraId(exitCamera.getDevId());
+            accessControlInfo.setExitCameraIp(exitCamera.getDeviceIp());
+            try {
+                cameraDeviceService.updateDevice(exitCamera);
+            } catch (Exception e) {
+                log.error("更新出口摄像头信息失败");
+            }
+        }
         UpdateWrapper<AccessControlInfo> updateWrapper = new UpdateWrapper<>();
         return accessControlDao.update(accessControlInfo, updateWrapper.eq("access_control_id", accessControlInfo.getAccessControlId()));
     }
@@ -195,7 +330,10 @@ public class AccessControlServiceImpl implements AccessControlService {
      */
     @Override
     public int delBatchAccCtrlByAccCtrlId(List<String> accessControlIds) {
-
+        if(accessControlIds == null || accessControlIds.isEmpty()){
+            log.error("门禁id列表为空");
+            return CommonConstants.UPDATE_ERROR;
+        }
         List<String> lockIds = new ArrayList<>();
         List<String> cameraIds = new ArrayList<>();
         List<String> authIds = new ArrayList<>();
@@ -212,9 +350,8 @@ public class AccessControlServiceImpl implements AccessControlService {
                     authIds.add(ar.getAccessControlId());
                 }
             }
-            CommonUtil.removeDuplicate(authIds);
         }
-
+        CommonUtil.removeDuplicate(authIds);
         try {
             lockInfoDao.deleteBatchIds(lockIds);
         } catch (Exception e) {

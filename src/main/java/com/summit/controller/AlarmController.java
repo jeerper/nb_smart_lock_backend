@@ -90,15 +90,15 @@ public class AlarmController {
     }
 
 
-    @ApiOperation(value = "用告警id删除门禁告警信息", notes = "alarmId和processId不能为空，时间若为空则取当前时间")
-    @DeleteMapping(value = "/delLockAlarmByIdBatch")
-    public RestfulEntityBySummit<String> delLockAlarmByIdBatch(@ApiParam(value = "门禁告警id数组", required = true) @RequestParam(value = "alarmIds") List<String> alarmIds) {
+    @ApiOperation(value = "用告警id列表批量删除门禁告警信息", notes = "alarmIds不能为空")
+    @DeleteMapping(value = "/delAlarmByIdBatch")
+    public RestfulEntityBySummit<String> delAlarmByIdBatch(@ApiParam(value = "门禁告警id数组", required = true) @RequestParam(value = "alarmIds") List<String> alarmIds) {
         if(alarmIds == null || alarmIds.isEmpty()){
             log.error("告警id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警id为空",null);
         }
         try {
-            alarmService.delLockAlarmByIdBatch(alarmIds);
+            alarmService.delAlarmByIdBatch(alarmIds);
         } catch (Exception e) {
             log.error("删除告警信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"删除告警信息失败",null);

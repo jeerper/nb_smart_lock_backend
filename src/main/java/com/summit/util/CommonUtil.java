@@ -19,7 +19,7 @@ public class CommonUtil {
      */
     public static Date parseStrToDate(String time, String mark){
 
-        if(time != null){
+        if(time != null && !"".equals(time)){
             try {
                 return CommonConstants.timeFormat.parse(time);
             } catch (ParseException e) {

@@ -38,7 +38,7 @@ public interface AlarmService {
      * @param alarmIds 告警id列表
      * @return 不为-1则成功
      */
-    int delLockAlarmByIdBatch(List<String> alarmIds);
+    int delAlarmByIdBatch(List<String> alarmIds);
 
 
     //###告警查询------------------------
@@ -57,6 +57,13 @@ public interface AlarmService {
      * @return 唯一确定的告警记录
      */
     Alarm selectAlarmById(String alarmId);
+
+    /**
+     * 根据告警Idid查询唯一门禁信息,不考虑权限
+     * @param alarmId 告警id
+     * @return 唯一告警对象
+     */
+    Alarm selectAlarmByIdBeyondAuthority(String alarmId);
 
     /**
      * 根据告警name（或者说类型）查询，用selectCondition实现，可指定时间段
