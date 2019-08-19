@@ -48,7 +48,7 @@ public class LockInfoController {
         Page<LockInfo> lockInfos = null;
         try {
             lockInfos = lockInfoService.selectLockInfoByPage(new SimplePage(current, pageSize));
-            filterInfo(lockInfos);
+//            filterInfo(lockInfos);
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询全部锁信息失败", lockInfos);
         }
@@ -65,7 +65,7 @@ public class LockInfoController {
         LockInfo lockInfo = null;
         try {
             lockInfo = lockInfoService.selectLockById(lockId);
-            filterInfo(lockInfo);
+//            filterInfo(lockInfo);
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询锁信息失败", lockInfo);
         }
@@ -82,7 +82,7 @@ public class LockInfoController {
         LockInfo lockInfo = null;
         try {
             lockInfo = lockInfoService.selectBylockCode(lockCode);
-            filterInfo(lockInfo);
+//            filterInfo(lockInfo);
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询锁信息失败", lockInfo);
         }
@@ -98,7 +98,7 @@ public class LockInfoController {
         Page<LockInfo> lockInfos = null;
         try {
             lockInfos = lockInfoService.selectHaveHistoryByPage(new SimplePage(current, pageSize));
-            filterInfo(lockInfos);
+//            filterInfo(lockInfos);
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"分页查询全部有操作记录的锁信息失败", lockInfos);
         }
@@ -118,7 +118,7 @@ public class LockInfoController {
         Page<LockInfo> lockInfos = null;
         try {
             lockInfos = lockInfoService.selectCondition(lockInfo, new SimplePage(current,pageSize));
-            filterInfo(lockInfos);
+//            filterInfo(lockInfos);
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"条件查询锁信息失败", lockInfos);
         }

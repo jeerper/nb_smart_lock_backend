@@ -57,7 +57,7 @@ public class AccessControlInfoController {
         Page<AccessControlInfo> controlInfoPage = null;
         try {
             controlInfoPage = accessControlService.selectAccCtrlByPage(new SimplePage(current, pageSize));
-            filterAccCtrlInfo(controlInfoPage);
+//            filterAccCtrlInfo(controlInfoPage);
         } catch (Exception e) {
             log.error("分页查询全部门禁信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"分页查询全部门禁信息失败", controlInfoPage);

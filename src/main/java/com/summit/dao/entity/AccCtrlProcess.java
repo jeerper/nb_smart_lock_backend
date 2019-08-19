@@ -5,12 +5,14 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
+@JsonIgnoreProperties(value={"panoramaPic","facePanorama","facePic","faceMatch"})
 @Data
 @AllArgsConstructor
 @TableName(value = "acc_ctrl_process")
@@ -74,6 +76,8 @@ public class AccCtrlProcess {
     private String facePicId;
     @TableField(value = "face_match_id")
     private String faceMatchId;
+
+
     @TableField(exist = false)
     private FileInfo panoramaPic;
     @TableField(exist = false)

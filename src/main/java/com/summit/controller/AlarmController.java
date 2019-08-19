@@ -132,7 +132,7 @@ public class AlarmController {
         Alarm alarm = null;
         try {
             alarm = alarmService.selectAlarmById(alarmId);
-            filterInfo(alarm);
+//            filterInfo(alarm);
         } catch (Exception e) {
             log.error("根据告警id查询告警信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"根据告警id查询告警信息失败", alarm);
@@ -159,7 +159,7 @@ public class AlarmController {
             alarm.setAccessControlName(accessControlName);
             alarm.setAlarmStatus(alarmStatus);
             alarms = alarmService.selectAlarmConditionByPage(alarm, start, end, new SimplePage(current,pageSize));
-            filterInfo(alarms);
+//            filterInfo(alarms);
         } catch (Exception e) {
             log.error("条件查询告警信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"条件查询告警信息失败", alarms);

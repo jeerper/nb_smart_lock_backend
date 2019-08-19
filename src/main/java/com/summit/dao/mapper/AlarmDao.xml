@@ -266,10 +266,10 @@
 <!--        and ac.access_control_name = #{alarm.accCtrlProcess.accessControlName}-->
 <!--      </if>-->
       <if test="alarm.accessControlId != null ">
-        and ac.access_control_id = #{alarm.accessControlId}
+        and acp.access_control_id = #{alarm.accessControlId}
       </if>
       <if test="alarm.accessControlName != null ">
-        and ac.access_control_name = #{alarm.accessControlName}
+        and acp.access_control_name = #{alarm.accessControlName}
       </if>
       <if test="alarm.alarmStatus != null">
         and al.alarm_status = #{alarm.alarmStatus}
