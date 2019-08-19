@@ -11,7 +11,7 @@ import lombok.Data;
 @ApiModel(value="锁实时信息类", description="封装所需要的实时信息")
 
 //@JsonInclude(JsonInclude.Include.NON_NULL)
-public class LockRealTimeInfo {
+public class AccCtrlRealTimeInfo {
 
     @ApiModelProperty(value="门禁id",name="accessControlId")
     private String accessControlId;
@@ -84,7 +84,7 @@ public class LockRealTimeInfo {
     @ApiModelProperty(value="锁当前告警数量",name="alarmCount")
     private Integer alarmCount;
 
-    public LockRealTimeInfo(){}
+    public AccCtrlRealTimeInfo(){}
 
 
 }

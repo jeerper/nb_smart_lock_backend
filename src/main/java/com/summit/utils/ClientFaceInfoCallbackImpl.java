@@ -250,6 +250,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
         if(device != null){
             String lockCode = device.getLockCode();
             String lockId = device.getLockId();
+            String deviceType = device.getType();
             AccessControlInfo acInfo = accessControlService.selectAccCtrlByLockCode(lockCode);
             if(acInfo != null){
                 String accessControlId = acInfo.getAccessControlId();
@@ -263,6 +264,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             accCtrlProcess.setLockId(lockId);
             accCtrlProcess.setLockCode(lockCode);
             accCtrlProcess.setDeviceId(devId);
+            accCtrlProcess.setDeviceType(deviceType);
             accessControlInfo.setLockId(lockId);
             accessControlInfo.setLockCode(lockCode);
             accessControlInfo.setUpdatetime(picSnapshotTime == null ? null : picSnapshotTime.toJdkDate());

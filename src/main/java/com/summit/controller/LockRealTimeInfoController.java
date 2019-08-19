@@ -1,7 +1,6 @@
 package com.summit.controller;
 
 import com.summit.cbb.utils.page.Page;
-import com.summit.cbb.utils.page.Pageable;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
@@ -9,9 +8,8 @@ import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.FileInfo;
-import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.SimplePage;
-import com.summit.entity.LockRealTimeInfo;
+import com.summit.entity.AccCtrlRealTimeInfo;
 import com.summit.sdk.huawei.model.AlarmStatus;
 import com.summit.service.AccCtrlProcessService;
 import com.summit.service.AccessControlService;
@@ -58,7 +56,7 @@ public class LockRealTimeInfoController {
     public RestfulEntityBySummit<Map<String,Object>> selectAllLockRealTimeInfo(@ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
                                                                                @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         Map<String,Object> data = new HashMap<>();
-        List<LockRealTimeInfo> lockRealTimeInfos;
+        List<AccCtrlRealTimeInfo> accCtrlRealTimeInfos;
 //        List<LockInfo> lockInfos;
         List<AccessControlInfo> accessControlInfos;
         try {
@@ -68,11 +66,11 @@ public class LockRealTimeInfoController {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"无门禁操作记录成功", null);
             }
             accessControlInfos = acPage.getContent();
-            lockRealTimeInfos = getLockRealTimeInfo(accessControlInfos);
+            accCtrlRealTimeInfos = getLockRealTimeInfo(accessControlInfos);
             Integer integer = alarmService.selectAlarmCountByStatus(AlarmStatus.UNPROCESSED.getCode());
             int allAlarmCount = integer == null ? 0 : integer;
             data.put("allAlarmCount",allAlarmCount);
-            data.put("content",lockRealTimeInfos);
+            data.put("content", accCtrlRealTimeInfos);
             data.put("pageable",acPage.getPageable());
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询门禁操作记录失败", data);
@@ -86,19 +84,19 @@ public class LockRealTimeInfoController {
      * @param accessControlInfos 门禁信息列表
      * @return 门禁实时信息列表
      */
-    private List<LockRealTimeInfo> getLockRealTimeInfo(List<AccessControlInfo> accessControlInfos) {
-        List<LockRealTimeInfo> lockRealTimeInfos = new ArrayList<>();
+    private List<AccCtrlRealTimeInfo> getLockRealTimeInfo(List<AccessControlInfo> accessControlInfos) {
+        List<AccCtrlRealTimeInfo> accCtrlRealTimeInfos = new ArrayList<>();
         for (AccessControlInfo accCtrl : accessControlInfos){
             if(accCtrl == null)
                 continue;
             String accessControlId = accCtrl.getAccessControlId();
-            LockRealTimeInfo lockRealTimeInfo = new LockRealTimeInfo();
+            AccCtrlRealTimeInfo accCtrlRealTimeInfo = new AccCtrlRealTimeInfo();
             if(accessControlId != null){
-                lockRealTimeInfo.setAccessControlId(accessControlId);
-                lockRealTimeInfo.setAccessControlName(accCtrl.getAccessControlName());
-                lockRealTimeInfo.setAccCtrlStatus(accCtrl.getStatus());
-                lockRealTimeInfo.setLockId(accCtrl.getLockId());
-//                lockRealTimeInfo.setLockCode(accCtrl.getLockCode());
+                accCtrlRealTimeInfo.setAccessControlId(accessControlId);
+                accCtrlRealTimeInfo.setAccessControlName(accCtrl.getAccessControlName());
+                accCtrlRealTimeInfo.setAccCtrlStatus(accCtrl.getStatus());
+                accCtrlRealTimeInfo.setLockId(accCtrl.getLockId());
+//                accCtrlRealTimeInfo.setLockCode(accCtrl.getLockCode());
                 List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessService.selectAccCtrlProcessByAccCtrlId(accessControlId,null);
 
                 if(accCtrlProcesses == null || accCtrlProcesses.isEmpty()){
@@ -110,42 +108,42 @@ public class LockRealTimeInfoController {
                 if(accCtrlProcess != null){
                     String userName = accCtrlProcess.getUserName();
                     //门禁记录中操作的具体摄像头
-                    lockRealTimeInfo.setDeviceIp(accCtrlProcess.getDeviceIp());
-                    lockRealTimeInfo.setName(userName);
+                    accCtrlRealTimeInfo.setDeviceIp(accCtrlProcess.getDeviceIp());
+                    accCtrlRealTimeInfo.setName(userName);
 
-                    lockRealTimeInfo.setGender(accCtrlProcess.getGender());
+                    accCtrlRealTimeInfo.setGender(accCtrlProcess.getGender());
                     Date birthday = accCtrlProcess.getBirthday();
                     try {
                         if(birthday != null)
-                            lockRealTimeInfo.setBirthday(CommonConstants.dateFormat.format(birthday));
+                            accCtrlRealTimeInfo.setBirthday(CommonConstants.dateFormat.format(birthday));
                     } catch (Exception e) {
                         log.error("生日格式有误");
                     }
-                    lockRealTimeInfo.setProvince(accCtrlProcess.getProvince());
-                    lockRealTimeInfo.setCity(accCtrlProcess.getCity());
-                    lockRealTimeInfo.setCardId(accCtrlProcess.getCardId());
-                    lockRealTimeInfo.setCardType(accCtrlProcess.getCardType());
-                    lockRealTimeInfo.setFaceMatchRate(accCtrlProcess.getFaceMatchRate());
-                    lockRealTimeInfo.setFaceLibName(accCtrlProcess.getFaceLibName());
-                    lockRealTimeInfo.setFaceLibType(accCtrlProcess.getFaceLibType());
+                    accCtrlRealTimeInfo.setProvince(accCtrlProcess.getProvince());
+                    accCtrlRealTimeInfo.setCity(accCtrlProcess.getCity());
+                    accCtrlRealTimeInfo.setCardId(accCtrlProcess.getCardId());
+                    accCtrlRealTimeInfo.setCardType(accCtrlProcess.getCardType());
+                    accCtrlRealTimeInfo.setFaceMatchRate(accCtrlProcess.getFaceMatchRate());
+                    accCtrlRealTimeInfo.setFaceLibName(accCtrlProcess.getFaceLibName());
+                    accCtrlRealTimeInfo.setFaceLibType(accCtrlProcess.getFaceLibType());
                     try {
                         if(accCtrlProcess.getProcessTime() != null)
-                            lockRealTimeInfo.setPicSnapshotTime(CommonConstants.timeFormat.format(accCtrlProcess.getProcessTime()));
+                            accCtrlRealTimeInfo.setPicSnapshotTime(CommonConstants.timeFormat.format(accCtrlProcess.getProcessTime()));
                     } catch (Exception e) {
                         log.error("操作时间格式有误");
                     }
                     FileInfo facePanorama = accCtrlProcess.getFacePanorama();
                     if(facePanorama != null){
-                        lockRealTimeInfo.setFacePanoramaUrl(facePanorama.getFilePath());
+                        accCtrlRealTimeInfo.setFacePanoramaUrl(facePanorama.getFilePath());
                     }
                     FileInfo facePic = accCtrlProcess.getFacePic();
                     if(facePic != null){
-                        lockRealTimeInfo.setFacePicUrl(facePic.getFilePath());
+                        accCtrlRealTimeInfo.setFacePicUrl(facePic.getFilePath());
                     }
                 }
             }
-            lockRealTimeInfos.add(lockRealTimeInfo);
+            accCtrlRealTimeInfos.add(accCtrlRealTimeInfo);
         }
-        return lockRealTimeInfos;
+        return accCtrlRealTimeInfos;
     }
 }
