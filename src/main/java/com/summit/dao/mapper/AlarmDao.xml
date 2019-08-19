@@ -247,7 +247,7 @@
               al.alarm_id = #{alarm.alarmId}
           </if>
           <if test="alarm.alarmName != null">
-              and al.alarm_name = #{alarm.alarmName}
+              and al.alarm_name like concat(concat('%', #{alarm.alarmName}), '%')
           </if>
           <if test="alarm.accCtrlProId != null">
               and al.acc_ctrl_pro_id = #{alarm.accCtrlProId}
@@ -259,7 +259,7 @@
               and acp.access_control_id = #{alarm.accessControlId}
           </if>
           <if test="alarm.accessControlName != null ">
-              and acp.access_control_name = #{alarm.accessControlName}
+              and acp.access_control_name like concat(concat('%', #{alarm.accessControlName}), '%')
           </if>
           <if test="alarm.alarmStatus != null">
               and al.alarm_status = #{alarm.alarmStatus}
@@ -268,11 +268,10 @@
               and al.process_person = #{alarm.processPerson}
           </if>
           <if test="alarm.description != null">
-              and al.description = #{alarm.description}
+              and al.description like concat(concat('%', #{alarm.description}), '%')
           </if>
           <if test="alarm.processRemark != null">
-              and al.process_remark = #{alarm.processRemark}
-              <!--        and al.process_remark like concat(concat('%', #{alarm.processRemark}), '%');-->
+              and al.process_remark like concat(concat('%', #{alarm.processRemark}), '%')
           </if>
           <if test="start != null">
               and al.alarm_time &gt;= #{start}
