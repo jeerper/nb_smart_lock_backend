@@ -216,6 +216,9 @@ public class TestDao {
         Integer alarmCount = alarmDao.selectAlarmCountByStatus(1, roles);
         System.out.println(alarmCount);
     }
+    @Test
+    public void testupdateAlarm(){
+    }
 
     @Test
     public void testLockCode(){

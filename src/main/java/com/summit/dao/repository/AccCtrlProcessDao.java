@@ -22,7 +22,11 @@ public interface AccCtrlProcessDao extends BaseMapper<AccCtrlProcess> {
                                       @Param("page") SimplePage page,
                                       @Param("roles") List<String> roles);
 
+    List<AccCtrlProcess> selectRecodByAccessControlIds(@Param("accessControlIds") List<String> accessControlIds);
+
     int insertRecord(AccCtrlProcess accCtrlProcess);
 
     int updateRecord(AccCtrlProcess accCtrlProcess);
+
+    int updateAccCtrlProcess(@Param("oldAccCtrlProcess") AccCtrlProcess oldAccCtrlProcess, @Param("newAccCtrlProcess") AccCtrlProcess newAccCtrlProcess);
 }

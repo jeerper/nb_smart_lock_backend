@@ -7,18 +7,24 @@ import com.summit.cbb.utils.page.Pageable;
 import com.summit.common.entity.UserInfo;
 import com.summit.common.web.filter.UserContextHolder;
 import com.summit.constants.CommonConstants;
+import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccCtrlRole;
 import com.summit.dao.entity.AccessControlInfo;
+import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.SimplePage;
+import com.summit.dao.repository.AccCtrlProcessDao;
 import com.summit.dao.repository.AccCtrlRoleDao;
 import com.summit.dao.repository.AccessControlDao;
+import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.sdk.huawei.model.AlarmType;
 import com.summit.sdk.huawei.model.DeviceType;
+import com.summit.service.AccCtrlProcessService;
 import com.summit.service.AccessControlService;
+import com.summit.service.AlarmService;
 import com.summit.service.CameraDeviceService;
 import com.summit.service.LockInfoService;
 import com.summit.util.CommonUtil;
@@ -49,6 +55,10 @@ public class AccessControlServiceImpl implements AccessControlService {
     private LockInfoService lockInfoService;
     @Autowired
     private CameraDeviceService cameraDeviceService;
+    @Autowired
+    private AlarmDao alarmDao;
+    @Autowired
+    private AccCtrlProcessDao accCtrlProcessDao;
 
     /**
      * 根据门禁id查询唯一门禁信息
@@ -249,7 +259,7 @@ public class AccessControlServiceImpl implements AccessControlService {
     }
 
     /**
-     * 更新门禁信息
+     * 更新门禁信息,同步更新门禁操作记录表,并且将设备的锁编号更新
      * @param accessControlInfo 门禁信息对象
      * @return 返回不为-1则为成功
      */
@@ -259,6 +269,15 @@ public class AccessControlServiceImpl implements AccessControlService {
             log.error("门禁信息为空");
             return CommonConstants.UPDATE_ERROR;
         }
+        String oldControlName = null;
+        AccessControlInfo controlInfo = accessControlDao.selectById(accessControlInfo.getAccessControlId());
+        if(controlInfo != null){
+            oldControlName = controlInfo.getAccessControlName();
+        }
+        String oldEntryCameraIp = null;
+        String oldExitCameraIp = null;
+        String oldLockCode = null;
+
         Date time = new Date();
         accessControlInfo.setUpdatetime(time);
         LockInfo lockInfo = accessControlInfo.getLockInfo();
@@ -269,6 +288,9 @@ public class AccessControlServiceImpl implements AccessControlService {
             accessControlInfo.setLockId(lockId);
             lockCode = lockInfo.getLockCode();
             accessControlInfo.setLockCode(lockCode);
+            LockInfo oldLock = lockInfoDao.selectById(lockId);
+            if(oldLock != null)
+                oldLockCode = oldLock.getLockCode();
             try {
                 lockInfo.setUpdatetime(time);
                 lockInfoService.updateLock(lockInfo);
@@ -284,6 +306,10 @@ public class AccessControlServiceImpl implements AccessControlService {
             entryCamera.setUpdatetime(time);
             accessControlInfo.setEntryCameraId(entryCamera.getDevId());
             accessControlInfo.setEntryCameraIp(entryCamera.getDeviceIp());
+            CameraDevice oldEntryCameraDevice = cameraDeviceDao.selectById(accessControlInfo.getEntryCameraId());
+            if(oldEntryCameraDevice != null)
+                oldEntryCameraIp = oldEntryCameraDevice.getDeviceIp();
+
             try {
                 cameraDeviceService.updateDevice(entryCamera);
             } catch (Exception e) {
@@ -298,6 +324,10 @@ public class AccessControlServiceImpl implements AccessControlService {
             exitCamera.setUpdatetime(time);
             accessControlInfo.setExitCameraId(exitCamera.getDevId());
             accessControlInfo.setExitCameraIp(exitCamera.getDeviceIp());
+            CameraDevice oldExitcameraDevice = cameraDeviceDao.selectById(accessControlInfo.getExitCameraId());
+            if(oldExitcameraDevice != null)
+                oldExitCameraIp = oldExitcameraDevice.getDeviceIp();
+
             try {
                 cameraDeviceService.updateDevice(exitCamera);
             } catch (Exception e) {
@@ -305,7 +335,44 @@ public class AccessControlServiceImpl implements AccessControlService {
             }
         }
         UpdateWrapper<AccessControlInfo> updateWrapper = new UpdateWrapper<>();
-        return accessControlDao.update(accessControlInfo, updateWrapper.eq("access_control_id", accessControlInfo.getAccessControlId()));
+        int result = 0;
+        try {
+            result = accessControlDao.update(accessControlInfo, updateWrapper.eq("access_control_id", accessControlInfo.getAccessControlId()));
+            //更新门禁信息成功后需要同步更新门禁操作记录表(access_control_name,device_ip,lock_code)，并且将设备的锁编号更新
+            UpdateWrapper<AccCtrlProcess> wrapper = new UpdateWrapper<>();
+            //accessControlName
+            String newControlName = accessControlInfo.getAccessControlName();
+//            AccCtrlProcess oldAccCtrlProcess = new AccCtrlProcess();
+            AccCtrlProcess newNameAccCtrlProcess = new AccCtrlProcess();
+            newNameAccCtrlProcess.setAccessControlName(newControlName);
+            accCtrlProcessDao.update(newNameAccCtrlProcess,wrapper.eq("access_control_name",oldControlName));
+            //dviceIp,先更新ip为入口ip的记录
+            String newEntryCameraIp = accessControlInfo.getEntryCameraIp();
+            AccCtrlProcess newEntryCameraAccCtrlProcess = new AccCtrlProcess();
+            newEntryCameraAccCtrlProcess.setDeviceIp(newEntryCameraIp);
+            accCtrlProcessDao.update(newEntryCameraAccCtrlProcess,wrapper.eq("device_ip",oldEntryCameraIp));
+            AccCtrlProcess newExitAccCtrlProcess = new AccCtrlProcess();
+            newExitAccCtrlProcess.setDeviceIp(accessControlInfo.getEntryCameraIp());
+            accCtrlProcessDao.update(newExitAccCtrlProcess,wrapper.eq("device_ip",oldExitCameraIp));
+
+            //lockCode
+            AccCtrlProcess newLockAccCtrlProcess = new AccCtrlProcess();
+            newLockAccCtrlProcess.setLockCode(accessControlInfo.getLockCode());
+            accCtrlProcessDao.update(newLockAccCtrlProcess,wrapper.eq("lock_code",oldLockCode));
+
+            CameraDevice updateDevice = new CameraDevice();
+            updateDevice.setDevId(accessControlInfo.getEntryCameraId());
+            updateDevice.setLockCode(accessControlInfo.getLockCode());
+            //更新摄像头关联的lockCode
+            cameraDeviceService.updateDevice(updateDevice);
+            updateDevice.setDevId(accessControlInfo.getExitCameraId());
+            cameraDeviceService.updateDevice(updateDevice);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     /**
@@ -337,6 +404,32 @@ public class AccessControlServiceImpl implements AccessControlService {
         List<String> lockIds = new ArrayList<>();
         List<String> cameraIds = new ArrayList<>();
         List<String> authIds = new ArrayList<>();
+        List<String> accCtrlProIds = new ArrayList<>();
+        List<String> alarmIds = new ArrayList<>();
+        List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessDao.selectRecodByAccessControlIds(accessControlIds);
+        if(accCtrlProcesses != null){
+            for(AccCtrlProcess accCtrlPro : accCtrlProcesses) {
+                if(accCtrlPro == null)
+                    continue;
+                String accCtrlProId = accCtrlPro.getAccCtrlProId();
+                if(accCtrlProId == null)
+                    continue;
+                accCtrlProIds.add(accCtrlProId);
+            }
+        }
+
+        List<Alarm> alarms = alarmDao.selectAlarmsByAccCtrlProIds(accCtrlProIds);
+        if(alarms != null){
+            for(Alarm alarm : alarms) {
+                if(alarm == null)
+                    continue;
+                String alarmId = alarm.getAlarmId();
+                if(alarmId == null)
+                    continue;
+                alarmIds.add(alarmId);
+            }
+        }
+
         for(String acId : accessControlIds) {
             AccessControlInfo accessControlInfo = selectAccCtrlByIdBeyondAuthority(acId);
             if(accessControlInfo == null)
@@ -372,7 +465,19 @@ public class AccessControlServiceImpl implements AccessControlService {
         try {
             accCtrlRoleDao.deleteBatchIds(authIds);
         } catch (Exception e) {
-            log.error("删除门禁授权信息信息失败");
+            log.error("删除门禁授权信息失败");
+        }
+        //删除相应的门禁操作记录
+        try {
+            accCtrlProcessDao.deleteBatchIds(accCtrlProIds);
+        } catch (Exception e) {
+            log.error("删除相应的门禁操作记录失败");
+        }
+        //删除相应的门禁告警
+        try {
+            alarmDao.deleteBatchIds(alarmIds);
+        } catch (Exception e) {
+            log.error("删除相应的门禁告警失败");
         }
         return result;
     }

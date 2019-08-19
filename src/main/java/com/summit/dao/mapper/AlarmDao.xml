@@ -295,5 +295,11 @@
 
   </select>
 
-
+    <select id="selectAlarmsByAccCtrlProIds"  resultMap="BaseResultMap">
+        select distinct <include refid="Base_Column_List" /> from alarm
+        where acc_ctrl_pro_id in
+        <foreach  item="accCtrlProId" collection="accCtrlProIds" index="index"  open="(" separator="," close=")">
+            #{accCtrlProId}
+        </foreach>
+    </select>
 </mapper>

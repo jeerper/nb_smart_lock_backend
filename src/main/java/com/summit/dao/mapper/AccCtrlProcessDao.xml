@@ -550,4 +550,36 @@
       </where>
     </update>
 
+
+  <update id="updateAccCtrlProcess" >
+
+    <if test="oldAccCtrlProcess.accessControlName != null and newAccCtrlProcess.accessControlName != null">
+      update acc_ctrl_process set access_control_name = #{newAccCtrlProcess.accessControlName}
+      where access_control_name=#{oldAccCtrlProcess.accessControlName};
+    </if>
+
+    <if test="oldAccCtrlProcess.deviceIp != null and newAccCtrlProcess.deviceIp != null">
+      update acc_ctrl_process set device_ip = #{newAccCtrlProcess.deviceIp}
+      where device_ip = #{oldAccCtrlProcess.deviceIp};
+    </if>
+
+    <if test="oldAccCtrlProcess.deviceType != null and newAccCtrlProcess.deviceType != null">
+      update acc_ctrl_process set device_type=#{newAccCtrlProcess.deviceType}
+      where device_type=#{oldAccCtrlProcess.deviceType};
+    </if>
+
+    <if test="oldAccCtrlProcess.lockCode != null and newAccCtrlProcess.lockCode != null">
+      update acc_ctrl_process set lock_code = #{newAccCtrlProcess.lockCode}
+      where lock_code = #{oldAccCtrlProcess.lockCode};
+    </if>
+  </update>
+
+  <select id="selectRecodByAccessControlIds"  resultMap="BaseResultMap">
+    select distinct <include refid="Base_Column_List" /> from acc_ctrl_process
+    where access_control_id in
+    <foreach  item="accessControlId" collection="accessControlIds" index="index"  open="(" separator="," close=")">
+      #{accessControlId}
+    </foreach>
+  </select>
+
 </mapper>
