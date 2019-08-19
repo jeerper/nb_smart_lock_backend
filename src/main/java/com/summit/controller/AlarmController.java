@@ -172,6 +172,8 @@ public class AlarmController {
      * @param alarm 待过滤告警对象
      */
     private void filterInfo(Alarm alarm){
+        if(alarm == null)
+            return;
         AccCtrlProcess accCtrlProcess = alarm.getAccCtrlProcess();
         if(accCtrlProcess != null){
             AccessControlInfo accessControlInfo = accCtrlProcess.getAccessControlInfo();
@@ -186,10 +188,11 @@ public class AlarmController {
      * @param alarmsPage 待过滤告警分页列表对象
      */
     private void filterInfo(Page<Alarm> alarmsPage) {
-        List<Alarm> content = alarmsPage.getContent();
-        if(content == null){
+        if(alarmsPage == null)
             return;
-        }
+        List<Alarm> content = alarmsPage.getContent();
+        if(content == null)
+            return;
         for (Alarm alarm : content){
             AccCtrlProcess accCtrlProcess = alarm.getAccCtrlProcess();
             if(accCtrlProcess != null){

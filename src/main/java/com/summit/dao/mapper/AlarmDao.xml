@@ -138,15 +138,17 @@
     <include refid="Face_Match_Alias_List" />
     from (select distinct <include refid="Alarm_Have_Alias_List" /> from
     alarm al left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
-    inner join (
-    select distinct <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
-    <where>
-      au.role_id in
-      <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
-        #{role}
-      </foreach>
-    </where>
-    ) au on au.access_control_id = acp.access_control_id
+      <if test="roles != null">
+          inner join (
+          select distinct <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
+          <where>
+              au.role_id in
+              <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+                  #{role}
+              </foreach>
+          </where>
+          ) au on au.access_control_id = acp.access_control_id
+      </if>
     ) al
     left join acc_ctrl_process acp on acp.acc_ctrl_pro_id=al.acc_ctrl_pro_id
     left join file_info fi1 on acp.face_panorama_id=fi1.file_id
@@ -170,15 +172,17 @@
     <include refid="Face_Match_Alias_List" />
     from (select distinct <include refid="Alarm_Have_Alias_List" /> from
     alarm al left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
-    inner join (
-    select distinct <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
-    <where>
-      au.role_id in
-      <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
-        #{role}
-      </foreach>
-    </where>
-    ) au on au.access_control_id = acp.access_control_id
+      <if test="roles != null">
+          inner join (
+          select distinct <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
+          <where>
+              au.role_id in
+              <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+                  #{role}
+              </foreach>
+          </where>
+          ) au on au.access_control_id = acp.access_control_id
+      </if>
     ) al
     left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
     left join file_info fi1 on acp.face_panorama_id=fi1.file_id
@@ -196,15 +200,17 @@
     from (
         select al.alarm_id, al.alarm_status from alarm al
         left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
-        inner join (
-        select distinct <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
-        <where>
-            au.role_id in
-            <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
-                #{role}
-            </foreach>
-        </where>
-        ) au on au.access_control_id = acp.access_control_id
+      <if test="roles != null">
+          inner join (
+          select distinct <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
+          <where>
+              au.role_id in
+              <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+                  #{role}
+              </foreach>
+          </where>
+          ) au on au.access_control_id = acp.access_control_id
+      </if>
     ) al
 
     <where>
