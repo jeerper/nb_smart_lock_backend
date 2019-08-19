@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -36,6 +37,7 @@ public class Alarm {
     @TableField(exist = false)
     private String accessControlName;
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value="告警发生时间 ",name="alarmTime")
     @TableField(value = "alarm_time")
     private Date alarmTime;
@@ -49,6 +51,7 @@ public class Alarm {
     @TableField(value = "description")
     private String description;
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value="告警最后更新时间，0已处理，1未处理",name="updatetime")
     @TableField(value = "updatetime")
     private Date updatetime;
