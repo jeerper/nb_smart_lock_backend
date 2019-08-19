@@ -1,5 +1,6 @@
 package com.summit.service.impl;
 
+import com.summit.cbb.utils.page.Page;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.SimplePage;
 import com.summit.service.AlarmService;
@@ -117,10 +118,14 @@ public class AlarmServiceImplTest {
 
     @Test
     public void selectAlarmCondition() {
+
     }
 
     @Test
     public void selectAlarmCondition1() {
-
+        Alarm alarm = new Alarm();
+        alarm.setAccessControlName("门禁1");
+        Page<Alarm> alarmPage = alarmService.selectAlarmConditionByPage(alarm, new SimplePage(1, 10));
+        System.out.println(alarmPage);
     }
 }

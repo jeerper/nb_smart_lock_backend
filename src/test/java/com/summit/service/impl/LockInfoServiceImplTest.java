@@ -55,15 +55,16 @@ public class LockInfoServiceImplTest {
 
     @Test
     public void selectAll() {
-        List<LockInfo> lockInfos = lockInfoService.selectLockInfoByPage(new SimplePage(2, 3)).getContent();
+        List<LockInfo> lockInfos = lockInfoService.selectLockInfoByPage(new SimplePage(3, 4)).getContent();
         System.out.println(lockInfos);
     }
 
     @Test
     public void selectCondition() {
         LockInfo lockInfo =new LockInfo();
-        lockInfo.setLockCode("1nb");
-        lockInfoService.selectCondition(lockInfo,page);
+//        lockInfo.setLockCode("1nb");
+        Page<LockInfo> lockInfoPage = lockInfoService.selectCondition(lockInfo, new SimplePage(3, 3));
+        System.out.println(lockInfoPage);
     }
 
     @Test

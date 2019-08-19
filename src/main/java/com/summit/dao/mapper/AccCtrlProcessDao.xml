@@ -133,15 +133,16 @@
       </where>
       ) au on au.access_control_id = acp.access_control_id
     </if>
+    <where>
+      acp.acc_ctrl_pro_id=#{accCtrlProId}
+    </where>
     ) acp
     left join file_info fi1 on acp.face_panorama_id=fi1.file_id
     left join file_info fi2 on acp.face_pic_id=fi2.file_id
     left join file_info fi3 on acp.face_match_id=fi3.file_id
     left join access_control ac on ac.access_control_id = acp.access_control_id
     left join role_accesscontrol_auth au on au.access_control_id = acp.access_control_id
-    <where>
-      acp.acc_ctrl_pro_id=#{accCtrlProId}
-    </where>
+
   </select>
 
   <select id="selectAccCtrlProcessByLockCode" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -165,7 +166,10 @@
       </where>
       ) au on au.access_control_id = acp.access_control_id
     </if>
-
+    <where>
+      acp.lock_code=#{lockCode}
+    </where>
+    order by process_time desc
     <if test="page != null and page.current != null and  page.pageSize != null ">
       limit #{page.current},#{page.pageSize}
     </if>
@@ -175,10 +179,7 @@
     left join file_info fi3 on acp.face_match_id=fi3.file_id
     left join access_control ac on ac.access_control_id = acp.access_control_id
     left join role_accesscontrol_auth au on au.access_control_id = acp.access_control_id
-    <where>
-      acp.lock_code=#{lockCode}
-    </where>
-    order by process_time desc
+
   </select>
 
   <select id="selectCondition"  resultMap="BaseResultMap">
@@ -202,16 +203,6 @@
       </where>
       ) au on au.access_control_id = acp.access_control_id
     </if>
-
-    <if test="page != null and page.current != null and  page.pageSize != null ">
-      limit #{page.current},#{page.pageSize}
-    </if>
-    ) acp
-    left join file_info fi1 on acp.face_panorama_id=fi1.file_id
-    left join file_info fi2 on acp.face_pic_id=fi2.file_id
-    left join file_info fi3 on acp.face_match_id=fi3.file_id
-    left join access_control ac on ac.access_control_id = acp.access_control_id
-    left join role_accesscontrol_auth au on au.access_control_id = acp.access_control_id
     <where>
       <if test="accCtrlProcess.accCtrlProId != null">
         acp.acc_ctrl_pro_id = #{accCtrlProcess.accCtrlProId}
@@ -287,6 +278,16 @@
       </if>
     </where>
     order by process_time desc
+    <if test="page != null and page.current != null and  page.pageSize != null ">
+      limit #{page.current},#{page.pageSize}
+    </if>
+    ) acp
+    left join file_info fi1 on acp.face_panorama_id=fi1.file_id
+    left join file_info fi2 on acp.face_pic_id=fi2.file_id
+    left join file_info fi3 on acp.face_match_id=fi3.file_id
+    left join access_control ac on ac.access_control_id = acp.access_control_id
+    left join role_accesscontrol_auth au on au.access_control_id = acp.access_control_id
+
   </select>
 
   <insert id="insertRecord" parameterType="com.summit.dao.entity.AccCtrlProcess">

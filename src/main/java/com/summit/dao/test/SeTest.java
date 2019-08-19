@@ -1,10 +1,13 @@
 package com.summit.dao.test;
 
+import com.summit.constants.CommonConstants;
 import io.swagger.models.auth.In;
 import org.junit.Test;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class SeTest {
@@ -15,6 +18,12 @@ public class SeTest {
         aaa(obj);
 
         System.out.println(obj);
+    }
+    @Test
+    public void testDate() throws ParseException {
+        String time = "2019-08-16T05:55:59.689Z";
+        Date parse = CommonConstants.frontTimeFormat.parse(time);
+        System.out.println(parse);
     }
     @Test
     public void test4(){

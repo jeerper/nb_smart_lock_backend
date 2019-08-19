@@ -242,6 +242,47 @@
           ) au on au.access_control_id = acp.access_control_id
       </if>
 
+      <where>
+          <if test="alarm.alarmId != null">
+              al.alarm_id = #{alarm.alarmId}
+          </if>
+          <if test="alarm.alarmName != null">
+              and al.alarm_name = #{alarm.alarmName}
+          </if>
+          <if test="alarm.accCtrlProId != null">
+              and al.acc_ctrl_pro_id = #{alarm.accCtrlProId}
+          </if>
+          <!--      <if test="alarm.accCtrlProcess != null and alarm.accCtrlProcess.accessControlName != null">-->
+          <!--        and ac.access_control_name = #{alarm.accCtrlProcess.accessControlName}-->
+          <!--      </if>-->
+          <if test="alarm.accessControlId != null ">
+              and acp.access_control_id = #{alarm.accessControlId}
+          </if>
+          <if test="alarm.accessControlName != null ">
+              and acp.access_control_name = #{alarm.accessControlName}
+          </if>
+          <if test="alarm.alarmStatus != null">
+              and al.alarm_status = #{alarm.alarmStatus}
+          </if>
+          <if test="alarm.processPerson != null">
+              and al.process_person = #{alarm.processPerson}
+          </if>
+          <if test="alarm.description != null">
+              and al.description = #{alarm.description}
+          </if>
+          <if test="alarm.processRemark != null">
+              and al.process_remark = #{alarm.processRemark}
+              <!--        and al.process_remark like concat(concat('%', #{alarm.processRemark}), '%');-->
+          </if>
+          <if test="start != null">
+              and al.alarm_time &gt;= #{start}
+          </if>
+          <if test="end != null">
+              and al.alarm_time &lt;= #{end}
+          </if>
+      </where>
+      order by alarm_time desc
+
       <if test="page != null and page.current != null and  page.pageSize != null ">
         limit #{page.current},#{page.pageSize}
       </if>
@@ -252,48 +293,7 @@
     left join file_info fi3 on acp.face_match_id=fi3.file_id
     left join access_control ac on ac.access_control_id = acp.access_control_id
     left join role_accesscontrol_auth au on au.access_control_id = acp.access_control_id
-    <where>
-      <if test="alarm.alarmId != null">
-        al.alarm_id = #{alarm.alarmId}
-      </if>
-      <if test="alarm.alarmName != null">
-        and al.alarm_name = #{alarm.alarmName}
-      </if>
-      <if test="alarm.accCtrlProId != null">
-        and al.acc_ctrl_pro_id = #{alarm.accCtrlProId}
-      </if>
-<!--      <if test="alarm.accCtrlProcess != null and alarm.accCtrlProcess.accessControlName != null">-->
-<!--        and ac.access_control_name = #{alarm.accCtrlProcess.accessControlName}-->
-<!--      </if>-->
-      <if test="alarm.accessControlId != null ">
-        and acp.access_control_id = #{alarm.accessControlId}
-      </if>
-      <if test="alarm.accessControlName != null ">
-        and acp.access_control_name = #{alarm.accessControlName}
-      </if>
-      <if test="alarm.alarmStatus != null">
-        and al.alarm_status = #{alarm.alarmStatus}
-      </if>
-      <if test="alarm.processPerson != null">
-        and al.process_person = #{alarm.processPerson}
-      </if>
-      <if test="alarm.description != null">
-        and al.description = #{alarm.description}
-      </if>
-      <if test="alarm.updatetime != null">
-        and al.updatetime = #{alarm.updatetime}
-      </if>
-      <if test="alarm.processRemark != null">
-        and al.process_remark = #{alarm.processRemark}
-      </if>
-      <if test="start != null">
-        and al.alarm_time &gt;= #{start}
-      </if>
-      <if test="end != null">
-        and al.alarm_time &lt;= #{end}
-      </if>
-    </where>
-    order by alarm_time desc
+
   </select>
 
 

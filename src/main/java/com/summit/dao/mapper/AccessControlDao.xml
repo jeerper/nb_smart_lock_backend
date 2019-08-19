@@ -56,11 +56,12 @@
       </where>
       ) au on ac.access_control_id = au.access_control_id
     </if>
-    ) ac
-    left join role_accesscontrol_auth au on ac.access_control_id = au.access_control_id
     <where>
       ac.access_control_id=#{accessControlId}
     </where>
+    ) ac
+    left join role_accesscontrol_auth au on ac.access_control_id = au.access_control_id
+
   </select>
 
   <select id="selectAccCtrlByLockCode" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -80,12 +81,12 @@
       </where>
       ) au on ac.access_control_id = au.access_control_id
     </if>
-    ) ac
-    left join role_accesscontrol_auth au on ac.access_control_id = au.access_control_id
     <where>
       ac.lock_code=#{lockCode}
-
     </where>
+    ) ac
+    left join role_accesscontrol_auth au on ac.access_control_id = au.access_control_id
+
   </select>
 
 
@@ -155,11 +156,6 @@
       </where>
       ) au on ac.access_control_id = au.access_control_id
     </if>
-      <if test="page != null and page.current != null and  page.pageSize != null ">
-        limit #{page.current},#{page.pageSize}
-      </if>
-    ) ac
-    left join role_accesscontrol_auth au on ac.access_control_id = au.access_control_id
     <where>
       <if test="accessControlInfo.accessControlId != null">
         ac.access_control_id = #{accessControlInfo.accessControlId}
@@ -187,6 +183,11 @@
       </if>
     </where>
     order by updatetime desc
+      <if test="page != null and page.current != null and  page.pageSize != null ">
+        limit #{page.current},#{page.pageSize}
+      </if>
+    ) ac
+    left join role_accesscontrol_auth au on ac.access_control_id = au.access_control_id
 
   </select>
 

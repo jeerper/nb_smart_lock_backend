@@ -30,6 +30,11 @@ public class CommonConstants {
     public static final SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /**
+     * 前台默认格式
+     */
+    public static final SimpleDateFormat frontTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+    /**
      * snapshotTime时间戳格式转换
      */
     public static final SimpleDateFormat snapshotTimeFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");

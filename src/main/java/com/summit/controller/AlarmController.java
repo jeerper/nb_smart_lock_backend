@@ -155,8 +155,10 @@ public class AlarmController {
         Date end = CommonUtil.parseStrToDate(endTime,CommonConstants.ENDTIMEMARK);
         try {
             Alarm alarm = new Alarm();
-            alarm.setAccessControlId(accessControlId);
-            alarm.setAccessControlName(accessControlName);
+            if(!"".equals(accessControlId))
+                alarm.setAccessControlId(accessControlId);
+            if(!"".equals(accessControlName))
+                alarm.setAccessControlName(accessControlName);
             alarm.setAlarmStatus(alarmStatus);
             alarms = alarmService.selectAlarmConditionByPage(alarm, start, end, new SimplePage(current,pageSize));
 //            filterInfo(alarms);

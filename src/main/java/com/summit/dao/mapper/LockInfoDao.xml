@@ -66,12 +66,13 @@
       </where>
       ) au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
     </if>
-    ) li
-    left join camera_device cd on li.lock_code = cd.lock_code
-    left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
     <where>
       li.lock_id=#{lockId}
     </where>
+    ) li
+    left join camera_device cd on li.lock_code = cd.lock_code
+    left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
+
   </select>
 
   <select id="selectBylockCode" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -92,13 +93,13 @@
       </where>
       ) au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
     </if>
+    <where>
+      li.lock_code=#{lockCode}
+    </where>
     ) li
     left join camera_device cd on li.lock_code = cd.lock_code
     left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
-    <where>
-      li.lock_code=#{lockCode}
 
-    </where>
   </select>
 
 
@@ -148,13 +149,6 @@
       </where>
       ) au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
     </if>
-
-      <if test="page != null and page.current != null and  page.pageSize != null ">
-        limit #{page.current},#{page.pageSize}
-      </if>
-    ) li
-    left join camera_device cd on li.lock_code = cd.lock_code
-    left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
     <where>
       <if test="lockInfo.lockId != null">
         li.lock_id = #{lockInfo.lockId}
@@ -170,6 +164,13 @@
       </if>
     </where>
     order by updatetime desc
+      <if test="page != null and page.current != null and  page.pageSize != null ">
+        limit #{page.current},#{page.pageSize}
+      </if>
+    ) li
+    left join camera_device cd on li.lock_code = cd.lock_code
+    left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
+
 
   </select>
 
