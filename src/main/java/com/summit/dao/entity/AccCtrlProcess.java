@@ -12,7 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
-@JsonIgnoreProperties(value={"panoramaPic","facePanorama","facePic","faceMatch"})
+@JsonIgnoreProperties(value={"panoramaPicId","facePanoramaId","facePicId","faceMatchId"})
 @Data
 @AllArgsConstructor
 @TableName(value = "acc_ctrl_process")
