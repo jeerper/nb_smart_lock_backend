@@ -98,7 +98,7 @@
   </sql>
     <sql id="AccCtrl_Have_Alias_List">
         acp.acc_ctrl_pro_id, acp.access_control_id, acp.access_control_name, acp.device_id, acp.device_ip,
-        acp.lock_id, acp.lock_code,
+        acp.device_type, acp.lock_id, acp.lock_code,
         acp.user_id, acp.user_name, acp.gender, acp.birthday, acp.province, acp.city, acp.card_type, acp.card_id,
         acp.face_match_rate, acp.face_lib_name, acp.face_lib_type, acp.process_type, acp.process_result,
         acp.fail_reason, acp.panorama_pic_id, acp.face_panorama_id, acp.face_pic_id, acp.face_match_id,

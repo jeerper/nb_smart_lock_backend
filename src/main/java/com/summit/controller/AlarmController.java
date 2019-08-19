@@ -80,7 +80,7 @@ public class AlarmController {
         alarm.setAlarmStatus(alarmStatus);
         alarm.setProcessPerson(processPerson);
         alarm.setProcessRemark(processRemark);
-        alarm.setAlarmTime(new Date());
+        alarm.setUpdatetime(new Date());
         int result = alarmService.updateAlarm(alarm);
         if(result == CommonConstants.UPDATE_ERROR){
             log.error("更新告警状态失败");

@@ -27,6 +27,8 @@ public class AccCtrlProcess {
     private String deviceId;
     @TableField(value = "device_ip")
     private String deviceIp;
+    @TableField(value = "device_type")
+    private String deviceType;
     @TableField(value = "lock_id")
     private String lockId;
     @TableField(value = "lock_code")
