@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
+@ApiModel(value="人脸信息类", description="封装人脸信息")
 @Data
 @AllArgsConstructor
 @TableName(value = "face_info")
@@ -57,19 +59,19 @@ public class FaceInfoEntity {
 //    @TableField(value = "face_panorama_id")
 //    private String facePanoramaId;,readOnly = true
 
-    @ApiModelProperty(value="人脸全景图",name="facePanorama")
+    @ApiModelProperty(value="人脸全景图",name="facePanorama",hidden = true)
     private FileInfo facePanorama = new FileInfo();
 
 //    @TableField(value = "face_pic_id")
 //    private String facePicId;
 
-    @ApiModelProperty(value="人脸识别抠图",name="facePic")
+    @ApiModelProperty(value="人脸识别抠图",name="facePic",hidden = true)
     private FileInfo facePic = new FileInfo();
 
 //    @TableField(value = "face_match_id")
 //    private String faceMatchId;
 
-    @ApiModelProperty(value="人脸识别和人脸库中匹配的图片",name="faceMatch")
+    @ApiModelProperty(value="人脸识别和人脸库中匹配的图片",name="faceMatch",hidden = true)
     private FileInfo faceMatch = new FileInfo();
 
     @ApiModelProperty(value="摄像头ip地址",name="deviceIp")

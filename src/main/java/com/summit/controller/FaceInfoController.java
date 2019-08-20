@@ -11,6 +11,7 @@ import com.summit.dao.entity.FaceInfoEntity;
 import com.summit.dao.entity.FileInfo;
 import com.summit.service.FaceInfoService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
