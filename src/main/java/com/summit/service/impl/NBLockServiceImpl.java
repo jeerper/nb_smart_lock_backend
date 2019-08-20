@@ -35,14 +35,14 @@ public class NBLockServiceImpl {
      * @return RestfulEntityBySummit对象
      */
     public RestfulEntityBySummit toUnLock(LockRequest lockRequest) {
-        String terminalId = "";
+        String lockId = "";
         String terminalNum;
-        if(lockRequest == null || ((terminalNum = lockRequest.getTerminalNum()) == null && (terminalId = lockRequest.getTerminalId()) == null)
+        if(lockRequest == null || ((terminalNum = lockRequest.getTerminalNum()) == null && (lockId = lockRequest.getLockId()) == null)
                 || lockRequest.getOperName() == null){
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993 );
         }
         if(terminalNum == null){
-            LockInfo lockInfo = lockInfoService.selectLockById(terminalId);
+            LockInfo lockInfo = lockInfoService.selectLockById(lockId);
             lockRequest.setTerminalNum(lockInfo.getLockCode());
         }
         final BackLockInfo[] backLockInfos = {null};
@@ -61,6 +61,9 @@ public class NBLockServiceImpl {
                                 resultCode[0] = ResponseCodeEnum.CODE_9999;
                                 msg[0] = backLockInfo.getContent();
                             }
+                        }else{
+                            resultCode[0] = ResponseCodeEnum.CODE_9999;
+                            msg[0] = ResponseCodeEnum.CODE_9999.getMessage();
                         }
                         return null;
                     }
@@ -103,18 +106,19 @@ public class NBLockServiceImpl {
      * @return RestfulEntityBySummit对象
      */
     public RestfulEntityBySummit toQueryLockStatus(LockRequest lockRequest) {
-        String terminalId = "";
+        String lockId = "";
         String terminalNum;
-        if(lockRequest == null || ((terminalNum = lockRequest.getTerminalNum()) == null && (terminalId = lockRequest.getTerminalId()) == null)
+        if(lockRequest == null || ((terminalNum = lockRequest.getTerminalNum()) == null && (lockId = lockRequest.getLockId()) == null)
                 || lockRequest.getOperName() == null){
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993 );
         }
         if(terminalNum == null){
-            LockInfo lockInfo = lockInfoService.selectLockById(terminalId);
+            LockInfo lockInfo = lockInfoService.selectLockById(lockId);
             lockRequest.setTerminalNum(lockInfo.getLockCode());
         }
         final BackLockInfo[] queryBackLockInfo = {null};
         final ResponseCodeEnum[] resultCode = {ResponseCodeEnum.CODE_0000};
+        final String[] msg = {ResponseCodeEnum.CODE_0000.getMessage()};
 //        CountDownLatch count = new CountDownLatch(1);
         httpClient.nbLockService.queryLockStatus(lockRequest)
                 .flatMap(new Func1<BackLockInfo, Observable<BackLockInfo>>() {
@@ -122,6 +126,16 @@ public class NBLockServiceImpl {
                     public Observable<BackLockInfo> call(BackLockInfo backLockInfo) {
                         log.info("{}" , backLockInfo);
                         queryBackLockInfo[0] = backLockInfo;
+                        if(backLockInfo != null){
+                            String type = backLockInfo.getType();
+                            if(LcokProcessResultType.ERROR.getCode().equalsIgnoreCase(type)){
+                                resultCode[0] = ResponseCodeEnum.CODE_9999;
+                                msg[0] = backLockInfo.getContent();
+                            }
+                        }else{
+                            resultCode[0] = ResponseCodeEnum.CODE_9999;
+                            msg[0] = ResponseCodeEnum.CODE_9999.getMessage();
+                        }
                         return null;
                     }
                 }).onErrorResumeNext(new Func1<Throwable, Observable<BackLockInfo>>() {

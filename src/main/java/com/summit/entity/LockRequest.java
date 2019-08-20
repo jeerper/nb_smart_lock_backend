@@ -13,7 +13,7 @@ public class LockRequest {
     /**
      * 锁终端id
      */
-    private String terminalId;
+    private String lockId;
 
     /**
      * 锁终端标号
