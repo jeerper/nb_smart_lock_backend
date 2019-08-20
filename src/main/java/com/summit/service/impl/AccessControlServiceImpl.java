@@ -350,15 +350,15 @@ public class AccessControlServiceImpl implements AccessControlService {
             String newEntryCameraIp = accessControlInfo.getEntryCameraIp();
             AccCtrlProcess newEntryCameraAccCtrlProcess = new AccCtrlProcess();
             newEntryCameraAccCtrlProcess.setDeviceIp(newEntryCameraIp);
-            accCtrlProcessDao.update(newEntryCameraAccCtrlProcess,wrapper.eq("device_ip",oldEntryCameraIp));
+            accCtrlProcessDao.update(newEntryCameraAccCtrlProcess,new UpdateWrapper<AccCtrlProcess>().eq("device_ip",oldEntryCameraIp));
             AccCtrlProcess newExitAccCtrlProcess = new AccCtrlProcess();
             newExitAccCtrlProcess.setDeviceIp(accessControlInfo.getEntryCameraIp());
-            accCtrlProcessDao.update(newExitAccCtrlProcess,wrapper.eq("device_ip",oldExitCameraIp));
+            accCtrlProcessDao.update(newExitAccCtrlProcess,new UpdateWrapper<AccCtrlProcess>().eq("device_ip",oldExitCameraIp));
 
             //lockCode
             AccCtrlProcess newLockAccCtrlProcess = new AccCtrlProcess();
             newLockAccCtrlProcess.setLockCode(accessControlInfo.getLockCode());
-            accCtrlProcessDao.update(newLockAccCtrlProcess,wrapper.eq("lock_code",oldLockCode));
+            accCtrlProcessDao.update(newLockAccCtrlProcess,new UpdateWrapper<AccCtrlProcess>().eq("lock_code",oldLockCode));
 
             CameraDevice updateDevice = new CameraDevice();
             updateDevice.setDevId(accessControlInfo.getEntryCameraId());
