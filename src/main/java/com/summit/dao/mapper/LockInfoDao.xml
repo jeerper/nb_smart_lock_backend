@@ -159,6 +159,9 @@
       <if test="lockInfo.status != null">
         and li.status = #{lockInfo.status}
       </if>
+      <if test="lockInfo.createby != null">
+        and li.createby like concat('%', #{lockInfo.createby}, '%')
+      </if>
       <if test="lockInfo.updatetime != null">
         and li.updatetime = #{lockInfo.updatetime}
       </if>

@@ -41,18 +41,12 @@ public class LockInfo {
     @ApiModelProperty(hidden = true)
     @TableField(value = "createtime")
     private Date createtime;
-//    @ApiModelProperty(value="锁创建时间",name="createtimeStr",notes = "格式为yyyy-MM-dd HH:mm:ss")
-//    @TableField(exist = false)
-//    private String createtimeStr;
 
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     @ApiModelProperty(hidden = true)
     @TableField(value = "updatetime")
     private Date updatetime;
-//    @ApiModelProperty(value="锁更新时间",name="updatetimeStr",notes = "格式为yyyy-MM-dd HH:mm:ss")
-//    @TableField(exist = false)
-//    private String updatetimeStr;
 
     @ApiModelProperty(value="锁关联的摄像头列表,为null则json中不返回此字段",name="devices",hidden = true)
     @JsonInclude(JsonInclude.Include.NON_NULL)

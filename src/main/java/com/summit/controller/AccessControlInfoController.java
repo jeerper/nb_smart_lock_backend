@@ -168,16 +168,5 @@ public class AccessControlInfoController {
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询全部门禁信息成功", simpleAccCtrlInfos);
     }
 
-    private void filterAccCtrlInfo(Page<AccessControlInfo> controlInfoPage) {
-        if (controlInfoPage != null) {
-            List<AccessControlInfo> content = controlInfoPage.getContent();
-            if (content == null){
-                return;
-            }
-            for(AccessControlInfo acInfos : content) {
-                acInfos.setRoles(null);
-            }
-        }
-    }
 
 }
