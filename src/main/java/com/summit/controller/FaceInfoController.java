@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +39,8 @@ public class FaceInfoController {
     @PostMapping(value = "/insertFaceInfo")
     public RestfulEntityBySummit<Integer> insertFaceInfo(@ApiParam(value = "人脸信息参数") FaceInfoEntity faceInfoEntity,
                                                          @ApiParam(value = "人脸全景图") MultipartFile facePanorama,
-                                                         @ApiParam(value = "人脸识别抠图") MultipartFile facePic) {
+                                                         @ApiParam(value = "人脸识别抠图") MultipartFile facePic,
+                                                         @ApiParam(value = "人脸识别和人脸库中匹配的图片") MultipartFile faceMatch) {
         if(faceInfoEntity == null){
             log.error("人脸信息为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"人脸信息为空", CommonConstants.UPDATE_ERROR);
@@ -109,9 +111,13 @@ public class FaceInfoController {
         faceInfoEntity.setFacePanorama(facePanoramaFile);
         faceInfoEntity.setFacePic(facePicFile);
 
-        if(faceInfoService.insertFaceInfo(faceInfoEntity) == CommonConstants.UPDATE_ERROR)
+        try {
+            faceInfoService.insertFaceInfo(faceInfoEntity);
+        } catch (Exception e) {
+            log.error("录入人脸信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"录入人脸信息失败", CommonConstants.UPDATE_ERROR);
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"录入人脸信息成功", CommonConstants.UPDATE_SUS);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"录入人脸信息成功", 0);
     }
 
 
