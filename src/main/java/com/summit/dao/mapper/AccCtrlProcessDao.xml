@@ -28,6 +28,9 @@
     <result column="face_panorama_id" jdbcType="VARCHAR" property="facePanoramaId" />
     <result column="face_pic_id" jdbcType="VARCHAR" property="facePicId" />
     <result column="face_match_id" jdbcType="VARCHAR" property="faceMatchId" />
+    <result column="fi1_path" jdbcType="VARCHAR" property="facePanoramaUrl" />
+    <result column="fi2_path" jdbcType="VARCHAR" property="facePicUrl" />
+    <result column="fi3_path" jdbcType="VARCHAR" property="faceMatchUrl" />
     <result column="process_time" jdbcType="TIMESTAMP" property="processTime" />
 
     <association property="accessControlInfo" javaType="com.summit.dao.entity.AccessControlInfo">

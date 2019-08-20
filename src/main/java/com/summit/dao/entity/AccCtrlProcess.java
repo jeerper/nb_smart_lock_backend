@@ -95,18 +95,31 @@ public class AccCtrlProcess {
     @TableField(value = "fail_reason")
     private String failReason;
 
-    @ApiModelProperty(value="全景图片id",name="panoramaPicId")
+    @ApiModelProperty(hidden = true)
     @TableField(value = "panorama_pic_id")
     private String panoramaPicId;
-    @ApiModelProperty(value="人脸识别全景图id",name="facePanoramaId")
+    @ApiModelProperty(hidden = true)
     @TableField(value = "face_panorama_id")
     private String facePanoramaId;
-    @ApiModelProperty(value="人脸识别抠图id",name="facePicId")
+    @ApiModelProperty(hidden = true)
     @TableField(value = "face_pic_id")
     private String facePicId;
-    @ApiModelProperty(value="人脸识别和人脸库中匹配的图片id",name="faceMatchId")
+    @ApiModelProperty(hidden = true)
     @TableField(value = "face_match_id")
     private String faceMatchId;
+
+    @ApiModelProperty(value="全景图片Url",name="panoramaPicUrl")
+    @TableField(exist = false)
+    private String panoramaPicUrl;
+    @ApiModelProperty(value="人脸识别全景图Url",name="facePanoramaUrl")
+    @TableField(exist = false)
+    private String facePanoramaUrl;
+    @ApiModelProperty(value="人脸识别抠图Url",name="facePicUrl")
+    @TableField(exist = false)
+    private String facePicUrl;
+    @ApiModelProperty(value="人脸识别和人脸库中匹配的图片Url",name="faceMatchUrl")
+    @TableField(exist = false)
+    private String faceMatchUrl;
 
 
     @TableField(exist = false)
