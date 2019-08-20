@@ -417,16 +417,17 @@ public class AccessControlServiceImpl implements AccessControlService {
                 accCtrlProIds.add(accCtrlProId);
             }
         }
-
-        List<Alarm> alarms = alarmDao.selectAlarmsByAccCtrlProIds(accCtrlProIds);
-        if(alarms != null){
-            for(Alarm alarm : alarms) {
-                if(alarm == null)
-                    continue;
-                String alarmId = alarm.getAlarmId();
-                if(alarmId == null)
-                    continue;
-                alarmIds.add(alarmId);
+        if(!accCtrlProIds.isEmpty()){
+            List<Alarm> alarms = alarmDao.selectAlarmsByAccCtrlProIds(accCtrlProIds);
+            if(alarms != null){
+                for(Alarm alarm : alarms) {
+                    if(alarm == null)
+                        continue;
+                    String alarmId = alarm.getAlarmId();
+                    if(alarmId == null)
+                        continue;
+                    alarmIds.add(alarmId);
+                }
             }
         }
 
