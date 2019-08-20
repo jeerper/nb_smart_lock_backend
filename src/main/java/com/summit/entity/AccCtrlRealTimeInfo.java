@@ -51,7 +51,7 @@ public class AccCtrlRealTimeInfo {
     private String userId;
     @ApiModelProperty(value="姓名",name="name")
     private String name;
-    @ApiModelProperty(value="性别",name="gender")
+    @ApiModelProperty(value="性别。0男，1女，2未知",name="gender")
     private Integer gender;
     @ApiModelProperty(value="生日",name="birthday")
     private String birthday;
@@ -59,7 +59,7 @@ public class AccCtrlRealTimeInfo {
     private String province;
     @ApiModelProperty(value="城市",name="city")
     private String city;
-    @ApiModelProperty(value="证件类型",name="cardType")
+    @ApiModelProperty(value="证件类型，0：身份证，1：护照，2：军官证，3：驾驶证，4：其他",name="cardType")
     private Integer cardType;
     @ApiModelProperty(value="证件id",name="cardId")
     private String cardId;
@@ -67,7 +67,7 @@ public class AccCtrlRealTimeInfo {
     private Float faceMatchRate;
     @ApiModelProperty(value="人脸库名称",name="faceLibName")
     private String faceLibName;
-    @ApiModelProperty(value="人脸库类型",name="faceLibType")
+    @ApiModelProperty(value="人脸库类型，0：未知，1：黑名单，2：白名单，3：报警",name="faceLibType")
     private Integer faceLibType;
 
     @ApiModelProperty(value="全景图url",name="facePanoramaUrl")
