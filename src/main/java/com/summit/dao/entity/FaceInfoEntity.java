@@ -44,17 +44,17 @@ public class FaceInfoEntity {
 //    @TableField(value = "face_panorama_id")
 //    private String facePanoramaId;
 
-    private FileInfo facePanorama;
+    private FileInfo facePanorama = new FileInfo();
 
 //    @TableField(value = "face_pic_id")
 //    private String facePicId;
 
-    private FileInfo facePic;
+    private FileInfo facePic = new FileInfo();
 
 //    @TableField(value = "face_match_id")
 //    private String faceMatchId;
 
-    private FileInfo faceMatch;
+    private FileInfo faceMatch = new FileInfo();
 
     @TableField(value = "device_ip")
     private String deviceIp;

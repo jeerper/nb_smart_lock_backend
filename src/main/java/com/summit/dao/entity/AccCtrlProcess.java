@@ -16,7 +16,7 @@ import java.util.Date;
 
 @Data
 @ApiModel(value="门禁操作记录类", description="封装门禁操作记录信息")
-@JsonIgnoreProperties(value={"panoramaPicId","facePanoramaId","facePicId","faceMatchId"})
+@JsonIgnoreProperties(value={"panoramaPicId","facePanoramaId","facePicId","faceMatchId","panoramaPic"})
 @AllArgsConstructor
 @TableName(value = "acc_ctrl_process")
 public class AccCtrlProcess {
@@ -110,13 +110,13 @@ public class AccCtrlProcess {
 
 
     @TableField(exist = false)
-    private FileInfo panoramaPic;
+    private FileInfo panoramaPic = new FileInfo();
     @TableField(exist = false)
-    private FileInfo facePanorama;
+    private FileInfo facePanorama = new FileInfo();
     @TableField(exist = false)
-    private FileInfo facePic;
+    private FileInfo facePic = new FileInfo();
     @TableField(exist = false)
-    private FileInfo faceMatch;
+    private FileInfo faceMatch = new FileInfo();
 
     @ApiModelProperty(value="操作时间",name="facePicId")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")

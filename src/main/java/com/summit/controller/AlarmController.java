@@ -36,26 +36,6 @@ public class AlarmController {
     @Autowired
     private AlarmService alarmService;
 
-//    @ApiOperation(value = "更新门禁告警信息", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间若为空则取当前时间")
-//    @PutMapping(value = "/updateAlarm")
-//    public RestfulEntityBySummit<String> updateAlarm(@ApiParam(value = "门禁告警各字段", required = true) Alarm alarm) {
-//        if(alarm == null){
-//            log.error("告警信息为空");
-//            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警信息为空",null);
-//        }
-//        if(alarm.getAlarmId() == null && alarm.getAccCtrlProId() == null){
-//            log.error("alarmId和processId不能同时为空");
-//            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"alarmId和processId不能同时为空",null);
-//        }
-//        int result = alarmService.updateAlarm(alarm);
-//        if(result == CommonConstants.UPDATE_ERROR){
-//            log.error("更新告警信息失败");
-//            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"告警信息为空",null);
-//        }
-//        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新告警信息成功",null);
-//    }
-
-
     @ApiOperation(value = "更新门禁告警状态", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间取当前时间")
     @PutMapping(value = "/updateAlarmStatus")
         public RestfulEntityBySummit<String> updateAlarmStatus(@ApiParam(value = "门禁告警状态", required = true) @RequestParam(value = "alarmStatus") Integer alarmStatus,
@@ -132,7 +112,6 @@ public class AlarmController {
         Alarm alarm = null;
         try {
             alarm = alarmService.selectAlarmById(alarmId);
-//            filterInfo(alarm);
         } catch (Exception e) {
             log.error("根据告警id查询告警信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"根据告警id查询告警信息失败", alarm);
@@ -161,7 +140,6 @@ public class AlarmController {
                 alarm.setAccessControlName(accessControlName);
             alarm.setAlarmStatus(alarmStatus);
             alarms = alarmService.selectAlarmConditionByPage(alarm, start, end, new SimplePage(current,pageSize));
-//            filterInfo(alarms);
         } catch (Exception e) {
             log.error("条件查询告警信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"条件查询告警信息失败", alarms);
@@ -169,40 +147,4 @@ public class AlarmController {
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"条件查询告警信息成功", alarms);
     }
 
-    /**
-     * 过滤门禁关联的用户角色等敏感信息
-     * @param alarm 待过滤告警对象
-     */
-    private void filterInfo(Alarm alarm){
-        if(alarm == null)
-            return;
-        AccCtrlProcess accCtrlProcess = alarm.getAccCtrlProcess();
-        if(accCtrlProcess != null){
-            AccessControlInfo accessControlInfo = accCtrlProcess.getAccessControlInfo();
-            if(accessControlInfo != null){
-                accessControlInfo.setRoles(null);
-            }
-        }
-    }
-
-    /**
-     * 过滤门禁关联的用户角色等敏感信息
-     * @param alarmsPage 待过滤告警分页列表对象
-     */
-    private void filterInfo(Page<Alarm> alarmsPage) {
-        if(alarmsPage == null)
-            return;
-        List<Alarm> content = alarmsPage.getContent();
-        if(content == null)
-            return;
-        for (Alarm alarm : content){
-            AccCtrlProcess accCtrlProcess = alarm.getAccCtrlProcess();
-            if(accCtrlProcess != null){
-                AccessControlInfo accessControlInfo = accCtrlProcess.getAccessControlInfo();
-                if(accessControlInfo != null){
-                    accessControlInfo.setRoles(null);
-                }
-            }
-        }
-    }
 }
