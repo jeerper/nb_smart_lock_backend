@@ -352,7 +352,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             newEntryCameraAccCtrlProcess.setDeviceIp(newEntryCameraIp);
             accCtrlProcessDao.update(newEntryCameraAccCtrlProcess,new UpdateWrapper<AccCtrlProcess>().eq("device_ip",oldEntryCameraIp));
             AccCtrlProcess newExitAccCtrlProcess = new AccCtrlProcess();
-            newExitAccCtrlProcess.setDeviceIp(accessControlInfo.getEntryCameraIp());
+            newExitAccCtrlProcess.setDeviceIp(accessControlInfo.getExitCameraIp());
             accCtrlProcessDao.update(newExitAccCtrlProcess,new UpdateWrapper<AccCtrlProcess>().eq("device_ip",oldExitCameraIp));
 
             //lockCode
