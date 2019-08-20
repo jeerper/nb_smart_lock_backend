@@ -16,9 +16,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 import java.util.List;
 
-@JsonIgnoreProperties(value={"roles"})
+
 @Data
 @AllArgsConstructor
+@JsonIgnoreProperties(value={"roles"})
 @TableName(value = "access_control")
 @ApiModel(value="门禁信息类", description="封装门禁信息")
 public class AccessControlInfo {

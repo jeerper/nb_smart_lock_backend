@@ -16,9 +16,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 import java.util.List;
 
-@JsonIgnoreProperties(value={"devices","roles"})
 @Data
 @AllArgsConstructor
+@JsonIgnoreProperties(value={"devices","roles"})
 @TableName(value = "lock_info")
 @ApiModel(value="锁信息类", description="封装锁信息")
 public class LockInfo {

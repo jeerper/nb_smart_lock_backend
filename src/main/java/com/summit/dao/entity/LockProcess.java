@@ -12,9 +12,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
-@JsonIgnoreProperties(value={"facePanoramaId","facePicId","faceMatchId"})
 @Data
 @AllArgsConstructor
+@JsonIgnoreProperties(value={"facePanoramaId","facePicId","faceMatchId"})
 @TableName(value = "lock_process")
 public class LockProcess {
     @TableId(value = "process_id", type = IdType.ID_WORKER_STR)

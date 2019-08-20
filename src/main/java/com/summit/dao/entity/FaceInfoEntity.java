@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -13,9 +14,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
-@ApiModel(value="人脸信息类", description="封装人脸信息")
 @Data
 @AllArgsConstructor
+@ApiModel(value="人脸信息类", description="封装人脸信息")
+@JsonIgnoreProperties(value={"facePanorama", "facePic", "faceMatch"})
 @TableName(value = "face_info")
 public class FaceInfoEntity {
     @ApiModelProperty(value="人脸id ",name="faceId")
@@ -57,7 +59,7 @@ public class FaceInfoEntity {
     @TableField(value = "face_lib_type")
     private Integer faceLibType;
 //    @TableField(value = "face_panorama_id")
-//    private String facePanoramaId;,readOnly = true
+//    private String facePanoramaId;
 
     @ApiModelProperty(value="人脸全景图",name="facePanorama",hidden = true)
     private FileInfo facePanorama = new FileInfo();

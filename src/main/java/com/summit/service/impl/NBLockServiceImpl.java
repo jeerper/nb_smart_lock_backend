@@ -8,6 +8,7 @@ import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.entity.ReportParam;
 import com.summit.entity.SafeReportInfo;
+import com.summit.sdk.huawei.model.LcokProcessResultType;
 import com.summit.service.LockInfoService;
 import com.summit.util.HttpClient;
 import lombok.extern.slf4j.Slf4j;
@@ -46,12 +47,21 @@ public class NBLockServiceImpl {
         }
         final BackLockInfo[] backLockInfos = {null};
         final ResponseCodeEnum[] resultCode = {ResponseCodeEnum.CODE_0000};
+        final String[] msg = {ResponseCodeEnum.CODE_0000.getMessage()};
         httpClient.nbLockService.unLock(lockRequest)
                 .flatMap(new Func1<BackLockInfo, Observable<BackLockInfo>>() {
                     @Override
                     public Observable<BackLockInfo> call(BackLockInfo backLockInfo) {
                         log.info("{}" , backLockInfo);
                         backLockInfos[0] = backLockInfo;
+
+                        if(backLockInfo != null){
+                            String type = backLockInfo.getType();
+                            if(LcokProcessResultType.ERROR.getCode().equalsIgnoreCase(type)){
+                                resultCode[0] = ResponseCodeEnum.CODE_9999;
+                                msg[0] = backLockInfo.getContent();
+                            }
+                        }
                         return null;
                     }
                 }).onErrorResumeNext(new Func1<Throwable, Observable<BackLockInfo>>() {
@@ -84,7 +94,7 @@ public class NBLockServiceImpl {
                 log.debug("onNext");
             }
         });
-        return ResultBuilder.buildError(resultCode[0] ,backLockInfos[0]);
+        return ResultBuilder.buildError(resultCode[0] ,msg[0], backLockInfos[0]);
     }
 
     /**
