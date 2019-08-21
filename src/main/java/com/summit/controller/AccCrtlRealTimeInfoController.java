@@ -106,7 +106,6 @@ public class AccCrtlRealTimeInfoController {
                 }
                 //取最新的一条操作记录(dao sql已排好序)
                 AccCtrlProcess accCtrlProcess = accCtrlProcesses.get(0);
-
                 if(accCtrlProcess != null){
                     String userName = accCtrlProcess.getUserName();
                     //门禁记录中操作的具体摄像头
