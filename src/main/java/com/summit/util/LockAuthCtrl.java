@@ -39,7 +39,7 @@ public class LockAuthCtrl {
         if (uerInfo != null) {
             rolesList = Arrays.asList(uerInfo.getRoles());
         } else {
-            rolesList = Arrays.asList("ROLE_1489581392504","ROLE_1565148602817","ROLE_SUPERUSER");
+            rolesList = Arrays.asList("ROLE_1489581392504","ROLE_1565148602817","ROLE_SUPERUSERxx");
         }
         if(rolesList.contains("ROLE_SUPERUSER")){
             rolesList = null;
