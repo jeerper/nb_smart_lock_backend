@@ -20,6 +20,14 @@ public class SeTest {
         System.out.println(obj);
     }
     @Test
+    public void testxx(){
+        if(null instanceof String){
+            System.out.println("未空指针");
+        }
+
+
+    }
+    @Test
     public void testDate() throws ParseException {
         String time = "2019-08-16T05:55:59.689Z";
         Date parse = CommonConstants.frontTimeFormat.parse(time);
@@ -39,7 +47,8 @@ public class SeTest {
     public void test3(){
         String[] strs = {"1", "3", "5", "4"};
         List<String> ints = Arrays.asList(strs);
-        List<String> subList = ints.subList(0, 2);
+        //从下标到下标而不是从下标开始多少长度
+        List<String> subList = ints.subList(1, 2);
         System.out.println(subList);
     }
 

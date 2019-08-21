@@ -54,17 +54,17 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
             return CommonConstants.UPDATE_ERROR;
         }
         FileInfo facePanorama = accCtrlProcess.getFacePanorama();
-        if(facePanorama != null){
+        if(facePanorama != null && facePanorama.getFilePath() != null){
             fileInfoDao.insert(facePanorama);
             accCtrlProcess.setFacePanoramaId(facePanorama.getFileId());
         }
         FileInfo facePic = accCtrlProcess.getFacePic();
-        if(facePic != null) {
+        if(facePic != null && facePic.getFilePath() != null) {
             fileInfoDao.insert(facePic);
             accCtrlProcess.setFacePicId(facePic.getFileId());
         }
         FileInfo faceMatch = accCtrlProcess.getFaceMatch();
-        if(faceMatch != null) {
+        if(faceMatch != null && faceMatch.getFilePath() != null) {
             fileInfoDao.insert(faceMatch);
             accCtrlProcess.setFaceMatchId(faceMatch.getFileId());
         }

@@ -29,7 +29,7 @@ public class BackLockInfo {
     /**
      * 锁状态
      */
-    private String objx;
+    private Integer objx;
 
     /**
      * 操作时间

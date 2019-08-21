@@ -47,6 +47,7 @@ public class NBLockServiceImpl {
         }
         final BackLockInfo[] backLockInfos = {null};
         final ResponseCodeEnum[] resultCode = {ResponseCodeEnum.CODE_0000};
+        ResponseCodeEnum resultCodeEnum = ResponseCodeEnum.CODE_0000;
         final String[] msg = {ResponseCodeEnum.CODE_0000.getMessage()};
         httpClient.nbLockService.unLock(lockRequest)
                 .flatMap(new Func1<BackLockInfo, Observable<BackLockInfo>>() {

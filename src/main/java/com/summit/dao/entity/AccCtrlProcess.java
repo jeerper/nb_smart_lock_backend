@@ -141,6 +141,10 @@ public class AccCtrlProcess {
     @TableField(value = "process_time")
     private Date processTime;
 
+    @ApiModelProperty(value="操作方式，1：刷脸操作，2：接口操作",name="processMethod")
+    @TableField(value = "process_method")
+    private Integer processMethod;
+
     public AccCtrlProcess(){}
 }
 

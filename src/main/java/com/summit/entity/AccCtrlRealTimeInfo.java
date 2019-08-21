@@ -35,6 +35,8 @@ public class AccCtrlRealTimeInfo {
     private String devId;
     @ApiModelProperty(value="摄像头ip地址",name="deviceIp")
     private String deviceIp;
+    @ApiModelProperty(value="摄像头类型",name="deviceType")
+    private String deviceType;
     //0正常，1异常
 //    @ApiModelProperty(value="摄像头状态",name="deviceStatus",notes = "0正常，1异常")
 //    private Integer deviceStatus;

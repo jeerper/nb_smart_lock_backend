@@ -32,6 +32,7 @@
     <result column="fi2_path" jdbcType="VARCHAR" property="facePicUrl" />
     <result column="fi3_path" jdbcType="VARCHAR" property="faceMatchUrl" />
     <result column="process_time" jdbcType="TIMESTAMP" property="processTime" />
+    <result column="process_method" jdbcType="TIMESTAMP" property="processMethod" />
 
     <association property="accessControlInfo" javaType="com.summit.dao.entity.AccessControlInfo">
       <result column="ac_access_control_id" jdbcType="VARCHAR" property="accessControlId" />
@@ -82,14 +83,14 @@
     acc_ctrl_pro_id, access_control_id, access_control_name, device_id, device_ip, device_type,
     lock_id,lock_code, user_id, user_name, gender, birthday, province, city,
     card_type, card_id, face_match_rate, face_lib_name, face_lib_type,process_type, process_result,fail_reason,
-    panorama_pic_id, face_panorama_id, face_pic_id, face_match_id, process_time
+    panorama_pic_id, face_panorama_id, face_pic_id, face_match_id, process_time, process_method
   </sql>
   <sql id="AccCtrl_Have_Alias_List">
     acp.acc_ctrl_pro_id, acp.access_control_id, acp.access_control_name, acp.device_id, acp.device_ip, acp.device_type,
     acp.lock_id, acp.lock_code,
     acp.user_id, acp.user_name, acp.gender, acp.birthday, acp.province, acp.city, acp.card_type, acp.card_id,
     acp.face_match_rate, acp.face_lib_name, acp.face_lib_type, acp.process_type, acp.process_result,acp.fail_reason,
-    acp.panorama_pic_id, acp.face_panorama_id, acp.face_pic_id, acp.face_match_id, acp.process_time
+    acp.panorama_pic_id, acp.face_panorama_id, acp.face_pic_id, acp.face_match_id, acp.process_time, acp.process_method
   </sql>
   <sql id="AccCtrlInfo_Have_Alias_List">
     ac.access_control_id ac_access_control_id, ac.access_control_name ac_access_control_name,

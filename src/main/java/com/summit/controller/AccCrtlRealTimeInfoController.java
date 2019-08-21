@@ -35,7 +35,7 @@ import java.util.Map;
 @Api(tags = "门禁实时信息接口")
 @RestController
 @RequestMapping("/accCtrlRealTimeInfo")
-public class LockRealTimeInfoController {
+public class AccCrtlRealTimeInfoController {
 
 //    @Autowired
 //    private LockRecordService lockRecordService;
@@ -109,6 +109,7 @@ public class LockRealTimeInfoController {
                     String userName = accCtrlProcess.getUserName();
                     //门禁记录中操作的具体摄像头
                     accCtrlRealTimeInfo.setDeviceIp(accCtrlProcess.getDeviceIp());
+                    accCtrlRealTimeInfo.setDeviceType(accCtrlProcess.getDeviceType());
                     accCtrlRealTimeInfo.setName(userName);
 
                     accCtrlRealTimeInfo.setGender(accCtrlProcess.getGender());

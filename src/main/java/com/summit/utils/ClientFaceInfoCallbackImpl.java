@@ -3,6 +3,8 @@ package com.summit.utils;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.system.SystemUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.MainAction;
 
 import com.summit.common.entity.RestfulEntityBySummit;
@@ -14,6 +16,8 @@ import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.LockProcess;
+import com.summit.dao.repository.AccessControlDao;
+import com.summit.dao.repository.LockInfoDao;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.sdk.huawei.callback.ClientFaceInfoCallback;
@@ -22,6 +26,7 @@ import com.summit.sdk.huawei.model.AlarmStatus;
 import com.summit.sdk.huawei.model.FaceInfo;
 import com.summit.sdk.huawei.model.FaceLibType;
 import com.summit.sdk.huawei.model.LcokProcessResultType;
+import com.summit.sdk.huawei.model.LockProcessMethod;
 import com.summit.sdk.huawei.model.LockProcessType;
 import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.service.AccCtrlProcessService;
@@ -57,6 +62,10 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
     private AccCtrlProcessService accCtrlProcessService;
     @Autowired
     private AccessControlService accessControlService;
+    @Autowired
+    private AccessControlDao accessControlDao;
+    @Autowired
+    private LockInfoDao lockInfoDao;
 
 
     @Override
@@ -147,20 +156,45 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                     if(cameraDevice != null) {
                         String lockCode = cameraDevice.getLockCode();
                         if (lockCode != null) {
-                            RestfulEntityBySummit result = unLockService.toUnLock(new LockRequest(null,lockCode, faceInfo.getName()));
+                            LockRequest lockRequest = new LockRequest(null, lockCode, faceInfo.getName());
+                            RestfulEntityBySummit result = unLockService.toUnLock(lockRequest);
                             BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
                             if(backLockInfo != null){
                                 String backLockInfoType = backLockInfo.getType();
                                 String content = backLockInfo.getContent();
                                 log.debug("rmid={},type={},content={},objx={},time={}",
                                         backLockInfo.getRmid(), backLockInfoType, content, backLockInfo.getObjx(), backLockInfo.getTime());
-                                processResult = backLockInfoType;
-                                if(!LcokProcessResultType.SUCCESS.getCode().equals(backLockInfoType)){
+
+                                if(LcokProcessResultType.SUCCESS.getCode().equalsIgnoreCase(backLockInfoType)){
+                                    //查询调用查询锁状态接口，若查到状态变为开锁，则改变锁、门禁状态为打开，否则不改变状态
+                                    Integer status = getLockStatus(lockRequest);
+                                    if(status != null){
+                                        if(status == LockStatus.UNLOCK.getCode()){
+                                            processResult = backLockInfoType;
+                                        }else if(status == LockStatus.LOCK_CLOSED.getCode()){
+                                            processResult = LcokProcessResultType.ERROR.getCode();
+                                            failReason = "未知";
+                                        }
+                                        toUpdateAccCtrlAndLockStatus(status,lockCode);
+                                    }
+                                }else{
+                                    processResult = backLockInfoType;
                                     failReason = content;
                                 }
                             }else{
                                 log.error("开锁时返回记录为空");
                                 failReason = "开锁时返回记录为空";
+                                //TODO  查询调用查询锁状态接口，根据查到状态改变锁和门禁状态，
+                                Integer status = getLockStatus(lockRequest);
+                                if(status != null ){
+                                    if(status == LockStatus.UNLOCK.getCode()){
+                                        processResult = LcokProcessResultType.SUCCESS.getCode();
+                                    }else if(status == LockStatus.LOCK_CLOSED.getCode()){
+                                        processResult = LcokProcessResultType.ERROR.getCode();
+                                        failReason = "未知";
+                                    }
+                                    toUpdateAccCtrlAndLockStatus(status,lockCode);
+                                }
                             }
                         }else{
                             log.error("没有找到ip地址为{}的摄像头对应的锁编号",deviceIp);
@@ -174,13 +208,6 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                 }
                 FileUtil.writeBytes(faceInfo.getFacePanorama(), picturePathFacePanorama);
                 FileUtil.writeBytes(faceInfo.getFacePic(), picturePathFacePic);
-
-//                LockProcess lockProcess = getLockProcess(faceInfo, type, facePanoramaFile, facePicFile, processResult, failReason);
-//                if (lockRecordService.insertLockProcess(lockProcess) != CommonConstants.UPDATE_ERROR) {
-//                    log.info("锁操作记录信息入库成功");
-//                } else {
-//                    log.error("锁操作记录信息入库失败");
-//                }
 
                 AccCtrlProcess accCtrlProcess = getAccCtrlProcess(faceInfo, type, facePanoramaFile, facePicFile, processResult, failReason);
                 if(accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess) != CommonConstants.UPDATE_ERROR){
@@ -205,6 +232,43 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
     }
 
     /**
+     * 根据开锁操作返回状态更新相应门禁和锁状态
+     * @param status 开锁操作返回状态
+     * @param lockCode 当前摄像头对应锁编号
+     */
+    private void toUpdateAccCtrlAndLockStatus(Integer status, String lockCode) {
+        AccCtrlStatus accCtrlStatus =  AccCtrlStatus.codeOf(status);
+        LockStatus lockStatus = LockStatus.codeOf(status);
+        //状态不合法则不更新
+        if(accCtrlStatus != null){
+            AccessControlInfo accessControlInfo = new AccessControlInfo();
+            accessControlInfo.setStatus(status);
+            //直接根据锁编号更新门禁状态
+            accessControlDao.update(accessControlInfo, new UpdateWrapper<AccessControlInfo>().eq("lock_code", lockCode));
+        }
+        //状态不合法则不更新
+        if(lockStatus != null){
+            LockInfo lockInfo = new LockInfo();
+            lockInfo.setStatus(lockStatus.getCode());
+            lockInfoDao.update(lockInfo, new UpdateWrapper<LockInfo>().eq("lock_code", lockCode));
+        }
+    }
+
+    /**
+     * 查询开锁状态
+     * @param lockRequest 请求参数
+     * @return 开锁状态
+     */
+    private Integer getLockStatus(LockRequest lockRequest) {
+        RestfulEntityBySummit back = unLockService.toQueryLockStatus(lockRequest);
+        Object backData = back.getData();
+        if((backData instanceof BackLockInfo)){
+            return ((BackLockInfo) backData).getObjx();
+        }
+        return null;
+    }
+
+    /**
      * 根据人脸识别结果信息及其他信息组装需要入库的门禁操作记录信息
      * @param faceInfo 识别的人脸信息
      * @param type 人脸识别结果类型
@@ -218,6 +282,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         String deviceIp = faceInfo.getDeviceIp();
         accCtrlProcess.setDeviceIp(deviceIp);
+        accCtrlProcess.setProcessMethod(LockProcessMethod.FACE_RECOGNITION.getCode());
         //先设一默认值防止报错
         accCtrlProcess.setLockCode("");
         accCtrlProcess.setUserName(faceInfo.getName());
@@ -270,20 +335,20 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             accessControlInfo.setUpdatetime(picSnapshotTime == null ? null : picSnapshotTime.toJdkDate());
         }
         if("Unlock".equals(type)){
-            accessControlInfo.setStatus(AccCtrlStatus.UNLOCK.getCode());
+            accessControlInfo.setStatus(AccCtrlStatus.OPEN.getCode());
             accCtrlProcess.setProcessType(LockProcessType.UNLOCK.getCode());
             accCtrlProcess.setProcessResult(processResult);
             //刷脸成功后开锁操作也有可能失败,成功则failReason=null
             accCtrlProcess.setFailReason(failReason);
         }else if("Alarm".equals(type)){
-            accessControlInfo.setStatus(AccCtrlStatus.LOCK_ALARM.getCode());
+            accessControlInfo.setStatus(AccCtrlStatus.ALARM.getCode());
             accCtrlProcess.setProcessType(LockProcessType.LOCK_ALARM.getCode());
             accCtrlProcess.setProcessResult(LcokProcessResultType.ERROR.getCode());
             accCtrlProcess.setFailReason("匹配度过低");
 
         }else{
             //关锁
-            accessControlInfo.setStatus(AccCtrlStatus.LOCK_CLOSED.getCode());
+            accessControlInfo.setStatus(AccCtrlStatus.CLOSED.getCode());
             accCtrlProcess.setProcessType(LockProcessType.CLOSE_LOCK.getCode());
             accCtrlProcess.setProcessResult("success");
         }
@@ -305,75 +370,5 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
         alarm.setUpdatetime(new Date());
         return alarm;
     }
-
-    /**
-     * 根据人脸识别结果信息及其他信息组装需要入库的锁操作信息
-     * @param faceInfo 识别的人脸信息
-     * @param type 人脸识别结果类型
-     * @param facePanoramaFile 人脸全景图对象
-     * @param facePicFile 人脸识别抠图对象
-     * @param processResult 锁操作结果返回码
-     * @param failReason 人脸识别或锁操作识别原因
-     * @return 组装好的锁操作记录信息对象
-     */
-    private LockProcess getLockProcess(FaceInfo faceInfo, String type, FileInfo facePanoramaFile, FileInfo facePicFile, String processResult,String failReason) {
-        LockProcess lockProcess = new LockProcess();
-        String deviceIp = faceInfo.getDeviceIp();
-        lockProcess.setDeviceIp(deviceIp);
-        lockProcess.setUserName(faceInfo.getName());
-        if(faceInfo.getGender() != null)
-            lockProcess.setGender(faceInfo.getGender().getGenderCode());
-        try {
-            if(faceInfo.getBirthday() != null)
-                lockProcess.setBirthday(CommonConstants.dateFormat.parse(faceInfo.getBirthday()));
-        } catch (ParseException e) {
-            log.error("生日格式有误");
-        }
-        lockProcess.setProvince(faceInfo.getProvince());
-        lockProcess.setCity(faceInfo.getCity());
-        if(faceInfo.getCardType() != null)
-            lockProcess.setCardType(faceInfo.getCardType().getCardTypeCode());
-        lockProcess.setCardId(faceInfo.getCardId());
-        lockProcess.setFaceMatchRate(faceInfo.getFaceMatchRate());
-        lockProcess.setFaceLibName(faceInfo.getFaceLibName());
-        if(faceInfo.getFaceLibType() != null)
-            lockProcess.setFaceLibType(faceInfo.getFaceLibType().getFaceLibTypeCode());
-        lockProcess.setFacePanorama(facePanoramaFile);
-        lockProcess.setFacePic(facePicFile);
-        DateTime picSnapshotTime = faceInfo.getPicSnapshotTime();
-        lockProcess.setProcessTime(picSnapshotTime);
-        LockInfo lockInfo = new LockInfo();
-        CameraDevice device = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
-
-        if(device != null){
-            String lockCode = device.getLockCode();
-            lockProcess.setLockCode(lockCode);
-            lockInfo.setLockCode(lockCode);
-
-            lockInfo.setUpdatetime(picSnapshotTime == null ? null : picSnapshotTime.toJdkDate());
-        }
-        if("Unlock".equals(type)){
-            lockInfo.setStatus(LockStatus.UNLOCK.getCode());
-            lockProcess.setProcessType(LockProcessType.UNLOCK.getCode());
-            lockProcess.setProcessResult(processResult);
-            //刷脸成功后开锁操作也有可能失败,成功则failReason=null
-            lockProcess.setFailReason(failReason);
-        }else if("Alarm".equals(type)){
-            lockInfo.setStatus(LockStatus.LOCK_ALARM.getCode());
-            lockProcess.setProcessType(LockProcessType.LOCK_ALARM.getCode());
-            lockProcess.setProcessResult(LcokProcessResultType.ERROR.getCode());
-            lockProcess.setFailReason("匹配度过低");
-
-        }else{
-            //关锁
-            lockProcess.setProcessType(LockProcessType.CLOSE_LOCK.getCode());
-            lockProcess.setProcessResult("success");
-            lockInfo.setStatus(LockStatus.LOCK_CLOSED.getCode());
-
-        }
-        lockProcess.setLockInfo(lockInfo);
-        return lockProcess;
-    }
-
 
 }
