@@ -87,5 +87,12 @@ public class AccessControlInfo {
     @TableField(exist = false)
     private List<LockRole> roles;
 
+    @ApiModelProperty(value="经度",name="longitude")
+    @TableField(value = "longitude")
+    private String longitude;
+    @ApiModelProperty(value="纬度",name="latitude")
+    @TableField(value = "latitude")
+    private String latitude;
+
     public AccessControlInfo(){}
 }

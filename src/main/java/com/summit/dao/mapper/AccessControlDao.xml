@@ -14,6 +14,8 @@
     <result column="createby" jdbcType="VARCHAR" property="createby" />
     <result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
     <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="longitude" jdbcType="VARCHAR" property="longitude" />
+    <result column="latitude" jdbcType="VARCHAR" property="latitude" />
 
     <collection property="roles" resultMap="rolesResult"  />
   </resultMap>
@@ -26,11 +28,12 @@
 
   <sql id="Base_Column_List">
     access_control_id, access_control_name, lock_id, lock_code, entry_camera_id, entry_camera_ip,
-    exit_camera_id, exit_camera_ip, status, createby, createtime, updatetime
+    exit_camera_id, exit_camera_ip, status, createby, createtime, updatetime, longitude, latitude
   </sql>
   <sql id="AccCtrl_Have_Alias_List">
     ac.access_control_id, ac.access_control_name, ac.lock_id, ac.lock_code, ac.entry_camera_id,
-    ac.entry_camera_ip, ac.exit_camera_id, ac.exit_camera_ip, ac.status, ac.createby, ac.createtime, ac.updatetime
+    ac.entry_camera_ip, ac.exit_camera_id, ac.exit_camera_ip, ac.status, ac.createby, ac.createtime, ac.updatetime,
+    ac.longitude, ac.latitude
   </sql>
   <sql id="Auth_Have_Alias_List">
     au.id au_id, au.role_id au_role_id, au.access_control_id au_access_control_id

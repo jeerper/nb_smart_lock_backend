@@ -96,6 +96,8 @@ public class AccCrtlRealTimeInfoController {
                 accCtrlRealTimeInfo.setAccessControlName(accCtrl.getAccessControlName());
                 accCtrlRealTimeInfo.setAccCtrlStatus(accCtrl.getStatus());
                 accCtrlRealTimeInfo.setLockId(accCtrl.getLockId());
+                accCtrlRealTimeInfo.setLongitude(accCtrl.getLongitude());
+                accCtrlRealTimeInfo.setLatitude(accCtrl.getLatitude());
 //                accCtrlRealTimeInfo.setLockCode(accCtrl.getLockCode());
                 List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessService.selectAccCtrlProcessByAccCtrlId(accessControlId,null);
 

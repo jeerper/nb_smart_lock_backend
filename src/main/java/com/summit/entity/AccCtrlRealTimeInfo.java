@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @ApiModel(value="锁实时信息类", description="封装所需要的实时信息")
@@ -85,6 +87,11 @@ public class AccCtrlRealTimeInfo {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @ApiModelProperty(value="锁当前告警数量",name="alarmCount")
     private Integer alarmCount;
+
+    @ApiModelProperty(value="经度",name="longitude")
+    private String longitude;
+    @ApiModelProperty(value="纬度",name="latitude")
+    private String latitude;
 
     public AccCtrlRealTimeInfo(){}
 
