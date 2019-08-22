@@ -4,6 +4,7 @@ import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
 import com.summit.dao.entity.LockInfo;
+import com.summit.dao.repository.LockInfoDao;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.entity.ReportParam;
@@ -28,6 +29,8 @@ public class NBLockServiceImpl {
     private HttpClient httpClient;
     @Autowired
     private LockInfoService lockInfoService;
+    @Autowired
+    private LockInfoDao lockInfoDao;
 
     /**
      * 开锁操作
@@ -42,7 +45,9 @@ public class NBLockServiceImpl {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993 );
         }
         if(terminalNum == null){
-            LockInfo lockInfo = lockInfoService.selectLockById(lockId);
+            LockInfo lockInfo = lockInfoDao.selectById(lockId);
+            if(lockInfo == null || lockInfo.getLockId() == null)
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993 );
             lockRequest.setTerminalNum(lockInfo.getLockCode());
         }
         final BackLockInfo[] backLockInfos = {null};
@@ -115,6 +120,8 @@ public class NBLockServiceImpl {
         }
         if(terminalNum == null){
             LockInfo lockInfo = lockInfoService.selectLockById(lockId);
+            if(lockInfo == null || lockInfo.getLockId() == null)
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993 );
             lockRequest.setTerminalNum(lockInfo.getLockCode());
         }
         final BackLockInfo[] queryBackLockInfo = {null};
