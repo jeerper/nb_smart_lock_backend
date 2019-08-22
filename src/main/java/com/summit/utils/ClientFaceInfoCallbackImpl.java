@@ -210,17 +210,20 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                 FileUtil.writeBytes(faceInfo.getFacePic(), picturePathFacePic);
 
                 AccCtrlProcess accCtrlProcess = getAccCtrlProcess(faceInfo, type, facePanoramaFile, facePicFile, processResult, failReason);
-                if(accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess) != CommonConstants.UPDATE_ERROR){
+
+                try {
+                    accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess);
                     log.info("门禁操作记录信息入库成功");
-                }else{
+                } catch (Exception e) {
                     log.error("门禁操作记录信息入库失败");
                 }
                 //如果是告警类型需要同时插入告警表
                 if ("Alarm".equals(type)) {
                     Alarm alarm = getAlarm(accCtrlProcess);
-                    if (alarmService.insertAlarm(alarm) != CommonConstants.UPDATE_ERROR) {
+                    try {
+                        alarmService.insertAlarm(alarm);
                         log.info("锁操作告警信息入库成功");
-                    } else {
+                    } catch (Exception e) {
                         log.error("锁操作告警信息入库失败");
                     }
                 }
@@ -335,20 +338,21 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             accessControlInfo.setUpdatetime(picSnapshotTime == null ? null : picSnapshotTime.toJdkDate());
         }
         if("Unlock".equals(type)){
-            accessControlInfo.setStatus(AccCtrlStatus.OPEN.getCode());
+            //改为在开锁真正成功后更新状态
+//            accessControlInfo.setStatus(AccCtrlStatus.OPEN.getCode());
             accCtrlProcess.setProcessType(LockProcessType.UNLOCK.getCode());
             accCtrlProcess.setProcessResult(processResult);
             //刷脸成功后开锁操作也有可能失败,成功则failReason=null
             accCtrlProcess.setFailReason(failReason);
         }else if("Alarm".equals(type)){
-            accessControlInfo.setStatus(AccCtrlStatus.ALARM.getCode());
+//            accessControlInfo.setStatus(AccCtrlStatus.ALARM.getCode());
             accCtrlProcess.setProcessType(LockProcessType.LOCK_ALARM.getCode());
             accCtrlProcess.setProcessResult(LcokProcessResultType.ERROR.getCode());
             accCtrlProcess.setFailReason("匹配度过低");
 
         }else{
             //关锁
-            accessControlInfo.setStatus(AccCtrlStatus.CLOSED.getCode());
+//            accessControlInfo.setStatus(AccCtrlStatus.CLOSED.getCode());
             accCtrlProcess.setProcessType(LockProcessType.CLOSE_LOCK.getCode());
             accCtrlProcess.setProcessResult("success");
         }

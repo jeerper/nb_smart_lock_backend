@@ -8,20 +8,24 @@ import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.FileInfo;
+import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.LockProcess;
 import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AccCtrlProcessDao;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.FileInfoDao;
+import com.summit.dao.repository.LockInfoDao;
 import com.summit.service.AccCtrlProcessService;
 import com.summit.service.AccessControlService;
 import com.summit.service.AlarmService;
+import com.summit.service.LockInfoService;
 import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,11 +40,15 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
     @Autowired
     private AccessControlService accessControlService;
     @Autowired
+    private AccessControlDao accessControlDao;
+    @Autowired
     private FileInfoDao fileInfoDao;
     @Autowired
     private AlarmService alarmService;
     @Autowired
     private AlarmDao alarmDao;
+    @Autowired
+    private LockInfoService lockInfoService;
 
     /**
      * 门禁操作记录插入
@@ -48,6 +56,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
      * @return 不为-1则成功
      */
     @Override
+    @Transactional
     public int insertAccCtrlProcess(AccCtrlProcess accCtrlProcess) {
         if(accCtrlProcess == null){
             log.error("锁操作信息为空");
@@ -71,7 +80,11 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
 
         AccessControlInfo accessControlInfo = accCtrlProcess.getAccessControlInfo();
         if(accessControlInfo != null){
-            accessControlService.updateAccCtrl(accessControlInfo);
+            accessControlDao.update(accessControlInfo,new UpdateWrapper<AccessControlInfo>().eq("access_control_id",accessControlInfo.getAccessControlId()));
+            LockInfo lockInfo = accessControlInfo.getLockInfo();
+            if (lockInfo != null) {
+                lockInfoService.updateLock(lockInfo);
+            }
         }
         return accCtrlProcessDao.insert(accCtrlProcess);
     }
@@ -82,6 +95,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
      * @return 不为-1则成功
      */
     @Override
+    @Transactional
     public int updateAccCtrlProcess(AccCtrlProcess accCtrlProcess) {
         if(accCtrlProcess == null){
             log.error("门禁操作信息为空");
