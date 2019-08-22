@@ -221,6 +221,13 @@ public class AccessControlServiceImpl implements AccessControlService {
             }
         }
         CameraDevice entryCamera = accessControlInfo.getEntryCamera();
+        CameraDevice exitCamera = accessControlInfo.getExitCamera();
+        if(entryCamera != null && exitCamera != null){
+            String entryDeviceIp = entryCamera.getDeviceIp();
+            String exitDeviceIp = exitCamera.getDeviceIp();
+            if(entryDeviceIp != null && entryDeviceIp.equals(exitDeviceIp))
+                throw new ErrorMsgException("入口摄像头ip不能和出口摄像头一样");
+        }
         if(entryCamera != null){
             entryCamera.setDevId(null);
             entryCamera.setCreateby(name);
@@ -241,7 +248,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 throw new ErrorMsgException("录入入口摄像头信息失败，摄像头" + deviceIp + "已属于其他门禁");
             }
         }
-        CameraDevice exitCamera = accessControlInfo.getExitCamera();
+
         if(exitCamera != null){
             exitCamera.setDevId(null);
             exitCamera.setCreateby(name);
