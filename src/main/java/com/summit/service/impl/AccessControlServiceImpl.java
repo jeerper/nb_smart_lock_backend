@@ -33,6 +33,8 @@ import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -172,6 +174,7 @@ public class AccessControlServiceImpl implements AccessControlService {
      * @param accessControlInfo 门禁信息对象
      * @return 返回不为-1则为成功
      */
+    @Transactional(propagation= Propagation.REQUIRED,rollbackFor = {Exception.class} )
     @Override
     public int insertAccCtrl(AccessControlInfo accessControlInfo) {
         if(accessControlInfo == null){
@@ -215,6 +218,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 accessControlInfo.setLockId(lockId);
             } catch (Exception e) {
                 log.error("录入锁信息失败");
+                throw new RuntimeException();
             }
         }
         CameraDevice entryCamera = accessControlInfo.getEntryCamera();
@@ -234,6 +238,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 accessControlInfo.setEntryCameraId(entryCamera.getDevId());
             } catch (Exception e) {
                 log.error("录入入口摄像头信息失败");
+                throw new RuntimeException();
             }
         }
         CameraDevice exitCamera = accessControlInfo.getExitCamera();
@@ -253,6 +258,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 accessControlInfo.setExitCameraId(exitCamera.getDevId());
             } catch (Exception e) {
                 log.error("录入出口摄像头信息失败");
+                throw new RuntimeException();
             }
         }
         return accessControlDao.insert(accessControlInfo);
@@ -263,6 +269,7 @@ public class AccessControlServiceImpl implements AccessControlService {
      * @param accessControlInfo 门禁信息对象
      * @return 返回不为-1则为成功
      */
+    @Transactional(propagation= Propagation.REQUIRED, rollbackFor = {Exception.class} )
     @Override
     public int updateAccCtrl(AccessControlInfo accessControlInfo) {
         if(accessControlInfo == null){
@@ -296,6 +303,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 lockInfoService.updateLock(lockInfo);
             } catch (Exception e) {
                 log.error("更新锁信息失败");
+                throw new RuntimeException();
             }
         }
         CameraDevice entryCamera = accessControlInfo.getEntryCamera();
@@ -314,6 +322,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 cameraDeviceService.updateDevice(entryCamera);
             } catch (Exception e) {
                 log.error("更新入口摄像头信息失败");
+                throw new RuntimeException();
             }
         }
         CameraDevice exitCamera = accessControlInfo.getExitCamera();
@@ -332,12 +341,19 @@ public class AccessControlServiceImpl implements AccessControlService {
                 cameraDeviceService.updateDevice(exitCamera);
             } catch (Exception e) {
                 log.error("更新出口摄像头信息失败");
+                throw new RuntimeException();
             }
         }
         UpdateWrapper<AccessControlInfo> updateWrapper = new UpdateWrapper<>();
         int result = 0;
         try {
             result = accessControlDao.update(accessControlInfo, updateWrapper.eq("access_control_id", accessControlInfo.getAccessControlId()));
+        } catch (Exception e) {
+            log.error("更新门禁{}失败", accessControlInfo.getAccessControlId());
+            throw new RuntimeException();
+        }
+
+        try {
             //更新门禁信息成功后需要同步更新门禁操作记录表(access_control_name,device_ip,lock_code)，并且将设备的锁编号更新
             UpdateWrapper<AccCtrlProcess> wrapper = new UpdateWrapper<>();
             //accessControlName
@@ -367,11 +383,10 @@ public class AccessControlServiceImpl implements AccessControlService {
             cameraDeviceService.updateDevice(updateDevice);
             updateDevice.setDevId(accessControlInfo.getExitCameraId());
             cameraDeviceService.updateDevice(updateDevice);
-
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("更新门禁操作记录失败");
+            throw new RuntimeException();
         }
-
         return result;
     }
 
