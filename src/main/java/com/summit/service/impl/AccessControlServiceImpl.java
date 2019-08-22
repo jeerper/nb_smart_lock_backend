@@ -20,11 +20,10 @@ import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.LockInfoDao;
+import com.summit.exception.ErrorMsgException;
 import com.summit.sdk.huawei.model.AlarmType;
 import com.summit.sdk.huawei.model.DeviceType;
-import com.summit.service.AccCtrlProcessService;
 import com.summit.service.AccessControlService;
-import com.summit.service.AlarmService;
 import com.summit.service.CameraDeviceService;
 import com.summit.service.LockInfoService;
 import com.summit.util.CommonUtil;
@@ -218,7 +217,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 accessControlInfo.setLockId(lockId);
             } catch (Exception e) {
                 log.error("录入锁信息失败");
-                throw new RuntimeException();
+                throw new ErrorMsgException("录入锁信息失败");
             }
         }
         CameraDevice entryCamera = accessControlInfo.getEntryCamera();
@@ -238,7 +237,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 accessControlInfo.setEntryCameraId(entryCamera.getDevId());
             } catch (Exception e) {
                 log.error("录入入口摄像头信息失败");
-                throw new RuntimeException();
+                throw new ErrorMsgException("录入入口摄像头信息失败");
             }
         }
         CameraDevice exitCamera = accessControlInfo.getExitCamera();
@@ -258,7 +257,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 accessControlInfo.setExitCameraId(exitCamera.getDevId());
             } catch (Exception e) {
                 log.error("录入出口摄像头信息失败");
-                throw new RuntimeException();
+                throw new ErrorMsgException("录入出口摄像头信息失败");
             }
         }
         return accessControlDao.insert(accessControlInfo);
@@ -277,7 +276,8 @@ public class AccessControlServiceImpl implements AccessControlService {
             return CommonConstants.UPDATE_ERROR;
         }
         String oldControlName = null;
-        AccessControlInfo controlInfo = accessControlDao.selectById(accessControlInfo.getAccessControlId());
+        String accessControlId = accessControlInfo.getAccessControlId();
+        AccessControlInfo controlInfo = accessControlDao.selectById(accessControlId);
         if(controlInfo != null){
             oldControlName = controlInfo.getAccessControlName();
         }
@@ -303,7 +303,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 lockInfoService.updateLock(lockInfo);
             } catch (Exception e) {
                 log.error("更新锁信息失败");
-                throw new RuntimeException();
+                throw new ErrorMsgException("更新锁信息失败");
             }
         }
         CameraDevice entryCamera = accessControlInfo.getEntryCamera();
@@ -322,7 +322,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 cameraDeviceService.updateDevice(entryCamera);
             } catch (Exception e) {
                 log.error("更新入口摄像头信息失败");
-                throw new RuntimeException();
+                throw new ErrorMsgException("更新入口摄像头信息失败");
             }
         }
         CameraDevice exitCamera = accessControlInfo.getExitCamera();
@@ -341,16 +341,16 @@ public class AccessControlServiceImpl implements AccessControlService {
                 cameraDeviceService.updateDevice(exitCamera);
             } catch (Exception e) {
                 log.error("更新出口摄像头信息失败");
-                throw new RuntimeException();
+                throw new ErrorMsgException("更新出口摄像头信息失败");
             }
         }
         UpdateWrapper<AccessControlInfo> updateWrapper = new UpdateWrapper<>();
         int result = 0;
         try {
-            result = accessControlDao.update(accessControlInfo, updateWrapper.eq("access_control_id", accessControlInfo.getAccessControlId()));
+            result = accessControlDao.update(accessControlInfo, updateWrapper.eq("access_control_id", accessControlId));
         } catch (Exception e) {
-            log.error("更新门禁{}失败", accessControlInfo.getAccessControlId());
-            throw new RuntimeException();
+            log.error("更新门禁{}失败", accessControlId);
+            throw new ErrorMsgException("更新门禁" + accessControlId +"失败");
         }
 
         try {
@@ -385,7 +385,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             cameraDeviceService.updateDevice(updateDevice);
         } catch (Exception e) {
             log.error("更新门禁操作记录失败");
-            throw new RuntimeException();
+            throw new ErrorMsgException("更新门禁操作记录失败");
         }
         return result;
     }
@@ -395,6 +395,7 @@ public class AccessControlServiceImpl implements AccessControlService {
      * @param accessControlId 门禁id
      * @return 返回不为-1则为成功
      */
+    @Transactional(propagation= Propagation.REQUIRED, rollbackFor = {Exception.class} )
     @Override
     public int delAccCtrlByAccCtrlId(String accessControlId) {
         if(accessControlId == null){
@@ -456,7 +457,9 @@ public class AccessControlServiceImpl implements AccessControlService {
             List<AccCtrlRole> accessControls = accCtrlRoleDao.selectList(new QueryWrapper<AccCtrlRole>().eq("access_control_id", acId));
             if(accessControls != null){
                 for(AccCtrlRole ar : accessControls) {
-                    authIds.add(ar.getAccessControlId());
+                    String accessControlId = ar.getAccessControlId();
+                    if(accessControlId != null)
+                        authIds.add(accessControlId);
                 }
             }
         }
@@ -465,35 +468,41 @@ public class AccessControlServiceImpl implements AccessControlService {
             lockInfoDao.deleteBatchIds(lockIds);
         } catch (Exception e) {
             log.error("批量删除锁信息失败");
+            throw new ErrorMsgException("批量删除锁信息失败");
         }
         try {
             cameraDeviceDao.deleteBatchIds(cameraIds);
         } catch (Exception e) {
             log.error("批量删除摄像头信息失败");
+            throw new ErrorMsgException("批量删除摄像头信息失败");
         }
         int result = -1;
         try {
             result = accessControlDao.deleteBatchIds(accessControlIds);
         } catch (Exception e) {
             log.error("删除门禁信息失败");
+            throw new ErrorMsgException("删除门禁信息失败");
         }
         //删除门禁授权信息
         try {
             accCtrlRoleDao.deleteBatchIds(authIds);
         } catch (Exception e) {
             log.error("删除门禁授权信息失败");
+            throw new ErrorMsgException("删除门禁授权信息失败");
         }
         //删除相应的门禁操作记录
         try {
             accCtrlProcessDao.deleteBatchIds(accCtrlProIds);
         } catch (Exception e) {
             log.error("删除相应的门禁操作记录失败");
+            throw new ErrorMsgException("删除相应的门禁操作记录失败");
         }
         //删除相应的门禁告警
         try {
             alarmDao.deleteBatchIds(alarmIds);
         } catch (Exception e) {
             log.error("删除相应的门禁告警失败");
+            throw new ErrorMsgException("删除相应的门禁告警失败");
         }
         return result;
     }

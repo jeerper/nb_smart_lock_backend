@@ -12,6 +12,7 @@ import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.SimpleAccCtrlInfo;
 import com.summit.dao.entity.SimplePage;
+import com.summit.exception.ErrorMsgException;
 import com.summit.sdk.huawei.model.AlarmType;
 import com.summit.sdk.huawei.model.DeviceType;
 import com.summit.service.AccCtrlProcessService;
@@ -77,6 +78,7 @@ public class AccessControlInfoController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁信息为空",null);
         }
         UserInfo uerInfo = UserContextHolder.getUserInfo();
+        String msg = "录入门禁信息失败";
         try {
             accessControlService.insertAccCtrl(accessControlInfo);
             //录入后立即给当前用户授权改门禁
@@ -87,8 +89,9 @@ public class AccessControlInfoController {
                     accCtrlRoleService.insertAccCtrlRole(new AccCtrlRole(null,null,roles[0],accessControlInfo.getAccessControlId()));
             }
         } catch (Exception e) {
-            log.error("录入门禁信息失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"录入门禁信息失败", null);
+            msg = getErrorMsg(msg, e);
+            log.error(msg);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg, null);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"录入门禁信息成功", null);
     }
@@ -100,15 +103,16 @@ public class AccessControlInfoController {
             log.error("门禁信息为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁信息为空",null);
         }
+        String msg = "更新门禁信息失败";
         try {
             accessControlService.updateAccCtrl(accessControlInfo);
         } catch (Exception e) {
-            log.error("更新门禁信息失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"更新门禁信息失败", null);
+            msg = getErrorMsg(msg, e);
+            log.error(msg);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg, null);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新门禁信息成功", null);
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "更新门禁信息成功", null);
     }
-
 
     @ApiOperation(value = "删除门禁信息，参数为id数组", notes = "根据门禁id删除门禁信息，时同删除锁关联的锁信息和设备信息")
     @DeleteMapping(value = "/delAccessControlBatch")
@@ -117,14 +121,15 @@ public class AccessControlInfoController {
             log.error("门禁id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁id为空",null);
         }
-
+        String msg = "删除门禁信息失败";
         try {
             accessControlService.delBatchAccCtrlByAccCtrlId(accessControlIds);
         } catch (Exception e) {
-            log.error("删除门禁信息失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"删除门禁信息失败", null);
+            msg = getErrorMsg(msg, e);
+            log.error(msg);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg, null);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"删除门禁信息成功", null);
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "删除门禁信息成功", null);
     }
 
 
@@ -168,5 +173,11 @@ public class AccessControlInfoController {
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询全部门禁信息成功", simpleAccCtrlInfos);
     }
 
+    private String getErrorMsg(String msg, Exception e) {
+        if(e instanceof ErrorMsgException){
+            return msg = ((ErrorMsgException) e).getErrorMsg();
+        }
+        return msg;
+    }
 
 }
