@@ -239,6 +239,11 @@ public class AccessControlServiceImpl implements AccessControlService {
             entryCamera.setLockId(lockId);
             entryCamera.setLockCode(lockCode);
             String deviceIp = entryCamera.getDeviceIp();
+            CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
+            if(cameraDevice != null){
+                log.error("录入入口摄像头信息失败，摄像头{}已属于其他门禁", deviceIp);
+                throw new ErrorMsgException("录入入口摄像头信息失败，摄像头" + deviceIp + "已属于其他门禁");
+            }
             accessControlInfo.setEntryCameraIp(deviceIp);
             try {
                 cameraDeviceService.insertDevice(entryCamera);
@@ -316,6 +321,13 @@ public class AccessControlServiceImpl implements AccessControlService {
             }
         }
         CameraDevice entryCamera = accessControlInfo.getEntryCamera();
+        CameraDevice exitCamera = accessControlInfo.getExitCamera();
+        if(entryCamera != null && exitCamera != null){
+            String entryDeviceIp = entryCamera.getDeviceIp();
+            String exitDeviceIp = exitCamera.getDeviceIp();
+            if(entryDeviceIp != null && entryDeviceIp.equals(exitDeviceIp))
+                throw new ErrorMsgException("入口摄像头ip不能和出口摄像头一样");
+        }
         if(entryCamera != null){
             entryCamera.setLockId(lockId);
             entryCamera.setLockCode(lockCode);
@@ -335,7 +347,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 throw new ErrorMsgException("更新入口摄像头信息失败，摄像头" + deviceIp + "已属于其他门禁");
             }
         }
-        CameraDevice exitCamera = accessControlInfo.getExitCamera();
+
         if(exitCamera != null){
             exitCamera.setLockId(lockId);
             exitCamera.setLockCode(lockCode);
@@ -477,45 +489,61 @@ public class AccessControlServiceImpl implements AccessControlService {
             }
         }
         CommonUtil.removeDuplicate(authIds);
-        try {
-            lockInfoDao.deleteBatchIds(lockIds);
-        } catch (Exception e) {
-            log.error("批量删除锁信息失败");
-            throw new ErrorMsgException("批量删除锁信息失败");
+        if(!lockIds.isEmpty()){
+            try {
+                lockInfoDao.deleteBatchIds(lockIds);
+            } catch (Exception e) {
+                log.error("批量删除锁信息失败");
+                throw new ErrorMsgException("批量删除锁信息失败");
+            }
         }
-        try {
-            cameraDeviceDao.deleteBatchIds(cameraIds);
-        } catch (Exception e) {
-            log.error("批量删除摄像头信息失败");
-            throw new ErrorMsgException("批量删除摄像头信息失败");
+        if(!cameraIds.isEmpty()){
+            try {
+                cameraDeviceDao.deleteBatchIds(cameraIds);
+            } catch (Exception e) {
+                log.error("批量删除摄像头信息失败");
+                throw new ErrorMsgException("批量删除摄像头信息失败");
+            }
         }
+
         int result = -1;
-        try {
-            result = accessControlDao.deleteBatchIds(accessControlIds);
-        } catch (Exception e) {
-            log.error("删除门禁信息失败");
-            throw new ErrorMsgException("删除门禁信息失败");
+        if(!accessControlIds.isEmpty()){
+            try {
+                result = accessControlDao.deleteBatchIds(accessControlIds);
+            } catch (Exception e) {
+                log.error("删除门禁信息失败");
+                throw new ErrorMsgException("删除门禁信息失败");
+            }
         }
+
         //删除门禁授权信息
-        try {
-            accCtrlRoleDao.deleteBatchIds(authIds);
-        } catch (Exception e) {
-            log.error("删除门禁授权信息失败");
-            throw new ErrorMsgException("删除门禁授权信息失败");
+        if(!authIds.isEmpty()){
+            try {
+                accCtrlRoleDao.deleteBatchIds(authIds);
+            } catch (Exception e) {
+                log.error("删除门禁授权信息失败");
+                throw new ErrorMsgException("删除门禁授权信息失败");
+            }
         }
+
         //删除相应的门禁操作记录
-        try {
-            accCtrlProcessDao.deleteBatchIds(accCtrlProIds);
-        } catch (Exception e) {
-            log.error("删除相应的门禁操作记录失败");
-            throw new ErrorMsgException("删除相应的门禁操作记录失败");
+        if(!accCtrlProIds.isEmpty()){
+            try {
+                accCtrlProcessDao.deleteBatchIds(accCtrlProIds);
+            } catch (Exception e) {
+                log.error("删除相应的门禁操作记录失败");
+                throw new ErrorMsgException("删除相应的门禁操作记录失败");
+            }
         }
+
         //删除相应的门禁告警
-        try {
-            alarmDao.deleteBatchIds(alarmIds);
-        } catch (Exception e) {
-            log.error("删除相应的门禁告警失败");
-            throw new ErrorMsgException("删除相应的门禁告警失败");
+        if(!alarmIds.isEmpty()){
+            try {
+                alarmDao.deleteBatchIds(alarmIds);
+            } catch (Exception e) {
+                log.error("删除相应的门禁告警失败");
+                throw new ErrorMsgException("删除相应的门禁告警失败");
+            }
         }
         return result;
     }
