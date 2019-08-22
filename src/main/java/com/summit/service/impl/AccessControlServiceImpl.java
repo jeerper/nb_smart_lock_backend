@@ -208,6 +208,11 @@ public class AccessControlServiceImpl implements AccessControlService {
             lockInfo.setCreateby(name);
             lockId = lockInfo.getLockId();
             lockCode = lockInfo.getLockCode();
+            LockInfo lock = lockInfoService.selectBylockCode(lockCode);
+            if(lock != null){
+                log.error("录入锁信息失败，锁{}已存在且已属于其他门禁", lock);
+                throw new ErrorMsgException("更新锁信息失败，锁" + lock + "已存在且已属于其他门禁");
+            }
             accessControlInfo.setLockCode(lockCode);
             lockInfo.setCreatetime(time);
             lockInfo.setUpdatetime(time);
@@ -216,8 +221,8 @@ public class AccessControlServiceImpl implements AccessControlService {
                 lockId = lockInfo.getLockId();
                 accessControlInfo.setLockId(lockId);
             } catch (Exception e) {
-                log.error("录入锁信息失败，锁{}已属于其他门禁", lockCode);
-                throw new ErrorMsgException("录入锁信息失败，锁" + lockCode + "已属于其他门禁");
+                log.error("录入锁信息失败，锁{}已存在且已属于其他门禁", lockCode);
+                throw new ErrorMsgException("录入锁信息失败，锁" + lockCode + "已存在且已属于其他门禁");
             }
         }
         CameraDevice entryCamera = accessControlInfo.getEntryCamera();
@@ -241,16 +246,16 @@ public class AccessControlServiceImpl implements AccessControlService {
             String deviceIp = entryCamera.getDeviceIp();
             CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
             if(cameraDevice != null){
-                log.error("录入入口摄像头信息失败，摄像头{}已属于其他门禁", deviceIp);
-                throw new ErrorMsgException("录入入口摄像头信息失败，摄像头" + deviceIp + "已属于其他门禁");
+                log.error("录入入口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
+                throw new ErrorMsgException("录入入口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
             }
             accessControlInfo.setEntryCameraIp(deviceIp);
             try {
                 cameraDeviceService.insertDevice(entryCamera);
                 accessControlInfo.setEntryCameraId(entryCamera.getDevId());
             } catch (Exception e) {
-                log.error("录入入口摄像头信息失败，摄像头{}已属于其他门禁", deviceIp);
-                throw new ErrorMsgException("录入入口摄像头信息失败，摄像头" + deviceIp + "已属于其他门禁");
+                log.error("录入入口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
+                throw new ErrorMsgException("录入入口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
             }
         }
 
@@ -265,13 +270,18 @@ public class AccessControlServiceImpl implements AccessControlService {
             exitCamera.setLockId(lockId);
             exitCamera.setLockCode(lockCode);
             String deviceIp = exitCamera.getDeviceIp();
+            CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
+            if(cameraDevice != null){
+                log.error("录入出口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
+                throw new ErrorMsgException("录入出口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
+            }
             accessControlInfo.setExitCameraIp(deviceIp);
             try {
                 cameraDeviceService.insertDevice(exitCamera);
                 accessControlInfo.setExitCameraId(exitCamera.getDevId());
             } catch (Exception e) {
-                log.error("录入出口摄像头信息失败，摄像头{}已属于其他门禁", deviceIp);
-                throw new ErrorMsgException("录入出口摄像头信息失败，摄像头" + deviceIp + "已属于其他门禁");
+                log.error("录入出口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
+                throw new ErrorMsgException("录入出口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
             }
         }
         return accessControlDao.insert(accessControlInfo);
@@ -308,6 +318,11 @@ public class AccessControlServiceImpl implements AccessControlService {
             lockId = lockInfo.getLockId();
             accessControlInfo.setLockId(lockId);
             lockCode = lockInfo.getLockCode();
+            LockInfo lock = lockInfoService.selectBylockCode(lockCode);
+            if(lock != null){
+                log.error("更新锁信息失败，锁{}已存在且已属于其他门禁", lock);
+                throw new ErrorMsgException("更新锁信息失败，锁" + lock + "已存在且已属于其他门禁");
+            }
             accessControlInfo.setLockCode(lockCode);
             LockInfo oldLock = lockInfoDao.selectById(lockId);
             if(oldLock != null)
@@ -316,8 +331,8 @@ public class AccessControlServiceImpl implements AccessControlService {
                 lockInfo.setUpdatetime(time);
                 lockInfoService.updateLock(lockInfo);
             } catch (Exception e) {
-                log.error("更新锁信息失败，锁{}已属于其他门禁", lockCode);
-                throw new ErrorMsgException("更新锁信息失败，锁" + lockCode + "已属于其他门禁");
+                log.error("更新锁信息失败，锁{}已存在且已属于其他门禁", lockCode);
+                throw new ErrorMsgException("更新锁信息失败，锁" + lockCode + "已存在且已属于其他门禁");
             }
         }
         CameraDevice entryCamera = accessControlInfo.getEntryCamera();
@@ -335,6 +350,11 @@ public class AccessControlServiceImpl implements AccessControlService {
             entryCamera.setUpdatetime(time);
             accessControlInfo.setEntryCameraId(entryCamera.getDevId());
             String deviceIp = entryCamera.getDeviceIp();
+            CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
+            if(cameraDevice != null){
+                log.error("更新入口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
+                throw new ErrorMsgException("更新入口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
+            }
             accessControlInfo.setEntryCameraIp(deviceIp);
             CameraDevice oldEntryCameraDevice = cameraDeviceDao.selectById(accessControlInfo.getEntryCameraId());
             if(oldEntryCameraDevice != null)
@@ -343,8 +363,8 @@ public class AccessControlServiceImpl implements AccessControlService {
             try {
                 cameraDeviceService.updateDevice(entryCamera);
             } catch (Exception e) {
-                log.error("更新入口摄像头信息失败，摄像头{}已属于其他门禁", deviceIp);
-                throw new ErrorMsgException("更新入口摄像头信息失败，摄像头" + deviceIp + "已属于其他门禁");
+                log.error("更新入口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
+                throw new ErrorMsgException("更新入口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
             }
         }
 
@@ -355,6 +375,11 @@ public class AccessControlServiceImpl implements AccessControlService {
             exitCamera.setUpdatetime(time);
             accessControlInfo.setExitCameraId(exitCamera.getDevId());
             String deviceIp = exitCamera.getDeviceIp();
+            CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
+            if(cameraDevice != null){
+                log.error("更新出口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
+                throw new ErrorMsgException("更新出口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
+            }
             accessControlInfo.setExitCameraIp(deviceIp);
             CameraDevice oldExitcameraDevice = cameraDeviceDao.selectById(accessControlInfo.getExitCameraId());
             if(oldExitcameraDevice != null)
@@ -363,8 +388,8 @@ public class AccessControlServiceImpl implements AccessControlService {
             try {
                 cameraDeviceService.updateDevice(exitCamera);
             } catch (Exception e) {
-                log.error("更新出口摄像头信息失败，摄像头{}已属于其他门禁", deviceIp);
-                throw new ErrorMsgException("更新出口摄像头信息失败，摄像头" + deviceIp + "已属于其他门禁");
+                log.error("更新出口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
+                throw new ErrorMsgException("更新出口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
             }
         }
         UpdateWrapper<AccessControlInfo> updateWrapper = new UpdateWrapper<>();

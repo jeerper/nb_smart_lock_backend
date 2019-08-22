@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @ApiModel(value="锁实时信息类", description="封装所需要的实时信息")
-
 //@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AccCtrlRealTimeInfo {
 
