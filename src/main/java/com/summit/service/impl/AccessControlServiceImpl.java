@@ -210,8 +210,8 @@ public class AccessControlServiceImpl implements AccessControlService {
             lockCode = lockInfo.getLockCode();
             LockInfo lock = lockInfoService.selectBylockCode(lockCode);
             if(lock != null){
-                log.error("录入锁信息失败，锁{}已存在且已属于其他门禁", lock);
-                throw new ErrorMsgException("更新锁信息失败，锁" + lock + "已存在且已属于其他门禁");
+                log.error("录入锁信息失败，锁{}已存在且已属于其他门禁", lock.getLockCode());
+                throw new ErrorMsgException("更新锁信息失败，锁" + lock.getLockCode() + "已存在且已属于其他门禁");
             }
             accessControlInfo.setLockCode(lockCode);
             lockInfo.setCreatetime(time);
@@ -320,8 +320,8 @@ public class AccessControlServiceImpl implements AccessControlService {
             lockCode = lockInfo.getLockCode();
             LockInfo lock = lockInfoService.selectBylockCode(lockCode);
             if(lock != null){
-                log.error("更新锁信息失败，锁{}已存在且已属于其他门禁", lock);
-                throw new ErrorMsgException("更新锁信息失败，锁" + lock + "已存在且已属于其他门禁");
+                log.error("更新锁信息失败，锁{}已存在且已属于其他门禁", lock.getLockCode());
+                throw new ErrorMsgException("更新锁信息失败，锁" + lock.getLockCode() + "已存在且已属于其他门禁");
             }
             accessControlInfo.setLockCode(lockCode);
             LockInfo oldLock = lockInfoDao.selectById(lockId);
