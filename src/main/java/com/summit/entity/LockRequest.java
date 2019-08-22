@@ -34,14 +34,20 @@ public class LockRequest {
     /**
      * 是否开锁
      */
-    @ApiModelProperty(value="是否开锁",name="isUnLock")
-    private boolean isUnLock;
+    @ApiModelProperty(value="是否开锁，默认开锁。查询状态接口无需传此参数",name="isUnLock")
+    private boolean isUnLock = true;
 
     /**
      * 告警处理说明
      */
-    @ApiModelProperty(value="告警处理说明",name="processRemark")
+    @ApiModelProperty(value="告警处理说明。查询状态接口无需传此参数",name="processRemark")
     private String processRemark;
+
+    /**
+     * 告警id
+     */
+    @ApiModelProperty(value="告警id",name="alarmId")
+    private String alarmId;
 
     public LockRequest(){}
 

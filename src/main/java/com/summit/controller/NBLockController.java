@@ -2,12 +2,15 @@ package com.summit.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.entity.UserInfo;
+import com.summit.common.util.ResultBuilder;
 import com.summit.common.web.filter.UserContextHolder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccessControlInfo;
+import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.LockInfoDao;
@@ -15,10 +18,13 @@ import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.entity.ReportParam;
 import com.summit.sdk.huawei.model.AccCtrlStatus;
+import com.summit.sdk.huawei.model.AlarmStatus;
+import com.summit.sdk.huawei.model.AlarmType;
 import com.summit.sdk.huawei.model.LcokProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessMethod;
 import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.service.AccCtrlProcessService;
+import com.summit.service.AlarmService;
 import com.summit.service.impl.NBLockServiceImpl;
 import com.summit.util.HttpClient;
 import io.swagger.annotations.Api;
@@ -27,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Api(tags = "NB智能锁操作接口")
@@ -45,6 +52,8 @@ public class NBLockController {
     private AccessControlDao accessControlDao;
     @Autowired
     private AccCtrlProcessService accCtrlProcessService;
+    @Autowired
+    private AlarmService alarmService;
 
     @PostMapping(value = "/queryLockStatus")
     public RestfulEntityBySummit queryLockStatus(@RequestBody LockRequest lockRequest){
@@ -53,16 +62,56 @@ public class NBLockController {
 
     @PostMapping(value = "/unLock")
     public RestfulEntityBySummit unLock(@RequestBody LockRequest lockRequest){
-        RestfulEntityBySummit result = nbLockServiceImpl.toUnLock(lockRequest);
-        //查询调用查询锁状态接口，插入一条锁操作记录，改变锁、门禁状态
-        toInsertAndUpdateData(result.getData(),lockRequest);
+        RestfulEntityBySummit result = null;
+        boolean isUnLock;
+        if(lockRequest != null){
+            String alarmId = lockRequest.getAlarmId();
+            if(alarmId == null || "".equals(alarmId)){
+                log.error("告警id为空");
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警id为空", null);
+            }
+            isUnLock = lockRequest.isUnLock();
+        }else{
+            log.error("请求参数为空");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"请求参数为空", null);
+        }
+        if(isUnLock){
+            result = nbLockServiceImpl.toUnLock(lockRequest);
+            //查询调用查询锁状态接口，插入一条锁操作记录，改变锁、门禁状态
+            toInsertAndUpdateData(result.getData(),lockRequest);
+        }
+        //开不开锁都处理告警
+        toProcessAlarm(lockRequest);
         return result;
     }
+
 
 
     @PostMapping(value = "/safeReport")
     public RestfulEntityBySummit safeReport(@RequestBody ReportParam reportInfo){
         return nbLockServiceImpl.toSafeReport(reportInfo);
+    }
+
+    /**
+     * 处理锁对应的门禁告警
+     * @param lockRequest 请求参数
+     */
+    private void toProcessAlarm(LockRequest lockRequest) {
+        if(lockRequest == null){
+            return;
+        }
+        String alarmId = lockRequest.getAlarmId();
+        String processRemark = lockRequest.getProcessRemark();
+        if(alarmId != null){
+            Alarm alarm = new Alarm();
+            alarm.setAlarmStatus(AlarmStatus.PROCESSED.getCode());
+            UserInfo uerInfo = UserContextHolder.getUserInfo();
+            if(uerInfo != null)
+                alarm.setProcessPerson(uerInfo.getName());
+            alarm.setProcessRemark(processRemark);
+            alarm.setUpdatetime(new Date());
+            alarmService.updateAlarm(alarm);
+        }
     }
 
     /**
@@ -185,6 +234,12 @@ public class NBLockController {
      * @return 开锁状态
      */
     private Integer getLockStatus(LockRequest lockRequest) {
+        try {
+            //休眠半秒再查询状态
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         RestfulEntityBySummit back = nbLockServiceImpl.toQueryLockStatus(lockRequest);
         Object backData = back.getData();
         if((backData instanceof BackLockInfo)){

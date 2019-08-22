@@ -91,6 +91,8 @@ public class AccCtrlRealTimeInfo {
     private String longitude;
     @ApiModelProperty(value="纬度",name="latitude")
     private String latitude;
+    @ApiModelProperty(value="告警id",name="alarmId")
+    private String alarmId;
 
     public AccCtrlRealTimeInfo(){}
 

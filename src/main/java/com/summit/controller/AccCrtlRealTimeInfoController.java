@@ -7,8 +7,10 @@ import com.summit.common.util.ResultBuilder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccessControlInfo;
+import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.SimplePage;
+import com.summit.dao.repository.AlarmDao;
 import com.summit.entity.AccCtrlRealTimeInfo;
 import com.summit.sdk.huawei.model.AlarmStatus;
 import com.summit.service.AccCtrlProcessService;
@@ -45,6 +47,8 @@ public class AccCrtlRealTimeInfoController {
     private FaceInfoService faceInfoService;
     @Autowired
     private AlarmService alarmService;
+    @Autowired
+    private AlarmDao alarmDao;
     @Autowired
     private AccCtrlProcessService accCtrlProcessService;
     @Autowired
@@ -112,6 +116,12 @@ public class AccCrtlRealTimeInfoController {
                     accCtrlRealTimeInfo.setDeviceIp(accCtrlProcess.getDeviceIp());
                     accCtrlRealTimeInfo.setDeviceType(accCtrlProcess.getDeviceType());
                     accCtrlRealTimeInfo.setName(userName);
+                    if(accCtrlProcess.getAccCtrlProId() != null){
+                        Alarm alarm = alarmDao.selectByAccCtrlProId(accCtrlProcess.getAccCtrlProId(), null);
+                        if(alarm != null){
+                            accCtrlRealTimeInfo.setAlarmId(alarm.getAlarmId());
+                        }
+                    }
 
                     accCtrlRealTimeInfo.setGender(accCtrlProcess.getGender());
                     Date birthday = accCtrlProcess.getBirthday();

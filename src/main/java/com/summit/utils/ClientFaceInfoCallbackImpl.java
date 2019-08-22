@@ -156,7 +156,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                     if(cameraDevice != null) {
                         String lockCode = cameraDevice.getLockCode();
                         if (lockCode != null) {
-                            LockRequest lockRequest = new LockRequest(null, lockCode, faceInfo.getName(), true, "通过刷脸开锁");
+                            LockRequest lockRequest = new LockRequest(null, lockCode, faceInfo.getName(), true, "通过刷脸开锁",null);
                             RestfulEntityBySummit result = unLockService.toUnLock(lockRequest);
                             BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
                             if(backLockInfo != null){
