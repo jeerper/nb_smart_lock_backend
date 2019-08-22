@@ -37,7 +37,7 @@ public class AccCtrlRoleController {
     @PostMapping(value = "/refreshAccCtrlRoleBatch")
     public RestfulEntityBySummit<String> refreshAccCtrlRoleBatch(@ApiParam(value = "门禁id列表", required = true) @RequestParam(value = "accessControlIds") List<String> accessControlIds,
                                                            @ApiParam(value = "角色code", required = true) @RequestParam(value = "roleCode") String roleCode) {
-        if(accessControlIds == null || accessControlIds.isEmpty()){
+        if(accessControlIds == null){
             log.error("门禁id列表为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁id列表为空",null);
         }
