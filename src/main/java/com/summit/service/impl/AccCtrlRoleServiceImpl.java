@@ -78,8 +78,18 @@ public class AccCtrlRoleServiceImpl implements AccCtrlRoleService {
         }
         //查出角色当前关联的角色
         List<AccCtrlRole> ctrlRoles = selectAccCtrlRolesByRoleCode(roleCode);
-        if(ctrlRoles != null && !ctrlRoles.isEmpty()){
 
+        if(ctrlRoles != null && !ctrlRoles.isEmpty()){
+            //若传入列表为空集合，说明需要删除所有授权
+            if(accessControlIds.isEmpty()){
+                List<String> authIds = new ArrayList<>();
+                for(AccCtrlRole ctrlRole : ctrlRoles){
+                    if(ctrlRole == null)
+                        continue;
+                    authIds.add(ctrlRole.getId());
+                }
+                return accCtrlRoleDao.deleteBatchIds(authIds);
+            }
             //先删除数据库在传入列表中找不到的门禁授权
             for(AccCtrlRole ctrlRole : ctrlRoles) {
                 boolean needDel = true;

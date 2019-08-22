@@ -461,9 +461,11 @@ public class AccessControlServiceImpl implements AccessControlService {
             List<AccCtrlRole> accessControls = accCtrlRoleDao.selectList(new QueryWrapper<AccCtrlRole>().eq("access_control_id", acId));
             if(accessControls != null){
                 for(AccCtrlRole ar : accessControls) {
-                    String accessControlId = ar.getAccessControlId();
-                    if(accessControlId != null)
-                        authIds.add(accessControlId);
+                    if(ar == null)
+                        continue;
+                    String authId = ar.getId();
+                    if(authId != null)
+                        authIds.add(authId);
                 }
             }
         }
