@@ -3,8 +3,6 @@ package com.summit.utils;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.system.SystemUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.MainAction;
 
 import com.summit.common.entity.RestfulEntityBySummit;
@@ -14,8 +12,6 @@ import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.FileInfo;
-import com.summit.dao.entity.LockInfo;
-import com.summit.dao.entity.LockProcess;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.entity.BackLockInfo;
@@ -35,17 +31,14 @@ import com.summit.service.AlarmService;
 import com.summit.service.CameraDeviceService;
 import com.summit.service.LockRecordService;
 import com.summit.service.impl.NBLockServiceImpl;
-import com.summit.util.LockAuthCtrl;
-import com.summit.util.LockProcessUtil;
+import com.summit.util.AccCtrlProcessUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 @Slf4j
 @Component
@@ -68,7 +61,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
     @Autowired
     private LockInfoDao lockInfoDao;
     @Autowired
-    private LockProcessUtil lockProcessUtil;
+    private AccCtrlProcessUtil accCtrlProcessUtil;
 
     @Override
     public void invoke(Object object) {
@@ -169,7 +162,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
 
                                 if(LcokProcessResultType.SUCCESS.getCode().equalsIgnoreCase(backLockInfoType)){
                                     //查询调用查询锁状态接口，若查到状态变为开锁，则改变锁、门禁状态为打开，否则不改变状态
-                                    Integer status = lockProcessUtil.getLockStatus(lockRequest);
+                                    Integer status = accCtrlProcessUtil.getLockStatus(lockRequest);
                                     if(status != null){
                                         if(status == LockStatus.UNLOCK.getCode()){
                                             processResult = backLockInfoType;
@@ -177,7 +170,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                                             processResult = LcokProcessResultType.ERROR.getCode();
                                             failReason = "未知";
                                         }
-                                        lockProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCode);
+                                        accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCode);
                                     }
                                 }else{
                                     processResult = backLockInfoType;
@@ -187,7 +180,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                                 log.error("开锁时返回记录为空");
                                 failReason = "开锁时返回记录为空";
                                 //TODO  查询调用查询锁状态接口，根据查到状态改变锁和门禁状态，
-                                Integer status = lockProcessUtil.getLockStatus(lockRequest);
+                                Integer status = accCtrlProcessUtil.getLockStatus(lockRequest);
                                 if(status != null ){
                                     if(status == LockStatus.UNLOCK.getCode()){
                                         processResult = LcokProcessResultType.SUCCESS.getCode();
@@ -195,7 +188,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                                         processResult = LcokProcessResultType.ERROR.getCode();
                                         failReason = "未知";
                                     }
-                                    lockProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCode);
+                                    accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCode);
                                 }
                             }
                         }else{
@@ -212,16 +205,13 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                 FileUtil.writeBytes(faceInfo.getFacePic(), picturePathFacePic);
 
                 AccCtrlProcess accCtrlProcess = getAccCtrlProcess(faceInfo, type, facePanoramaFile, facePicFile, processResult, failReason);
-
-                try {
-                    accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess);
-                    log.info("门禁操作记录信息入库成功");
-                } catch (Exception e) {
-                    log.error("门禁操作记录信息入库失败");
-                }
                 //如果是告警类型需要同时插入告警表
                 if ("Alarm".equals(type)) {
                     Alarm alarm = getAlarm(accCtrlProcess);
+                    AccessControlInfo accessControlInfo = accCtrlProcess.getAccessControlInfo();
+                    if(accessControlInfo != null)
+                        accessControlInfo.setStatus(AccCtrlStatus.ALARM.getCode());
+                    accCtrlProcess.setAccessControlInfo(accessControlInfo);
                     try {
                         alarmService.insertAlarm(alarm);
                         log.info("锁操作告警信息入库成功");
@@ -229,6 +219,13 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                         log.error("锁操作告警信息入库失败");
                     }
                 }
+                try {
+                    accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess);
+                    log.info("门禁操作记录信息入库成功");
+                } catch (Exception e) {
+                    log.error("门禁操作记录信息入库失败");
+                }
+
             }
         }catch (Exception e){
             log.error("摄像头上报信息处理异常",e);

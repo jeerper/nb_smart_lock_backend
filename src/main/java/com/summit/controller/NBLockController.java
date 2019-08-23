@@ -1,7 +1,6 @@
 package com.summit.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.entity.UserInfo;
@@ -10,35 +9,25 @@ import com.summit.common.web.filter.UserContextHolder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccessControlInfo;
-import com.summit.dao.entity.Alarm;
-import com.summit.dao.entity.CameraDevice;
-import com.summit.dao.entity.LockInfo;
 import com.summit.dao.repository.AccCtrlProcessDao;
-import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.entity.ReportParam;
-import com.summit.sdk.huawei.model.AccCtrlStatus;
-import com.summit.sdk.huawei.model.AlarmStatus;
-import com.summit.sdk.huawei.model.AlarmType;
 import com.summit.sdk.huawei.model.LcokProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessMethod;
 import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.service.AccCtrlProcessService;
 import com.summit.service.AccessControlService;
-import com.summit.service.AlarmService;
 import com.summit.service.CameraDeviceService;
 import com.summit.service.impl.NBLockServiceImpl;
-import com.summit.util.HttpClient;
-import com.summit.util.LockProcessUtil;
+import com.summit.util.AccCtrlProcessUtil;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.List;
 
 @Slf4j
 @Api(tags = "NB智能锁操作接口")
@@ -60,7 +49,7 @@ public class NBLockController {
     @Autowired
     private CameraDeviceService cameraDeviceService;
     @Autowired
-    private LockProcessUtil lockProcessUtil;
+    private AccCtrlProcessUtil accCtrlProcessUtil;
 
     @PostMapping(value = "/queryLockStatus")
     public RestfulEntityBySummit queryLockStatus(@RequestBody LockRequest lockRequest){
@@ -105,10 +94,10 @@ public class NBLockController {
             return;
         }
         if(lockCode == null){
-            lockCode = lockProcessUtil.getLockCodeById(lockId);
+            lockCode = accCtrlProcessUtil.getLockCodeById(lockId);
         }
         if(lockId == null){
-            lockId = lockProcessUtil.getLockIdByCode(lockCode);
+            lockId = accCtrlProcessUtil.getLockIdByCode(lockCode);
         }
 
         //组装门禁历史对象，保存门禁操作历史
@@ -177,7 +166,7 @@ public class NBLockController {
                 backLockInfo = (BackLockInfo) backData;
                 String type = backLockInfo.getType();
 
-                Integer status = lockProcessUtil.getLockStatus(lockRequest);
+                Integer status = accCtrlProcessUtil.getLockStatus(lockRequest);
                 if(LcokProcessResultType.SUCCESS.getCode().equalsIgnoreCase(type)
                         && status != null && status == LockStatus.UNLOCK.getCode()){
                     accCtrlProcess.setProcessResult(LcokProcessResultType.SUCCESS.getCode());
@@ -192,7 +181,7 @@ public class NBLockController {
                 if(status != null){
                     if(status == LockStatus.UNLOCK.getCode() || status == LockStatus.LOCK_CLOSED.getCode()){
                         //改变锁、门禁状态为当前状态
-                        lockProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCode);
+                        accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCode);
                     }
                 }
 

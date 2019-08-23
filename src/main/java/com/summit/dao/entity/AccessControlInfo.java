@@ -19,7 +19,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-@JsonIgnoreProperties(value={"roles"})
+@JsonIgnoreProperties(value={"roles"},ignoreUnknown = true)
 @TableName(value = "access_control")
 @ApiModel(value="门禁信息类", description="封装门禁信息")
 public class AccessControlInfo {

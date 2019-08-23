@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.Date;
 @AllArgsConstructor
 @TableName(value = "alarm")
 @ApiModel(value="锁告警信息实体类", description="用来记录锁告警信息")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Alarm {
     @ApiModelProperty(value="告警id ",name="alarmId")
     @TableId(value = "alarm_id", type = IdType.ID_WORKER_STR)

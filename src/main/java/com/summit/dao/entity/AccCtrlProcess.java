@@ -16,7 +16,7 @@ import java.util.Date;
 
 @Data
 @ApiModel(value="门禁操作记录类", description="封装门禁操作记录信息")
-@JsonIgnoreProperties(value={"panoramaPicId","facePanoramaId","facePicId","faceMatchId","panoramaPic","facePanorama", "facePic", "faceMatch"})
+@JsonIgnoreProperties(value={"panoramaPicId","facePanoramaId","facePicId","faceMatchId","panoramaPic","facePanorama", "facePic", "faceMatch"},ignoreUnknown = true)
 @AllArgsConstructor
 @TableName(value = "acc_ctrl_process")
 public class AccCtrlProcess {

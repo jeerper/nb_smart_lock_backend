@@ -18,7 +18,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-@JsonIgnoreProperties(value={"devices","roles"})
+@JsonIgnoreProperties(value={"devices","roles"},ignoreUnknown = true)
 @TableName(value = "lock_info")
 @ApiModel(value="锁信息类", description="封装锁信息")
 public class LockInfo {

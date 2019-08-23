@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 @Component
-public class LockProcessUtil {
+public class AccCtrlProcessUtil {
     @Autowired
     private NBLockServiceImpl nbLockServiceImpl;
     @Autowired

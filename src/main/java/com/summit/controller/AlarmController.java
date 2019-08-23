@@ -7,8 +7,6 @@ import com.summit.common.entity.UserInfo;
 import com.summit.common.util.ResultBuilder;
 import com.summit.common.web.filter.UserContextHolder;
 import com.summit.constants.CommonConstants;
-import com.summit.dao.entity.AccCtrlProcess;
-import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.SimplePage;
 import com.summit.entity.LockRequest;
@@ -16,14 +14,13 @@ import com.summit.entity.UpdateAlarmParam;
 import com.summit.service.AlarmService;
 import com.summit.service.impl.NBLockServiceImpl;
 import com.summit.util.CommonUtil;
-import com.summit.util.LockProcessUtil;
+import com.summit.util.AccCtrlProcessUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,7 +42,7 @@ public class AlarmController {
     @Autowired
     private NBLockServiceImpl nbLockServiceImpl;
     @Autowired
-    private LockProcessUtil lockProcessUtil;
+    private AccCtrlProcessUtil accCtrlProcessUtil;
 
     @ApiOperation(value = "更新门禁告警状态", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间取当前时间")
     @PutMapping(value = "/updateAlarmStatus")
@@ -95,9 +92,9 @@ public class AlarmController {
         lockRequest.setLockId(lockId);
         lockRequest.setOperName(operName);
         //更新锁和门禁为当前真实状态
-        String lockCodeById = lockProcessUtil.getLockIdByCode(lockId);
-        Integer status = lockProcessUtil.getLockStatus(lockRequest);
-        lockProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCodeById);
+        String lockCodeById = accCtrlProcessUtil.getLockIdByCode(lockId);
+        Integer status = accCtrlProcessUtil.getLockStatus(lockRequest);
+        accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCodeById);
         try {
             alarmService.updateAlarm(alarm);
         } catch (Exception e) {
