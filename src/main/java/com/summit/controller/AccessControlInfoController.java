@@ -49,10 +49,6 @@ public class AccessControlInfoController {
     private AccessControlService accessControlService;
     @Autowired
     private AccCtrlRoleService accCtrlRoleService;
-    @Autowired
-    private AlarmService alarmService;
-    @Autowired
-    private AccCtrlProcessService accCtrlProcessService;
 
 
     @ApiOperation(value = "分页查询全部门禁信息", notes = "分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")

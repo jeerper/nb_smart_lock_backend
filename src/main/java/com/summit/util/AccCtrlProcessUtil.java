@@ -1,5 +1,6 @@
 package com.summit.util;
 
+import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.common.entity.RestfulEntityBySummit;
@@ -8,6 +9,9 @@ import com.summit.common.web.filter.UserContextHolder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccessControlInfo;
+import com.summit.dao.entity.Alarm;
+import com.summit.dao.entity.CameraDevice;
+import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.repository.AccCtrlProcessDao;
 import com.summit.dao.repository.AccessControlDao;
@@ -15,16 +19,21 @@ import com.summit.dao.repository.LockInfoDao;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.sdk.huawei.model.AccCtrlStatus;
+import com.summit.sdk.huawei.model.AlarmStatus;
+import com.summit.sdk.huawei.model.FaceInfo;
 import com.summit.sdk.huawei.model.LcokProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessMethod;
+import com.summit.sdk.huawei.model.LockProcessType;
 import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.service.AccCtrlProcessService;
 import com.summit.service.AccessControlService;
+import com.summit.service.CameraDeviceService;
 import com.summit.service.impl.NBLockServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -43,6 +52,8 @@ public class AccCtrlProcessUtil {
     private AccCtrlProcessDao accCtrlProcessDao;
     @Autowired
     private AccessControlService accessControlService;
+    @Autowired
+    private CameraDeviceService cameraDeviceService;
 
     /**
      * 根据开锁操作返回状态更新相应门禁和锁状态
@@ -240,6 +251,111 @@ public class AccCtrlProcessUtil {
         }else{
             log.error("门禁操作记录入库失败");
         }
+    }
+
+
+    /**
+     * 根据人脸识别结果信息及其他信息组装需要入库的门禁操作记录信息
+     * @param faceInfo 识别的人脸信息
+     * @param type 人脸识别结果类型
+     * @param facePanoramaFile 人脸全景图对象
+     * @param facePicFile 人脸识别抠图对象
+     * @param processResult 门禁操作结果返回码
+     * @param failReason 人脸识别或门禁操作识别原因
+     * @return 组装好的门禁操作记录信息对象
+     */
+    public AccCtrlProcess getAccCtrlProcess(FaceInfo faceInfo, String type, FileInfo facePanoramaFile, FileInfo facePicFile, String processResult, String failReason) {
+        AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
+        String deviceIp = faceInfo.getDeviceIp();
+        accCtrlProcess.setDeviceIp(deviceIp);
+        accCtrlProcess.setProcessMethod(LockProcessMethod.FACE_RECOGNITION.getCode());
+        //先设一默认值防止报错
+        accCtrlProcess.setLockCode("");
+        accCtrlProcess.setUserName(faceInfo.getName());
+        if(faceInfo.getGender() != null)
+            accCtrlProcess.setGender(faceInfo.getGender().getGenderCode());
+        try {
+            if(faceInfo.getBirthday() != null)
+                accCtrlProcess.setBirthday(CommonConstants.dateFormat.parse(faceInfo.getBirthday()));
+        } catch (ParseException e) {
+            log.error("生日格式有误");
+        }
+        accCtrlProcess.setProvince(faceInfo.getProvince());
+        accCtrlProcess.setCity(faceInfo.getCity());
+        if(faceInfo.getCardType() != null)
+            accCtrlProcess.setCardType(faceInfo.getCardType().getCardTypeCode());
+        accCtrlProcess.setCardId(faceInfo.getCardId());
+        accCtrlProcess.setFaceMatchRate(faceInfo.getFaceMatchRate());
+        accCtrlProcess.setFaceLibName(faceInfo.getFaceLibName());
+        if(faceInfo.getFaceLibType() != null)
+            accCtrlProcess.setFaceLibType(faceInfo.getFaceLibType().getFaceLibTypeCode());
+        accCtrlProcess.setFacePanorama(facePanoramaFile);
+        accCtrlProcess.setFacePic(facePicFile);
+        DateTime picSnapshotTime = faceInfo.getPicSnapshotTime();
+        accCtrlProcess.setProcessTime(picSnapshotTime);
+//        LockInfo lockInfo = new LockInfo();
+        AccessControlInfo accessControlInfo = new AccessControlInfo();
+
+        CameraDevice device = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
+
+        if(device != null){
+            String lockCode = device.getLockCode();
+            String lockId = device.getLockId();
+            String deviceType = device.getType();
+            AccessControlInfo acInfo = accessControlService.selectAccCtrlByLockCode(lockCode);
+            if(acInfo != null){
+                String accessControlId = acInfo.getAccessControlId();
+                accCtrlProcess.setAccessControlId(accessControlId);
+                String accessControlName = acInfo.getAccessControlName();
+                accCtrlProcess.setAccessControlName(accessControlName);
+                accessControlInfo.setAccessControlId(accessControlId);
+                accessControlInfo.setAccessControlName(accessControlName);
+            }
+            String devId = device.getDevId();
+            accCtrlProcess.setLockId(lockId);
+            accCtrlProcess.setLockCode(lockCode);
+            accCtrlProcess.setDeviceId(devId);
+            accCtrlProcess.setDeviceType(deviceType);
+            accessControlInfo.setLockId(lockId);
+            accessControlInfo.setLockCode(lockCode);
+            accessControlInfo.setUpdatetime(picSnapshotTime == null ? null : picSnapshotTime.toJdkDate());
+        }
+        if("Unlock".equals(type)){
+            //改为在开锁真正成功后更新状态
+//            accessControlInfo.setStatus(AccCtrlStatus.OPEN.getCode());
+            accCtrlProcess.setProcessType(LockProcessType.UNLOCK.getCode());
+            accCtrlProcess.setProcessResult(processResult);
+            //刷脸成功后开锁操作也有可能失败,成功则failReason=null
+            accCtrlProcess.setFailReason(failReason);
+        }else if("Alarm".equals(type)){
+//            accessControlInfo.setStatus(AccCtrlStatus.ALARM.getCode());
+            accCtrlProcess.setProcessType(LockProcessType.LOCK_ALARM.getCode());
+            accCtrlProcess.setProcessResult(LcokProcessResultType.ERROR.getCode());
+            accCtrlProcess.setFailReason("匹配度过低");
+
+        }else{
+            //关锁
+//            accessControlInfo.setStatus(AccCtrlStatus.CLOSED.getCode());
+            accCtrlProcess.setProcessType(LockProcessType.CLOSE_LOCK.getCode());
+            accCtrlProcess.setProcessResult("success");
+        }
+        accCtrlProcess.setAccessControlInfo(accessControlInfo);
+        return accCtrlProcess;
+    }
+
+    /**
+     * 根据门禁操作记录信息组装告警信息入库信息对象
+     * @param accCtrlProcess 门禁操作记录对象
+     * @return 门禁告警对象
+     */
+    public Alarm getAlarm(AccCtrlProcess accCtrlProcess) {
+        Alarm alarm = new Alarm();
+        alarm.setAccCtrlProId(accCtrlProcess.getAccCtrlProId());
+        alarm.setAlarmTime(accCtrlProcess.getProcessTime());
+        alarm.setAlarmStatus(AlarmStatus.UNPROCESSED.getCode());
+        alarm.setDescription(accCtrlProcess.getFailReason());
+        alarm.setUpdatetime(new Date());
+        return alarm;
     }
 
 }

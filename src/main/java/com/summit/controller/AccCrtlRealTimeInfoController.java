@@ -39,12 +39,6 @@ import java.util.Map;
 @RequestMapping("/accCtrlRealTimeInfo")
 public class AccCrtlRealTimeInfoController {
 
-//    @Autowired
-//    private LockRecordService lockRecordService;
-//    @Autowired
-//    private LockInfoService lockInfoService;
-    @Autowired
-    private FaceInfoService faceInfoService;
     @Autowired
     private AlarmService alarmService;
     @Autowired

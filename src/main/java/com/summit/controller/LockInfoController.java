@@ -33,12 +33,7 @@ import java.util.List;
 public class LockInfoController {
 
     @Autowired
-    private LockRecordService lockRecordService;
-    @Autowired
     private LockInfoService lockInfoService;
-    @Autowired
-    private FaceInfoService faceInfoService;
-
 
     @ApiOperation(value = "分页查询全部锁信息", notes = "分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
     @GetMapping(value = "/selectLockInfoByPage")

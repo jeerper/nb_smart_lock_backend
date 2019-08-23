@@ -30,8 +30,6 @@ public class AccCtrlRoleController {
 
     @Autowired
     private AccCtrlRoleService accCtrlRoleService;
-    @Autowired
-    private AccessControlService accessControlService;
 
     @ApiOperation(value = "批量刷新指定角色关联的门禁", notes = "为指定角色更新门禁权限，所传角色之前没有关联某门禁且所传列表中有则添加，之前已关联某门禁权限而所传列表中有则不添加，之前已关联某门禁权限而所传列表中没有则删除")
     @PostMapping(value = "/refreshAccCtrlRoleBatch")

@@ -39,16 +39,6 @@ public class NBLockController {
     @Autowired
     private NBLockServiceImpl nbLockServiceImpl;
     @Autowired
-    private LockInfoDao lockInfoDao;
-    @Autowired
-    private AccCtrlProcessService accCtrlProcessService;
-    @Autowired
-    private AccCtrlProcessDao accCtrlProcessDao;
-    @Autowired
-    private AccessControlService accessControlService;
-    @Autowired
-    private CameraDeviceService cameraDeviceService;
-    @Autowired
     private AccCtrlProcessUtil accCtrlProcessUtil;
 
     @PostMapping(value = "/queryLockStatus")
