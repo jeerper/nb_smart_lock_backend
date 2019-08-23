@@ -9,8 +9,10 @@ import com.summit.common.web.filter.UserContextHolder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.SimplePage;
+import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.entity.UpdateAlarmParam;
+import com.summit.sdk.huawei.model.LcokProcessResultType;
 import com.summit.service.AlarmService;
 import com.summit.service.impl.NBLockServiceImpl;
 import com.summit.util.CommonUtil;
@@ -44,7 +46,7 @@ public class AlarmController {
     @Autowired
     private AccCtrlProcessUtil accCtrlProcessUtil;
 
-    @ApiOperation(value = "更新门禁告警状态", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间取当前时间")
+    @ApiOperation(value = "更新门禁告警状态", notes = "alarmId为null或空串则不进行更新告警操作")
     @PutMapping(value = "/updateAlarmStatus")
         public RestfulEntityBySummit<String> updateAlarmStatus(@RequestBody UpdateAlarmParam updateAlarmParam) {
         if(updateAlarmParam == null){
@@ -53,16 +55,14 @@ public class AlarmController {
         }
         String alarmId = updateAlarmParam.getAlarmId();
         String accCtrlProId = updateAlarmParam.getAccCtrlProId();
-        if(alarmId == null && accCtrlProId == null){
-            log.error("alarmId和processId不能同时为空");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"alarmId和processId不能同时为空",null);
-        }
-        String msg = "";
+//        if(alarmId == null && accCtrlProId == null){
+//            log.error("alarmId和processId不能同时为空");
+//            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"alarmId和processId不能同时为空",null);
+//        }
+
+        String msg = "操作成功";
         boolean needUnLock = updateAlarmParam.isNeedUnLock();
         String lockId = updateAlarmParam.getLockId();
-        if(lockId == null){
-//            lockId = alarmDao;
-        }
         Integer alarmStatus = updateAlarmParam.getAlarmStatus();
         String processRemark = updateAlarmParam.getProcessRemark();
         String operName = null;
@@ -75,17 +75,28 @@ public class AlarmController {
             lockRequest.setOperName(operName);
             lockRequest.setAccCtrlProId(accCtrlProId);
             RestfulEntityBySummit result = nbLockServiceImpl.toUnLock(lockRequest);
-            if(result != null){
-                accCtrlProcessUtil.toInsertAndUpdateData(result.getData(),lockRequest);
-                msg = "开锁结果：" + result.getMsg() + ";";
+            if(result == null){
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,msg + "开锁失败",null);
             }
+            Object data = result.getData();
+            accCtrlProcessUtil.toInsertAndUpdateData(data,lockRequest);
+            BackLockInfo backLockInfo = null;
+            if((data instanceof BackLockInfo)){
+                backLockInfo = (BackLockInfo) data;
+                if(!LcokProcessResultType.SUCCESS.getCode().equals(backLockInfo.getType())){
+                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,result.getMsg(),null);
+                }
+            }
+            msg = "开锁结果：" + result.getMsg() + ";";
+        }
+
+        if(alarmId == null){
+            log.info(msg);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, msg,null);
         }
         Alarm alarm = new Alarm();
-        if(alarmId != null){
-            alarm.setAlarmId(alarmId);
-        }else{
-            alarm.setAccCtrlProId(accCtrlProId);
-        }
+        alarm.setAlarmId(alarmId);
+        alarm.setAccCtrlProId(accCtrlProId);
         alarm.setAlarmStatus(alarmStatus);
         alarm.setProcessPerson(operName);
         alarm.setProcessRemark(processRemark);

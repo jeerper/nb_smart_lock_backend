@@ -15,6 +15,7 @@ import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.repository.AccCtrlProcessDao;
 import com.summit.dao.repository.AccessControlDao;
+import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
@@ -54,6 +55,8 @@ public class AccCtrlProcessUtil {
     private AccessControlService accessControlService;
     @Autowired
     private CameraDeviceService cameraDeviceService;
+    @Autowired
+    private AlarmDao alarmDao;
 
     /**
      * 根据开锁操作返回状态更新相应门禁和锁状态
@@ -90,7 +93,7 @@ public class AccCtrlProcessUtil {
     public Integer getLockStatus(LockRequest lockRequest) {
         try {
             //休眠半秒再查询状态
-            Thread.sleep(500);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -358,4 +361,19 @@ public class AccCtrlProcessUtil {
         return alarm;
     }
 
+    /**
+     * 通过门禁操作记录id查询告警
+     * @param accCtrlProId 门禁操作记录id
+     * @return 门禁操作记录id对应告警
+     */
+    public Alarm getAlarmByAccCtrlProId(String accCtrlProId){
+        if (accCtrlProId == null || "".equals(accCtrlProId)) {
+            return null;
+        }
+        List<Alarm> alarms = alarmDao.selectList(new QueryWrapper<Alarm>().eq("acc_ctrl_pro_id", accCtrlProId));
+        if(alarms == null || alarms.isEmpty()){
+            return null;
+        }
+        return alarms.get(0);
+    }
 }
