@@ -75,6 +75,7 @@ public class AlarmController {
             lockRequest.setOperName(operName);
             RestfulEntityBySummit result = nbLockServiceImpl.toUnLock(lockRequest);
             if(result != null){
+                accCtrlProcessUtil.toInsertAndUpdateData(result.getData(),lockRequest);
                 msg = "开锁结果：" + result.getMsg() + ";";
             }
         }
