@@ -46,7 +46,7 @@ public class LockRequest {
     /**
      * 告警id
      */
-    @ApiModelProperty(value="告警id",name="alarmId")
+    @ApiModelProperty(value="告警id。查询状态接口无需传此参数",name="alarmId")
     private String alarmId;
 
     public LockRequest(){}
