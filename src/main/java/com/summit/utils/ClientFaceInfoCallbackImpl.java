@@ -205,25 +205,22 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                 FileUtil.writeBytes(faceInfo.getFacePic(), picturePathFacePic);
 
                 AccCtrlProcess accCtrlProcess = getAccCtrlProcess(faceInfo, type, facePanoramaFile, facePicFile, processResult, failReason);
+
+                try {
+                    accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess);
+                    log.info("门禁操作记录信息入库成功");
+                } catch (Exception e) {
+                    log.error("门禁操作记录信息入库失败");
+                }
                 //如果是告警类型需要同时插入告警表
                 if ("Alarm".equals(type)) {
                     Alarm alarm = getAlarm(accCtrlProcess);
-                    AccessControlInfo accessControlInfo = accCtrlProcess.getAccessControlInfo();
-                    if(accessControlInfo != null)
-                        accessControlInfo.setStatus(AccCtrlStatus.ALARM.getCode());
-                    accCtrlProcess.setAccessControlInfo(accessControlInfo);
                     try {
                         alarmService.insertAlarm(alarm);
                         log.info("锁操作告警信息入库成功");
                     } catch (Exception e) {
                         log.error("锁操作告警信息入库失败");
                     }
-                }
-                try {
-                    accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess);
-                    log.info("门禁操作记录信息入库成功");
-                } catch (Exception e) {
-                    log.error("门禁操作记录信息入库失败");
                 }
 
             }

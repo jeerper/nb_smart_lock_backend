@@ -46,7 +46,7 @@ public class AlarmController {
 
     @ApiOperation(value = "更新门禁告警状态", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间取当前时间")
     @PutMapping(value = "/updateAlarmStatus")
-        public RestfulEntityBySummit<String> updateAlarmStatus(@RequestBody UpdateAlarmParam updateAlarmParam) {
+        public RestfulEntityBySummit<String> updateAlarmStatus(UpdateAlarmParam updateAlarmParam) {
         if(updateAlarmParam == null){
             log.error("参数为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"参数为空",null);
@@ -75,7 +75,7 @@ public class AlarmController {
             lockRequest.setOperName(operName);
             RestfulEntityBySummit result = nbLockServiceImpl.toUnLock(lockRequest);
             if(result != null){
-                msg = "开锁结果：" + result.getMsg() + System.lineSeparator();
+                msg = "开锁结果：" + result.getMsg() + ";";
             }
         }
         Alarm alarm = new Alarm();
