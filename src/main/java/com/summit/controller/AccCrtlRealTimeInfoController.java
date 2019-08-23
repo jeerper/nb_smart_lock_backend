@@ -116,8 +116,10 @@ public class AccCrtlRealTimeInfoController {
                     accCtrlRealTimeInfo.setDeviceIp(accCtrlProcess.getDeviceIp());
                     accCtrlRealTimeInfo.setDeviceType(accCtrlProcess.getDeviceType());
                     accCtrlRealTimeInfo.setName(userName);
-                    if(accCtrlProcess.getAccCtrlProId() != null){
-                        Alarm alarm = alarmDao.selectByAccCtrlProId(accCtrlProcess.getAccCtrlProId(), null);
+                    String accCtrlProId = accCtrlProcess.getAccCtrlProId();
+                    if(accCtrlProId != null){
+                        accCtrlRealTimeInfo.setAccCtrlProId(accCtrlProId);
+                        Alarm alarm = alarmDao.selectByAccCtrlProId(accCtrlProId, null);
                         if(alarm != null){
                             accCtrlRealTimeInfo.setAlarmId(alarm.getAlarmId());
                         }

@@ -11,7 +11,9 @@ import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.Alarm;
+import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.LockInfo;
+import com.summit.dao.repository.AccCtrlProcessDao;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.entity.BackLockInfo;
@@ -26,6 +28,7 @@ import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.service.AccCtrlProcessService;
 import com.summit.service.AccessControlService;
 import com.summit.service.AlarmService;
+import com.summit.service.CameraDeviceService;
 import com.summit.service.impl.NBLockServiceImpl;
 import com.summit.util.HttpClient;
 import io.swagger.annotations.Api;
@@ -54,9 +57,13 @@ public class NBLockController {
     @Autowired
     private AccCtrlProcessService accCtrlProcessService;
     @Autowired
+    private AccCtrlProcessDao accCtrlProcessDao;
+    @Autowired
     private AlarmService alarmService;
     @Autowired
     private AccessControlService accessControlService;
+    @Autowired
+    private CameraDeviceService cameraDeviceService;
 
     @PostMapping(value = "/queryLockStatus")
     public RestfulEntityBySummit queryLockStatus(@RequestBody LockRequest lockRequest){
@@ -136,15 +143,31 @@ public class NBLockController {
         accCtrlProcess.setProcessMethod(LockProcessMethod.INTERFACE_BY.getCode());
         //设置对应门禁信息
         AccessControlInfo accessControlInfo = new AccessControlInfo();
-        AccessControlInfo acInfo = accessControlService.selectAccCtrlByLockCode(lockCode);
-        if(acInfo != null){
-            String accessControlId = acInfo.getAccessControlId();
-            accCtrlProcess.setAccessControlId(accessControlId);
-            String accessControlName = acInfo.getAccessControlName();
-            accCtrlProcess.setAccessControlName(accessControlName);
-            accessControlInfo.setAccessControlId(accessControlId);
-            accessControlInfo.setAccessControlName(accessControlName);
+        CameraDevice device = null;
+        String accCtrlProId = lockRequest.getAccCtrlProId();
+        AccCtrlProcess accCtrlPro = null;
+        if(accCtrlProId != null){
+            accCtrlPro = accCtrlProcessDao.selectById(accCtrlProId);
         }
+        if (accCtrlPro != null){
+            accessControlInfo.setAccessControlId(accCtrlPro.getAccessControlId());
+            accessControlInfo.setAccessControlName(accCtrlPro.getAccessControlName());
+            accCtrlProcess.setAccessControlName(accCtrlPro.getAccessControlName());
+            accCtrlProcess.setAccessControlId(accCtrlPro.getAccessControlId());
+            //todo 设置设备信息
+
+        }else {
+            AccessControlInfo acInfo = accessControlService.selectAccCtrlByLockCode(lockCode);
+            if(acInfo != null){
+                String accessControlId = acInfo.getAccessControlId();
+                accCtrlProcess.setAccessControlId(accessControlId);
+                String accessControlName = acInfo.getAccessControlName();
+                accCtrlProcess.setAccessControlName(accessControlName);
+                accessControlInfo.setAccessControlId(accessControlId);
+                accessControlInfo.setAccessControlName(accessControlName);
+            }
+        }
+
         accCtrlProcess.setAccessControlInfo(accessControlInfo);
         //设置操作结果及失败原因
         BackLockInfo backLockInfo = null;

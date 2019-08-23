@@ -31,6 +31,12 @@ public class LockRequest {
     @ApiModelProperty(value="操作人",name="operName")
     private String operName;
 
+    /**
+     * 当前操作记录id
+     */
+    @ApiModelProperty(value="当前操作记录id",name="accCtrlProId")
+    private String accCtrlProId;
+
 
     public LockRequest(){}
 
