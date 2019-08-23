@@ -3,13 +3,17 @@ package com.summit.controller;
 import com.summit.cbb.utils.page.Page;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
+import com.summit.common.entity.UserInfo;
 import com.summit.common.util.ResultBuilder;
+import com.summit.common.web.filter.UserContextHolder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.SimplePage;
+import com.summit.entity.LockRequest;
 import com.summit.service.AlarmService;
+import com.summit.service.impl.NBLockServiceImpl;
 import com.summit.util.CommonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,6 +39,8 @@ public class AlarmController {
 
     @Autowired
     private AlarmService alarmService;
+    @Autowired
+    private NBLockServiceImpl nbLockServiceImpl;
 
     @ApiOperation(value = "更新门禁告警状态", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间取当前时间")
     @PutMapping(value = "/updateAlarmStatus")
@@ -42,7 +48,9 @@ public class AlarmController {
                                                                @ApiParam(value = "门禁告警id") @RequestParam(value = "alarmId",required = false) String alarmId,
                                                                @ApiParam(value = "门禁告警对应操作记录id") @RequestParam(value = "accCtrlProId",required = false) String accCtrlProId,
                                                                @ApiParam(value = "告警处理人", required = true) @RequestParam(value = "processPerson",required = false) String processPerson,
-                                                               @ApiParam(value = "告警处理说明", required = true) @RequestParam(value = "processRemark",required = false) String processRemark) {
+                                                               @ApiParam(value = "告警处理说明", required = true) @RequestParam(value = "processRemark",required = false) String processRemark,
+                                                               @ApiParam(value = "锁id", required = true) @RequestParam(value = "lockId",required = false) String lockId,
+                                                               @ApiParam(value = "是否开锁") @RequestParam(value = "isUnLock",required = false) Boolean isUnLock) {
         if(alarmStatus == null){
             log.error("门禁告警状态为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁告警状态为空",null);
@@ -50,6 +58,20 @@ public class AlarmController {
         if(alarmId == null && accCtrlProId == null){
             log.error("alarmId和processId不能同时为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"alarmId和processId不能同时为空",null);
+        }
+        String msg = "";
+        if(isUnLock){
+            LockRequest lockRequest = new LockRequest();
+            lockRequest.setLockId(lockId);
+            UserInfo userInfo = UserContextHolder.getUserInfo();
+            String operName = null;
+            if(userInfo != null)
+                operName = userInfo.getName();
+            lockRequest.setOperName(operName);
+            RestfulEntityBySummit result = nbLockServiceImpl.toUnLock(lockRequest);
+            if(result != null){
+                msg = "开锁结果：" + result.getMsg() + System.lineSeparator();
+            }
         }
         Alarm alarm = new Alarm();
         if(alarmId != null){
@@ -61,12 +83,13 @@ public class AlarmController {
         alarm.setProcessPerson(processPerson);
         alarm.setProcessRemark(processRemark);
         alarm.setUpdatetime(new Date());
-        int result = alarmService.updateAlarm(alarm);
-        if(result == CommonConstants.UPDATE_ERROR){
-            log.error("更新告警状态失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"更新告警状态失败",null);
+        try {
+            alarmService.updateAlarm(alarm);
+        } catch (Exception e) {
+            log.error(msg + "更新告警状态失败");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,msg + "更新告警状态失败",null);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新告警状态成功",null);
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,msg + "更新告警状态成功",null);
     }
 
 

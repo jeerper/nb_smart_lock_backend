@@ -62,26 +62,16 @@ public class NBLockController {
 
     @PostMapping(value = "/unLock")
     public RestfulEntityBySummit unLock(@RequestBody LockRequest lockRequest){
-        RestfulEntityBySummit result = null;
+        RestfulEntityBySummit result;
         boolean isUnLock;
-        if(lockRequest != null){
-            String alarmId = lockRequest.getAlarmId();
-            if(alarmId == null || "".equals(alarmId)){
-                log.error("告警id为空");
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警id为空", null);
-            }
-            isUnLock = lockRequest.isUnLock();
-        }else{
+        if(lockRequest == null){
             log.error("请求参数为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"请求参数为空", null);
+
         }
-        if(isUnLock){
-            result = nbLockServiceImpl.toUnLock(lockRequest);
-            //查询调用查询锁状态接口，插入一条锁操作记录，改变锁、门禁状态
-            toInsertAndUpdateData(result.getData(),lockRequest);
-        }
-        //开不开锁都处理告警
-        toProcessAlarm(lockRequest);
+        result = nbLockServiceImpl.toUnLock(lockRequest);
+        //查询调用查询锁状态接口，插入一条锁操作记录，改变锁、门禁状态
+        toInsertAndUpdateData(result.getData(),lockRequest);
         return result;
     }
 
@@ -92,27 +82,6 @@ public class NBLockController {
         return nbLockServiceImpl.toSafeReport(reportInfo);
     }
 
-    /**
-     * 处理锁对应的门禁告警
-     * @param lockRequest 请求参数
-     */
-    private void toProcessAlarm(LockRequest lockRequest) {
-        if(lockRequest == null){
-            return;
-        }
-        String alarmId = lockRequest.getAlarmId();
-        String processRemark = lockRequest.getProcessRemark();
-        if(alarmId != null){
-            Alarm alarm = new Alarm();
-            alarm.setAlarmStatus(AlarmStatus.PROCESSED.getCode());
-            UserInfo uerInfo = UserContextHolder.getUserInfo();
-            if(uerInfo != null)
-                alarm.setProcessPerson(uerInfo.getName());
-            alarm.setProcessRemark(processRemark);
-            alarm.setUpdatetime(new Date());
-            alarmService.updateAlarm(alarm);
-        }
-    }
 
     /**
      * 查询调用查询锁状态接口，插入一条锁操作记录，根据返回结果改变锁、门禁状态
