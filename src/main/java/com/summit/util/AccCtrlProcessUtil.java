@@ -328,14 +328,14 @@ public class AccCtrlProcessUtil {
             //刷脸成功后开锁操作也有可能失败,成功则failReason=null
             accCtrlProcess.setFailReason(failReason);
         }else if("Alarm".equals(type)){
-//            accessControlInfo.setStatus(AccCtrlStatus.ALARM.getCode());
+            accessControlInfo.setStatus(AccCtrlStatus.ALARM.getCode());
             accCtrlProcess.setProcessType(LockProcessType.LOCK_ALARM.getCode());
             accCtrlProcess.setProcessResult(LcokProcessResultType.ERROR.getCode());
             accCtrlProcess.setFailReason("匹配度过低");
 
         }else{
             //关锁
-//            accessControlInfo.setStatus(AccCtrlStatus.CLOSED.getCode());
+            accessControlInfo.setStatus(AccCtrlStatus.CLOSED.getCode());
             accCtrlProcess.setProcessType(LockProcessType.CLOSE_LOCK.getCode());
             accCtrlProcess.setProcessResult("success");
         }

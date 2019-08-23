@@ -176,6 +176,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                                 if(status != null ){
                                     if(status == LockStatus.UNLOCK.getCode()){
                                         processResult = LcokProcessResultType.SUCCESS.getCode();
+
                                     }else if(status == LockStatus.LOCK_CLOSED.getCode()){
                                         processResult = LcokProcessResultType.ERROR.getCode();
                                         failReason = "未知";
