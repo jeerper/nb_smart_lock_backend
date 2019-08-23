@@ -114,8 +114,8 @@ public class NBLockServiceImpl {
     public RestfulEntityBySummit toQueryLockStatus(LockRequest lockRequest) {
         String lockId = "";
         String terminalNum;
-        if(lockRequest == null || ((terminalNum = lockRequest.getTerminalNum()) == null && (lockId = lockRequest.getLockId()) == null)
-                || lockRequest.getOperName() == null){
+        if(lockRequest == null
+                || ((terminalNum = lockRequest.getTerminalNum()) == null && (lockId = lockRequest.getLockId()) == null)){
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993 );
         }
         if(terminalNum == null){

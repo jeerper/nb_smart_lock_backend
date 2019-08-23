@@ -13,7 +13,7 @@ public class UpdateAlarmParam {
     @ApiModelProperty(value="告警id，和accCtrlProId不能同时为空",name="alarmId")
     private String alarmId;
     @ApiModelProperty(value="告警状态，不传默认为0，表示更新告警状态为已处理",name="alarmStatus")
-//    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonIgnoreProperties(ignoreUnknown = true)
     private Integer alarmStatus = 0;
     @ApiModelProperty(value="对应门禁操作记录id，和alarmId不能同时为空",name="accCtrlProId")
     private String accCtrlProId;

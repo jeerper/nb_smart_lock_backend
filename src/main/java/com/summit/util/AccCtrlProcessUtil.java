@@ -33,6 +33,8 @@ public class AccCtrlProcessUtil {
      * @param lockCode 当前摄像头对应锁编号
      */
     public void toUpdateAccCtrlAndLockStatus(Integer status, String lockCode) {
+        if(status == null)
+            return;
         AccCtrlStatus accCtrlStatus =  AccCtrlStatus.codeOf(status);
         LockStatus lockStatus = LockStatus.codeOf(status);
         //状态不合法则不更新
