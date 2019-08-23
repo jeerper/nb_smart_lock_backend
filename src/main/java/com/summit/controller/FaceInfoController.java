@@ -17,6 +17,7 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +39,7 @@ public class FaceInfoController {
 
     @ApiOperation(value = "录入人脸信息", notes = "返回不为-1则为成功")
     @PostMapping(value = "/insertFaceInfo")
-    public RestfulEntityBySummit<Integer> insertFaceInfo(@ApiParam(value = "人脸信息参数") FaceInfoEntity faceInfoEntity,
+    public RestfulEntityBySummit<Integer> insertFaceInfo(@ApiParam(value = "人脸信息参数") @RequestBody FaceInfoEntity faceInfoEntity,
                                                          @ApiParam(value = "人脸全景图") MultipartFile facePanorama,
                                                          @ApiParam(value = "人脸识别抠图") MultipartFile facePic,
                                                          @ApiParam(value = "人脸识别和人脸库中匹配的图片") MultipartFile faceMatch) {

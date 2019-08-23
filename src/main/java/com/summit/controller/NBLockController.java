@@ -24,6 +24,7 @@ import com.summit.sdk.huawei.model.LcokProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessMethod;
 import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.service.AccCtrlProcessService;
+import com.summit.service.AccessControlService;
 import com.summit.service.AlarmService;
 import com.summit.service.impl.NBLockServiceImpl;
 import com.summit.util.HttpClient;
@@ -54,6 +55,8 @@ public class NBLockController {
     private AccCtrlProcessService accCtrlProcessService;
     @Autowired
     private AlarmService alarmService;
+    @Autowired
+    private AccessControlService accessControlService;
 
     @PostMapping(value = "/queryLockStatus")
     public RestfulEntityBySummit queryLockStatus(@RequestBody LockRequest lockRequest){
@@ -131,6 +134,18 @@ public class NBLockController {
             }
         }
         accCtrlProcess.setProcessMethod(LockProcessMethod.INTERFACE_BY.getCode());
+        //设置对应门禁信息
+        AccessControlInfo accessControlInfo = new AccessControlInfo();
+        AccessControlInfo acInfo = accessControlService.selectAccCtrlByLockCode(lockCode);
+        if(acInfo != null){
+            String accessControlId = acInfo.getAccessControlId();
+            accCtrlProcess.setAccessControlId(accessControlId);
+            String accessControlName = acInfo.getAccessControlName();
+            accCtrlProcess.setAccessControlName(accessControlName);
+            accessControlInfo.setAccessControlId(accessControlId);
+            accessControlInfo.setAccessControlName(accessControlName);
+        }
+        accCtrlProcess.setAccessControlInfo(accessControlInfo);
         //设置操作结果及失败原因
         BackLockInfo backLockInfo = null;
         if(backData == null){

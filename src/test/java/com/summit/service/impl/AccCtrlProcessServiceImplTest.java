@@ -21,9 +21,9 @@ public class AccCtrlProcessServiceImplTest {
     @Test
     public void selectAccCtrlProcessCondition() {
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
-        accCtrlProcess.setAccCtrlProId("1163356805951225858");
-        accCtrlProcess.setAccessControlName("门");
-        accCtrlProcess.setProcessType(3);
+//        accCtrlProcess.setAccCtrlProId("1163356805951225858");
+//        accCtrlProcess.setAccessControlName("门");
+//        accCtrlProcess.setProcessType(3);
         Page<AccCtrlProcess> accCtrlProcessPage = accCtrlProcessService.selectAccCtrlProcessCondition(accCtrlProcess,null);
         System.out.println(accCtrlProcessPage);
     }
