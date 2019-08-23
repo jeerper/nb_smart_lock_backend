@@ -94,7 +94,7 @@ public class LockProcessUtil {
     public String getLockIdByCode(String lockCode){
         if(lockCode == null || "".equals(lockCode))
             return null;
-        List<LockInfo> lockInfos = lockInfoDao.selectList(new QueryWrapper<LockInfo>().eq("", lockCode));
+        List<LockInfo> lockInfos = lockInfoDao.selectList(new QueryWrapper<LockInfo>().eq("lock_code", lockCode));
         if(lockInfos == null || lockInfos.isEmpty())
             return null;
         LockInfo lockInfo = lockInfos.get(0);
