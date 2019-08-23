@@ -36,6 +36,7 @@ import com.summit.service.CameraDeviceService;
 import com.summit.service.LockRecordService;
 import com.summit.service.impl.NBLockServiceImpl;
 import com.summit.util.LockAuthCtrl;
+import com.summit.util.LockProcessUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -66,7 +67,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
     private AccessControlDao accessControlDao;
     @Autowired
     private LockInfoDao lockInfoDao;
-
+    @Autowired
+    private LockProcessUtil lockProcessUtil;
 
     @Override
     public void invoke(Object object) {
@@ -167,7 +169,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
 
                                 if(LcokProcessResultType.SUCCESS.getCode().equalsIgnoreCase(backLockInfoType)){
                                     //查询调用查询锁状态接口，若查到状态变为开锁，则改变锁、门禁状态为打开，否则不改变状态
-                                    Integer status = getLockStatus(lockRequest);
+                                    Integer status = lockProcessUtil.getLockStatus(lockRequest);
                                     if(status != null){
                                         if(status == LockStatus.UNLOCK.getCode()){
                                             processResult = backLockInfoType;
@@ -175,7 +177,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                                             processResult = LcokProcessResultType.ERROR.getCode();
                                             failReason = "未知";
                                         }
-                                        toUpdateAccCtrlAndLockStatus(status,lockCode);
+                                        lockProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCode);
                                     }
                                 }else{
                                     processResult = backLockInfoType;
@@ -185,7 +187,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                                 log.error("开锁时返回记录为空");
                                 failReason = "开锁时返回记录为空";
                                 //TODO  查询调用查询锁状态接口，根据查到状态改变锁和门禁状态，
-                                Integer status = getLockStatus(lockRequest);
+                                Integer status = lockProcessUtil.getLockStatus(lockRequest);
                                 if(status != null ){
                                     if(status == LockStatus.UNLOCK.getCode()){
                                         processResult = LcokProcessResultType.SUCCESS.getCode();
@@ -193,7 +195,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                                         processResult = LcokProcessResultType.ERROR.getCode();
                                         failReason = "未知";
                                     }
-                                    toUpdateAccCtrlAndLockStatus(status,lockCode);
+                                    lockProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCode);
                                 }
                             }
                         }else{
@@ -234,42 +236,6 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
 
     }
 
-    /**
-     * 根据开锁操作返回状态更新相应门禁和锁状态
-     * @param status 开锁操作返回状态
-     * @param lockCode 当前摄像头对应锁编号
-     */
-    private void toUpdateAccCtrlAndLockStatus(Integer status, String lockCode) {
-        AccCtrlStatus accCtrlStatus =  AccCtrlStatus.codeOf(status);
-        LockStatus lockStatus = LockStatus.codeOf(status);
-        //状态不合法则不更新
-        if(accCtrlStatus != null){
-            AccessControlInfo accessControlInfo = new AccessControlInfo();
-            accessControlInfo.setStatus(status);
-            //直接根据锁编号更新门禁状态
-            accessControlDao.update(accessControlInfo, new UpdateWrapper<AccessControlInfo>().eq("lock_code", lockCode));
-        }
-        //状态不合法则不更新
-        if(lockStatus != null){
-            LockInfo lockInfo = new LockInfo();
-            lockInfo.setStatus(lockStatus.getCode());
-            lockInfoDao.update(lockInfo, new UpdateWrapper<LockInfo>().eq("lock_code", lockCode));
-        }
-    }
-
-    /**
-     * 查询开锁状态
-     * @param lockRequest 请求参数
-     * @return 开锁状态
-     */
-    private Integer getLockStatus(LockRequest lockRequest) {
-        RestfulEntityBySummit back = unLockService.toQueryLockStatus(lockRequest);
-        Object backData = back.getData();
-        if((backData instanceof BackLockInfo)){
-            return ((BackLockInfo) backData).getObjx();
-        }
-        return null;
-    }
 
     /**
      * 根据人脸识别结果信息及其他信息组装需要入库的门禁操作记录信息

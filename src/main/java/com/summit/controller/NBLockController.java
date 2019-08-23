@@ -31,6 +31,7 @@ import com.summit.service.AlarmService;
 import com.summit.service.CameraDeviceService;
 import com.summit.service.impl.NBLockServiceImpl;
 import com.summit.util.HttpClient;
+import com.summit.util.LockProcessUtil;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,23 +48,19 @@ public class NBLockController {
 
 
     @Autowired
-    private HttpClient httpClient;
-    @Autowired
     private NBLockServiceImpl nbLockServiceImpl;
     @Autowired
     private LockInfoDao lockInfoDao;
-    @Autowired
-    private AccessControlDao accessControlDao;
     @Autowired
     private AccCtrlProcessService accCtrlProcessService;
     @Autowired
     private AccCtrlProcessDao accCtrlProcessDao;
     @Autowired
-    private AlarmService alarmService;
-    @Autowired
     private AccessControlService accessControlService;
     @Autowired
     private CameraDeviceService cameraDeviceService;
+    @Autowired
+    private LockProcessUtil lockProcessUtil;
 
     @PostMapping(value = "/queryLockStatus")
     public RestfulEntityBySummit queryLockStatus(@RequestBody LockRequest lockRequest){
@@ -102,21 +99,16 @@ public class NBLockController {
         if(lockRequest == null){
             return;
         }
-        String lockId = null;
+        String lockId = lockRequest.getLockId();
         String lockCode = lockRequest.getTerminalNum();
+        if(lockId == null && lockCode == null){
+            return;
+        }
         if(lockCode == null){
-            lockId = lockRequest.getLockId();
-            if(lockId == null){
-                return;
-            }
-            LockInfo lockInfo = lockInfoDao.selectById(lockId);
-            if(lockInfo == null){
-                return;
-            }
-            lockCode = lockInfo.getLockCode();
-            if(lockCode == null){
-                return;
-            }
+            lockCode = lockProcessUtil.getLockCodeById(lockId);
+        }
+        if(lockId == null){
+            lockId = lockProcessUtil.getLockIdByCode(lockCode);
         }
 
         //组装门禁历史对象，保存门禁操作历史
@@ -143,20 +135,26 @@ public class NBLockController {
         accCtrlProcess.setProcessMethod(LockProcessMethod.INTERFACE_BY.getCode());
         //设置对应门禁信息
         AccessControlInfo accessControlInfo = new AccessControlInfo();
-        CameraDevice device = null;
         String accCtrlProId = lockRequest.getAccCtrlProId();
         AccCtrlProcess accCtrlPro = null;
         if(accCtrlProId != null){
             accCtrlPro = accCtrlProcessDao.selectById(accCtrlProId);
         }
         if (accCtrlPro != null){
+            accCtrlProcess.setLockCode(accCtrlPro.getLockCode());
+            accCtrlProcess.setLockId(accCtrlPro.getLockId());
             accessControlInfo.setAccessControlId(accCtrlPro.getAccessControlId());
             accessControlInfo.setAccessControlName(accCtrlPro.getAccessControlName());
             accCtrlProcess.setAccessControlName(accCtrlPro.getAccessControlName());
             accCtrlProcess.setAccessControlId(accCtrlPro.getAccessControlId());
+            accCtrlProcess.setGender(accCtrlPro.getGender());
             //todo 设置设备信息
-
+            accCtrlProcess.setDeviceId(accCtrlPro.getDeviceId());
+            accCtrlProcess.setDeviceIp(accCtrlPro.getDeviceIp());
+            accCtrlProcess.setDeviceType(accCtrlPro.getDeviceType());
         }else {
+            accCtrlProcess.setLockId(lockId);
+            accCtrlProcess.setLockCode(lockCode);
             AccessControlInfo acInfo = accessControlService.selectAccCtrlByLockCode(lockCode);
             if(acInfo != null){
                 String accessControlId = acInfo.getAccessControlId();
@@ -179,7 +177,7 @@ public class NBLockController {
                 backLockInfo = (BackLockInfo) backData;
                 String type = backLockInfo.getType();
 
-                Integer status = getLockStatus(lockRequest);
+                Integer status = lockProcessUtil.getLockStatus(lockRequest);
                 if(LcokProcessResultType.SUCCESS.getCode().equalsIgnoreCase(type)
                         && status != null && status == LockStatus.UNLOCK.getCode()){
                     accCtrlProcess.setProcessResult(LcokProcessResultType.SUCCESS.getCode());
@@ -194,7 +192,7 @@ public class NBLockController {
                 if(status != null){
                     if(status == LockStatus.UNLOCK.getCode() || status == LockStatus.LOCK_CLOSED.getCode()){
                         //改变锁、门禁状态为当前状态
-                        toUpdateAccCtrlAndLockStatus(status,lockCode);
+                        lockProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCode);
                     }
                 }
 
@@ -210,49 +208,5 @@ public class NBLockController {
         }
     }
 
-    /**
-     * 根据开锁操作返回状态更新相应门禁和锁状态
-     * @param status 开锁操作返回状态
-     * @param lockCode 当前摄像头对应锁编号
-     */
-    private void toUpdateAccCtrlAndLockStatus(Integer status, String lockCode) {
-        AccCtrlStatus accCtrlStatus =  AccCtrlStatus.codeOf(status);
-        LockStatus lockStatus = LockStatus.codeOf(status);
-        //状态不合法则不更新
-        if(accCtrlStatus != null){
-            AccessControlInfo accessControlInfo = new AccessControlInfo();
-            accessControlInfo.setStatus(status);
-            accessControlInfo.setUpdatetime(new Date());
-            //直接根据锁编号更新门禁状态
-            accessControlDao.update(accessControlInfo, new UpdateWrapper<AccessControlInfo>().eq("lock_code", lockCode));
-        }
-        //状态不合法则不更新
-        if(lockStatus != null){
-            LockInfo lockInfo = new LockInfo();
-            lockInfo.setStatus(lockStatus.getCode());
-            lockInfo.setUpdatetime(new Date());
-            lockInfoDao.update(lockInfo, new UpdateWrapper<LockInfo>().eq("lock_code", lockCode));
-        }
-    }
-
-    /**
-     * 查询开锁状态
-     * @param lockRequest 请求参数
-     * @return 开锁状态
-     */
-    private Integer getLockStatus(LockRequest lockRequest) {
-        try {
-            //休眠半秒再查询状态
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        RestfulEntityBySummit back = nbLockServiceImpl.toQueryLockStatus(lockRequest);
-        Object backData = back.getData();
-        if((backData instanceof BackLockInfo)){
-            return ((BackLockInfo) backData).getObjx();
-        }
-        return null;
-    }
 
 }
