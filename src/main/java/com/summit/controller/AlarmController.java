@@ -12,6 +12,7 @@ import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.SimplePage;
 import com.summit.entity.LockRequest;
+import com.summit.entity.UpdateAlarmParam;
 import com.summit.service.AlarmService;
 import com.summit.service.impl.NBLockServiceImpl;
 import com.summit.util.CommonUtil;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,29 +46,29 @@ public class AlarmController {
 
     @ApiOperation(value = "更新门禁告警状态", notes = "alarmId和processId不能同时为空，若两个都不为空以alarmId作为更新条件，若alarmId为空则以processId作为更新条件，时间取当前时间")
     @PutMapping(value = "/updateAlarmStatus")
-        public RestfulEntityBySummit<String> updateAlarmStatus(@ApiParam(value = "门禁告警状态", required = true) @RequestParam(value = "alarmStatus") Integer alarmStatus,
-                                                               @ApiParam(value = "门禁告警id") @RequestParam(value = "alarmId",required = false) String alarmId,
-                                                               @ApiParam(value = "门禁告警对应操作记录id") @RequestParam(value = "accCtrlProId",required = false) String accCtrlProId,
-                                                               @ApiParam(value = "告警处理人", required = true) @RequestParam(value = "processPerson",required = false) String processPerson,
-                                                               @ApiParam(value = "告警处理说明", required = true) @RequestParam(value = "processRemark",required = false) String processRemark,
-                                                               @ApiParam(value = "锁id", required = true) @RequestParam(value = "lockId",required = false) String lockId,
-                                                               @ApiParam(value = "是否开锁") @RequestParam(value = "isUnLock",required = false) Boolean isUnLock) {
-        if(alarmStatus == null){
-            log.error("门禁告警状态为空");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁告警状态为空",null);
+        public RestfulEntityBySummit<String> updateAlarmStatus(@RequestBody UpdateAlarmParam updateAlarmParam) {
+        if(updateAlarmParam == null){
+            log.error("参数为空");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"参数为空",null);
         }
+        String alarmId = updateAlarmParam.getAlarmId();
+        String accCtrlProId = updateAlarmParam.getAccCtrlProId();
         if(alarmId == null && accCtrlProId == null){
             log.error("alarmId和processId不能同时为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"alarmId和processId不能同时为空",null);
         }
         String msg = "";
-        if(isUnLock){
+        boolean needUnLock = updateAlarmParam.isNeedUnLock();
+        String lockId = updateAlarmParam.getLockId();
+        Integer alarmStatus = updateAlarmParam.getAlarmStatus();
+        String processRemark = updateAlarmParam.getProcessRemark();
+        String operName = null;
+        UserInfo userInfo = UserContextHolder.getUserInfo();
+        if(userInfo != null)
+            operName = userInfo.getName();
+        if(needUnLock){
             LockRequest lockRequest = new LockRequest();
             lockRequest.setLockId(lockId);
-            UserInfo userInfo = UserContextHolder.getUserInfo();
-            String operName = null;
-            if(userInfo != null)
-                operName = userInfo.getName();
             lockRequest.setOperName(operName);
             RestfulEntityBySummit result = nbLockServiceImpl.toUnLock(lockRequest);
             if(result != null){
@@ -80,7 +82,7 @@ public class AlarmController {
             alarm.setAccCtrlProId(accCtrlProId);
         }
         alarm.setAlarmStatus(alarmStatus);
-        alarm.setProcessPerson(processPerson);
+        alarm.setProcessPerson(operName);
         alarm.setProcessRemark(processRemark);
         alarm.setUpdatetime(new Date());
         try {
