@@ -73,6 +73,7 @@ public class AlarmController {
             LockRequest lockRequest = new LockRequest();
             lockRequest.setLockId(lockId);
             lockRequest.setOperName(operName);
+            lockRequest.setAccCtrlProId(accCtrlProId);
             RestfulEntityBySummit result = nbLockServiceImpl.toUnLock(lockRequest);
             if(result != null){
                 accCtrlProcessUtil.toInsertAndUpdateData(result.getData(),lockRequest);
