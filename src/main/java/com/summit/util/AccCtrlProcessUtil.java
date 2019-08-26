@@ -107,6 +107,7 @@ public class AccCtrlProcessUtil {
             if(e instanceof ErrorMsgException)
                 log.error(((ErrorMsgException) e).getErrorMsg());
             else log.error("开锁失败,{}",e.getMessage());
+            return null;
         }
         Object backData = back.getData();
         if((backData instanceof BackLockInfo)){
