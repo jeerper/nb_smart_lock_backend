@@ -6,6 +6,7 @@ import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
 import com.summit.entity.LockRequest;
 import com.summit.entity.ReportParam;
+import com.summit.exception.ErrorMsgException;
 import com.summit.service.impl.NBLockServiceImpl;
 import com.summit.util.AccCtrlProcessUtil;
 import io.swagger.annotations.Api;
@@ -28,7 +29,14 @@ public class NBLockController {
 
     @PostMapping(value = "/queryLockStatus")
     public RestfulEntityBySummit queryLockStatus(@RequestBody LockRequest lockRequest){
-        return nbLockServiceImpl.toQueryLockStatus(lockRequest);
+        try {
+            return nbLockServiceImpl.toQueryLockStatus(lockRequest);
+        } catch (Exception e) {
+            log.error("查询锁状态失败,{}",e.getMessage());
+            if(e instanceof ErrorMsgException)
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, ((ErrorMsgException) e).getErrorMsg(),null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999);
+        }
     }
 
     @PostMapping(value = "/unLock")
@@ -39,10 +47,17 @@ public class NBLockController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"请求参数为空", null);
 
         }
-        result = nbLockServiceImpl.toUnLock(lockRequest);
-        //查询调用查询锁状态接口，插入一条锁操作记录，改变锁、门禁状态
-        if(result != null)
-            accCtrlProcessUtil.toInsertAndUpdateData(result.getData(),lockRequest);
+        try {
+            result = nbLockServiceImpl.toUnLock(lockRequest);
+            //查询调用查询锁状态接口，插入一条锁操作记录，改变锁、门禁状态
+            if(result != null)
+                accCtrlProcessUtil.toInsertAndUpdateData(result.getData(),lockRequest);
+        } catch (Exception e) {
+            log.error("开锁失败,{}",e.getMessage());
+            if(e instanceof ErrorMsgException)
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, ((ErrorMsgException) e).getErrorMsg(),null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999);
+        }
         return result;
     }
 
