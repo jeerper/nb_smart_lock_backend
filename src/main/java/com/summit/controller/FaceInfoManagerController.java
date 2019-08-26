@@ -10,6 +10,7 @@ import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.FaceInfo;
+import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.exception.ErrorMsgException;
 import com.summit.service.FaceInfoManagerService;
 import com.summit.util.SummitTools;
@@ -44,16 +45,9 @@ public class FaceInfoManagerController {
   private FaceInfoManagerService faceInfoManagerService;
   @ApiOperation(value = "录入人脸信息",notes = "返回不是-1则为成功")
   @PostMapping(value = "insertFaceInfo")
-  public RestfulEntityBySummit<Integer>  insertFaceInfo(@RequestParam(value = "name",defaultValue = "")String userName,
-                                                        @RequestParam(value = "gender") Integer gender,
-                                                        @RequestParam(value = "province")String province,
-                                                        @RequestParam(value = "city")String city,
-                                                        @RequestParam(value = "birthday")String birthday,
-                                                        @RequestParam(value = "cardType")Integer cardType,
-                                                        @RequestParam(value = "certificateNum")String cardId,
-                                                        @RequestParam(value = "faceImage")String faceImage) throws ParseException {
+  public RestfulEntityBySummit<Integer>  insertFaceInfo(@RequestBody FaceInfoManagerEntity faceInfoManagerEntity) throws ParseException {
         String time=CommonConstants.snapshotTimeFormat.format(new Date());
-        String  base64Str=faceImage;
+        String  base64Str=faceInfoManagerEntity.getFaceImage();
         FaceInfo faceInfo=new FaceInfo();
         if(SummitTools.stringNotNull(base64Str)){
           StringBuffer fileName = new StringBuffer();
@@ -77,7 +71,7 @@ public class FaceInfoManagerController {
           String faceUrl=new StringBuilder()
                   .append(CommonConstants.FACE_LIB_ROOT)
                   .append(CommonConstants.URL_SEPARATOR)
-                  .append(userName)
+                  .append(faceInfoManagerEntity.getName())
                   .append(CommonConstants.URL_SEPARATOR)
                   .append(time)
                   .append(CommonConstants.FACE_Image_SUFFIX)
@@ -90,15 +84,14 @@ public class FaceInfoManagerController {
             log.error("保存人脸图片异常");
           }
         }
-          faceInfo.setUserName(userName);
-          faceInfo.setGender(gender);
-          faceInfo.setProvince(province);
-          faceInfo.setCity(city);
-          SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd");
-          Date birthday1 = sdf.parse(birthday);
+          faceInfo.setUserName(faceInfoManagerEntity.getName());
+          faceInfo.setGender(faceInfoManagerEntity.getGender());
+          faceInfo.setProvince(faceInfoManagerEntity.getProvince());
+          faceInfo.setCity(faceInfoManagerEntity.getCity());
+          Date birthday1 = CommonConstants.dateFormat.parse(faceInfoManagerEntity.getBirthday());
           faceInfo.setBirthday(birthday1);
-          faceInfo.setCardType(cardType);
-          faceInfo.setCardId(cardId);
+          faceInfo.setCardType(faceInfoManagerEntity.getCardType());
+          faceInfo.setCardId(faceInfo.getCardId());
           try {
             faceInfoManagerService.insertFaceInfo(faceInfo);
           } catch (Exception e) {
