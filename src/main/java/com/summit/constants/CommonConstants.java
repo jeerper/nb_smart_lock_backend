@@ -63,5 +63,8 @@ public class CommonConstants {
      * 人脸库根目录名称
      */
     public static final String FACE_LIB_ROOT = "faceLibRoot";
-
+    /**
+     * 人脸信息图名称后缀
+     */
+    public static final String FACE_Image_SUFFIX = "_Faceimage.jpg";
 }

@@ -1,6 +1,5 @@
 package com.summit.dao.entity;
 
-import ch.qos.logback.classic.db.names.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -13,7 +12,6 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.joda.time.format.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
@@ -25,7 +23,7 @@ import java.util.Date;
 @AllArgsConstructor//生成全参的构造函数
 @ApiModel(value = "人脸信息类",description = "封装人脸信息")
 @JsonIgnoreProperties(value = {"facepanorama","facepic","facematch"})
-@com.baomidou.mybatisplus.annotation.TableName(value = "face_info")
+@TableName(value = "face_info")
 public class FaceInfo {
 
     @ApiModelProperty(value = "人脸id",name = "faceid")

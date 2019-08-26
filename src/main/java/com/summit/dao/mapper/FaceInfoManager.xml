@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.summit.dao.repository.FaceInfoManagerDao">
+   <!--<resultMap id="facemanager" type="com.summit.dao.entity.FaceInfo">
+       <result column="face_mamager_id" jdbcType="VARCHAR" property="faceManagerID"/>
+       <result column="face_name" jdbcType="VARCHAR" property="faceName"/>
+       <result column="gender" jdbcType="INTEGER" property="gender"/>
+       <result column="province" jdbcType="VARCHAR" property="province"/>
+       <result column="city" jdbcType="VARCHAR" property="city"/>
+       <result column="card_type" jdbcType="VARCHAR" property="cardType"/>
+       <result column="card_id" jdbcType="VARCHAR" property="cardID"/>
+       <result column="birthday" jdbcType="TIMESTAMP" property="birthday"/>
+       <result column="face_image" jdbcType="VARCHAR" property="faceImage"/>
+   </resultMap>
+    <select id="selectFaceManagerByID" parameterType="string" resultMap="facemanager">
+     SELECT *
+     FROM face_manager
+     WHERE face_manager_id=#{faceManagerID}
+  </select>-->
+    <insert id="insertFaceInfo" parameterType="com.summit.dao.entity.FaceInfo">
+        INSERT INTO face_info
+        (face_id,face_name,user_name,user_id,gender,birthday,province,city,card_type,
+        card_id,face_match_rate,face_lib_name,face_lib_type,device_ip,pic_snapshot_time,face_lib_id,face_image)
+        VALUES (#{faceid},#{faceName},#{userName},#{userID},#{gender},#{birthday},#{province},#{city},#{cardType},
+                #{cardID},#{faceMatchrate},#{facelibname},#{facelibtype},
+                #{deviceip},#{picsnapshottime},#{facelibid},#{faceImage}
+        )
+    </insert>
+</mapper>
