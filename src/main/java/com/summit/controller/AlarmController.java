@@ -81,13 +81,14 @@ public class AlarmController {
             Object data = result.getData();
             accCtrlProcessUtil.toInsertAndUpdateData(data,lockRequest);
             BackLockInfo backLockInfo = null;
+            msg = "开锁结果：" + result.getMsg() + ";";
             if((data instanceof BackLockInfo)){
                 backLockInfo = (BackLockInfo) data;
+                msg = "开锁结果：" + backLockInfo.getContent();
                 if(!LcokProcessResultType.SUCCESS.getCode().equals(backLockInfo.getType())){
                     return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,result.getMsg(),null);
                 }
             }
-            msg = "开锁结果：" + result.getMsg() + ";";
         }
 
         if(alarmId == null){
