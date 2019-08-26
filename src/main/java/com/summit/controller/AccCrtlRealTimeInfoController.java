@@ -43,10 +43,6 @@ public class AccCrtlRealTimeInfoController {
     @Autowired
     private AlarmService alarmService;
     @Autowired
-    private AlarmDao alarmDao;
-    @Autowired
-    private AccCtrlProcessService accCtrlProcessService;
-    @Autowired
     private AccessControlService accessControlService;
     @Autowired
     private AccCtrlProcessUtil accCtrlProcessUtil;

@@ -397,6 +397,7 @@ public class AccCtrlProcessUtil {
                 accCtrlRealTimeInfo.setAccessControlName(accCtrl.getAccessControlName());
                 accCtrlRealTimeInfo.setAccCtrlStatus(accCtrl.getStatus());
                 accCtrlRealTimeInfo.setLockId(accCtrl.getLockId());
+                accCtrlRealTimeInfo.setLockCode(accCtrl.getLockCode());
                 accCtrlRealTimeInfo.setLongitude(accCtrl.getLongitude());
                 accCtrlRealTimeInfo.setLatitude(accCtrl.getLatitude());
 //                accCtrlRealTimeInfo.setLockCode(accCtrl.getLockCode());
