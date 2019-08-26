@@ -7,6 +7,7 @@ import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.service.CameraDeviceService;
+import com.summit.util.CommonUtil;
 import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
@@ -125,9 +126,8 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
         CameraDevice cameraDevice = new CameraDevice();
         cameraDevice.setDeviceIp(deviceIp);
         List<CameraDevice> devices = cameraDeviceDao.selectCondition(cameraDevice, null);
-        if(devices == null || devices.isEmpty()){
+        if(CommonUtil.isEmptyList(devices)){
             return null;
-
         }
         return devices.get(0);
     }

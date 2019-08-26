@@ -15,9 +15,12 @@ import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.repository.AccCtrlProcessDao;
 import com.summit.dao.repository.AccessControlDao;
+import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.LockInfoDao;
+import com.summit.entity.AccCtrlRealTimeInfo;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
+import com.summit.exception.ErrorMsgException;
 import com.summit.sdk.huawei.model.AccCtrlStatus;
 import com.summit.sdk.huawei.model.AlarmStatus;
 import com.summit.sdk.huawei.model.FaceInfo;
@@ -34,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -54,6 +58,8 @@ public class AccCtrlProcessUtil {
     private AccessControlService accessControlService;
     @Autowired
     private CameraDeviceService cameraDeviceService;
+    @Autowired
+    private AlarmDao alarmDao;
 
     /**
      * 根据开锁操作返回状态更新相应门禁和锁状态
@@ -90,11 +96,19 @@ public class AccCtrlProcessUtil {
     public Integer getLockStatus(LockRequest lockRequest) {
         try {
             //休眠半秒再查询状态
-            Thread.sleep(500);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        RestfulEntityBySummit back = nbLockServiceImpl.toQueryLockStatus(lockRequest);
+        RestfulEntityBySummit back = null;
+        try {
+            back = nbLockServiceImpl.toQueryLockStatus(lockRequest);
+        } catch (Exception e) {
+            if(e instanceof ErrorMsgException)
+                log.error(((ErrorMsgException) e).getErrorMsg());
+            else log.error("开锁失败,{}",e.getMessage());
+            return null;
+        }
         Object backData = back.getData();
         if((backData instanceof BackLockInfo)){
             return ((BackLockInfo) backData).getObjx();
@@ -107,7 +121,7 @@ public class AccCtrlProcessUtil {
      * @return 锁编号
      */
     public String getLockCodeById(String lockId){
-        if(lockId == null || "".equals(lockId))
+        if(CommonUtil.isEmptyStr(lockId))
             return null;
         LockInfo lockInfo = lockInfoDao.selectById(lockId);
         String lockCode = null;
@@ -122,10 +136,10 @@ public class AccCtrlProcessUtil {
      * @return 锁id
      */
     public String getLockIdByCode(String lockCode){
-        if(lockCode == null || "".equals(lockCode))
+        if(CommonUtil.isEmptyStr(lockCode))
             return null;
         List<LockInfo> lockInfos = lockInfoDao.selectList(new QueryWrapper<LockInfo>().eq("lock_code", lockCode));
-        if(lockInfos == null || lockInfos.isEmpty())
+        if(CommonUtil.isEmptyList(lockInfos))
             return null;
         LockInfo lockInfo = lockInfos.get(0);
         String lockId = null;
@@ -163,6 +177,7 @@ public class AccCtrlProcessUtil {
         accCtrlProcess.setLockId(lockId);
         accCtrlProcess.setProcessMethod(LockProcessMethod.INTERFACE_BY.getCode());
         accCtrlProcess.setProcessTime(new Date());
+        accCtrlProcess.setProcessType(LockProcessType.UNLOCK.getCode());
         UserInfo userInfo = UserContextHolder.getUserInfo();
         if(userInfo != null){
             accCtrlProcess.setUserName(userInfo.getName());
@@ -229,7 +244,7 @@ public class AccCtrlProcessUtil {
                 }else{
                     accCtrlProcess.setProcessResult(LcokProcessResultType.ERROR.getCode());
                     String content = backLockInfo.getContent();
-                    if(content == null || "".equals(content))
+                    if(CommonUtil.isEmptyStr(content))
                         accCtrlProcess.setFailReason("未知");
                     else
                         accCtrlProcess.setFailReason(content);
@@ -328,14 +343,14 @@ public class AccCtrlProcessUtil {
             //刷脸成功后开锁操作也有可能失败,成功则failReason=null
             accCtrlProcess.setFailReason(failReason);
         }else if("Alarm".equals(type)){
-//            accessControlInfo.setStatus(AccCtrlStatus.ALARM.getCode());
+            accessControlInfo.setStatus(AccCtrlStatus.ALARM.getCode());
             accCtrlProcess.setProcessType(LockProcessType.LOCK_ALARM.getCode());
             accCtrlProcess.setProcessResult(LcokProcessResultType.ERROR.getCode());
             accCtrlProcess.setFailReason("匹配度过低");
 
         }else{
             //关锁
-//            accessControlInfo.setStatus(AccCtrlStatus.CLOSED.getCode());
+            accessControlInfo.setStatus(AccCtrlStatus.CLOSED.getCode());
             accCtrlProcess.setProcessType(LockProcessType.CLOSE_LOCK.getCode());
             accCtrlProcess.setProcessResult("success");
         }
@@ -358,4 +373,98 @@ public class AccCtrlProcessUtil {
         return alarm;
     }
 
+    /**
+     * 通过门禁操作记录id查询告警
+     * @param accCtrlProId 门禁操作记录id
+     * @return 门禁操作记录id对应告警
+     */
+    public Alarm getAlarmByAccCtrlProId(String accCtrlProId){
+        if (CommonUtil.isEmptyStr(accCtrlProId)) {
+            return null;
+        }
+        List<Alarm> alarms = alarmDao.selectList(new QueryWrapper<Alarm>().eq("acc_ctrl_pro_id", accCtrlProId));
+        if(CommonUtil.isEmptyList(alarms)){
+            return null;
+        }
+        return alarms.get(0);
+    }
+
+    /**
+     * 根据门禁信息列表查询组装门禁实时信息列表
+     * @param accessControlInfos 门禁信息列表
+     * @return 门禁实时信息列表
+     */
+    public List<AccCtrlRealTimeInfo> getLockRealTimeInfo(List<AccessControlInfo> accessControlInfos) {
+        List<AccCtrlRealTimeInfo> accCtrlRealTimeInfos = new ArrayList<>();
+        for (AccessControlInfo accCtrl : accessControlInfos){
+            if(accCtrl == null)
+                continue;
+            String accessControlId = accCtrl.getAccessControlId();
+            AccCtrlRealTimeInfo accCtrlRealTimeInfo = new AccCtrlRealTimeInfo();
+            if(accessControlId != null){
+                accCtrlRealTimeInfo.setAccessControlId(accessControlId);
+                accCtrlRealTimeInfo.setAccessControlName(accCtrl.getAccessControlName());
+                accCtrlRealTimeInfo.setAccCtrlStatus(accCtrl.getStatus());
+                accCtrlRealTimeInfo.setLockId(accCtrl.getLockId());
+                accCtrlRealTimeInfo.setLockCode(accCtrl.getLockCode());
+                accCtrlRealTimeInfo.setLongitude(accCtrl.getLongitude());
+                accCtrlRealTimeInfo.setLatitude(accCtrl.getLatitude());
+//                accCtrlRealTimeInfo.setLockCode(accCtrl.getLockCode());
+                List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessService.selectAccCtrlProcessByAccCtrlId(accessControlId,null);
+
+                if(CommonUtil.isEmptyList(accCtrlProcesses)){
+                    continue;
+                }
+                //取最新的一条操作记录(dao sql已排好序)
+                AccCtrlProcess accCtrlProcess = accCtrlProcesses.get(0);
+                if(accCtrlProcess != null){
+                    String userName = accCtrlProcess.getUserName();
+                    //门禁记录中操作的具体摄像头
+                    accCtrlRealTimeInfo.setDeviceIp(accCtrlProcess.getDeviceIp());
+                    accCtrlRealTimeInfo.setDeviceType(accCtrlProcess.getDeviceType());
+                    accCtrlRealTimeInfo.setName(userName);
+                    String accCtrlProId = accCtrlProcess.getAccCtrlProId();
+                    if(accCtrlProId != null){
+                        accCtrlRealTimeInfo.setAccCtrlProId(accCtrlProId);
+                        Alarm alarm = alarmDao.selectByAccCtrlProId(accCtrlProId, null);
+                        if(alarm != null){
+                            accCtrlRealTimeInfo.setAlarmId(alarm.getAlarmId());
+                        }
+                    }
+
+                    accCtrlRealTimeInfo.setGender(accCtrlProcess.getGender());
+                    Date birthday = accCtrlProcess.getBirthday();
+                    try {
+                        if(birthday != null)
+                            accCtrlRealTimeInfo.setBirthday(CommonConstants.dateFormat.format(birthday));
+                    } catch (Exception e) {
+                        log.error("生日格式有误");
+                    }
+                    accCtrlRealTimeInfo.setProvince(accCtrlProcess.getProvince());
+                    accCtrlRealTimeInfo.setCity(accCtrlProcess.getCity());
+                    accCtrlRealTimeInfo.setCardId(accCtrlProcess.getCardId());
+                    accCtrlRealTimeInfo.setCardType(accCtrlProcess.getCardType());
+                    accCtrlRealTimeInfo.setFaceMatchRate(accCtrlProcess.getFaceMatchRate());
+                    accCtrlRealTimeInfo.setFaceLibName(accCtrlProcess.getFaceLibName());
+                    accCtrlRealTimeInfo.setFaceLibType(accCtrlProcess.getFaceLibType());
+                    try {
+                        if(accCtrlProcess.getProcessTime() != null)
+                            accCtrlRealTimeInfo.setPicSnapshotTime(CommonConstants.timeFormat.format(accCtrlProcess.getProcessTime()));
+                    } catch (Exception e) {
+                        log.error("操作时间格式有误");
+                    }
+                    FileInfo facePanorama = accCtrlProcess.getFacePanorama();
+                    if(facePanorama != null){
+                        accCtrlRealTimeInfo.setFacePanoramaUrl(facePanorama.getFilePath());
+                    }
+                    FileInfo facePic = accCtrlProcess.getFacePic();
+                    if(facePic != null){
+                        accCtrlRealTimeInfo.setFacePicUrl(facePic.getFilePath());
+                    }
+                }
+            }
+            accCtrlRealTimeInfos.add(accCtrlRealTimeInfo);
+        }
+        return accCtrlRealTimeInfos;
+    }
 }

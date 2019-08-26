@@ -102,7 +102,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             log.error("锁编号为空");
             return null;
         }
-        return accessControlDao.selectAccCtrlByLockCode(lockCode, LockAuthCtrl.getRoles());
+        return accessControlDao.selectAccCtrlByLockCode(lockCode, null);
     }
 
     /**
@@ -388,7 +388,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                         throw new ErrorMsgException("更新入口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
                     }
                     try {
-                        cameraDeviceService.updateDevice(exitCamera);
+                        cameraDeviceService.updateDevice(entryCamera);
                     } catch (Exception e) {
                         log.error("更新入口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
                         throw new ErrorMsgException("更新入口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
@@ -494,7 +494,7 @@ public class AccessControlServiceImpl implements AccessControlService {
      */
     @Override
     public int delBatchAccCtrlByAccCtrlId(List<String> accessControlIds) {
-        if(accessControlIds == null || accessControlIds.isEmpty()){
+        if(CommonUtil.isEmptyList(accessControlIds)){
             log.error("门禁id列表为空");
             return CommonConstants.UPDATE_ERROR;
         }

@@ -7,7 +7,6 @@ import com.summit.common.util.ResultBuilder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.SimplePage;
-import com.summit.sdk.huawei.model.LockProcessType;
 import com.summit.service.AccCtrlProcessService;
 import com.summit.util.CommonUtil;
 import io.swagger.annotations.Api;
@@ -64,9 +63,9 @@ public class AccCtrlProcessController {
         Date end = CommonUtil.parseStrToDate(endTime,CommonConstants.ENDTIMEMARK);
         try {
             AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
-            if(!"".equals(accCtrlProId))
+            if(!CommonUtil.isEmptyStr(accCtrlProId))
                 accCtrlProcess.setAccCtrlProId(accCtrlProId);
-            if(!"".equals(accessControlName))
+            if(!CommonUtil.isEmptyStr(accessControlName))
                 accCtrlProcess.setAccessControlName(accessControlName);
             accCtrlProcess.setProcessType(processType);
             accCtrlProcessPage = accCtrlProcessService.selectAccCtrlProcessCondition(accCtrlProcess, start, end, new SimplePage(current, pageSize));
@@ -80,7 +79,7 @@ public class AccCtrlProcessController {
     @ApiOperation(value = "用id列表批量删除门禁操作记录", notes = "accCtrlProIds不能为空")
     @DeleteMapping(value = "/delAccCtrlProcessByIdBatch")
     public RestfulEntityBySummit<String> delAccCtrlProcessByIdBatch(@ApiParam(value = "门禁告警id数组", required = true) @RequestParam(value = "accCtrlProIds") List<String> accCtrlProIds) {
-        if(accCtrlProIds == null || accCtrlProIds.isEmpty()){
+        if(CommonUtil.isEmptyList(accCtrlProIds)){
             log.error("门禁操作记录id列表为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁操作记录id列表为空",null);
         }

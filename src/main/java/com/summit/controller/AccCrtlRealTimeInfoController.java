@@ -4,19 +4,13 @@ import com.summit.cbb.utils.page.Page;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
-import com.summit.constants.CommonConstants;
-import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccessControlInfo;
-import com.summit.dao.entity.Alarm;
-import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.SimplePage;
-import com.summit.dao.repository.AlarmDao;
 import com.summit.entity.AccCtrlRealTimeInfo;
 import com.summit.sdk.huawei.model.AlarmStatus;
-import com.summit.service.AccCtrlProcessService;
 import com.summit.service.AccessControlService;
 import com.summit.service.AlarmService;
-import com.summit.service.FaceInfoService;
+import com.summit.util.AccCtrlProcessUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -27,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +34,9 @@ public class AccCrtlRealTimeInfoController {
     @Autowired
     private AlarmService alarmService;
     @Autowired
-    private AlarmDao alarmDao;
-    @Autowired
-    private AccCtrlProcessService accCtrlProcessService;
-    @Autowired
     private AccessControlService accessControlService;
+    @Autowired
+    private AccCtrlProcessUtil accCtrlProcessUtil;
 
 
     @ApiOperation(value = "分页查询门禁操作实时信息", notes = "分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
@@ -64,7 +54,7 @@ public class AccCrtlRealTimeInfoController {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"无门禁操作记录成功", null);
             }
             accessControlInfos = acPage.getContent();
-            accCtrlRealTimeInfos = getLockRealTimeInfo(accessControlInfos);
+            accCtrlRealTimeInfos = accCtrlProcessUtil.getLockRealTimeInfo(accessControlInfos);
             Integer integer = alarmService.selectAlarmCountByStatus(AlarmStatus.UNPROCESSED.getCode());
             int allAlarmCount = integer == null ? 0 : integer;
             data.put("allAlarmCount",allAlarmCount);
@@ -77,81 +67,4 @@ public class AccCrtlRealTimeInfoController {
 
     }
 
-    /**
-     * 根据门禁信息列表查询组装门禁实时信息列表
-     * @param accessControlInfos 门禁信息列表
-     * @return 门禁实时信息列表
-     */
-    private List<AccCtrlRealTimeInfo> getLockRealTimeInfo(List<AccessControlInfo> accessControlInfos) {
-        List<AccCtrlRealTimeInfo> accCtrlRealTimeInfos = new ArrayList<>();
-        for (AccessControlInfo accCtrl : accessControlInfos){
-            if(accCtrl == null)
-                continue;
-            String accessControlId = accCtrl.getAccessControlId();
-            AccCtrlRealTimeInfo accCtrlRealTimeInfo = new AccCtrlRealTimeInfo();
-            if(accessControlId != null){
-                accCtrlRealTimeInfo.setAccessControlId(accessControlId);
-                accCtrlRealTimeInfo.setAccessControlName(accCtrl.getAccessControlName());
-                accCtrlRealTimeInfo.setAccCtrlStatus(accCtrl.getStatus());
-                accCtrlRealTimeInfo.setLockId(accCtrl.getLockId());
-                accCtrlRealTimeInfo.setLongitude(accCtrl.getLongitude());
-                accCtrlRealTimeInfo.setLatitude(accCtrl.getLatitude());
-//                accCtrlRealTimeInfo.setLockCode(accCtrl.getLockCode());
-                List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessService.selectAccCtrlProcessByAccCtrlId(accessControlId,null);
-
-                if(accCtrlProcesses == null || accCtrlProcesses.isEmpty()){
-                    continue;
-                }
-                //取最新的一条操作记录(dao sql已排好序)
-                AccCtrlProcess accCtrlProcess = accCtrlProcesses.get(0);
-                if(accCtrlProcess != null){
-                    String userName = accCtrlProcess.getUserName();
-                    //门禁记录中操作的具体摄像头
-                    accCtrlRealTimeInfo.setDeviceIp(accCtrlProcess.getDeviceIp());
-                    accCtrlRealTimeInfo.setDeviceType(accCtrlProcess.getDeviceType());
-                    accCtrlRealTimeInfo.setName(userName);
-                    String accCtrlProId = accCtrlProcess.getAccCtrlProId();
-                    if(accCtrlProId != null){
-                        accCtrlRealTimeInfo.setAccCtrlProId(accCtrlProId);
-                        Alarm alarm = alarmDao.selectByAccCtrlProId(accCtrlProId, null);
-                        if(alarm != null){
-                            accCtrlRealTimeInfo.setAlarmId(alarm.getAlarmId());
-                        }
-                    }
-
-                    accCtrlRealTimeInfo.setGender(accCtrlProcess.getGender());
-                    Date birthday = accCtrlProcess.getBirthday();
-                    try {
-                        if(birthday != null)
-                            accCtrlRealTimeInfo.setBirthday(CommonConstants.dateFormat.format(birthday));
-                    } catch (Exception e) {
-                        log.error("生日格式有误");
-                    }
-                    accCtrlRealTimeInfo.setProvince(accCtrlProcess.getProvince());
-                    accCtrlRealTimeInfo.setCity(accCtrlProcess.getCity());
-                    accCtrlRealTimeInfo.setCardId(accCtrlProcess.getCardId());
-                    accCtrlRealTimeInfo.setCardType(accCtrlProcess.getCardType());
-                    accCtrlRealTimeInfo.setFaceMatchRate(accCtrlProcess.getFaceMatchRate());
-                    accCtrlRealTimeInfo.setFaceLibName(accCtrlProcess.getFaceLibName());
-                    accCtrlRealTimeInfo.setFaceLibType(accCtrlProcess.getFaceLibType());
-                    try {
-                        if(accCtrlProcess.getProcessTime() != null)
-                            accCtrlRealTimeInfo.setPicSnapshotTime(CommonConstants.timeFormat.format(accCtrlProcess.getProcessTime()));
-                    } catch (Exception e) {
-                        log.error("操作时间格式有误");
-                    }
-                    FileInfo facePanorama = accCtrlProcess.getFacePanorama();
-                    if(facePanorama != null){
-                        accCtrlRealTimeInfo.setFacePanoramaUrl(facePanorama.getFilePath());
-                    }
-                    FileInfo facePic = accCtrlProcess.getFacePic();
-                    if(facePic != null){
-                        accCtrlRealTimeInfo.setFacePicUrl(facePic.getFilePath());
-                    }
-                }
-            }
-            accCtrlRealTimeInfos.add(accCtrlRealTimeInfo);
-        }
-        return accCtrlRealTimeInfos;
-    }
 }
