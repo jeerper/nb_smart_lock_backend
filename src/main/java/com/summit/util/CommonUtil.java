@@ -35,6 +35,11 @@ public class CommonUtil {
         return null;
     }
 
+    /**
+     * List集合去重
+     * @param list 待去重List集合
+     * @return 去重后List集合
+     */
     public static List<String> removeDuplicate(List<String> list) {
         HashSet<String> h = new HashSet<>(list);
         list.clear();

@@ -102,7 +102,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             log.error("锁编号为空");
             return null;
         }
-        return accessControlDao.selectAccCtrlByLockCode(lockCode, LockAuthCtrl.getRoles());
+        return accessControlDao.selectAccCtrlByLockCode(lockCode, null);
     }
 
     /**
