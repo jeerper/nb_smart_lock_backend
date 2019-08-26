@@ -1,16 +1,14 @@
 package com.summit.controller;
 
 import com.summit.cbb.utils.page.Page;
-import com.summit.cbb.utils.page.Pageable;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.SimplePage;
-import com.summit.service.FaceInfoService;
 import com.summit.service.LockInfoService;
-import com.summit.service.LockRecordService;
+import com.summit.util.CommonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -107,11 +105,11 @@ public class LockInfoController {
                                                                        @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         Page<LockInfo> lockInfos = null;
         LockInfo lockInfo = new LockInfo();
-        if(!"".equals(lockId))
+        if(!CommonUtil.isEmptyStr(lockId))
             lockInfo.setLockId(lockId);
-        if(!"".equals(lockCode))
+        if(!CommonUtil.isEmptyStr(lockCode))
             lockInfo.setLockCode(lockCode);
-        if(!"".equals(createby))
+        if(!CommonUtil.isEmptyStr(createby))
             lockInfo.setCreateby(createby);
         lockInfo.setStatus(status);
         try {

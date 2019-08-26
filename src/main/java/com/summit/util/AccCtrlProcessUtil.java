@@ -112,7 +112,7 @@ public class AccCtrlProcessUtil {
      * @return 锁编号
      */
     public String getLockCodeById(String lockId){
-        if(lockId == null || "".equals(lockId))
+        if(CommonUtil.isEmptyStr(lockId))
             return null;
         LockInfo lockInfo = lockInfoDao.selectById(lockId);
         String lockCode = null;
@@ -127,10 +127,10 @@ public class AccCtrlProcessUtil {
      * @return 锁id
      */
     public String getLockIdByCode(String lockCode){
-        if(lockCode == null || "".equals(lockCode))
+        if(CommonUtil.isEmptyStr(lockCode))
             return null;
         List<LockInfo> lockInfos = lockInfoDao.selectList(new QueryWrapper<LockInfo>().eq("lock_code", lockCode));
-        if(lockInfos == null || lockInfos.isEmpty())
+        if(CommonUtil.isEmptyList(lockInfos))
             return null;
         LockInfo lockInfo = lockInfos.get(0);
         String lockId = null;
@@ -235,7 +235,7 @@ public class AccCtrlProcessUtil {
                 }else{
                     accCtrlProcess.setProcessResult(LcokProcessResultType.ERROR.getCode());
                     String content = backLockInfo.getContent();
-                    if(content == null || "".equals(content))
+                    if(CommonUtil.isEmptyStr(content))
                         accCtrlProcess.setFailReason("未知");
                     else
                         accCtrlProcess.setFailReason(content);
@@ -370,11 +370,11 @@ public class AccCtrlProcessUtil {
      * @return 门禁操作记录id对应告警
      */
     public Alarm getAlarmByAccCtrlProId(String accCtrlProId){
-        if (accCtrlProId == null || "".equals(accCtrlProId)) {
+        if (CommonUtil.isEmptyStr(accCtrlProId)) {
             return null;
         }
         List<Alarm> alarms = alarmDao.selectList(new QueryWrapper<Alarm>().eq("acc_ctrl_pro_id", accCtrlProId));
-        if(alarms == null || alarms.isEmpty()){
+        if(CommonUtil.isEmptyList(alarms)){
             return null;
         }
         return alarms.get(0);
@@ -403,7 +403,7 @@ public class AccCtrlProcessUtil {
 //                accCtrlRealTimeInfo.setLockCode(accCtrl.getLockCode());
                 List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessService.selectAccCtrlProcessByAccCtrlId(accessControlId,null);
 
-                if(accCtrlProcesses == null || accCtrlProcesses.isEmpty()){
+                if(CommonUtil.isEmptyList(accCtrlProcesses)){
                     continue;
                 }
                 //取最新的一条操作记录(dao sql已排好序)

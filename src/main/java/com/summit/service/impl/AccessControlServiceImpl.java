@@ -494,7 +494,7 @@ public class AccessControlServiceImpl implements AccessControlService {
      */
     @Override
     public int delBatchAccCtrlByAccCtrlId(List<String> accessControlIds) {
-        if(accessControlIds == null || accessControlIds.isEmpty()){
+        if(CommonUtil.isEmptyList(accessControlIds)){
             log.error("门禁id列表为空");
             return CommonConstants.UPDATE_ERROR;
         }

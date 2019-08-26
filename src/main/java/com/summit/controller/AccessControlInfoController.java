@@ -8,19 +8,12 @@ import com.summit.common.util.ResultBuilder;
 import com.summit.common.web.filter.UserContextHolder;
 import com.summit.dao.entity.AccCtrlRole;
 import com.summit.dao.entity.AccessControlInfo;
-import com.summit.dao.entity.CameraDevice;
-import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.SimpleAccCtrlInfo;
 import com.summit.dao.entity.SimplePage;
 import com.summit.exception.ErrorMsgException;
-import com.summit.sdk.huawei.model.AlarmType;
-import com.summit.sdk.huawei.model.DeviceType;
-import com.summit.service.AccCtrlProcessService;
 import com.summit.service.AccCtrlRoleService;
 import com.summit.service.AccessControlService;
-import com.summit.service.AlarmService;
-import com.summit.service.CameraDeviceService;
-import com.summit.service.LockInfoService;
+import com.summit.util.CommonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -36,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -81,7 +73,7 @@ public class AccessControlInfoController {
             if(uerInfo != null){
                 String[] roles = uerInfo.getRoles();
                 //暂时取第一个角色
-                if(roles != null && roles.length != 0)
+                if(!CommonUtil.isEmptyArr(roles))
                     accCtrlRoleService.insertAccCtrlRole(new AccCtrlRole(null,null,roles[0],accessControlInfo.getAccessControlId()));
             }
         } catch (Exception e) {
@@ -113,7 +105,7 @@ public class AccessControlInfoController {
     @ApiOperation(value = "删除门禁信息，参数为id数组", notes = "根据门禁id删除门禁信息，时同删除锁关联的锁信息和设备信息")
     @DeleteMapping(value = "/delAccessControlBatch")
     public RestfulEntityBySummit<String> delAccessControlBatch(@ApiParam(value = "门禁id",required = true)  @RequestParam(value = "accessControlIds",required = false) List<String> accessControlIds){
-        if(accessControlIds == null || accessControlIds.isEmpty()){
+        if(CommonUtil.isEmptyList(accessControlIds)){
             log.error("门禁id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁id为空",null);
         }
@@ -171,7 +163,7 @@ public class AccessControlInfoController {
 
     private String getErrorMsg(String msg, Exception e) {
         if(e instanceof ErrorMsgException){
-            return msg = ((ErrorMsgException) e).getErrorMsg();
+            return ((ErrorMsgException) e).getErrorMsg();
         }
         return msg;
     }

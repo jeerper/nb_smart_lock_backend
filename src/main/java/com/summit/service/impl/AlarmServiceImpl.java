@@ -12,6 +12,7 @@ import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.LockProcessDao;
 import com.summit.service.AlarmService;
+import com.summit.util.CommonUtil;
 import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
@@ -253,10 +254,12 @@ public class AlarmServiceImpl implements AlarmService {
         List<Alarm> alarms = new ArrayList<>();
         List<String> roles = LockAuthCtrl.getRoles();
         List<LockProcess> lockProcesses = lockProcessDao.selectByLockCode(lockCode, page,roles);
-        for (LockProcess lockProcess: lockProcesses) {
-
-            alarms.add(alarmDao.selectByAccCtrlProId(lockProcess.getProcessId(), roles));
+        if (!CommonUtil.isEmptyList(lockProcesses)){
+            for (LockProcess lockProcess: lockProcesses) {
+                alarms.add(alarmDao.selectByAccCtrlProId(lockProcess.getProcessId(), roles));
+            }
         }
+
         return alarms;
     }
 
@@ -295,8 +298,10 @@ public class AlarmServiceImpl implements AlarmService {
         lp.setDeviceIp(deviceIp);
         List<String> roles = LockAuthCtrl.getRoles();
         List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lp, start, end, page,roles);
-        for (LockProcess lockProcess: lockProcesses) {
-            alarms.add(alarmDao.selectByAccCtrlProId(lockProcess.getProcessId(), roles));
+        if (!CommonUtil.isEmptyList(lockProcesses)){
+            for (LockProcess lockProcess: lockProcesses) {
+                alarms.add(alarmDao.selectByAccCtrlProId(lockProcess.getProcessId(), roles));
+            }
         }
         return alarms;
     }
@@ -341,8 +346,10 @@ public class AlarmServiceImpl implements AlarmService {
         lp.setDeviceIp(cameraDevice.getDeviceIp());
         List<String> roles = LockAuthCtrl.getRoles();
         List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lp, start, end, page,roles);
-        for (LockProcess lockProcess: lockProcesses) {
-            alarms.add(alarmDao.selectByAccCtrlProId(lockProcess.getProcessId(), roles));
+        if (!CommonUtil.isEmptyList(lockProcesses)){
+            for (LockProcess lockProcess: lockProcesses) {
+                alarms.add(alarmDao.selectByAccCtrlProId(lockProcess.getProcessId(), roles));
+            }
         }
         return alarms;
     }
