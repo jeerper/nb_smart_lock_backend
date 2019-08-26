@@ -166,6 +166,7 @@ public class AccCtrlProcessUtil {
         accCtrlProcess.setLockId(lockId);
         accCtrlProcess.setProcessMethod(LockProcessMethod.INTERFACE_BY.getCode());
         accCtrlProcess.setProcessTime(new Date());
+        accCtrlProcess.setProcessType(LockProcessType.UNLOCK.getCode());
         UserInfo userInfo = UserContextHolder.getUserInfo();
         if(userInfo != null){
             accCtrlProcess.setUserName(userInfo.getName());
