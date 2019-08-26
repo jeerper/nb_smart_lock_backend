@@ -167,6 +167,10 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                                 }else{
                                     processResult = backLockInfoType;
                                     failReason = content;
+                                    Integer status = accCtrlProcessUtil.getLockStatus(lockRequest);
+                                    if(status != null){
+                                        accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCode);
+                                    }
                                 }
                             }else{
                                 log.error("开锁时返回记录为空");
