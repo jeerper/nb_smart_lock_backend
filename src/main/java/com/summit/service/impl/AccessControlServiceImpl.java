@@ -388,7 +388,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                         throw new ErrorMsgException("更新入口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
                     }
                     try {
-                        cameraDeviceService.updateDevice(exitCamera);
+                        cameraDeviceService.updateDevice(entryCamera);
                     } catch (Exception e) {
                         log.error("更新入口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
                         throw new ErrorMsgException("更新入口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
