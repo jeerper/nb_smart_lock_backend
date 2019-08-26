@@ -44,13 +44,13 @@ public class FaceInfoManagerController {
   private FaceInfoManagerService faceInfoManagerService;
   @ApiOperation(value = "录入人脸信息",notes = "返回不是-1则为成功")
   @PostMapping(value = "insertFaceInfo")
-  public RestfulEntityBySummit<Integer>  insertFaceInfo(@RequestParam(value = "userName",defaultValue = "")String userName,
+  public RestfulEntityBySummit<Integer>  insertFaceInfo(@RequestParam(value = "name",defaultValue = "")String userName,
                                                         @RequestParam(value = "gender") Integer gender,
                                                         @RequestParam(value = "province")String province,
                                                         @RequestParam(value = "city")String city,
                                                         @RequestParam(value = "birthday")String birthday,
                                                         @RequestParam(value = "cardType")Integer cardType,
-                                                        @RequestParam(value = "cardId")String cardId,
+                                                        @RequestParam(value = "certificateNum")String cardId,
                                                         @RequestParam(value = "faceImage")String faceImage) throws ParseException {
         String time=CommonConstants.snapshotTimeFormat.format(new Date());
         String  base64Str=faceImage;
