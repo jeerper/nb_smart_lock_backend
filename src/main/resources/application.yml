@@ -8,7 +8,7 @@ server:
   port: 22233
 spring:
   profiles:
-    active: pro
+    active: dev
     include: common
   application:
     name: "cbb-nb-smart-lock"

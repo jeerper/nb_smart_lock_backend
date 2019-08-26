@@ -22,7 +22,7 @@
         (face_id,face_name,user_name,user_id,gender,birthday,province,city,card_type,
         card_id,face_match_rate,face_lib_name,face_lib_type,device_ip,pic_snapshot_time,face_lib_id,face_image)
         VALUES (#{faceid},#{faceName},#{userName},#{userID},#{gender},#{birthday},#{province},#{city},#{cardType},
-                #{cardID},#{faceMatchrate},#{facelibname},#{facelibtype},
+                #{cardId},#{faceMatchrate},#{facelibname},#{facelibtype},
                 #{deviceip},#{picsnapshottime},#{facelibid},#{faceImage}
         )
     </insert>

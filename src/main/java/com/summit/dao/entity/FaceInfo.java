@@ -30,10 +30,6 @@ public class FaceInfo {
     @TableId(value = "face_id",type = IdType.ID_WORKER_STR)
     private String faceid;
 
-    @ApiModelProperty(value = "人脸名称",name = "faceName")
-    @TableField(value = "face_name")
-    private String faceName;
-
     @ApiModelProperty(value = "姓名",name = "userName")
     @TableField(value = "user_name")
     private String userName;
@@ -66,7 +62,7 @@ public class FaceInfo {
 
     @ApiModelProperty(value = "证件号",name = "cardID")
     @TableField(value = "card_id")
-    private String cardID;
+    private String cardId;
 
     @ApiModelProperty(value = "匹配率",name = "faceMatchrate")
     @TableField(value = "face_match_rate")

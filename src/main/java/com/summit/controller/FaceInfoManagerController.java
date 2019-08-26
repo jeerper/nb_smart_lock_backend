@@ -44,13 +44,13 @@ public class FaceInfoManagerController {
   private FaceInfoManagerService faceInfoManagerService;
   @ApiOperation(value = "录入人脸信息",notes = "返回不是-1则为成功")
   @PostMapping(value = "insertFaceInfo")
-  public RestfulEntityBySummit<Integer>  insertFaceInfo(@RequestParam(value = "faceName",defaultValue = "")String faceName,
+  public RestfulEntityBySummit<Integer>  insertFaceInfo(@RequestParam(value = "userName",defaultValue = "")String userName,
                                                         @RequestParam(value = "gender") Integer gender,
                                                         @RequestParam(value = "province")String province,
                                                         @RequestParam(value = "city")String city,
                                                         @RequestParam(value = "birthday")String birthday,
                                                         @RequestParam(value = "cardType")Integer cardType,
-                                                        @RequestParam(value = "cardID")String cardID,
+                                                        @RequestParam(value = "cardId")String cardId,
                                                         @RequestParam(value = "faceImage")String faceImage) throws ParseException {
         String time=CommonConstants.snapshotTimeFormat.format(new Date());
         String  base64Str=faceImage;
@@ -77,7 +77,7 @@ public class FaceInfoManagerController {
           String faceUrl=new StringBuilder()
                   .append(CommonConstants.FACE_LIB_ROOT)
                   .append(CommonConstants.URL_SEPARATOR)
-                  .append(faceName)
+                  .append(userName)
                   .append(CommonConstants.URL_SEPARATOR)
                   .append(time)
                   .append(CommonConstants.FACE_Image_SUFFIX)
@@ -90,7 +90,7 @@ public class FaceInfoManagerController {
             log.error("保存人脸图片异常");
           }
         }
-          faceInfo.setFaceName(faceName);
+          faceInfo.setUserName(userName);
           faceInfo.setGender(gender);
           faceInfo.setProvince(province);
           faceInfo.setCity(city);
@@ -98,7 +98,7 @@ public class FaceInfoManagerController {
           Date birthday1 = sdf.parse(birthday);
           faceInfo.setBirthday(birthday1);
           faceInfo.setCardType(cardType);
-          faceInfo.setCardID(cardID);
+          faceInfo.setCardId(cardId);
           try {
             faceInfoManagerService.insertFaceInfo(faceInfo);
           } catch (Exception e) {
@@ -109,6 +109,7 @@ public class FaceInfoManagerController {
           return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"录入人脸信息成功", 0);
   }
   @ApiOperation(value = "删除人脸信息，参数为id数组",notes = "根据人脸id删除人脸信息")
+  @DeleteMapping(value = "/delfaceInfoByIdBatch")
   public RestfulEntityBySummit<String> delFaceInfo(@ApiParam(value = "人脸信息的id",required = true)@RequestParam(value = "faceInfoIds",required = false)List<String> faceInfoIds){
     if(faceInfoIds==null || faceInfoIds.isEmpty()){
         log.error("人脸信息id为空");
@@ -124,6 +125,8 @@ public class FaceInfoManagerController {
     }
     return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"删除人脸信息成功",null);
   }
+
+
 
 
   private String getErrorMsg(String msg,Exception e){
