@@ -20,6 +20,7 @@ import com.summit.dao.repository.LockInfoDao;
 import com.summit.entity.AccCtrlRealTimeInfo;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
+import com.summit.exception.ErrorMsgException;
 import com.summit.sdk.huawei.model.AccCtrlStatus;
 import com.summit.sdk.huawei.model.AlarmStatus;
 import com.summit.sdk.huawei.model.FaceInfo;
@@ -99,7 +100,14 @@ public class AccCtrlProcessUtil {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        RestfulEntityBySummit back = nbLockServiceImpl.toQueryLockStatus(lockRequest);
+        RestfulEntityBySummit back = null;
+        try {
+            back = nbLockServiceImpl.toQueryLockStatus(lockRequest);
+        } catch (Exception e) {
+            if(e instanceof ErrorMsgException)
+                log.error(((ErrorMsgException) e).getErrorMsg());
+            else log.error("开锁失败,{}",e.getMessage());
+        }
         Object backData = back.getData();
         if((backData instanceof BackLockInfo)){
             return ((BackLockInfo) backData).getObjx();
