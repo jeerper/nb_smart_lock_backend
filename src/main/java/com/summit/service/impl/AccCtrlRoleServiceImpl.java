@@ -11,6 +11,7 @@ import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AccCtrlRoleDao;
 import com.summit.service.AccCtrlRoleService;
+import com.summit.util.CommonUtil;
 import com.summit.util.MybatisPage;
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +45,7 @@ public class AccCtrlRoleServiceImpl implements AccCtrlRoleService {
 
     @Override
     public int insertAccCtrlRoleBatch(List<AccCtrlRole>  accCtrlRoles) {
-        if(accCtrlRoles == null || accCtrlRoles.isEmpty()){
+        if(CommonUtil.isEmptyList(accCtrlRoles)){
             log.error("门禁角色权限对象数组为空");
             return CommonConstants.UPDATE_ERROR;
         }

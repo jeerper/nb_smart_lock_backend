@@ -122,7 +122,7 @@ public class AlarmController {
     @ApiOperation(value = "用告警id列表批量删除门禁告警信息", notes = "alarmIds不能为空")
     @DeleteMapping(value = "/delAlarmByIdBatch")
     public RestfulEntityBySummit<String> delAlarmByIdBatch(@ApiParam(value = "门禁告警id数组", required = true) @RequestParam(value = "alarmIds") List<String> alarmIds) {
-        if(alarmIds == null || alarmIds.isEmpty()){
+        if(CommonUtil.isEmptyList(alarmIds)){
             log.error("告警id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警id为空",null);
         }
@@ -183,9 +183,9 @@ public class AlarmController {
         Date end = CommonUtil.parseStrToDate(endTime,CommonConstants.ENDTIMEMARK);
         try {
             Alarm alarm = new Alarm();
-            if(!"".equals(accessControlId))
+            if(!CommonUtil.isEmptyStr(accessControlId))
                 alarm.setAccessControlId(accessControlId);
-            if(!"".equals(accessControlName))
+            if(!CommonUtil.isEmptyStr(accessControlName))
                 alarm.setAccessControlName(accessControlName);
             alarm.setAlarmStatus(alarmStatus);
             alarms = alarmService.selectAlarmConditionByPage(alarm, start, end, new SimplePage(current,pageSize));

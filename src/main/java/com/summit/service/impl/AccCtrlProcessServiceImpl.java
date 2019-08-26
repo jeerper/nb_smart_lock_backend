@@ -20,6 +20,7 @@ import com.summit.service.AccCtrlProcessService;
 import com.summit.service.AccessControlService;
 import com.summit.service.AlarmService;
 import com.summit.service.LockInfoService;
+import com.summit.util.CommonUtil;
 import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
@@ -132,7 +133,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
             return CommonConstants.UPDATE_ERROR;
         }
         List<String> roles = LockAuthCtrl.getRoles();
-        AccCtrlProcess accCtrlProcess = accCtrlProcessDao.selectAccCtrlProcessById(accCtrlProId, roles);
+        AccCtrlProcess accCtrlProcess = accCtrlProcessDao.selectAccCtrlProcessById(accCtrlProId, null);
         UpdateWrapper<AccCtrlProcess> wrapper = new UpdateWrapper<>();
         UpdateWrapper<FileInfo> fileWrapper = new UpdateWrapper<>();
         int result = accCtrlProcessDao.delete(wrapper.eq("acc_ctrl_pro_id", accCtrlProId));
@@ -151,7 +152,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
      */
     @Override
     public int delAccCtrlProcessByIdBatch(List<String> accCtrlProIds) {
-        if(accCtrlProIds == null || accCtrlProIds.isEmpty()){
+        if(CommonUtil.isEmptyList(accCtrlProIds)){
             log.error("门禁操作记录id列表为空");
             return CommonConstants.UPDATE_ERROR;
         }

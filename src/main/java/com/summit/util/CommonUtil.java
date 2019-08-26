@@ -38,12 +38,37 @@ public class CommonUtil {
     /**
      * List集合去重
      * @param list 待去重List集合
-     * @return 去重后List集合
      */
-    public static List<String> removeDuplicate(List<String> list) {
+    public static void removeDuplicate(List<String> list) {
         HashSet<String> h = new HashSet<>(list);
         list.clear();
         list.addAll(h);
-        return list;
+    }
+
+    /**
+     * List集合判空
+     * @param list 待判空List集合
+     * @return 是否为空
+     */
+    public static boolean isEmptyList(List list) {
+        return list == null || list.isEmpty();
+    }
+
+    /**
+     * 数组判空
+     * @param arr 待判空数组
+     * @return 数组是否为空
+     */
+    public static boolean isEmptyArr(Object[] arr) {
+        return arr == null || arr.length == 0;
+    }
+
+    /**
+     * 字符串判空
+     * @param str 待判空字符串
+     * @return 字符串是否为空
+     */
+    public static boolean isEmptyStr(String str) {
+        return str == null || str.trim().length() == 0;
     }
 }
