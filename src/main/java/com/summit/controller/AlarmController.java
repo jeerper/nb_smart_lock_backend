@@ -12,6 +12,7 @@ import com.summit.dao.entity.SimplePage;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.entity.UpdateAlarmParam;
+import com.summit.exception.ErrorMsgException;
 import com.summit.sdk.huawei.model.LcokProcessResultType;
 import com.summit.service.AlarmService;
 import com.summit.service.impl.NBLockServiceImpl;
@@ -74,7 +75,15 @@ public class AlarmController {
             lockRequest.setLockId(lockId);
             lockRequest.setOperName(operName);
             lockRequest.setAccCtrlProId(accCtrlProId);
-            RestfulEntityBySummit result = nbLockServiceImpl.toUnLock(lockRequest);
+            RestfulEntityBySummit result = null;
+            try {
+                result = nbLockServiceImpl.toUnLock(lockRequest);
+            } catch (Exception e) {
+                log.error("开锁失败,{}",e.getMessage());
+                if(e instanceof ErrorMsgException)
+                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, ((ErrorMsgException) e).getErrorMsg(),null);
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999);
+            }
             if(result == null){
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,msg + "开锁失败",null);
             }

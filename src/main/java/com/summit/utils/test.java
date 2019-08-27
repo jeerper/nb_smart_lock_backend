@@ -9,6 +9,7 @@ import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.LockProcess;
+import com.summit.entity.LockRequest;
 import com.summit.sdk.huawei.model.CardType;
 import com.summit.sdk.huawei.model.FaceInfo;
 import com.summit.sdk.huawei.model.FaceLibType;
@@ -16,6 +17,7 @@ import com.summit.sdk.huawei.model.Gender;
 import com.summit.service.AlarmService;
 import com.summit.service.CameraDeviceService;
 import com.summit.service.LockRecordService;
+import com.summit.util.AccCtrlProcessUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +42,16 @@ public class test {
     private AlarmService alarmService;
     @Autowired
     private CameraDeviceService cameraDeviceService;
+    @Autowired
+    private AccCtrlProcessUtil accCtrlProcessUtil;
+
+    @Test
+    public  void testn() throws IOException {
+        LockRequest lockRequest = new LockRequest();
+        lockRequest.setTerminalNum("NB100002");
+        accCtrlProcessUtil.getLockStatus(lockRequest);
+        System.out.println("success");
+    }
 
     @Test
     public  void test() throws IOException {

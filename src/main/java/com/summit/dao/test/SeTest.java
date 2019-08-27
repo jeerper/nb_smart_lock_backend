@@ -1,6 +1,7 @@
 package com.summit.dao.test;
 
 import com.summit.constants.CommonConstants;
+import com.summit.util.CommonUtil;
 import io.swagger.models.auth.In;
 import org.junit.Test;
 
@@ -24,8 +25,10 @@ public class SeTest {
         if(null instanceof String){
             System.out.println("未空指针");
         }
-
-
+    }
+    @Test
+    public void testEStr(){
+        System.out.println(CommonUtil.isEmptyStr("    \t \n"));
     }
     @Test
     public void testDate() throws ParseException {

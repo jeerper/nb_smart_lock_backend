@@ -3,12 +3,14 @@ package com.summit.service.impl;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
+import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.entity.ReportParam;
 import com.summit.entity.SafeReportInfo;
+import com.summit.exception.ErrorMsgException;
 import com.summit.sdk.huawei.model.LcokProcessResultType;
 import com.summit.service.LockInfoService;
 import com.summit.util.HttpClient;
@@ -22,6 +24,13 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 @Slf4j
 @Service
 public class NBLockServiceImpl {
@@ -33,11 +42,60 @@ public class NBLockServiceImpl {
     private LockInfoDao lockInfoDao;
 
     /**
-     * 开锁操作
+     * 开锁操作,同时控制超时时间
      * @param lockRequest 开锁请求信息对象
      * @return RestfulEntityBySummit对象
      */
     public RestfulEntityBySummit toUnLock(LockRequest lockRequest) {
+        //控制超时时间
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Callable<RestfulEntityBySummit> work = new Callable<RestfulEntityBySummit>() {
+            @Override
+            public RestfulEntityBySummit call() {
+                return unLock(lockRequest);
+            }
+        };
+        Future<RestfulEntityBySummit> future = executor.submit(work);
+        try {
+            //设置2秒的超时时间
+            return future.get(CommonConstants.QUERY_LOCK_STATUS_OUTTIME, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            log.error("开锁超时");
+            throw new ErrorMsgException("开锁超时");
+        } catch (Exception e) {
+            log.error("开锁失败");
+            throw new ErrorMsgException("开锁失败");
+        }
+    }
+
+    /**
+     * 查询锁状态,同时控制超时时间
+     * @param lockRequest 开锁请求信息对象
+     * @return RestfulEntityBySummit对象
+     */
+    public RestfulEntityBySummit toQueryLockStatus(LockRequest lockRequest) {
+        //控制超时时间
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Callable<RestfulEntityBySummit> work = new Callable<RestfulEntityBySummit>() {
+            @Override
+            public RestfulEntityBySummit call() {
+                return getLockStatus(lockRequest);
+            }
+        };
+        Future<RestfulEntityBySummit> future = executor.submit(work);
+        try {
+            //设置2秒的超时时间
+            return future.get(CommonConstants.QUERY_LOCK_STATUS_OUTTIME, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            log.error("查询锁状态超时");
+            throw new ErrorMsgException("查询锁状态超时");
+        } catch (Exception e) {
+            log.error("查询锁状态失败");
+            throw new ErrorMsgException("查询锁状态失败");
+        }
+    }
+
+    private RestfulEntityBySummit unLock(LockRequest lockRequest) {
         String lockId = "";
         String terminalNum;
         if(lockRequest == null
@@ -106,12 +164,8 @@ public class NBLockServiceImpl {
         return ResultBuilder.buildError(resultCode[0] ,msg[0], backLockInfos[0]);
     }
 
-    /**
-     * 查询锁状态
-     * @param lockRequest 开锁请求信息对象
-     * @return RestfulEntityBySummit对象
-     */
-    public RestfulEntityBySummit toQueryLockStatus(LockRequest lockRequest) {
+
+    private RestfulEntityBySummit getLockStatus(LockRequest lockRequest) {
         String lockId = "";
         String terminalNum;
         if(lockRequest == null
