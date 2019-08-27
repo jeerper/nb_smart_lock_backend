@@ -1,9 +1,14 @@
 package com.summit.service.impl;
 
+import com.summit.cbb.utils.page.Page;
+import com.summit.cbb.utils.page.Pageable;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.FaceInfo;
+import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.FaceInfoManagerDao;
+import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.service.FaceInfoManagerService;
+import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +23,12 @@ import java.util.List;
 public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
     @Autowired
     private FaceInfoManagerDao faceInfoManagerDao;
+
+    /**
+     * 插入人脸信息
+     * @param faceInfo 人脸信息
+     * @return 返回-1则为不成功
+     */
     @Override
     public int insertFaceInfo(FaceInfo faceInfo) {
         int result=faceInfoManagerDao.insertFaceInfo(faceInfo);
@@ -37,4 +48,31 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         }
         return faceInfoManagerDao.deleteBatchIds(faceInfoIds);
     }
+    /**
+     * 分页查询全部人脸信息
+     * @param faceInfoManagerEntity 人脸对象
+     * @param page 分页对象
+     * @return 人脸信息列表
+     */
+    @Override
+    public Page<FaceInfo> selectFaceInfoByPage(FaceInfoManagerEntity faceInfoManagerEntity, SimplePage page) {
+        if(faceInfoManagerEntity==null){
+            log.error("人脸信息对象为空");
+            return null;
+        }
+        List<FaceInfo> faceInfoList=faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity,null);
+        System.out.println(faceInfoList+"qqq");
+        int rowsCount = faceInfoList == null ? 0 : faceInfoList.size();
+        Pageable pageable = PageConverter.getPageable(page, rowsCount);
+        PageConverter.convertPage(page);
+        Page<FaceInfo> backpage=new Page<>();
+        List<FaceInfo> faceInfoList1=faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity,page);
+        System.out.println(faceInfoList1+"wwww");
+        backpage.setContent(faceInfoList1);
+        backpage.setPageable(pageable);
+        return backpage;
+    }
+
+
+
 }

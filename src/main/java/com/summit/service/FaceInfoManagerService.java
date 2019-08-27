@@ -1,6 +1,9 @@
 package com.summit.service;
 
+import com.summit.cbb.utils.page.Page;
 import com.summit.dao.entity.FaceInfo;
+import com.summit.dao.entity.SimplePage;
+import com.summit.entity.FaceInfoManagerEntity;
 
 import java.util.List;
 
@@ -26,4 +29,12 @@ public interface FaceInfoManagerService {
      * @return 返回-1则为不成功
      */
     int delFaceInfoByIds(List<String> faceInfoIds);
+
+    /**
+     * 分页查询人脸信息
+     * @param faceInfoManagerEntity 人脸对象
+     * @param  simplePage 分页对象
+     * @return  人脸信息列表分页对象
+     */
+    Page<FaceInfo> selectFaceInfoByPage(FaceInfoManagerEntity faceInfoManagerEntity, SimplePage simplePage);
 }

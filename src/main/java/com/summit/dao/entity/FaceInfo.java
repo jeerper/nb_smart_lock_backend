@@ -30,6 +30,10 @@ public class FaceInfo {
     @TableId(value = "face_id",type = IdType.ID_WORKER_STR)
     private String faceid;
 
+    @ApiModelProperty(value = "人脸名",name = "faceName")
+    @TableField(value = "face_name")
+    private String faceName;
+
     @ApiModelProperty(value = "姓名",name = "userName")
     @TableField(value = "user_name")
     private String userName;

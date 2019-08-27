@@ -1,8 +1,12 @@
 package com.summit.service.impl;
 
+import com.summit.cbb.utils.page.Page;
+import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoEntity;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.SimplePage;
+import com.summit.dao.repository.FaceInfoManagerDao;
+import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.service.FaceInfoService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +23,8 @@ import java.util.List;
 public class FaceInfoServiceImplTest {
     @Autowired
     private FaceInfoService faceInfoService;
+    @Autowired
+    private FaceInfoManagerDao  faceInfoManagerDao;
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     SimplePage page = new SimplePage(1, 3);
     @Test
@@ -77,4 +83,13 @@ public class FaceInfoServiceImplTest {
     @Test
     public void selectCondition1() {
     }
+    @Test
+    public void select(){
+        FaceInfoManagerEntity faceInfoManagerEntity = new FaceInfoManagerEntity();
+        System.out.println(faceInfoManagerEntity);
+        Page<Object> page = new Page<>();
+        List<FaceInfo> faceInfoList = faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity, null);
+        System.out.println(faceInfoList);
+    }
+
 }

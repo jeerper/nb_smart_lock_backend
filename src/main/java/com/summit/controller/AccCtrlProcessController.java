@@ -67,7 +67,7 @@ public class AccCtrlProcessController {
                 accCtrlProcess.setAccCtrlProId(accCtrlProId);
             if(!CommonUtil.isEmptyStr(accessControlName))
                 accCtrlProcess.setAccessControlName(accessControlName);
-            accCtrlProcess.setProcessType(processType);
+                accCtrlProcess.setProcessType(processType);
             accCtrlProcessPage = accCtrlProcessService.selectAccCtrlProcessCondition(accCtrlProcess, start, end, new SimplePage(current, pageSize));
         } catch (Exception e) {
             log.error("条件查询门禁操作记录失败");

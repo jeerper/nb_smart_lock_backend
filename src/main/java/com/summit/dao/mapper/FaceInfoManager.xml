@@ -1,22 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.summit.dao.repository.FaceInfoManagerDao">
-   <!--<resultMap id="facemanager" type="com.summit.dao.entity.FaceInfo">
-       <result column="face_mamager_id" jdbcType="VARCHAR" property="faceManagerID"/>
-       <result column="face_name" jdbcType="VARCHAR" property="faceName"/>
-       <result column="gender" jdbcType="INTEGER" property="gender"/>
-       <result column="province" jdbcType="VARCHAR" property="province"/>
-       <result column="city" jdbcType="VARCHAR" property="city"/>
-       <result column="card_type" jdbcType="VARCHAR" property="cardType"/>
-       <result column="card_id" jdbcType="VARCHAR" property="cardID"/>
-       <result column="birthday" jdbcType="TIMESTAMP" property="birthday"/>
-       <result column="face_image" jdbcType="VARCHAR" property="faceImage"/>
+   <resultMap id="facemanager" type="com.summit.dao.entity.FaceInfo">
+       <result column="face_id"  property="faceid"/>
+       <result column="user_name" property="userName"/>
+       <result column="user_id"  property="userID"/>
+       <result column="gender"  property="gender"/>
+       <result column="province"  property="province"/>
+       <result column="city"  property="city"/>
+       <result column="card_type"  property="cardType"/>
+       <result column="card_id"  property="cardId"/>
+       <result column="birthday"  property="birthday"/>
+       <result column="face_image" property="faceImage"/>
    </resultMap>
-    <select id="selectFaceManagerByID" parameterType="string" resultMap="facemanager">
-     SELECT *
-     FROM face_manager
-     WHERE face_manager_id=#{faceManagerID}
-  </select>-->
     <insert id="insertFaceInfo" parameterType="com.summit.dao.entity.FaceInfo">
         INSERT INTO face_info
         (face_id,face_name,user_name,user_id,gender,birthday,province,city,card_type,
@@ -26,4 +22,34 @@
                 #{deviceip},#{picsnapshottime},#{facelibid},#{faceImage}
         )
     </insert>
+    <sql id="faceInfoCloum">
+      face_id,user_name,gender,birthday,province,city,card_type,card_id,face_image
+    </sql>
+    <select id="selectFaceInfoByPage" parameterType="com.summit.entity.FaceInfoManagerEntity" resultMap="facemanager">
+        SELECT
+        <include refid="faceInfoCloum"/>
+        FROM  face_info
+        <where>
+            <if test="faceInfoManagerEntity.name !=null and faceInfoManagerEntity.name !=''">
+                user_name=#{faceInfoManagerEntity.name}
+            </if>
+            <if test="faceInfoManagerEntity.certificateNum !=null and faceInfoManagerEntity.certificateNum !=''">
+               AND card_id=#{faceInfoManagerEntity.certificateNum}
+            </if>
+            <if test="faceInfoManagerEntity.province !=null and faceInfoManagerEntity.province !=''">
+                AND province=#{faceInfoManagerEntity.province}
+            </if>
+            <if test="faceInfoManagerEntity.city !=null and faceInfoManagerEntity.city !=''">
+                AND city=#{faceInfoManagerEntity.city}
+            </if>
+            <if test="faceInfoManagerEntity.gender !=null">
+                AND gender=#{faceInfoManagerEntity.gender}
+            </if><if test="faceInfoManagerEntity.cardType !=null">
+                AND card_type=#{faceInfoManagerEntity.cardType}
+            </if>
+        </where>
+        <if test="page !=null and page.current !=null and page.pageSize !=null">
+            limit #{page.current},#{page.pageSize}
+        </if>
+    </select>
 </mapper>

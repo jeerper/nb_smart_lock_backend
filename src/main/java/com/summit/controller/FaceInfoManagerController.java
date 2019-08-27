@@ -4,12 +4,15 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.system.SystemUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.summit.MainAction;
+import com.summit.cbb.utils.page.Page;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.FaceInfo;
+import com.summit.dao.entity.SimplePage;
 import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.exception.ErrorMsgException;
 import com.summit.service.FaceInfoManagerService;
@@ -46,7 +49,8 @@ public class FaceInfoManagerController {
   @ApiOperation(value = "录入人脸信息",notes = "返回不是-1则为成功")
   @PostMapping(value = "insertFaceInfo")
   public RestfulEntityBySummit<Integer>  insertFaceInfo(@RequestBody FaceInfoManagerEntity faceInfoManagerEntity) throws ParseException {
-        String time=CommonConstants.snapshotTimeFormat.format(new Date());
+       System.out.println(faceInfoManagerEntity+"ddd");
+       String time=CommonConstants.snapshotTimeFormat.format(new Date());
         String  base64Str=faceInfoManagerEntity.getFaceImage();
         FaceInfo faceInfo=new FaceInfo();
         if(SummitTools.stringNotNull(base64Str)){
@@ -101,6 +105,38 @@ public class FaceInfoManagerController {
           }
           return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"录入人脸信息成功", 0);
   }
+  @ApiOperation(value = "根据所传一个或多个条件组合分页查询人脸信息记录",notes = "各字段都为空则查询全部。时间信息为空或不合法则无时间限制。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
+  @GetMapping(value = "/selectFaceInfoByPage")
+  public RestfulEntityBySummit<Page<FaceInfo>> selectFaceInfoByPage(@ApiParam(value = "姓名")@RequestParam(value = "userName",required = false,defaultValue = "")String userName,
+                                                                    @ApiParam(value = "证件号")@RequestParam(value = "cardId",required = false,defaultValue = "")String cardId,
+                                                                    @ApiParam(value = "省份")@RequestParam(value = "province",required = false ,defaultValue = "")String province,
+                                                                    @ApiParam(value = "城市")@RequestParam(value = "city",required = false,defaultValue ="")String city,
+                                                                    @ApiParam(value = "性别，0：男，1：女，2：未知")@RequestParam(value = "gender",required = false)Integer gender,
+                                                                    @ApiParam(value = "证件类型，0：身份证，1：护照，2：军官证，3：驾驶证，4：未知")@RequestParam(value = "cardType",required = false)Integer cardType,
+                                                                    @ApiParam(value = "当前页，大于等于1")@RequestParam(value = "current",required = false)Integer current,
+                                                                    @ApiParam(value = "每页条数，大于等于0")@RequestParam(value = "pageSize",required = false)Integer pageSize){
+    Page<FaceInfo> faceInfoPage=null;
+
+    try {
+      FaceInfoManagerEntity faceInfoManagerEntity = new FaceInfoManagerEntity();
+      faceInfoManagerEntity.setName(userName);
+      faceInfoManagerEntity.setCertificateNum(cardId);
+      faceInfoManagerEntity.setProvince(province);
+      faceInfoManagerEntity.setCity(city);
+      faceInfoManagerEntity.setGender(gender);
+      faceInfoManagerEntity.setCardType(cardType);
+      System.out.println(faceInfoManagerEntity+"ggg");
+      faceInfoPage=faceInfoManagerService.selectFaceInfoByPage(faceInfoManagerEntity,new SimplePage(current,pageSize));
+    } catch (Exception e) {
+      e.printStackTrace();
+      log.error("分页全部查询人脸信息失败");
+      return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"分页全部查询人脸信息失败",faceInfoPage);
+    }
+    return  ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"分页全部查询人脸信息成功",faceInfoPage);
+  }
+
+
+
   @ApiOperation(value = "删除人脸信息，参数为id数组",notes = "根据人脸id删除人脸信息")
   @DeleteMapping(value = "/delfaceInfoByIdBatch")
   public RestfulEntityBySummit<String> delFaceInfo(@ApiParam(value = "人脸信息的id",required = true)@RequestParam(value = "faceInfoIds",required = false)List<String> faceInfoIds){

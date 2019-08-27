@@ -7,6 +7,7 @@ import lombok.Data;
  */
 @Data
 public class FaceInfoManagerEntity {
+    private String faceid;
     private String name;
     private Integer gender;
     private String province;
