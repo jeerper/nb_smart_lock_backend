@@ -80,7 +80,7 @@ public class FaceInfo {
     @TableField(value = "face_lib_type")
     private Integer facelibtype;
 
-    @ApiModelProperty(value = "人脸全景图",name = "facepanorama",hidden = true)
+   /* @ApiModelProperty(value = "人脸全景图",name = "facepanorama",hidden = true)
     private FileInfo facepanorama=new FileInfo() ;
 
     @ApiModelProperty(value = "人脸识别扣图",name = "facepic",hidden = true)
@@ -88,7 +88,7 @@ public class FaceInfo {
 
     @ApiModelProperty(value = "人脸识别和人脸库中匹配的图片",name = "facematch",hidden = true)
     private FileInfo facematch=new FileInfo();
-
+*/
     @ApiModelProperty(value = "摄像头ip地址",name ="deviceip")
     @TableField(value = "device_ip")
     private String deviceip;

@@ -37,4 +37,11 @@ public interface FaceInfoManagerService {
      * @return  人脸信息列表分页对象
      */
     Page<FaceInfo> selectFaceInfoByPage(FaceInfoManagerEntity faceInfoManagerEntity, SimplePage simplePage);
+
+    /**
+     * 更新人脸信息
+     * @param faceInfo 需要修改的人脸信息对象
+     * @return 返回-1则为不成功
+     */
+    int updateFaceInfo(FaceInfo faceInfo);
 }

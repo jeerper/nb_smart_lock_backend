@@ -8,12 +8,12 @@ import lombok.Data;
 @Data
 public class FaceInfoManagerEntity {
     private String faceid;
-    private String name;
+    private String userName;
     private Integer gender;
     private String province;
     private String city;
     private String birthday;
     private Integer cardType;
-    private String certificateNum;
+    private String cardId;
     private String faceImage;
 }

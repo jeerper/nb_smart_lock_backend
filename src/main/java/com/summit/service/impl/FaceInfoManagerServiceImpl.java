@@ -1,5 +1,6 @@
 package com.summit.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
 import com.summit.constants.CommonConstants;
@@ -73,6 +74,20 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         return backpage;
     }
 
+    /**
+     * 更新人脸信息
+     * @param faceInfo 需要修改的人脸信息对象
+     * @return 不为-1则为修改成功
+     */
+    @Override
+    public int updateFaceInfo(FaceInfo faceInfo) {
+        if(faceInfo == null){
+            log.error("人脸信息为空");
+            return CommonConstants.UPDATE_ERROR;
+        }
+        UpdateWrapper<FaceInfo> updateWrapper=new UpdateWrapper<>();
+        return  faceInfoManagerDao.update(faceInfo,updateWrapper.eq("face_id",faceInfo.getFaceid()));
+    }
 
 
 }

@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.mockito.internal.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,9 +50,9 @@ public class FaceInfoManagerController {
   @ApiOperation(value = "录入人脸信息",notes = "返回不是-1则为成功")
   @PostMapping(value = "insertFaceInfo")
   public RestfulEntityBySummit<Integer>  insertFaceInfo(@RequestBody FaceInfoManagerEntity faceInfoManagerEntity) throws ParseException {
-       System.out.println(faceInfoManagerEntity+"ddd");
+       //System.out.println(faceInfoManagerEntity+"ddd");
        String time=CommonConstants.snapshotTimeFormat.format(new Date());
-        String  base64Str=faceInfoManagerEntity.getFaceImage();
+       String  base64Str=faceInfoManagerEntity.getFaceImage();
         FaceInfo faceInfo=new FaceInfo();
         if(SummitTools.stringNotNull(base64Str)){
           StringBuffer fileName = new StringBuffer();
@@ -75,7 +76,7 @@ public class FaceInfoManagerController {
           String faceUrl=new StringBuilder()
                   .append(CommonConstants.FACE_LIB_ROOT)
                   .append(CommonConstants.URL_SEPARATOR)
-                  .append(faceInfoManagerEntity.getName())
+                  .append(faceInfoManagerEntity.getUserName())
                   .append(CommonConstants.URL_SEPARATOR)
                   .append(time)
                   .append(CommonConstants.FACE_Image_SUFFIX)
@@ -88,14 +89,14 @@ public class FaceInfoManagerController {
             log.error("保存人脸图片异常");
           }
         }
-          faceInfo.setUserName(faceInfoManagerEntity.getName());
+          faceInfo.setUserName(faceInfoManagerEntity.getUserName());
           faceInfo.setGender(faceInfoManagerEntity.getGender());
           faceInfo.setProvince(faceInfoManagerEntity.getProvince());
           faceInfo.setCity(faceInfoManagerEntity.getCity());
           Date birthday1 = CommonConstants.dateFormat.parse(faceInfoManagerEntity.getBirthday());
           faceInfo.setBirthday(birthday1);
           faceInfo.setCardType(faceInfoManagerEntity.getCardType());
-          faceInfo.setCardId(faceInfo.getCardId());
+          faceInfo.setCardId(faceInfoManagerEntity.getCardId());
           try {
             faceInfoManagerService.insertFaceInfo(faceInfo);
           } catch (Exception e) {
@@ -105,7 +106,7 @@ public class FaceInfoManagerController {
           }
           return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"录入人脸信息成功", 0);
   }
-  @ApiOperation(value = "根据所传一个或多个条件组合分页查询人脸信息记录",notes = "各字段都为空则查询全部。时间信息为空或不合法则无时间限制。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
+  @ApiOperation(value = "根据所传一个或多个条件组合分页查询人脸信息记录",notes = "各字段都为空则查询全部。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
   @GetMapping(value = "/selectFaceInfoByPage")
   public RestfulEntityBySummit<Page<FaceInfo>> selectFaceInfoByPage(@ApiParam(value = "姓名")@RequestParam(value = "userName",required = false,defaultValue = "")String userName,
                                                                     @ApiParam(value = "证件号")@RequestParam(value = "cardId",required = false,defaultValue = "")String cardId,
@@ -119,8 +120,8 @@ public class FaceInfoManagerController {
 
     try {
       FaceInfoManagerEntity faceInfoManagerEntity = new FaceInfoManagerEntity();
-      faceInfoManagerEntity.setName(userName);
-      faceInfoManagerEntity.setCertificateNum(cardId);
+      faceInfoManagerEntity.setUserName(userName);
+      faceInfoManagerEntity.setCardId(cardId);
       faceInfoManagerEntity.setProvince(province);
       faceInfoManagerEntity.setCity(city);
       faceInfoManagerEntity.setGender(gender);
@@ -134,8 +135,24 @@ public class FaceInfoManagerController {
     }
     return  ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"分页全部查询人脸信息成功",faceInfoPage);
   }
-
-
+  @ApiOperation(value = "更新人脸信息")
+  @PutMapping(value = "/updateFaceInfo")
+  public RestfulEntityBySummit<String> updateFaceInfo(@ApiParam(value = "包含人脸信息")@RequestBody FaceInfo faceInfo ){
+    if(faceInfo==null){
+      log.error("人脸信息为空");
+      return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"人脸信息为空",null);
+    }
+    String msg="更新人脸信息失败";
+    try {
+      faceInfoManagerService.updateFaceInfo(faceInfo);
+    } catch (Exception e) {
+      e.printStackTrace();
+      msg=getErrorMsg(msg,e);
+      log.error(msg);
+      return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,msg,null);
+    }
+    return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息成功",null);
+  }
 
   @ApiOperation(value = "删除人脸信息，参数为id数组",notes = "根据人脸id删除人脸信息")
   @DeleteMapping(value = "/delfaceInfoByIdBatch")
