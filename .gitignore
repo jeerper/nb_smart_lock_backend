@@ -5,6 +5,7 @@ target/
 .DS_Store
 *.iml
 .idea/
+*.yml/
 logs/
 log/
 *.versionsBackup
