@@ -8,6 +8,7 @@ import com.summit.MainAction;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
+import com.summit.dao.entity.AccCtrlRealTimeEntity;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.CameraDevice;
@@ -27,6 +28,7 @@ import com.summit.sdk.huawei.model.LockProcessMethod;
 import com.summit.sdk.huawei.model.LockProcessType;
 import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.service.AccCtrlProcessService;
+import com.summit.service.AccCtrlRealTimeService;
 import com.summit.service.AccessControlService;
 import com.summit.service.AlarmService;
 import com.summit.service.CameraDeviceService;
@@ -36,6 +38,8 @@ import com.summit.util.AccCtrlProcessUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.text.ParseException;
@@ -55,6 +59,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
     private AccCtrlProcessService accCtrlProcessService;
     @Autowired
     private AccCtrlProcessUtil accCtrlProcessUtil;
+    @Autowired
+    private AccCtrlRealTimeService accCtrlRealTimeService;
 
     @Override
     public void invoke(Object object) {
@@ -212,29 +218,45 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                 FileUtil.writeBytes(faceInfo.getFacePic(), picturePathFacePic);
 
                 AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(faceInfo, type, facePanoramaFile, facePicFile, processResult, failReason);
-
-                try {
-                    accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess);
-                    log.info("门禁操作记录信息入库成功");
-                } catch (Exception e) {
-                    log.error("门禁操作记录信息入库失败");
-                }
-                //如果是告警类型需要同时插入告警表
-                if ("Alarm".equals(type)) {
-                    Alarm alarm = accCtrlProcessUtil.getAlarm(accCtrlProcess);
-                    try {
-                        alarmService.insertAlarm(alarm);
-                        log.info("锁操作告警信息入库成功");
-                    } catch (Exception e) {
-                        log.error("锁操作告警信息入库失败");
-                    }
-                }
-
+                AccCtrlRealTimeEntity accCtrlRealTimeEntity = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess);
+                //在事务控制下插入门禁操作记录、门禁实时信息、告警
+                insertData(type, accCtrlProcess, accCtrlRealTimeEntity);
             }
         }catch (Exception e){
             log.error("摄像头上报信息处理异常",e);
         }
 
+    }
+
+    //加入事务控制
+    @Transactional(propagation= Propagation.REQUIRED,rollbackFor = {Exception.class} )
+    private void insertData(String type, AccCtrlProcess accCtrlProcess, AccCtrlRealTimeEntity accCtrlRealTimeEntity) {
+        try {
+            accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess);
+            log.info("门禁操作记录信息入库成功");
+        } catch (Exception e) {
+            log.error("门禁操作记录信息入库失败");
+            throw new ErrorMsgException("门禁操作记录信息入库失败");
+        }
+
+        try {
+            accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity);
+            log.info("门禁实时信息数据库操作成功");
+        } catch (Exception e) {
+            log.error("门禁实时信息数据库操作失败");
+            throw new ErrorMsgException("门禁实时信息数据库操作失败");
+        }
+        //如果是告警类型需要同时插入告警表
+        if ("Alarm".equals(type)) {
+            Alarm alarm = accCtrlProcessUtil.getAlarm(accCtrlProcess);
+            try {
+                alarmService.insertAlarm(alarm);
+                log.info("门禁操作告警信息入库成功");
+            } catch (Exception e) {
+                log.error("门禁操作告警信息入库失败");
+                throw new ErrorMsgException("门禁操作告警信息入库失败");
+            }
+        }
     }
 
 

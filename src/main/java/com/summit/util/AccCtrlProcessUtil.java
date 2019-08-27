@@ -8,12 +8,14 @@ import com.summit.common.entity.UserInfo;
 import com.summit.common.web.filter.UserContextHolder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
+import com.summit.dao.entity.AccCtrlRealTimeEntity;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.repository.AccCtrlProcessDao;
+import com.summit.dao.repository.AccCtrlRealTimeDao;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.LockInfoDao;
@@ -29,6 +31,7 @@ import com.summit.sdk.huawei.model.LockProcessMethod;
 import com.summit.sdk.huawei.model.LockProcessType;
 import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.service.AccCtrlProcessService;
+import com.summit.service.AccCtrlRealTimeService;
 import com.summit.service.AccessControlService;
 import com.summit.service.CameraDeviceService;
 import com.summit.service.impl.NBLockServiceImpl;
@@ -60,9 +63,13 @@ public class AccCtrlProcessUtil {
     private CameraDeviceService cameraDeviceService;
     @Autowired
     private AlarmDao alarmDao;
+    @Autowired
+    private AccCtrlRealTimeDao accCtrlRealTimeDao;
+    @Autowired
+    private AccCtrlRealTimeService accCtrlRealTimeService;
 
     /**
-     * 根据开锁操作返回状态更新相应门禁和锁状态
+     * 根据开锁操作返回状态更新相应门禁和锁状态、实时信息状态
      * @param status 开锁操作返回状态
      * @param lockCode 当前摄像头对应锁编号
      */
@@ -78,6 +85,13 @@ public class AccCtrlProcessUtil {
             accessControlInfo.setUpdatetime(new Date());
             //直接根据锁编号更新门禁状态
             accessControlDao.update(accessControlInfo, new UpdateWrapper<AccessControlInfo>().eq("lock_code", lockCode));
+
+            //同时更新门禁实时信息
+            AccCtrlRealTimeEntity accCtrlRealTimeEntity = new AccCtrlRealTimeEntity();
+            accCtrlRealTimeEntity.setAccCtrlStatus(status);
+            accCtrlRealTimeEntity.setLockStatus(status);
+            accCtrlRealTimeEntity.setUpdatetime(new Date());
+            accCtrlRealTimeDao.update(accCtrlRealTimeEntity, new UpdateWrapper<AccCtrlRealTimeEntity>().eq("lock_code", lockCode));
         }
         //状态不合法则不更新
         if(lockStatus != null){
@@ -208,7 +222,7 @@ public class AccCtrlProcessUtil {
             accCtrlProcess.setAccessControlName(accCtrlPro.getAccessControlName());
             accCtrlProcess.setAccessControlId(accCtrlPro.getAccessControlId());
             accCtrlProcess.setGender(accCtrlPro.getGender());
-            //todo 设置设备信息
+            //设置设备信息
             accCtrlProcess.setDeviceId(accCtrlPro.getDeviceId());
             accCtrlProcess.setDeviceIp(accCtrlPro.getDeviceIp());
             accCtrlProcess.setDeviceType(accCtrlPro.getDeviceType());
@@ -261,11 +275,21 @@ public class AccCtrlProcessUtil {
                 accCtrlProcess.setFailReason("未知");
             }
         }
-        if(accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess) != CommonConstants.UPDATE_ERROR){
+        try {
+            accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess);
             log.info("门禁操作记录入库成功");
-        }else{
+        } catch (Exception e) {
             log.error("门禁操作记录入库失败");
         }
+
+        AccCtrlRealTimeEntity accCtrlRealTimeEntity = getAccCtrlRealTimeEntity(accCtrlProcess);
+        try {
+            accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity);
+            log.info("门禁实时信息入库成功");
+        } catch (Exception e) {
+            log.error("门禁实时信息入库失败");
+        }
+
     }
 
 
@@ -395,6 +419,8 @@ public class AccCtrlProcessUtil {
      * @return 门禁实时信息列表
      */
     public List<AccCtrlRealTimeInfo> getLockRealTimeInfo(List<AccessControlInfo> accessControlInfos) {
+        if (CommonUtil.isEmptyList(accessControlInfos))
+            return null;
         List<AccCtrlRealTimeInfo> accCtrlRealTimeInfos = new ArrayList<>();
         for (AccessControlInfo accCtrl : accessControlInfos){
             if(accCtrl == null)
@@ -466,5 +492,85 @@ public class AccCtrlProcessUtil {
             accCtrlRealTimeInfos.add(accCtrlRealTimeInfo);
         }
         return accCtrlRealTimeInfos;
+    }
+
+    /**
+     * 通过门禁操作信息对象组装门禁实时信息对象以进行入库操作
+     * @param accCtrlProcess  门禁操作信息对象
+     * @return 门禁实时信息对象
+     */
+    public AccCtrlRealTimeEntity getAccCtrlRealTimeEntity(AccCtrlProcess accCtrlProcess) {
+
+        String accessControlId;
+        if (accCtrlProcess == null || (accessControlId = accCtrlProcess.getAccessControlId()) == null)
+            return null;
+
+        AccessControlInfo accessControlInfo = accessControlDao.selectById(accessControlId);
+        AccCtrlRealTimeEntity accCtrlRealTimeEntity = new AccCtrlRealTimeEntity();
+        AccCtrlRealTimeEntity realTimeEntity = accCtrlRealTimeDao.selectRealTimeInfoByAccCtrlId(accessControlId, null);
+        if(realTimeEntity.getAccCrtlRealTimeId() != null){
+            accCtrlRealTimeEntity.setAccCrtlRealTimeId(realTimeEntity.getAccCrtlRealTimeId());
+        }
+        String accCtrlProId = accCtrlProcess.getAccCtrlProId();
+        accCtrlRealTimeEntity.setAccCtrlProId(accCtrlProId);
+        accCtrlRealTimeEntity.setAccessControlId(accessControlId);
+        accCtrlRealTimeEntity.setAccessControlName(accCtrlProcess.getAccessControlName());
+        accCtrlRealTimeEntity.setLockId(accCtrlProcess.getLockId());
+        accCtrlRealTimeEntity.setLockCode(accCtrlProcess.getLockCode());
+
+        //设置门禁状态、经度、纬度需要查询门禁
+        if(accessControlInfo != null){
+            accCtrlRealTimeEntity.setAccCtrlStatus(accessControlInfo.getStatus());
+            accCtrlRealTimeEntity.setLongitude(accessControlInfo.getLongitude());
+            accCtrlRealTimeEntity.setLatitude(accessControlInfo.getLatitude());
+        }
+//        accCtrlRealTimeEntity.setLockStatus();
+        accCtrlRealTimeEntity.setDevId(accCtrlProcess.getDeviceId());
+        accCtrlRealTimeEntity.setDeviceIp(accCtrlProcess.getDeviceIp());
+        accCtrlRealTimeEntity.setDeviceType(accCtrlProcess.getDeviceType());
+        accCtrlRealTimeEntity.setName(accCtrlProcess.getUserName());
+        accCtrlRealTimeEntity.setGender(accCtrlProcess.getGender());
+        accCtrlRealTimeEntity.setBirthday(accCtrlProcess.getBirthday());
+        accCtrlRealTimeEntity.setProvince(accCtrlProcess.getProvince());
+        accCtrlRealTimeEntity.setCity(accCtrlProcess.getCity());
+        accCtrlRealTimeEntity.setCardType(accCtrlProcess.getCardType());
+        accCtrlRealTimeEntity.setCardId(accCtrlProcess.getCardId());
+        accCtrlRealTimeEntity.setFaceMatchRate(accCtrlProcess.getFaceMatchRate());
+        accCtrlRealTimeEntity.setFaceLibName(accCtrlProcess.getFaceLibName());
+        accCtrlRealTimeEntity.setFaceLibType(accCtrlProcess.getFaceLibType());
+
+        String facePanoramaUrl = accCtrlProcess.getFacePanoramaUrl();
+        if(!CommonUtil.isEmptyStr(facePanoramaUrl)){
+            accCtrlRealTimeEntity.setFacePanoramaUrl(facePanoramaUrl);
+        }else{
+            FileInfo facePanorama = accCtrlProcess.getFacePanorama();
+            if(facePanorama != null){
+                accCtrlRealTimeEntity.setFacePanoramaUrl(facePanorama.getFilePath());
+            }
+        }
+        String facePicUrl = accCtrlProcess.getFacePicUrl();
+        if(!CommonUtil.isEmptyStr(facePicUrl)){
+            accCtrlRealTimeEntity.setFacePicUrl(facePicUrl);
+        }else{
+            FileInfo facePic = accCtrlProcess.getFacePic();
+            if(facePic != null){
+                accCtrlRealTimeEntity.setFacePicUrl(facePic.getFilePath());
+            }
+        }
+//        accCtrlRealTimeEntity.setFaceMatchUrl();
+        //插入时需要
+        accCtrlRealTimeEntity.setPicSnapshotTime(accCtrlProcess.getProcessTime());
+//        accCtrlRealTimeEntity.setAlarmCount();
+
+        if(accCtrlProId != null){
+            accCtrlRealTimeEntity.setAccCtrlProId(accCtrlProId);
+            Alarm alarm = alarmDao.selectByAccCtrlProId(accCtrlProId, null);
+            if(alarm != null){
+                accCtrlRealTimeEntity.setAlarmId(alarm.getAlarmId());
+            }
+        }
+        accCtrlRealTimeEntity.setUpdatetime(new Date());
+
+        return accCtrlRealTimeEntity;
     }
 }

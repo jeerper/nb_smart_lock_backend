@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -17,8 +18,11 @@ import java.util.Date;
 @TableName(value = "acc_crtl_realtime")
 public class AccCtrlRealTimeEntity {
 
+    @ApiModelProperty(value="门禁实时信息id",name="accCrtlRealTimeId")
+    @TableId(value = "acc_crtl_realtime_id", type = IdType.ID_WORKER_STR)
+    private String accCrtlRealTimeId;
     @ApiModelProperty(value="门禁id",name="accessControlId")
-    @TableId(value = "access_control_id", type = IdType.ID_WORKER_STR)
+    @TableId(value = "access_control_id")
     private String accessControlId;
     @ApiModelProperty(value="门禁名称",name="accessControlName")
     @TableField(value = "access_control_name")
@@ -33,8 +37,8 @@ public class AccCtrlRealTimeEntity {
     @TableField(value = "acc_ctrl_status")
     private Integer accCtrlStatus;
     @ApiModelProperty(value="锁状态",name="lockStatus",notes = "1开锁，2锁定，3告警")
-    @TableField(value = "lock_code")
-    private Integer lock_status;
+    @TableField(value = "lock_status")
+    private Integer lockStatus;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @ApiModelProperty(value="摄像头id",name="devId")
     @TableField(value = "dev_id")
@@ -55,23 +59,24 @@ public class AccCtrlRealTimeEntity {
     @TableField(value = "face_id")
     private String faceId;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @ApiModelProperty(value="用户名",name="userName")
-    @TableField(value = "user_name")
-    private String userName;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     @ApiModelProperty(value="用户id",name="userId")
     @TableField(value = "user_id")
     private String userId;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @ApiModelProperty(value="用户名",name="userName")
+    @TableField(value = "user_name")
+    private String userName;
     @ApiModelProperty(value="姓名",name="name")
     @TableField(value = "name")
     private String name;
     @ApiModelProperty(value="性别。0男，1女，2未知",name="gender")
     @TableField(value = "gender")
     private Integer gender;
+    @JsonFormat(pattern="yyyy-MM-dd", timezone="GMT+8")
     @ApiModelProperty(value="生日",name="birthday")
-    private String birthday;
     @TableField(value = "birthday")
-    private Date birthdayDate;
+    private Date birthday;
+
     @ApiModelProperty(value="省份",name="province")
     @TableField(value = "province")
     private String province;
@@ -103,14 +108,15 @@ public class AccCtrlRealTimeEntity {
     @ApiModelProperty(value="锁编号",name="faceMatchUrl")
     @TableField(value = "face_match_url")
     private String faceMatchUrl;
+
     @ApiModelProperty(value="快照时间",name="picSnapshotTime")
-    private String picSnapshotTime;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     @TableField(value = "pic_snapshot_time")
-    private Date picSnapshotTimeDate;
+    private Date picSnapshotTime;
 
     //当前锁告警数量
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @ApiModelProperty(value="锁当前告警数量",name="alarmCount")
+    @ApiModelProperty(value="门禁当前告警数量",name="alarmCount")
     @TableField(exist = false)
     private Integer alarmCount;
 
@@ -127,9 +133,10 @@ public class AccCtrlRealTimeEntity {
     @TableField(value = "acc_ctrl_pro_id")
     private String accCtrlProId;
 
-    @ApiModelProperty(hidden = true)
-    @TableField(value = "is_first")
-    private Boolean isFirst;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    @ApiModelProperty(value="最后更新时间",name="updatetime")
+    @TableField(value = "updatetime")
+    private Date updatetime;
 
     public AccCtrlRealTimeEntity(){}
 

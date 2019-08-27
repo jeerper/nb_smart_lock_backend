@@ -337,8 +337,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
     @Override
     public Page<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, Date start, Date end, SimplePage page) {
         if(accCtrlProcess == null) {
-            log.error("门禁操作对象为空");
-            return null;
+            accCtrlProcess = new AccCtrlProcess();
         }
         List<AccCtrlProcess> processList = accCtrlProcessDao.selectCondition(accCtrlProcess, start, end, null, LockAuthCtrl.getRoles());
         int rowsCount = processList == null ? 0 : processList.size();

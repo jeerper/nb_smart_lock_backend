@@ -62,6 +62,7 @@ public class AlarmController {
 //        }
 
         String msg = "操作成功";
+        boolean noUpdatedStatus = true;
         boolean needUnLock = updateAlarmParam.isNeedUnLock();
         String lockId = updateAlarmParam.getLockId();
         Integer alarmStatus = updateAlarmParam.getAlarmStatus();
@@ -89,6 +90,7 @@ public class AlarmController {
             }
             Object data = result.getData();
             accCtrlProcessUtil.toInsertAndUpdateData(data,lockRequest);
+            noUpdatedStatus = false;
             BackLockInfo backLockInfo = null;
             msg = "开锁结果：" + result.getMsg() + ";";
             if((data instanceof BackLockInfo)){
@@ -114,10 +116,16 @@ public class AlarmController {
         LockRequest lockRequest = new LockRequest();
         lockRequest.setLockId(lockId);
         lockRequest.setOperName(operName);
-        //更新锁和门禁为当前真实状态
-        String lockCodeById = accCtrlProcessUtil.getLockCodeById(lockId);
-        Integer status = accCtrlProcessUtil.getLockStatus(lockRequest);
-        accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCodeById);
+        if(noUpdatedStatus){
+            //若上面未更新过告警，这里更新锁和门禁为当前真实状态
+            String lockCodeById = accCtrlProcessUtil.getLockCodeById(lockId);
+            try {
+                Integer status = accCtrlProcessUtil.getLockStatus(lockRequest);
+                accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCodeById);
+            } catch (Exception e) {
+                log.error(msg + "获取锁状态失败");
+            }
+        }
         try {
             alarmService.updateAlarm(alarm);
         } catch (Exception e) {
