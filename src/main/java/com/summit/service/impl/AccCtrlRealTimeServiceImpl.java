@@ -48,7 +48,6 @@ public class AccCtrlRealTimeServiceImpl implements AccCtrlRealTimeService {
             return accCtrlRealTimeDao.insert(accCtrlRealTimeEntity);
         }
         //id不为空则是更新
-        accCtrlRealTimeEntity.setPicSnapshotTime(null);
         accCtrlRealTimeDao.deleteById(accCrtlRealTimeId);
         return accCtrlRealTimeDao.insert(accCtrlRealTimeEntity);
     }

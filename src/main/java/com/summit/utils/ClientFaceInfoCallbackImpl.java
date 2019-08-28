@@ -231,6 +231,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
     //加入事务控制
     @Transactional(propagation= Propagation.REQUIRED,rollbackFor = {Exception.class} )
     private void insertData(String type, AccCtrlProcess accCtrlProcess, AccCtrlRealTimeEntity accCtrlRealTimeEntity) {
+
         try {
             accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess);
             log.info("门禁操作记录信息入库成功");
@@ -239,16 +240,10 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             throw new ErrorMsgException("门禁操作记录信息入库失败");
         }
 
-        try {
-            accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity);
-            log.info("门禁实时信息数据库操作成功");
-        } catch (Exception e) {
-            log.error("门禁实时信息数据库操作失败");
-            throw new ErrorMsgException("门禁实时信息数据库操作失败");
-        }
         //如果是告警类型需要同时插入告警表
+        Alarm alarm = null;
         if ("Alarm".equals(type)) {
-            Alarm alarm = accCtrlProcessUtil.getAlarm(accCtrlProcess);
+            alarm = accCtrlProcessUtil.getAlarm(accCtrlProcess);
             try {
                 alarmService.insertAlarm(alarm);
                 log.info("门禁操作告警信息入库成功");
@@ -256,6 +251,18 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                 log.error("门禁操作告警信息入库失败");
                 throw new ErrorMsgException("门禁操作告警信息入库失败");
             }
+        }
+
+        try {
+            if(accCtrlProcess != null)
+                accCtrlRealTimeEntity.setAccCtrlProId(accCtrlProcess.getAccCtrlProId());
+            if(alarm != null)
+                accCtrlRealTimeEntity.setAlarmId(alarm.getAlarmId());
+            accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity);
+            log.info("门禁实时信息数据库操作成功");
+        } catch (Exception e) {
+            log.error("门禁实时信息数据库操作失败");
+            throw new ErrorMsgException("门禁实时信息数据库操作失败");
         }
     }
 

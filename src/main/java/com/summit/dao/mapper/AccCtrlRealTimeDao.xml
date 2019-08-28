@@ -17,7 +17,7 @@
         <result column="user_name" jdbcType="VARCHAR" property="userName" />
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="gender" jdbcType="INTEGER" property="gender" />
-        <result column="birthday" jdbcType="TIMESTAMP" property="birthdayDate" />
+        <result column="birthday" jdbcType="TIMESTAMP" property="birthday" />
         <result column="province" jdbcType="VARCHAR" property="province" />
         <result column="city" jdbcType="VARCHAR" property="city" />
         <result column="card_type" jdbcType="INTEGER" property="cardType" />
@@ -29,7 +29,7 @@
         <result column="face_panorama_url" jdbcType="VARCHAR" property="facePanoramaUrl" />
         <result column="face_pic_url" jdbcType="VARCHAR" property="facePicUrl" />
         <result column="face_match_url" jdbcType="VARCHAR" property="faceMatchUrl" />
-        <result column="pic_snapshot_time" jdbcType="TIMESTAMP" property="picSnapshotTimeDate" />
+        <result column="pic_snapshot_time" jdbcType="TIMESTAMP" property="picSnapshotTime" />
         <result column="longitude" jdbcType="VARCHAR" property="longitude" />
         <result column="latitude" jdbcType="VARCHAR" property="latitude" />
         <result column="alarm_id" jdbcType="VARCHAR" property="alarmId" />
