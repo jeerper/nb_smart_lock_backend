@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.summit.dao.repository.AccCtrlRealTimeDao">
+    <resultMap id="BaseResultMap" type="com.summit.dao.entity.AccCtrlRealTimeEntity">
+        <result column="acc_crtl_realtime_id" jdbcType="VARCHAR" property="accCrtlRealTimeId" />
+        <result column="access_control_id" jdbcType="VARCHAR" property="accessControlId" />
+        <result column="access_control_name" jdbcType="VARCHAR" property="accessControlName" />
+        <result column="lock_id" jdbcType="VARCHAR" property="lockId" />
+        <result column="lock_code" jdbcType="VARCHAR" property="lockCode" />
+        <result column="acc_ctrl_status" jdbcType="INTEGER" property="accCtrlStatus" />
+        <result column="lock_status" jdbcType="INTEGER" property="lockStatus" />
+        <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
+        <result column="device_ip" jdbcType="VARCHAR" property="deviceIp" />
+        <result column="device_type" jdbcType="VARCHAR" property="deviceType" />
+        <result column="face_id" jdbcType="VARCHAR" property="faceId" />
+        <result column="user_id" jdbcType="VARCHAR" property="userId" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="gender" jdbcType="INTEGER" property="gender" />
+        <result column="birthday" jdbcType="TIMESTAMP" property="birthdayDate" />
+        <result column="province" jdbcType="VARCHAR" property="province" />
+        <result column="city" jdbcType="VARCHAR" property="city" />
+        <result column="card_type" jdbcType="INTEGER" property="cardType" />
+        <result column="card_id" jdbcType="VARCHAR" property="cardId" />
+        <result column="face_match_rate" jdbcType="REAL" property="faceMatchRate" />
+        <result column="face_lib_name" jdbcType="VARCHAR" property="faceLibName" />
+        <result column="face_lib_type" jdbcType="INTEGER" property="faceLibType" />
+
+        <result column="face_panorama_url" jdbcType="VARCHAR" property="facePanoramaUrl" />
+        <result column="face_pic_url" jdbcType="VARCHAR" property="facePicUrl" />
+        <result column="face_match_url" jdbcType="VARCHAR" property="faceMatchUrl" />
+        <result column="pic_snapshot_time" jdbcType="TIMESTAMP" property="picSnapshotTimeDate" />
+        <result column="longitude" jdbcType="VARCHAR" property="longitude" />
+        <result column="latitude" jdbcType="VARCHAR" property="latitude" />
+        <result column="alarm_id" jdbcType="VARCHAR" property="alarmId" />
+        <result column="acc_ctrl_pro_id" jdbcType="VARCHAR" property="accCtrlProId" />
+        <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        acc_crtl_realtime_id, access_control_id, access_control_name, lock_id,lock_code,
+        acc_ctrl_status, lock_status, dev_id, device_ip, device_type, face_id
+        user_id, user_name, name, gender, birthday, province, city,
+        card_type, card_id, face_match_rate, face_lib_name, face_lib_type,face_panorama_url,
+        face_pic_url,face_match_url,pic_snapshot_time, longitude, latitude,
+        alarm_id, acc_ctrl_pro_id, updatetime
+    </sql>
+
+    <sql id="RealTime_Have_Alias_List">
+        ar.acc_crtl_realtime_id, ar.access_control_id, ar.access_control_name, ar.lock_id,lock_code,
+        ar.acc_ctrl_status, ar.lock_status, ar.dev_id, ar.device_ip, ar.device_type, ar.face_id,
+        ar.user_id, ar.user_name, ar.name, ar.gender, ar.birthday, ar.province, ar.city,
+        ar.card_type, ar.card_id, ar.face_match_rate, ar.face_lib_name, ar.face_lib_type,ar.face_panorama_url,
+        ar.face_pic_url, ar.face_match_url, ar.pic_snapshot_time, ar.longitude, ar.latitude,
+        ar.alarm_id, ar.acc_ctrl_pro_id, ar.updatetime
+    </sql>
+
+    <sql id="Auth_No_Alias_List">
+        au.id , au.role_id , au.access_control_id
+    </sql>
+
+    <select id="selectRealTimeInfoByAccCtrlId" resultMap="BaseResultMap">
+        select
+        <include refid="RealTime_Have_Alias_List" />
+        from acc_crtl_realtime ar
+        <if test="roles != null">
+            inner join (
+            select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
+            <where>
+                au.role_id in
+                <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+                    #{role}
+                </foreach>
+            </where>
+            ) au on au.access_control_id = ar.access_control_id
+        </if>
+        <where>
+            <if test="accessControlId != null">
+                ar.access_control_id = #{accessControlId}
+            </if>
+        </where>
+
+    </select>
+
+    <select id="selectCondition" resultMap="BaseResultMap">
+        select
+        <include refid="RealTime_Have_Alias_List" />
+        from acc_crtl_realtime ar
+        <if test="roles != null">
+            inner join (
+            select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
+            <where>
+                au.role_id in
+                <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+                    #{role}
+                </foreach>
+            </where>
+            ) au on au.access_control_id = ar.access_control_id
+        </if>
+        <where>
+            <if test="accCtrlRealTimeEntity.accessControlId != null">
+                ar.access_control_id = #{accCtrlRealTimeEntity.accessControlId}
+            </if>
+            <if test="accCtrlRealTimeEntity.accessControlName != null">
+                and ar.access_control_name like concat('%', #{accCtrlRealTimeEntity.accessControlName}, '%')
+            </if>
+            <if test="accCtrlRealTimeEntity.accCtrlStatus != null">
+                and ar.acc_ctrl_status = #{accCtrlRealTimeEntity.accCtrlStatus}
+            </if>
+            <if test="accCtrlRealTimeEntity.name != null">
+                ar.name like concat('%', #{accCtrlRealTimeEntity.name}, '%')
+            </if>
+        </where>
+
+        order by pic_snapshot_time desc
+        <if test="page != null and page.current != null and  page.pageSize != null ">
+            limit #{page.current},#{page.pageSize}
+        </if>
+
+    </select>
+
+    <select id="selectUpdatetimeById" resultType="java.util.Date">
+        select updatetime from acc_crtl_realtime
+        where acc_crtl_realtime_id = #{accCrtlRealTimeId}
+    </select>
+
+</mapper>

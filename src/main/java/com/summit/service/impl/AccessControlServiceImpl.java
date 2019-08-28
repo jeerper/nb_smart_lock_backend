@@ -8,6 +8,7 @@ import com.summit.common.entity.UserInfo;
 import com.summit.common.web.filter.UserContextHolder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
+import com.summit.dao.entity.AccCtrlRealTimeEntity;
 import com.summit.dao.entity.AccCtrlRole;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.Alarm;
@@ -15,6 +16,7 @@ import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AccCtrlProcessDao;
+import com.summit.dao.repository.AccCtrlRealTimeDao;
 import com.summit.dao.repository.AccCtrlRoleDao;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.AlarmDao;
@@ -62,6 +64,8 @@ public class AccessControlServiceImpl implements AccessControlService {
     private AlarmDao alarmDao;
     @Autowired
     private AccCtrlProcessDao accCtrlProcessDao;
+    @Autowired
+    private AccCtrlRealTimeDao accCtrlRealTimeDao;
 
     /**
      * 根据门禁id查询唯一门禁信息
@@ -352,6 +356,11 @@ public class AccessControlServiceImpl implements AccessControlService {
                 }
             }
         }
+        String newEntryCameraId = accessControlInfo.getEntryCameraId();
+        String newExitCameraId = accessControlInfo.getExitCameraId();
+        if(newEntryCameraId != null && newEntryCameraId.equals(newExitCameraId)){
+            throw new ErrorMsgException("入口摄像头ip不能和出口摄像头一样");
+        }
         CameraDevice entryCamera = accessControlInfo.getEntryCamera();
         CameraDevice exitCamera = accessControlInfo.getExitCamera();
         if(entryCamera != null && exitCamera != null){
@@ -360,6 +369,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             if(entryDeviceIp != null && entryDeviceIp.equals(exitDeviceIp))
                 throw new ErrorMsgException("入口摄像头ip不能和出口摄像头一样");
         }
+
         if(entryCamera != null){
             entryCamera.setLockId(lockId);
             entryCamera.setLockCode(lockCode);
@@ -367,16 +377,8 @@ public class AccessControlServiceImpl implements AccessControlService {
             entryCamera.setUpdatetime(time);
             accessControlInfo.setEntryCameraId(entryCamera.getDevId());
             String deviceIp = entryCamera.getDeviceIp();
-//            List<AccessControlInfo> accessControls = accessControlDao.selectList(new QueryWrapper<AccessControlInfo>().eq("device_ip", deviceIp));
-//            if(accessControls != null && !accessControls.isEmpty()){
-//                AccessControlInfo acInfo = accessControls.get(0);
-//                if(acInfo != null && !accessControlId.equals(acInfo.getAccessControlId())){
-//                    log.error("更新入口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
-//                    throw new ErrorMsgException("更新入口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
-//                }
-//            }
             accessControlInfo.setEntryCameraIp(deviceIp);
-            CameraDevice oldEntryCameraDevice = cameraDeviceDao.selectById(accessControlInfo.getEntryCameraId());
+            CameraDevice oldEntryCameraDevice = cameraDeviceDao.selectById(newEntryCameraId);
             if(oldEntryCameraDevice != null)
                 oldEntryCameraIp = oldEntryCameraDevice.getDeviceIp();
 
@@ -406,7 +408,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             String deviceIp = exitCamera.getDeviceIp();
 
             accessControlInfo.setExitCameraIp(deviceIp);
-            CameraDevice oldExitcameraDevice = cameraDeviceDao.selectById(accessControlInfo.getExitCameraId());
+            CameraDevice oldExitcameraDevice = cameraDeviceDao.selectById(newExitCameraId);
             if(oldExitcameraDevice != null)
                 oldExitCameraIp = oldExitcameraDevice.getDeviceIp();
             if(deviceIp != null){
@@ -434,40 +436,50 @@ public class AccessControlServiceImpl implements AccessControlService {
             throw new ErrorMsgException("更新门禁" + accessControlId +"失败");
         }
 
+        String newControlName = accessControlInfo.getAccessControlName();
+        String newEntryCameraIp = accessControlInfo.getEntryCameraIp();
+        String newExitCameraIp = accessControlInfo.getExitCameraIp();
         try {
             //更新门禁信息成功后需要同步更新门禁操作记录表(access_control_name,device_ip,lock_code)，并且将设备的锁编号更新
-            UpdateWrapper<AccCtrlProcess> wrapper = new UpdateWrapper<>();
-            //accessControlName
-            String newControlName = accessControlInfo.getAccessControlName();
-//            AccCtrlProcess oldAccCtrlProcess = new AccCtrlProcess();
-            AccCtrlProcess newNameAccCtrlProcess = new AccCtrlProcess();
-            newNameAccCtrlProcess.setAccessControlName(newControlName);
-            accCtrlProcessDao.update(newNameAccCtrlProcess,wrapper.eq("access_control_name",oldControlName));
-            //dviceIp,先更新ip为入口ip的记录
-            String newEntryCameraIp = accessControlInfo.getEntryCameraIp();
+            //accessControlName、lockCode可以同时更新
+            AccCtrlProcess newAccCtrlProcess = new AccCtrlProcess();
+            newAccCtrlProcess.setAccessControlName(newControlName);
+            newAccCtrlProcess.setLockCode(lockCode);
+            accCtrlProcessDao.update(newAccCtrlProcess,new UpdateWrapper<AccCtrlProcess>().eq("access_control_id",accessControlId));
+            //dviceIp,入口摄像头和出口ip的记录需要分次更新
             AccCtrlProcess newEntryCameraAccCtrlProcess = new AccCtrlProcess();
             newEntryCameraAccCtrlProcess.setDeviceIp(newEntryCameraIp);
             accCtrlProcessDao.update(newEntryCameraAccCtrlProcess,new UpdateWrapper<AccCtrlProcess>().eq("device_ip",oldEntryCameraIp));
             AccCtrlProcess newExitAccCtrlProcess = new AccCtrlProcess();
-            newExitAccCtrlProcess.setDeviceIp(accessControlInfo.getExitCameraIp());
+            newExitAccCtrlProcess.setDeviceIp(newExitCameraIp);
             accCtrlProcessDao.update(newExitAccCtrlProcess,new UpdateWrapper<AccCtrlProcess>().eq("device_ip",oldExitCameraIp));
 
-            //lockCode
-            AccCtrlProcess newLockAccCtrlProcess = new AccCtrlProcess();
-            newLockAccCtrlProcess.setLockCode(accessControlInfo.getLockCode());
-            accCtrlProcessDao.update(newLockAccCtrlProcess,new UpdateWrapper<AccCtrlProcess>().eq("lock_code",oldLockCode));
-
-            CameraDevice updateDevice = new CameraDevice();
-            updateDevice.setDevId(accessControlInfo.getEntryCameraId());
-            updateDevice.setLockCode(accessControlInfo.getLockCode());
-            //更新摄像头关联的lockCode
-            cameraDeviceService.updateDevice(updateDevice);
-            updateDevice.setDevId(accessControlInfo.getExitCameraId());
-            cameraDeviceService.updateDevice(updateDevice);
         } catch (Exception e) {
             log.error("更新门禁操作记录失败");
             throw new ErrorMsgException("更新门禁操作记录失败");
         }
+
+        //更新门禁实时信息表
+        try {
+            //accessControlName、lockCode可以同时更新
+            AccCtrlRealTimeEntity newRealTimeEntity = new AccCtrlRealTimeEntity();
+            newRealTimeEntity.setAccessControlName(newControlName);
+            newRealTimeEntity.setLockCode(lockCode);
+            accCtrlRealTimeDao.update(newRealTimeEntity, new UpdateWrapper<AccCtrlRealTimeEntity>().eq("access_control_id",accessControlId));
+            //dviceIp,入口摄像头和出口ip的记录需要分次更新，当前门禁实时记录中是哪种摄像头则更新时哪种
+            AccCtrlRealTimeEntity newEntryRealTimeEntity = new AccCtrlRealTimeEntity();
+            newEntryRealTimeEntity.setDeviceIp(newEntryCameraIp);
+            accCtrlRealTimeDao.update(newRealTimeEntity, new UpdateWrapper<AccCtrlRealTimeEntity>().eq("device_ip",oldEntryCameraIp));
+
+            AccCtrlRealTimeEntity newExitRealTimeEntity = new AccCtrlRealTimeEntity();
+            newExitRealTimeEntity.setDeviceIp(newExitCameraIp);
+            accCtrlRealTimeDao.update(newRealTimeEntity, new UpdateWrapper<AccCtrlRealTimeEntity>().eq("device_ip",oldExitCameraIp));
+
+        } catch (Exception e) {
+            log.error("更新门禁实时信息失败");
+            throw new ErrorMsgException("更新门禁实时信息失败");
+        }
+
         return result;
     }
 
@@ -476,7 +488,6 @@ public class AccessControlServiceImpl implements AccessControlService {
      * @param accessControlId 门禁id
      * @return 返回不为-1则为成功
      */
-    @Transactional(propagation= Propagation.REQUIRED, rollbackFor = {Exception.class} )
     @Override
     public int delAccCtrlByAccCtrlId(String accessControlId) {
         if(accessControlId == null){
@@ -492,6 +503,7 @@ public class AccessControlServiceImpl implements AccessControlService {
      * @param accessControlIds 门禁id列表
      * @return 返回不为-1则为成功
      */
+    @Transactional(propagation= Propagation.REQUIRED, rollbackFor = {Exception.class} )
     @Override
     public int delBatchAccCtrlByAccCtrlId(List<String> accessControlIds) {
         if(CommonUtil.isEmptyList(accessControlIds)){
@@ -503,6 +515,7 @@ public class AccessControlServiceImpl implements AccessControlService {
         List<String> authIds = new ArrayList<>();
         List<String> accCtrlProIds = new ArrayList<>();
         List<String> alarmIds = new ArrayList<>();
+        List<String> accCrtlRealTimeIds = new ArrayList<>();
         List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessDao.selectRecodByAccessControlIds(accessControlIds);
         if(accCtrlProcesses != null){
             for(AccCtrlProcess accCtrlPro : accCtrlProcesses) {
@@ -529,12 +542,20 @@ public class AccessControlServiceImpl implements AccessControlService {
         }
 
         for(String acId : accessControlIds) {
-            AccessControlInfo accessControlInfo = selectAccCtrlByIdBeyondAuthority(acId);
-            if(accessControlInfo == null)
+            if(CommonUtil.isEmptyStr(acId))
                 continue;
-            lockIds.add(accessControlInfo.getLockId());
-            cameraIds.add(accessControlInfo.getEntryCameraId());
-            cameraIds.add(accessControlInfo.getExitCameraId());
+            AccessControlInfo accessControlInfo = selectAccCtrlByIdBeyondAuthority(acId);
+            if(accessControlInfo != null){
+                lockIds.add(accessControlInfo.getLockId());
+                cameraIds.add(accessControlInfo.getEntryCameraId());
+                cameraIds.add(accessControlInfo.getExitCameraId());
+            }
+
+            AccCtrlRealTimeEntity accCtrlRealTimeEntity = accCtrlRealTimeDao.selectRealTimeInfoByAccCtrlId(acId, null);
+            String accCrtlRealTimeId;
+            if(accCtrlRealTimeEntity != null &&
+                    !CommonUtil.isEmptyStr((accCrtlRealTimeId = accCtrlRealTimeEntity.getAccCrtlRealTimeId())))
+                accCrtlRealTimeIds.add(accCrtlRealTimeId);
             List<AccCtrlRole> accessControls = accCtrlRoleDao.selectList(new QueryWrapper<AccCtrlRole>().eq("access_control_id", acId));
             if(accessControls != null){
                 for(AccCtrlRole ar : accessControls) {
@@ -601,6 +622,15 @@ public class AccessControlServiceImpl implements AccessControlService {
             } catch (Exception e) {
                 log.error("删除相应的门禁告警失败");
                 throw new ErrorMsgException("删除相应的门禁告警失败");
+            }
+        }
+        //删除相应的门禁实时信息
+        if(!accCrtlRealTimeIds.isEmpty()){
+            try {
+                accCtrlRealTimeDao.deleteBatchIds(accCrtlRealTimeIds);
+            } catch (Exception e) {
+                log.error("删除相应的门禁实时信息失败");
+                throw new ErrorMsgException("删除相应的门禁实时信息失败");
             }
         }
         return result;

@@ -25,7 +25,7 @@ public interface AccCtrlRealTimeDao extends BaseMapper<AccCtrlRealTimeEntity> {
      * @param end 最近更新时间截止时间
      * @param page 简单分页对象
      * @param roles 当前用户管理角色列表
-     * @return
+     * @return 门禁实时信息list
      */
     List<AccCtrlRealTimeEntity> selectCondition(@Param("accCtrlRealTimeEntity") AccCtrlRealTimeEntity accCtrlRealTimeEntity,
                                          @Param("start") Date start,
@@ -34,9 +34,10 @@ public interface AccCtrlRealTimeDao extends BaseMapper<AccCtrlRealTimeEntity> {
                                          @Param("roles") List<String> roles);
 
     /**
-     * 第一次是插入，后面都是更新
-     * @param accCtrlRealTimeEntity 门禁实时信息对象
-     * @return 返回-1则失败
+     * 根据门禁实时id查询最近更新时间
+     * @param accCrtlRealTimeId 门禁实时id
+     * @return 门禁实时信息最近更新时间
      */
-    int insertOrUpdate(AccCtrlRealTimeEntity accCtrlRealTimeEntity);
+    Date selectUpdatetimeById(@Param("accCrtlRealTimeId")  String accCrtlRealTimeId);
+
 }

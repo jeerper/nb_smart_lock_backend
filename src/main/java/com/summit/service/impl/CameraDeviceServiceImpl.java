@@ -59,8 +59,7 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
         if(devId != null &&  deviceIp!= null){
             deviceIp = null;
         }
-        List<String> roles = LockAuthCtrl.getRoles();
-        if(lockInfoDao.selectBylockCode(cameraDevice.getLockCode(),roles) == null){
+        if(lockInfoDao.selectBylockCode(cameraDevice.getLockCode(),null) == null){
             log.warn("所更新的锁编号在锁信息表中不存在");
         }
         UpdateWrapper<CameraDevice> updateWrapper = new UpdateWrapper<>();

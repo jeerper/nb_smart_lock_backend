@@ -11,6 +11,7 @@ import com.summit.dao.entity.LockRole;
 import com.summit.dao.entity.SafeReport;
 import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AccCtrlProcessDao;
+import com.summit.dao.repository.AccCtrlRealTimeDao;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.FaceInfoDao;
@@ -64,6 +65,8 @@ public class TestDao {
     private AccCtrlProcessDao accCtrlProcessDao;
     @Autowired
     private AccessControlDao accessControlDao;
+    @Autowired
+    private AccCtrlRealTimeDao accCtrlRealTimeDao;
 
 
     SimpleDateFormat temeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
