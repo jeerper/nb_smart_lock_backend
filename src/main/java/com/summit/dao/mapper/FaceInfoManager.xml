@@ -31,16 +31,16 @@
         FROM  face_info
         <where>
             <if test="faceInfoManagerEntity.userName !=null and faceInfoManagerEntity.userName !=''">
-                user_name=#{faceInfoManagerEntity.userName}
+                user_name like concat('%',#{faceInfoManagerEntity.userName}, '%')
             </if>
             <if test="faceInfoManagerEntity.cardId !=null and faceInfoManagerEntity.cardId !=''">
-               AND card_id=#{faceInfoManagerEntity.cardId}
+               AND card_id like concat('%',#{faceInfoManagerEntity.cardId}, '%')
             </if>
             <if test="faceInfoManagerEntity.province !=null and faceInfoManagerEntity.province !=''">
-                AND province=#{faceInfoManagerEntity.province}
+                AND province like concat('%',#{faceInfoManagerEntity.province}, '%')
             </if>
             <if test="faceInfoManagerEntity.city !=null and faceInfoManagerEntity.city !=''">
-                AND city=#{faceInfoManagerEntity.city}
+                AND city  like concat('%',#{faceInfoManagerEntity.city}, '%')
             </if>
             <if test="faceInfoManagerEntity.gender !=null">
                 AND gender=#{faceInfoManagerEntity.gender}

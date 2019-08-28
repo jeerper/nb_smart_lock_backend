@@ -74,12 +74,11 @@ public class FaceInfoManagerController {
                   .append("_Face.jpg")
                   .toString();
           String faceUrl=new StringBuilder()
-                  .append(CommonConstants.FACE_LIB_ROOT)
-                  .append(CommonConstants.URL_SEPARATOR)
-                  .append(faceInfoManagerEntity.getUserName())
-                  .append(CommonConstants.URL_SEPARATOR)
-                  .append(time)
-                  .append(CommonConstants.FACE_Image_SUFFIX)
+                  .append("/")
+                  .append(MainAction.SnapshotFileName)
+                  .append("/")
+                  .append(picId)
+                  .append("_Face.jpg")
                   .toString();
           faceInfo.setFaceImage(faceUrl);
           byte[] bytes = Base64.getDecoder().decode(base64Str);
