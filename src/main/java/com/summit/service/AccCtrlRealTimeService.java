@@ -44,5 +44,12 @@ public interface AccCtrlRealTimeService {
      */
     Long selectUpdatetimeById(String accCrtlRealTimeId);
 
+    /**
+     * 根据门禁实时id查询快照时间毫秒值
+     * @param accCrtlRealTimeId 门禁实时id
+     * @return 门禁实时信息快照时间毫秒值
+     */
+    Long selectSnapshotTimeById(String accCrtlRealTimeId);
+
 
 }

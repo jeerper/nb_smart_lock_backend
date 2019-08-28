@@ -57,11 +57,27 @@ public class AccCrtlRealTimeInfoController {
             data.put("content", accCtrlRealTimePage.getContent());
             data.put("pageable",accCtrlRealTimePage.getPageable());
         } catch (Exception e) {
+            log.error("查询门禁操作记录失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询门禁操作记录失败", data);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询门禁操作记录成功", data);
 
     }
+
+    @ApiOperation(value = "根据门禁实时id查询门禁最近更新时间毫秒值", notes = "根据门禁实时id查询门禁最近更新时间毫秒值")
+    @GetMapping(value = "/selectUpdatetimeById")
+    public RestfulEntityBySummit<Long> selectUpdatetimeById(@ApiParam(value = "门禁实时id")  @RequestParam(value = "accCrtlRealTimeId") String accCrtlRealTimeId){
+        Long updatetime = null;
+        try {
+            updatetime = accCtrlRealTimeService.selectUpdatetimeById(accCrtlRealTimeId);
+        } catch (Exception e) {
+            log.error("查询门禁最近更新时间失败");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询门禁最近更新时间失败", updatetime);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询门禁最近更新时间成功", updatetime);
+    }
+
+
 
 
 
