@@ -186,7 +186,7 @@ public class AccCtrlProcessUtil {
 
         //组装门禁历史对象，保存门禁操作历史
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
-        //设置锁信息(通过接口开锁无设备信息)
+        //设置锁信息
         accCtrlProcess.setLockCode(lockCode);
         accCtrlProcess.setLockId(lockId);
         accCtrlProcess.setProcessMethod(LockProcessMethod.INTERFACE_BY.getCode());
@@ -215,8 +215,6 @@ public class AccCtrlProcessUtil {
             accCtrlPro = accCtrlProcessDao.selectById(accCtrlProId);
         }
         if (accCtrlPro != null){
-            accCtrlProcess.setLockCode(accCtrlPro.getLockCode());
-            accCtrlProcess.setLockId(accCtrlPro.getLockId());
             accessControlInfo.setAccessControlId(accCtrlPro.getAccessControlId());
             accessControlInfo.setAccessControlName(accCtrlPro.getAccessControlName());
             accCtrlProcess.setAccessControlName(accCtrlPro.getAccessControlName());
@@ -227,8 +225,6 @@ public class AccCtrlProcessUtil {
             accCtrlProcess.setDeviceIp(accCtrlPro.getDeviceIp());
             accCtrlProcess.setDeviceType(accCtrlPro.getDeviceType());
         }else {
-            accCtrlProcess.setLockId(lockId);
-            accCtrlProcess.setLockCode(lockCode);
             AccessControlInfo acInfo = accessControlService.selectAccCtrlByLockCode(lockCode);
             if(acInfo != null){
                 String accessControlId = acInfo.getAccessControlId();
@@ -508,7 +504,7 @@ public class AccCtrlProcessUtil {
         AccessControlInfo accessControlInfo = accessControlDao.selectById(accessControlId);
         AccCtrlRealTimeEntity accCtrlRealTimeEntity = new AccCtrlRealTimeEntity();
         AccCtrlRealTimeEntity realTimeEntity = accCtrlRealTimeDao.selectRealTimeInfoByAccCtrlId(accessControlId, null);
-        if(realTimeEntity.getAccCrtlRealTimeId() != null){
+        if(realTimeEntity != null && realTimeEntity.getAccCrtlRealTimeId() != null){
             accCtrlRealTimeEntity.setAccCrtlRealTimeId(realTimeEntity.getAccCrtlRealTimeId());
         }
         String accCtrlProId = accCtrlProcess.getAccCtrlProId();
