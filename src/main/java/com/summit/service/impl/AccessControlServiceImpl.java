@@ -468,11 +468,11 @@ public class AccessControlServiceImpl implements AccessControlService {
             //dviceIp,入口摄像头和出口ip的记录需要分次更新，当前门禁实时记录中是哪种摄像头则更新时哪种
             AccCtrlRealTimeEntity newEntryRealTimeEntity = new AccCtrlRealTimeEntity();
             newEntryRealTimeEntity.setDeviceIp(newEntryCameraIp);
-            accCtrlRealTimeDao.update(newRealTimeEntity, new UpdateWrapper<AccCtrlRealTimeEntity>().eq("device_ip",oldEntryCameraIp));
+            accCtrlRealTimeDao.update(newEntryRealTimeEntity, new UpdateWrapper<AccCtrlRealTimeEntity>().eq("device_ip",oldEntryCameraIp));
 
             AccCtrlRealTimeEntity newExitRealTimeEntity = new AccCtrlRealTimeEntity();
             newExitRealTimeEntity.setDeviceIp(newExitCameraIp);
-            accCtrlRealTimeDao.update(newRealTimeEntity, new UpdateWrapper<AccCtrlRealTimeEntity>().eq("device_ip",oldExitCameraIp));
+            accCtrlRealTimeDao.update(newExitRealTimeEntity, new UpdateWrapper<AccCtrlRealTimeEntity>().eq("device_ip",oldExitCameraIp));
 
         } catch (Exception e) {
             log.error("更新门禁实时信息失败");

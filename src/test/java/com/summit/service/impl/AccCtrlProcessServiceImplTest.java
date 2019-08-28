@@ -3,12 +3,14 @@ package com.summit.service.impl;
 import cn.hutool.core.date.DateTime;
 import com.summit.cbb.utils.page.Page;
 import com.summit.dao.entity.AccCtrlProcess;
+import com.summit.dao.entity.AccCtrlRealTimeEntity;
 import com.summit.sdk.huawei.model.CardType;
 import com.summit.sdk.huawei.model.FaceInfo;
 import com.summit.sdk.huawei.model.FaceLibType;
 import com.summit.sdk.huawei.model.Gender;
 import com.summit.sdk.huawei.model.LcokProcessResultType;
 import com.summit.service.AccCtrlProcessService;
+import com.summit.service.AccCtrlRealTimeService;
 import com.summit.util.AccCtrlProcessUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +28,8 @@ public class AccCtrlProcessServiceImplTest {
     private AccCtrlProcessService accCtrlProcessService;
     @Autowired
     private AccCtrlProcessUtil accCtrlProcessUtil;
+    @Autowired
+    private AccCtrlRealTimeService accCtrlRealTimeService;
 
     @Test
     public void selectAccCtrlProcessCondition() {
@@ -37,7 +41,7 @@ public class AccCtrlProcessServiceImplTest {
         System.out.println(accCtrlProcessPage);
     }
     @Test
-    public void insertAccCtrlProcess() {
+    public void insertAccCtrlProcessAndRealTimeInfo() {
         FaceInfo faceInfo1 = getFace1();
         FaceInfo faceInfo2 = getFace2();
         FaceInfo faceInfo3 = getFace3();
@@ -56,20 +60,51 @@ public class AccCtrlProcessServiceImplTest {
         String type = "Unlock";
         String processResult = LcokProcessResultType.SUCCESS.getCode();
         String failReason = "";
-//        AccCtrlProcess accCtrlProcess1 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo1, type, null, null, processResult, failReason);
-//        AccCtrlProcess accCtrlProcess2 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo2, type, null, null, processResult, failReason);
-//        AccCtrlProcess accCtrlProcess3 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo3, type, null, null, processResult, failReason);
-//        AccCtrlProcess accCtrlProcess4 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo4, type, null, null, processResult, failReason);
-//        AccCtrlProcess accCtrlProcess5 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo5, type, null, null, processResult, failReason);
-//        AccCtrlProcess accCtrlProcess6 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo6, type, null, null, processResult, failReason);
-//        AccCtrlProcess accCtrlProcess7 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo7, type, null, null, processResult, failReason);
-//        AccCtrlProcess accCtrlProcess8 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo8, type, null, null, processResult, failReason);
-//        AccCtrlProcess accCtrlProcess9 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo9, type, null, null, processResult, failReason);
-//        AccCtrlProcess accCtrlProcess10 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo10, type, null, null, processResult, failReason);
-//        AccCtrlProcess accCtrlProcess11 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo11, type, null, null, processResult, failReason);
-//        AccCtrlProcess accCtrlProcess12 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo12, type, null, null, processResult, failReason);
+        AccCtrlProcess accCtrlProcess1 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo1, type, null, null, processResult, failReason);
+        AccCtrlProcess accCtrlProcess2 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo2, type, null, null, processResult, failReason);
+        AccCtrlProcess accCtrlProcess3 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo3, type, null, null, processResult, failReason);
+        AccCtrlProcess accCtrlProcess4 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo4, type, null, null, processResult, failReason);
+        AccCtrlProcess accCtrlProcess5 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo5, type, null, null, processResult, failReason);
+        AccCtrlProcess accCtrlProcess6 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo6, type, null, null, processResult, failReason);
+        AccCtrlProcess accCtrlProcess7 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo7, type, null, null, processResult, failReason);
+        AccCtrlProcess accCtrlProcess8 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo8, type, null, null, processResult, failReason);
+        AccCtrlProcess accCtrlProcess9 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo9, type, null, null, processResult, failReason);
+        AccCtrlProcess accCtrlProcess10 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo10, type, null, null, processResult, failReason);
+        AccCtrlProcess accCtrlProcess11 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo11, type, null, null, processResult, failReason);
+        AccCtrlProcess accCtrlProcess12 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo12, type, null, null, processResult, failReason);
         AccCtrlProcess accCtrlProcess13 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo13, type, null, null, processResult, failReason);
         AccCtrlProcess accCtrlProcess14 = accCtrlProcessUtil.getAccCtrlProcess(faceInfo14, type, null, null, processResult, failReason);
+
+        AccCtrlRealTimeEntity accCtrlRealTimeEntity1 = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess1);
+        AccCtrlRealTimeEntity accCtrlRealTimeEntity2 = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess2);
+        AccCtrlRealTimeEntity accCtrlRealTimeEntity3  = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess3);
+        AccCtrlRealTimeEntity accCtrlRealTimeEntity4  = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess4);
+        AccCtrlRealTimeEntity accCtrlRealTimeEntity5  = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess5);
+        AccCtrlRealTimeEntity accCtrlRealTimeEntity6  = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess6);
+        AccCtrlRealTimeEntity accCtrlRealTimeEntity7  = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess7);
+        AccCtrlRealTimeEntity accCtrlRealTimeEntity8  = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess8);
+        AccCtrlRealTimeEntity accCtrlRealTimeEntity9  = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess9);
+        AccCtrlRealTimeEntity accCtrlRealTimeEntity10 = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess10);
+        AccCtrlRealTimeEntity accCtrlRealTimeEntity11 = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess11);
+        AccCtrlRealTimeEntity accCtrlRealTimeEntity12 = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess12);
+        AccCtrlRealTimeEntity accCtrlRealTimeEntity13 = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess13);
+        AccCtrlRealTimeEntity accCtrlRealTimeEntity14 = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess14);
+
+//        accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity1 );
+//        accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity2 );
+//        accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity3 );
+//        accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity4 );
+//        accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity5 );
+//        accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity6 );
+//        accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity7 );
+//        accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity8 );
+//        accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity9 );
+//        accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity10);
+//        accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity11);
+//        accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity12);
+//        accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity13);
+//        accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity14);
+
 
 //        accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess1);
 //        accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess2);
@@ -83,8 +118,8 @@ public class AccCtrlProcessServiceImplTest {
 //        accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess10);
 //        accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess11);
 //        accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess12);
-        accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess13);
-        accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess14);
+//        accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess13);
+//        accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess14);
         System.out.println("yes");
     }
 
