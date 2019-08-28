@@ -14,5 +14,8 @@ import java.util.List;
  */
 public interface FaceInfoManagerDao extends BaseMapper<FaceInfo> {
     int insertFaceInfo(FaceInfo faceInfo);
+
     List<FaceInfo> selectFaceInfoByPage(@Param("faceInfoManagerEntity") FaceInfoManagerEntity faceInfoManagerEntity, @Param("page") SimplePage page);
+
+    FaceInfo selectFaceInfoByID(@Param("faceid") String faceid);
 }

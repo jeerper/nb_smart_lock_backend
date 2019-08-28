@@ -52,4 +52,12 @@
             limit #{page.current},#{page.pageSize}
         </if>
     </select>
+    <select id="selectFaceInfoByID" parameterType="java.lang.String" resultMap="facemanager">
+        SELECT
+        <include refid="faceInfoCloum"/>
+        FROM  face_info
+        <where>
+          face_id=#{faceid}
+        </where>
+    </select>
 </mapper>

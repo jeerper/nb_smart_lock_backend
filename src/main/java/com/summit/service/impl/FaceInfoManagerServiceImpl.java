@@ -89,5 +89,19 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         return  faceInfoManagerDao.update(faceInfo,updateWrapper.eq("face_id",faceInfo.getFaceid()));
     }
 
+    /**
+     * 根据人脸id查询唯一的人脸信息记录
+     * @param faceid
+     * @return 确定唯一的人脸信息记录
+     */
+    @Override
+    public FaceInfo selectFaceInfoByID(String faceid) {
+        if (faceid==null){
+            log.error("人脸信息的id为空");
+            return null;
+        }
+        return faceInfoManagerDao.selectFaceInfoByID(faceid);
+    }
+
 
 }

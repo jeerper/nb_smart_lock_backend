@@ -171,7 +171,22 @@ public class FaceInfoManagerController {
     }
     return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"删除人脸信息成功",null);
   }
-
+  @ApiOperation(value = "根据id查询人脸信息",notes = "faceid不能为空，查询唯一一条人脸信息")
+  @GetMapping(value = "/queryFaceInfoById")
+  public RestfulEntityBySummit<FaceInfo> queryFaceInfoById(@ApiParam(value = "人脸信息id",required = true)@RequestParam(value = "faceid")String faceid){
+    if(faceid==null){
+      log.error("人脸信息id为空");
+      return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"人脸信息id为空",null);
+    }
+    FaceInfo faceInfo=null;
+    try {
+      faceInfo=faceInfoManagerService.selectFaceInfoByID(faceid);
+    } catch (Exception e) {
+      log.error("查询人脸信息失败");
+      return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"根据id查询人脸信息失败",faceInfo);
+    }
+    return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"根据id查询人脸信息成功",faceInfo);
+  }
 
 
 
