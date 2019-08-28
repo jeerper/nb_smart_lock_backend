@@ -40,7 +40,7 @@
 
     <sql id="Base_Column_List">
         acc_crtl_realtime_id, access_control_id, access_control_name, lock_id,lock_code,
-        acc_ctrl_status, lock_status, device_id, device_ip, device_type, face_id
+        acc_ctrl_status, lock_status, dev_id, device_ip, device_type, face_id
         user_id, user_name, name, gender, birthday, province, city,
         card_type, card_id, face_match_rate, face_lib_name, face_lib_type,face_panorama_url,
         face_pic_url,face_match_url,pic_snapshot_time, longitude, latitude,
@@ -49,7 +49,7 @@
 
     <sql id="RealTime_Have_Alias_List">
         ar.acc_crtl_realtime_id, ar.access_control_id, ar.access_control_name, ar.lock_id,lock_code,
-        ar.acc_ctrl_status, ar.lock_status, ar.device_id, ar.device_ip, ar.device_type, ar.face_id
+        ar.acc_ctrl_status, ar.lock_status, ar.dev_id, ar.device_ip, ar.device_type, ar.face_id,
         ar.user_id, ar.user_name, ar.name, ar.gender, ar.birthday, ar.province, ar.city,
         ar.card_type, ar.card_id, ar.face_match_rate, ar.face_lib_name, ar.face_lib_type,ar.face_panorama_url,
         ar.face_pic_url, ar.face_match_url, ar.pic_snapshot_time, ar.longitude, ar.latitude,

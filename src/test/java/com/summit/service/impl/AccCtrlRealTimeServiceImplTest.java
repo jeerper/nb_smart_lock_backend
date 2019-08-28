@@ -1,6 +1,8 @@
 package com.summit.service.impl;
 
+import com.summit.cbb.utils.page.Page;
 import com.summit.dao.entity.AccCtrlRealTimeEntity;
+import com.summit.dao.entity.SimplePage;
 import com.summit.service.AccCtrlRealTimeService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +35,8 @@ public class AccCtrlRealTimeServiceImplTest {
 
     @Test
     public void selectCondition() {
+        Page<AccCtrlRealTimeEntity> accCtrlRealTimePage = accCtrlRealTimeService.selectByConditionPage(null, null, null, new SimplePage(1, 10));
+        System.out.println(accCtrlRealTimePage);
     }
 
     @Test
