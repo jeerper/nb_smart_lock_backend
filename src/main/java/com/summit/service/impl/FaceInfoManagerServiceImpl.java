@@ -62,13 +62,13 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
             return null;
         }
         List<FaceInfo> faceInfoList=faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity,null);
-        System.out.println(faceInfoList+"qqq");
+       // System.out.println(faceInfoList+"qqq");
         int rowsCount = faceInfoList == null ? 0 : faceInfoList.size();
         Pageable pageable = PageConverter.getPageable(page, rowsCount);
         PageConverter.convertPage(page);
         Page<FaceInfo> backpage=new Page<>();
         List<FaceInfo> faceInfoList1=faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity,page);
-        System.out.println(faceInfoList1+"wwww");
+        //System.out.println(faceInfoList1+"wwww");
         backpage.setContent(faceInfoList1);
         backpage.setPageable(pageable);
         return backpage;

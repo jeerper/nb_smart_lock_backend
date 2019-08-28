@@ -30,10 +30,10 @@
         <include refid="faceInfoCloum"/>
         FROM  face_info
         <where>
-            <if test="faceInfoManagerEntity.name !=null and faceInfoManagerEntity.name !=''">
+            <if test="faceInfoManagerEntity.userName !=null and faceInfoManagerEntity.userName !=''">
                 user_name=#{faceInfoManagerEntity.name}
             </if>
-            <if test="faceInfoManagerEntity.certificateNum !=null and faceInfoManagerEntity.certificateNum !=''">
+            <if test="faceInfoManagerEntity.cardId !=null and faceInfoManagerEntity.cardId !=''">
                AND card_id=#{faceInfoManagerEntity.certificateNum}
             </if>
             <if test="faceInfoManagerEntity.province !=null and faceInfoManagerEntity.province !=''">
