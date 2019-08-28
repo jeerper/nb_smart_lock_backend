@@ -305,19 +305,19 @@ public class AccessControlServiceImpl implements AccessControlService {
             log.error("门禁信息为空");
             return CommonConstants.UPDATE_ERROR;
         }
-        String oldControlName = null;
         String accessControlId = accessControlInfo.getAccessControlId();
         if(accessControlId == null){
             log.error("门禁id为空");
             return CommonConstants.UPDATE_ERROR;
         }
         AccessControlInfo controlInfo = accessControlDao.selectById(accessControlId);
-        if(controlInfo != null){
-            oldControlName = controlInfo.getAccessControlName();
+        if(controlInfo == null){
+            log.error("未找到对应门禁");
+            return CommonConstants.UPDATE_ERROR;
         }
-        String oldEntryCameraIp = null;
-        String oldExitCameraIp = null;
-        String oldLockCode = null;
+        String oldEntryCameraIp = controlInfo.getEntryCameraIp();;
+        String oldExitCameraIp = controlInfo.getExitCameraIp();
+        String oldLockCode = controlInfo.getLockCode();
 
         Date time = new Date();
         accessControlInfo.setUpdatetime(time);
@@ -336,9 +336,6 @@ public class AccessControlServiceImpl implements AccessControlService {
 //                }
 //            }
             accessControlInfo.setLockCode(lockCode);
-            LockInfo oldLock = lockInfoDao.selectById(lockId);
-            if(oldLock != null)
-                oldLockCode = oldLock.getLockCode();
             if(lockCode != null){
                 if(!lockCode.equals(oldLockCode)){
                     LockInfo lock = lockInfoService.selectBylockCode(lockCode);
@@ -356,16 +353,18 @@ public class AccessControlServiceImpl implements AccessControlService {
                 }
             }
         }
-        String newEntryCameraId = accessControlInfo.getEntryCameraId();
-        String newExitCameraId = accessControlInfo.getExitCameraId();
-        if(newEntryCameraId != null && newEntryCameraId.equals(newExitCameraId)){
+        String newEntryCameraIp = accessControlInfo.getEntryCameraIp();
+        String newExitCameraIp = accessControlInfo.getExitCameraIp();
+        if(newEntryCameraIp != null && newEntryCameraIp.equals(newExitCameraIp)){
             throw new ErrorMsgException("入口摄像头ip不能和出口摄像头一样");
         }
         CameraDevice entryCamera = accessControlInfo.getEntryCamera();
         CameraDevice exitCamera = accessControlInfo.getExitCamera();
         if(entryCamera != null && exitCamera != null){
             String entryDeviceIp = entryCamera.getDeviceIp();
+            newEntryCameraIp = entryDeviceIp;
             String exitDeviceIp = exitCamera.getDeviceIp();
+            newExitCameraIp = exitDeviceIp;
             if(entryDeviceIp != null && entryDeviceIp.equals(exitDeviceIp))
                 throw new ErrorMsgException("入口摄像头ip不能和出口摄像头一样");
         }
@@ -375,10 +374,11 @@ public class AccessControlServiceImpl implements AccessControlService {
             entryCamera.setLockCode(lockCode);
             entryCamera.setType(DeviceType.ENTRY.getCode());
             entryCamera.setUpdatetime(time);
-            accessControlInfo.setEntryCameraId(entryCamera.getDevId());
+            String devId = entryCamera.getDevId();
+            accessControlInfo.setEntryCameraId(devId);
             String deviceIp = entryCamera.getDeviceIp();
             accessControlInfo.setEntryCameraIp(deviceIp);
-            CameraDevice oldEntryCameraDevice = cameraDeviceDao.selectById(newEntryCameraId);
+            CameraDevice oldEntryCameraDevice = cameraDeviceDao.selectById(devId);
             if(oldEntryCameraDevice != null)
                 oldEntryCameraIp = oldEntryCameraDevice.getDeviceIp();
 
@@ -404,11 +404,12 @@ public class AccessControlServiceImpl implements AccessControlService {
             exitCamera.setLockCode(lockCode);
             exitCamera.setType(DeviceType.EXIT.getCode());
             exitCamera.setUpdatetime(time);
-            accessControlInfo.setExitCameraId(exitCamera.getDevId());
+            String devId = exitCamera.getDevId();
+            accessControlInfo.setExitCameraId(devId);
             String deviceIp = exitCamera.getDeviceIp();
 
             accessControlInfo.setExitCameraIp(deviceIp);
-            CameraDevice oldExitcameraDevice = cameraDeviceDao.selectById(newExitCameraId);
+            CameraDevice oldExitcameraDevice = cameraDeviceDao.selectById(devId);
             if(oldExitcameraDevice != null)
                 oldExitCameraIp = oldExitcameraDevice.getDeviceIp();
             if(deviceIp != null){
@@ -437,8 +438,6 @@ public class AccessControlServiceImpl implements AccessControlService {
         }
 
         String newControlName = accessControlInfo.getAccessControlName();
-        String newEntryCameraIp = accessControlInfo.getEntryCameraIp();
-        String newExitCameraIp = accessControlInfo.getExitCameraIp();
         try {
             //更新门禁信息成功后需要同步更新门禁操作记录表(access_control_name,device_ip,lock_code)，并且将设备的锁编号更新
             //accessControlName、lockCode可以同时更新
