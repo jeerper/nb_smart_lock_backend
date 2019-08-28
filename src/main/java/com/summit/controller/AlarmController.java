@@ -103,8 +103,8 @@ public class AlarmController {
         }
 
         if(alarmId == null){
-            log.info(msg);
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, msg,null);
+            log.info("没有对应的告警信息");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有对应的告警信息",null);
         }
         Alarm alarm = new Alarm();
         alarm.setAlarmId(alarmId);

@@ -503,9 +503,13 @@ public class AccCtrlProcessUtil {
 
         AccessControlInfo accessControlInfo = accessControlDao.selectById(accessControlId);
         AccCtrlRealTimeEntity accCtrlRealTimeEntity = new AccCtrlRealTimeEntity();
+        //插入时需要
+        Date processTime = accCtrlProcess.getProcessTime();
+        accCtrlRealTimeEntity.setPicSnapshotTime(processTime);
         AccCtrlRealTimeEntity realTimeEntity = accCtrlRealTimeDao.selectRealTimeInfoByAccCtrlId(accessControlId, null);
         if(realTimeEntity != null && realTimeEntity.getAccCrtlRealTimeId() != null){
             accCtrlRealTimeEntity.setAccCrtlRealTimeId(realTimeEntity.getAccCrtlRealTimeId());
+//            accCtrlRealTimeEntity.setPicSnapshotTime(realTimeEntity.getPicSnapshotTime());
         }
         String accCtrlProId = accCtrlProcess.getAccCtrlProId();
         accCtrlRealTimeEntity.setAccCtrlProId(accCtrlProId);
@@ -554,8 +558,7 @@ public class AccCtrlProcessUtil {
             }
         }
 //        accCtrlRealTimeEntity.setFaceMatchUrl();
-        //插入时需要
-        accCtrlRealTimeEntity.setPicSnapshotTime(accCtrlProcess.getProcessTime());
+
 //        accCtrlRealTimeEntity.setAlarmCount();
 
         if(accCtrlProId != null){
