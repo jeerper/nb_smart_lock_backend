@@ -124,4 +124,12 @@ public class AccCtrlRealTimeServiceImpl implements AccCtrlRealTimeService {
             return null;
         return date.getTime();
     }
+
+    @Override
+    public Long selectLastUpdatetime() {
+        Date date = accCtrlRealTimeDao.selectLastUpdatetime();
+        if(date == null)
+            return null;
+        return date.getTime();
+    }
 }

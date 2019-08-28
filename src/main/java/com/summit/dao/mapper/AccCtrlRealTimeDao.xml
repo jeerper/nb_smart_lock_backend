@@ -130,4 +130,9 @@
         where acc_crtl_realtime_id = #{accCrtlRealTimeId}
     </select>
 
+    <select id="selectLastUpdatetime" resultType="java.util.Date">
+        select updatetime from acc_crtl_realtime
+        order by updatetime desc limit 0,1
+    </select>
+
 </mapper>

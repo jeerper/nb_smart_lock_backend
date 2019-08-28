@@ -52,4 +52,10 @@ public interface AccCtrlRealTimeService {
     Long selectSnapshotTimeById(String accCrtlRealTimeId);
 
 
+    /**
+     * 从所有门禁实时信息中查询最后更新时间毫秒值
+     * @return 所有门禁实时信息中的最后更新时间毫秒值
+     */
+    Long selectLastUpdatetime();
+
 }
