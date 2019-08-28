@@ -383,7 +383,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 oldEntryCameraIp = oldEntryCameraDevice.getDeviceIp();
 
             if(deviceIp != null){
-                if(!deviceIp.equals(oldEntryCameraIp)){
+                if(!deviceIp.equals(oldEntryCameraIp) || (lockCode != null && !lockCode.equals(oldLockCode))){
                     CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
                     if(cameraDevice != null){
                         log.error("更新入口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
@@ -413,7 +413,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             if(oldExitcameraDevice != null)
                 oldExitCameraIp = oldExitcameraDevice.getDeviceIp();
             if(deviceIp != null){
-                if(!deviceIp.equals(oldExitCameraIp)){
+                if(!deviceIp.equals(oldExitCameraIp) || (lockCode != null && !lockCode.equals(oldLockCode))){
                     CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
                     if(cameraDevice != null){
                         log.error("更新出口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
