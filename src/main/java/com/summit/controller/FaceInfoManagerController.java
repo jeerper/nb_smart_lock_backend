@@ -56,13 +56,13 @@ public class FaceInfoManagerController {
         FaceInfo faceInfo=new FaceInfo();
         if(SummitTools.stringNotNull(base64Str)){
           StringBuffer fileName = new StringBuffer();
-          fileName.append(UUID.randomUUID().toString().replaceAll("-",""));
-          if(base64Str.indexOf("data:image/png;") != -1){
-            base64Str=base64Str.replace("data:image/png;base64,", "");
+          fileName.append(UUID.randomUUID().toString().replaceAll("-", ""));
+          if (base64Str.indexOf("data:image/png;") != -1) {
+            base64Str = base64Str.replace("data:image/png;base64,", "");
             fileName.append(".png");
-          }else if(base64Str.indexOf("data:image/jpeg;") != -1){
-            base64Str.replace("data:image/jpeg;base64,", "");
-            fileName.append("jpeg");
+          } else if (base64Str.indexOf("data:image/jpeg;") != -1) {
+            base64Str = base64Str.replace("data:image/jpeg;base64,", "");
+            fileName.append(".jpeg");
           }
           String picId= IdWorker.getIdStr();
           String facePicPath=new StringBuilder()

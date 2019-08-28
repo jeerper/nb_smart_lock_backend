@@ -31,10 +31,10 @@
         FROM  face_info
         <where>
             <if test="faceInfoManagerEntity.userName !=null and faceInfoManagerEntity.userName !=''">
-                user_name=#{faceInfoManagerEntity.name}
+                user_name=#{faceInfoManagerEntity.userName}
             </if>
             <if test="faceInfoManagerEntity.cardId !=null and faceInfoManagerEntity.cardId !=''">
-               AND card_id=#{faceInfoManagerEntity.certificateNum}
+               AND card_id=#{faceInfoManagerEntity.cardId}
             </if>
             <if test="faceInfoManagerEntity.province !=null and faceInfoManagerEntity.province !=''">
                 AND province=#{faceInfoManagerEntity.province}
