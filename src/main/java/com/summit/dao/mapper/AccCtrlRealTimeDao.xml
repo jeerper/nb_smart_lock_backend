@@ -125,4 +125,9 @@
         where acc_crtl_realtime_id = #{accCrtlRealTimeId}
     </select>
 
+    <select id="selectSnapshotTimeById" resultType="java.util.Date">
+        select pic_snapshot_time from acc_crtl_realtime
+        where acc_crtl_realtime_id = #{accCrtlRealTimeId}
+    </select>
+
 </mapper>

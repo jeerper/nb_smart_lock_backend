@@ -107,4 +107,21 @@ public class AccCtrlRealTimeServiceImpl implements AccCtrlRealTimeService {
             return null;
         return date.getTime();
     }
+
+    /**
+     * 根据门禁实时id查询快照时间毫秒值
+     * @param accCrtlRealTimeId 门禁实时id
+     * @return 门禁实时信息快照时间毫秒值
+     */
+    @Override
+    public Long selectSnapshotTimeById(String accCrtlRealTimeId) {
+        if(CommonUtil.isEmptyStr(accCrtlRealTimeId)){
+            log.error("门禁实时信息id为空");
+            return null;
+        }
+        Date date = accCtrlRealTimeDao.selectSnapshotTimeById(accCrtlRealTimeId);
+        if(date == null)
+            return null;
+        return date.getTime();
+    }
 }

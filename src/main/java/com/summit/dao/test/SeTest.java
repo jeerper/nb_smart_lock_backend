@@ -1,6 +1,7 @@
 package com.summit.dao.test;
 
 import com.summit.constants.CommonConstants;
+import com.summit.dao.entity.SimplePage;
 import com.summit.util.CommonUtil;
 import io.swagger.models.auth.In;
 import org.junit.Test;
@@ -42,6 +43,19 @@ public class SeTest {
         bbb(obj);
 
         System.out.println(obj);
+    }
+    @Test
+    public void testSet(){
+        SimplePage page = new SimplePage();
+        set(page);
+        System.out.println(page);
+    }
+    private void  set(SimplePage page){
+        innerSet(page);
+
+    }
+    private void innerSet(SimplePage page){
+        page.setPageSize(1);
     }
     void bbb(Object obj){
         obj = new Object();
