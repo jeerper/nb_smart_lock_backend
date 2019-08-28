@@ -130,6 +130,11 @@ public class TestDao {
         System.out.println(record);
     }
     @Test
+    public void selectConutByCondition() throws ParseException {
+        Integer result = accCtrlProcessDao.selectConutByCondition(new AccCtrlProcess(), null, null, null);
+        System.out.println(result);
+    }
+    @Test
     public void selectAccCtrlProcessCondition() throws ParseException {
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setAccCtrlProId("acp001");

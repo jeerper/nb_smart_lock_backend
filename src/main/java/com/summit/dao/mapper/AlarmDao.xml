@@ -215,10 +215,12 @@
           ) au on au.access_control_id = acp.access_control_id
       </if>
     ) al
+      <if test="alarmStatus != null">
+          <where>
+              al.alarm_status=#{alarmStatus}
+          </where>
+      </if>
 
-    <where>
-        al.alarm_status=#{alarmStatus}
-    </where>
   </select>
 
 

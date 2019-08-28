@@ -29,4 +29,10 @@ public interface AccCtrlProcessDao extends BaseMapper<AccCtrlProcess> {
     int updateRecord(AccCtrlProcess accCtrlProcess);
 
     int updateAccCtrlProcess(@Param("oldAccCtrlProcess") AccCtrlProcess oldAccCtrlProcess, @Param("newAccCtrlProcess") AccCtrlProcess newAccCtrlProcess);
+
+    int selectConutByCondition(@Param("accCtrlProcess") AccCtrlProcess accCtrlProcess,
+                               @Param("start") Date start,
+                               @Param("end") Date end,
+                               @Param("roles") List<String> roles);
+
 }
