@@ -225,7 +225,8 @@ public class FaceInfoManagerController {
      List<SimpleFaceInfo> simpleFaceInfos=new ArrayList<>();
      try {
        List<FaceInfo> faceInfos=faceInfoManagerService.selectAllFaceInfo(null);
-       if(faceInfos==null){
+       System.out.println(faceInfos+"aaa");
+       if(faceInfos !=null){
          for(FaceInfo faceInfo:faceInfos){
            simpleFaceInfos.add(new SimpleFaceInfo(faceInfo.getFaceid(),faceInfo.getUserName()));
          }
