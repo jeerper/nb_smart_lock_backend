@@ -106,6 +106,7 @@ public class AccCtrlRoleServiceImpl implements AccCtrlRoleService {
                 for(AccCtrlRole ctrlRole : ctrlRoles) {
                     if(acId != null && acId.equals(ctrlRole.getAccessControlId())){
                         needAdd = false;
+                        break;
                     }
                 }
                 if(needAdd){
