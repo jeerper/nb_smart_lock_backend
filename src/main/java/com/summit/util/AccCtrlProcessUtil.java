@@ -366,7 +366,7 @@ public class AccCtrlProcessUtil {
             accessControlInfo.setStatus(AccCtrlStatus.ALARM.getCode());
             accCtrlProcess.setProcessType(LockProcessType.LOCK_ALARM.getCode());
             accCtrlProcess.setProcessResult(LcokProcessResultType.ERROR.getCode());
-            if(CommonUtil.isEmptyStr(accCtrlProcess.getFailReason())){
+            if(CommonUtil.isEmptyStr(failReason)){
                 accCtrlProcess.setFailReason("匹配度过低");
             }else{
                 accCtrlProcess.setFailReason(failReason);
