@@ -82,10 +82,10 @@ public class AccessControlInfo {
 //    @TableField(exist = false)
 //    private String updatetimeStr;
 
-//    @JsonInclude(JsonInclude.Include.NON_NULL)
-//    @ApiModelProperty(hidden = true)
-//    @TableField(exist = false)
-//    private List<LockRole> roles;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @ApiModelProperty(hidden = true)
+    @TableField(exist = false)
+    private List<LockRole> roles;
 
     @ApiModelProperty(value="经度",name="longitude")
     @TableField(value = "longitude")
