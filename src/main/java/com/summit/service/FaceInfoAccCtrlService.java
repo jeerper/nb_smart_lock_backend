@@ -22,4 +22,12 @@ public interface FaceInfoAccCtrlService {
      * @return 人脸信息列表
      */
     List<FaceInfoAccCtrl> selectFaceInfoAccCtrlByActrlId(String accCtrlId);
+
+    /**
+     * 根据人脸名称和身份证号查询门禁的id
+     * @param userName 人脸名称
+     * @param cardId 身份证号码
+     * @return  返回门禁的id列表
+     */
+    List<String> selectAccCtrlIdByUserNameAndCardId(String userName,String cardId);
 }

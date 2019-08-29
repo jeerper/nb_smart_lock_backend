@@ -44,7 +44,8 @@
             </if>
             <if test="faceInfoManagerEntity.gender !=null">
                 AND gender=#{faceInfoManagerEntity.gender}
-            </if><if test="faceInfoManagerEntity.cardType !=null">
+            </if>
+            <if test="faceInfoManagerEntity.cardType !=null">
                 AND card_type=#{faceInfoManagerEntity.cardType}
             </if>
         </where>
@@ -58,6 +59,14 @@
         FROM  face_info
         <where>
           face_id=#{faceid}
+        </where>
+    </select>
+    <select id="selectFaceIdByUserNameAndCardId" parameterType="java.lang.String" resultMap="java.lang.String" >
+        SELECT
+        face_id
+        FROM  face_info
+        <where>
+           user_name=#{userName} AND card_id=#{cardId}
         </where>
     </select>
 </mapper>

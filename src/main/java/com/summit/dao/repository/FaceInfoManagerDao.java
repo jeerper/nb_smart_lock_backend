@@ -18,4 +18,6 @@ public interface FaceInfoManagerDao extends BaseMapper<FaceInfo> {
     List<FaceInfo> selectFaceInfoByPage(@Param("faceInfoManagerEntity") FaceInfoManagerEntity faceInfoManagerEntity, @Param("page") SimplePage page);
 
     FaceInfo selectFaceInfoByID(@Param("faceid") String faceid);
+
+    String selectFaceIdByUserNameAndCardId(@Param("userName") String userName, @Param("cardId") String cardId);
 }

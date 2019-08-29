@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.FaceInfoAccCtrl;
 import com.summit.dao.repository.FaceInfoAccCtrlDao;
+import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.service.FaceInfoAccCtrlService;
+import com.summit.service.FaceInfoManagerService;
 import com.summit.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
 
     @Autowired
     private FaceInfoAccCtrlDao faceInfoAccCtrlDao;
+    @Autowired
+    private FaceInfoManagerDao faceInfoManagerDao;
 
     /**
      * 批量刷新指定人脸关联的门禁",notes = "为指定的人脸信息更新门禁权限，所传的人脸信息之前没有关联某门禁且所传列表中有添加，之前已关联过门禁而所传列表中有则不添加，之前已关联过门禁而所传列表中没有则删除
@@ -82,7 +86,7 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
              for(String faceid:faceids){
                  faceInfoCtrls.add(new FaceInfoAccCtrl(null,accessControlId,faceid));
              }
-             System.out.println("aaa"+faceInfoCtrls);
+             //System.out.println("aaa"+faceInfoCtrls);
              return insertFaceAccCtrl(faceInfoCtrls);
          }
         return 0;
@@ -101,6 +105,23 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
         }
         QueryWrapper<FaceInfoAccCtrl> wrapper=new QueryWrapper<>();
         return faceInfoAccCtrlDao.selectList(wrapper.eq("access_control_id",accCtrlId));
+    }
+
+    /**
+     * 根据人脸名称和身份证号查询门禁的id
+     * @param userName 人脸名称
+     * @param cardId 身份证号码
+     * @return 返回门禁的id列表
+     */
+    @Override
+    public List<String> selectAccCtrlIdByUserNameAndCardId(String userName, String cardId) {
+        if(userName == null || cardId==null){
+            log.error("人脸名称或者cardId为空");
+            return null;
+        }
+        String faceid= faceInfoManagerDao.selectFaceIdByUserNameAndCardId(userName,cardId);
+        List<String>  accCtrlIds=faceInfoAccCtrlDao.seletAccCtrlIdByFaceId(faceid);
+        return accCtrlIds;
     }
 
     private int insertFaceAccCtrl(List<FaceInfoAccCtrl> faceInfoAccCtrls) {
