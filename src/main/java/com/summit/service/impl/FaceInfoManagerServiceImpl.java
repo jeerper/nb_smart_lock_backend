@@ -1,5 +1,6 @@
 package com.summit.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
@@ -101,6 +102,17 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
             return null;
         }
         return faceInfoManagerDao.selectFaceInfoByID(faceid);
+    }
+
+    /**
+     * 查询所有的人脸信息
+     * @param page
+     * @return 人脸信息列表
+     */
+    @Override
+    public List<FaceInfo> selectAllFaceInfo(SimplePage page) {
+        QueryWrapper<FaceInfo> wrapper=new QueryWrapper<>();
+        return faceInfoManagerDao.selectList(wrapper);
     }
 
 

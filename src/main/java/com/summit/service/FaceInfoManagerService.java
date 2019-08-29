@@ -51,4 +51,11 @@ public interface FaceInfoManagerService {
      * @return 唯一确定的人脸信息记录
      */
     FaceInfo selectFaceInfoByID(String faceid);
+
+    /**
+     * 查询所有的人脸信息
+     * @param page
+     * @return 人脸信息列表
+     */
+    List<FaceInfo> selectAllFaceInfo(SimplePage page);
 }

@@ -14,6 +14,7 @@ import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.SimplePage;
 import com.summit.entity.FaceInfoManagerEntity;
+import com.summit.entity.SimpleFaceInfo;
 import com.summit.exception.ErrorMsgException;
 import com.summit.service.FaceInfoManagerService;
 import com.summit.util.SummitTools;
@@ -32,10 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by Administrator on 2019/8/21.
@@ -221,7 +219,23 @@ public class FaceInfoManagerController {
     }
     return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"根据id查询人脸信息成功",faceInfo);
   }
-   
+   @ApiOperation(value = "查询全部人脸信息，包括人脸信息的id和name",notes = "无论有无门禁权限都全部查询")
+   @GetMapping(value = "/selectAllFaceInfo")
+   public RestfulEntityBySummit<List<SimpleFaceInfo>> selectAllFaceInfo(){
+     List<SimpleFaceInfo> simpleFaceInfos=new ArrayList<>();
+     try {
+       List<FaceInfo> faceInfos=faceInfoManagerService.selectAllFaceInfo(null);
+       if(faceInfos==null){
+         for(FaceInfo faceInfo:faceInfos){
+           simpleFaceInfos.add(new SimpleFaceInfo(faceInfo.getFaceid(),faceInfo.getUserName()));
+         }
+       }
+     } catch (Exception e) {
+        log.error("查询全部的人脸信息失败");
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询全部人脸信息失败",simpleFaceInfos);
+     }
+     return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询全部人脸信息成功",simpleFaceInfos);
+   }
 
 
   private String getErrorMsg(String msg,Exception e){
