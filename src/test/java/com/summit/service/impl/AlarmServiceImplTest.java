@@ -3,6 +3,7 @@ package com.summit.service.impl;
 import com.summit.cbb.utils.page.Page;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.SimplePage;
+import com.summit.dao.repository.AlarmDao;
 import com.summit.service.AlarmService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +21,8 @@ import java.util.List;
 public class AlarmServiceImplTest {
     @Autowired
     private AlarmService alarmService;
+    @Autowired
+    private AlarmDao alarmDao;
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -63,9 +66,16 @@ public class AlarmServiceImplTest {
 
     @Test
     public void selectAlarmById() {
-        Alarm alarm = alarmService.selectAlarmById("1158360061051932674");
+        Alarm alarm = alarmService.selectAlarmById("1166896782987235330");
         System.out.println(alarm);
     }
+
+    @Test
+    public void selectByAccCtrlProId() {
+        Alarm alarm = alarmDao.selectByAccCtrlProId("1166896782903349250", null);
+        System.out.println(alarm);
+    }
+
     @Test
     public void selectAlarmCountByStatus() {
         Integer count = alarmService.selectAlarmCountByStatus(1);
@@ -74,10 +84,6 @@ public class AlarmServiceImplTest {
 
     @Test
     public void selectAlarmByName() {
-    }
-
-    @Test
-    public void selectAlarmByName1() {
     }
 
     @Test
@@ -118,14 +124,14 @@ public class AlarmServiceImplTest {
 
     @Test
     public void selectAlarmCondition() {
-
+        Alarm alarm = new Alarm();
+        alarm.setAccessControlName("门禁");
+        Page<Alarm> alarmPage = alarmService.selectAlarmConditionByPage(alarm, null);
+        System.out.println(alarmPage);
     }
 
     @Test
     public void selectAlarmCondition1() {
-        Alarm alarm = new Alarm();
-        alarm.setAccessControlName("门禁1");
-        Page<Alarm> alarmPage = alarmService.selectAlarmConditionByPage(alarm, new SimplePage(1, 10));
-        System.out.println(alarmPage);
+
     }
 }

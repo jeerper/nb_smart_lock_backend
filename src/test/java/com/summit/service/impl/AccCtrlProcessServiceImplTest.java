@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
@@ -32,6 +34,11 @@ public class AccCtrlProcessServiceImplTest {
     private AccCtrlRealTimeService accCtrlRealTimeService;
 
     @Test
+    public void selectAccCtrlProcessById() {
+        AccCtrlProcess accCtrlProcess = accCtrlProcessService.selectAccCtrlProcessById("1166534285776130050");
+        System.out.println(accCtrlProcess);
+    }
+    @Test
     public void selectAccCtrlProcessCondition() {
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
 //        accCtrlProcess.setAccCtrlProId("1163356805951225858");
@@ -39,6 +46,11 @@ public class AccCtrlProcessServiceImplTest {
 //        accCtrlProcess.setProcessType(3);
         Page<AccCtrlProcess> accCtrlProcessPage = accCtrlProcessService.selectAccCtrlProcessCondition(accCtrlProcess,null);
         System.out.println(accCtrlProcessPage);
+    }
+    @Test
+    public void selectAccCtrlProcessByLockCode() {
+        List<AccCtrlProcess> accCtrlProcesss = accCtrlProcessService.selectAccCtrlProcessByLockCode("NB100002", null, null, null);
+        System.out.println(accCtrlProcesss);
     }
     @Test
     public void insertAccCtrlProcessAndRealTimeInfo() {
