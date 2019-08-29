@@ -47,4 +47,10 @@ public interface AccCtrlRealTimeDao extends BaseMapper<AccCtrlRealTimeEntity> {
      */
     Date selectSnapshotTimeById(@Param("accCrtlRealTimeId")  String accCrtlRealTimeId);
 
+    /**
+     * 从所有门禁实时信息中查询最后更新时间
+     * @return 所有门禁实时信息中的最后更新时间
+     */
+    Date selectLastUpdatetime();
+
 }

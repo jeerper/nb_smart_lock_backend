@@ -186,6 +186,108 @@
 
   </select>
 
+  <select id="selectRecodByAccessControlIds"  resultMap="BaseResultMap">
+    select distinct <include refid="Base_Column_List" /> from acc_ctrl_process
+    where access_control_id in
+    <foreach  item="accessControlId" collection="accessControlIds" index="index"  open="(" separator="," close=")">
+      #{accessControlId}
+    </foreach>
+  </select>
+
+
+  <select id="selectConutByCondition"  resultType="java.lang.Integer">
+    select count(distinct acp.acc_ctrl_pro_id)  from acc_ctrl_process acp
+    <if test="roles != null">
+      inner join (
+      select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
+      <where>
+        au.role_id in
+        <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+          #{role}
+        </foreach>
+      </where>
+      ) au on au.access_control_id = acp.access_control_id
+    </if>
+    <where>
+      <if test="accCtrlProcess.accCtrlProId != null">
+        acp.acc_ctrl_pro_id = #{accCtrlProcess.accCtrlProId}
+      </if>
+      <if test="accCtrlProcess.accessControlId != null">
+        and acp.access_control_id = #{accCtrlProcess.accessControlId}
+      </if>
+      <if test="accCtrlProcess.accessControlName != null">
+        and acp.access_control_name like concat('%', #{accCtrlProcess.accessControlName}, '%')
+      </if>
+      <if test="accCtrlProcess.deviceId != null">
+        and acp.device_id = #{accCtrlProcess.deviceId}
+      </if>
+      <if test="accCtrlProcess.deviceIp != null">
+        and acp.device_ip = #{accCtrlProcess.deviceIp}
+      </if>
+      <if test="accCtrlProcess.deviceType != null">
+        and acp.device_type = #{accCtrlProcess.deviceType}
+      </if>
+      <if test="accCtrlProcess.lockId != null">
+        and acp.lock_cd = #{accCtrlProcess.lockId}
+      </if>
+      <if test="accCtrlProcess.lockCode != null">
+        and acp.lock_code like concat('%', #{accCtrlProcess.lockCode}, '%')
+      </if>
+      <if test="accCtrlProcess.userId != null">
+        and acp.user_id = #{accCtrlProcess.userId}
+      </if>
+      <if test="accCtrlProcess.userName != null">
+        and acp.user_name = #{accCtrlProcess.userName}
+      </if>
+      <if test="accCtrlProcess.gender != null">
+        and acp.gender = #{accCtrlProcess.gender}
+      </if>
+      <if test="accCtrlProcess.birthday != null">
+        and acp.birthday = #{accCtrlProcess.birthday}
+      </if>
+      <if test="accCtrlProcess.province != null">
+        and acp.province like concat('%', #{accCtrlProcess.province}, '%')
+      </if>
+      <if test="accCtrlProcess.city != null">
+        and acp.city like concat('%', #{accCtrlProcess.city}, '%')
+      </if>
+      <if test="accCtrlProcess.cardType != null">
+        and acp.card_type = #{accCtrlProcess.cardType}
+      </if>
+      <if test="accCtrlProcess.cardId != null">
+        and acp.card_id = #{accCtrlProcess.cardId}
+      </if>
+      <if test="accCtrlProcess.faceMatchRate != null">
+        and acp.face_match_rate = #{accCtrlProcess.faceMatchRate}
+      </if>
+      <if test="accCtrlProcess.faceLibName != null">
+        and acp.face_lib_name = #{accCtrlProcess.faceLibName}
+      </if>
+      <if test="accCtrlProcess.faceLibType != null">
+        and acp.face_lib_type = #{accCtrlProcess.faceLibType}
+      </if>
+      <if test="accCtrlProcess.processType != null">
+        and acp.process_type = #{accCtrlProcess.processType}
+      </if>
+      <if test="accCtrlProcess.processResult != null">
+        and acp.process_result like concat('%', #{accCtrlProcess.processResult}, '%')
+      </if>
+      <if test="accCtrlProcess.failReason != null">
+        and acp.fail_reason like concat('%', #{accCtrlProcess.processResult}, '%')
+      </if>
+      <if test="start != null">
+        and acp.process_time &gt;= #{start}
+      </if>
+      <if test="end != null">
+        and acp.process_time &lt;= #{end}
+      </if>
+    </where>
+    order by process_time desc
+
+
+  </select>
+
+
   <select id="selectCondition"  resultMap="BaseResultMap">
     select
     <include refid="AccCtrl_Have_Alias_List" />,
@@ -578,12 +680,5 @@
     </if>
   </update>
 
-  <select id="selectRecodByAccessControlIds"  resultMap="BaseResultMap">
-    select distinct <include refid="Base_Column_List" /> from acc_ctrl_process
-    where access_control_id in
-    <foreach  item="accessControlId" collection="accessControlIds" index="index"  open="(" separator="," close=")">
-      #{accessControlId}
-    </foreach>
-  </select>
 
 </mapper>

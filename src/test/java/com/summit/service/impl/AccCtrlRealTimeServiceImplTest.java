@@ -44,4 +44,10 @@ public class AccCtrlRealTimeServiceImplTest {
         Long date = accCtrlRealTimeService.selectUpdatetimeById("1");
         System.out.println(date);
     }
+
+    @Test
+    public void selectLastUpdatetime() {
+        Long date = accCtrlRealTimeService.selectLastUpdatetime();
+        System.out.println(date);
+    }
 }

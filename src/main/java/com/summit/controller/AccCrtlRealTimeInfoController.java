@@ -64,12 +64,12 @@ public class AccCrtlRealTimeInfoController {
 
     }
 
-    @ApiOperation(value = "根据门禁实时id查询门禁最近更新时间毫秒值", notes = "根据门禁实时id查询门禁最近更新时间毫秒值")
-    @GetMapping(value = "/selectUpdatetimeById")
-    public RestfulEntityBySummit<Long> selectUpdatetimeById(@ApiParam(value = "门禁实时id")  @RequestParam(value = "accCrtlRealTimeId") String accCrtlRealTimeId){
+    @ApiOperation(value = "从所有门禁实时信息中查询最后更新时间毫秒值", notes = "从所有门禁实时信息中查询最后更新时间毫秒值")
+    @GetMapping(value = "/selectLastUpdatetime")
+    public RestfulEntityBySummit<Long> selectLastUpdatetime(){
         Long updatetime = null;
         try {
-            updatetime = accCtrlRealTimeService.selectUpdatetimeById(accCrtlRealTimeId);
+            updatetime = accCtrlRealTimeService.selectLastUpdatetime();
         } catch (Exception e) {
             log.error("查询门禁最近更新时间失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询门禁最近更新时间失败", updatetime);
