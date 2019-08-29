@@ -93,13 +93,9 @@ public class AccCtrlRoleServiceImpl implements AccCtrlRoleService {
             }
             //先删除数据库在传入列表中找不到的门禁授权
             for(AccCtrlRole ctrlRole : ctrlRoles) {
-                boolean needDel = true;
-                for(String acId : accessControlIds) {
-                    if(acId != null && acId.equals(ctrlRole.getAccessControlId())){
-                        needDel = false;
-                    }
-                }
-                if(needDel){
+                if(ctrlRole == null)
+                    continue;
+                if(!accessControlIds.contains(ctrlRole.getAccessControlId())){
                     accCtrlRoleDao.deleteById(ctrlRole.getId());
                 }
             }

@@ -47,8 +47,9 @@
       <result column="ac_createby" jdbcType="VARCHAR" property="createby" />
       <result column="ac_createtime" jdbcType="TIMESTAMP" property="createtime" />
       <result column="ac_updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+      <result column="ac_longitude" jdbcType="VARCHAR" property="longitude" />
+      <result column="ac_latitude" jdbcType="VARCHAR" property="latitude" />
 
-      <collection property="roles" resultMap="rolesResult"  />
     </association>
 
     <association property="facePanorama" javaType="com.summit.dao.entity.FileInfo">
@@ -72,12 +73,6 @@
 
   </resultMap>
 
-  <resultMap id="rolesResult" type="com.summit.dao.entity.AccCtrlRole">
-    <result column="au_id" jdbcType="VARCHAR" property="id" />
-    <result column="au_role_id" jdbcType="VARCHAR" property="roleCode" />
-    <result column="au_access_control_id" jdbcType="VARCHAR" property="accessControlId" />
-  </resultMap>
-
 
   <sql id="Base_Column_List">
     acc_ctrl_pro_id, access_control_id, access_control_name, device_id, device_ip, device_type,
@@ -97,7 +92,7 @@
     ac.lock_id ac_lock_id, ac.lock_code ac_lock_code,
     ac.entry_camera_id ac_entry_camera_id, ac.entry_camera_ip ac_entry_camera_ip, ac.exit_camera_id ac_exit_camera_id,
     ac.exit_camera_ip ac_exit_camera_ip, ac.status ac_status, ac.createby ac_createby,
-    ac.createtime ac_createtime, ac.updatetime ac_updatetime
+    ac.createtime ac_createtime, ac.updatetime ac_updatetime, ac.longitude ac_longitude, ac.latitude ac_latitude
   </sql>
   <sql id="Auth_Have_Alias_List">
     au.id au_id, au.role_id au_role_id, au.access_control_id au_access_control_id
@@ -120,12 +115,10 @@
     select
     <include refid="AccCtrl_Have_Alias_List" />,
     <include refid="AccCtrlInfo_Have_Alias_List" />,
-    <include refid="Auth_Have_Alias_List" />,
     <include refid="Face_Panorama_Alias_List" />,
     <include refid="Face_Pic_Alias_List" />,
     <include refid="Face_Match_Alias_List" />
-    from (
-    select distinct <include refid="AccCtrl_Have_Alias_List" /> from acc_ctrl_process acp
+    from  acc_ctrl_process acp
     <if test="roles != null">
       inner join (
       select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
@@ -137,15 +130,14 @@
       </where>
       ) au on au.access_control_id = acp.access_control_id
     </if>
-    <where>
-      acp.acc_ctrl_pro_id=#{accCtrlProId}
-    </where>
-    ) acp
     left join file_info fi1 on acp.face_panorama_id=fi1.file_id
     left join file_info fi2 on acp.face_pic_id=fi2.file_id
     left join file_info fi3 on acp.face_match_id=fi3.file_id
     left join access_control ac on ac.access_control_id = acp.access_control_id
-    left join role_accesscontrol_auth au on au.access_control_id = acp.access_control_id
+
+    <where>
+      acp.acc_ctrl_pro_id=#{accCtrlProId}
+    </where>
 
   </select>
 
@@ -153,12 +145,10 @@
     select
     <include refid="AccCtrl_Have_Alias_List" />,
     <include refid="AccCtrlInfo_Have_Alias_List" />,
-    <include refid="Auth_Have_Alias_List" />,
     <include refid="Face_Panorama_Alias_List" />,
     <include refid="Face_Pic_Alias_List" />,
     <include refid="Face_Match_Alias_List" />
-    from (
-      select distinct <include refid="AccCtrl_Have_Alias_List" /> from acc_ctrl_process acp
+    from acc_ctrl_process acp
     <if test="roles != null">
       inner join (
       select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
@@ -170,6 +160,10 @@
       </where>
       ) au on au.access_control_id = acp.access_control_id
     </if>
+    left join file_info fi1 on acp.face_panorama_id=fi1.file_id
+    left join file_info fi2 on acp.face_pic_id=fi2.file_id
+    left join file_info fi3 on acp.face_match_id=fi3.file_id
+    left join access_control ac on ac.access_control_id = acp.access_control_id
     <where>
       acp.lock_code=#{lockCode}
     </where>
@@ -177,12 +171,6 @@
     <if test="page != null and page.current != null and  page.pageSize != null ">
       limit #{page.current},#{page.pageSize}
     </if>
-    ) acp
-    left join file_info fi1 on acp.face_panorama_id=fi1.file_id
-    left join file_info fi2 on acp.face_pic_id=fi2.file_id
-    left join file_info fi3 on acp.face_match_id=fi3.file_id
-    left join access_control ac on ac.access_control_id = acp.access_control_id
-    left join role_accesscontrol_auth au on au.access_control_id = acp.access_control_id
 
   </select>
 
@@ -292,12 +280,10 @@
     select
     <include refid="AccCtrl_Have_Alias_List" />,
     <include refid="AccCtrlInfo_Have_Alias_List" />,
-    <include refid="Auth_Have_Alias_List" />,
     <include refid="Face_Panorama_Alias_List" />,
     <include refid="Face_Pic_Alias_List" />,
     <include refid="Face_Match_Alias_List" />
-    from (
-    select distinct <include refid="AccCtrl_Have_Alias_List" /> from acc_ctrl_process acp
+    from acc_ctrl_process acp
     <if test="roles != null">
       inner join (
       select <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
@@ -309,6 +295,10 @@
       </where>
       ) au on au.access_control_id = acp.access_control_id
     </if>
+    left join file_info fi1 on acp.face_panorama_id=fi1.file_id
+    left join file_info fi2 on acp.face_pic_id=fi2.file_id
+    left join file_info fi3 on acp.face_match_id=fi3.file_id
+    left join access_control ac on ac.access_control_id = acp.access_control_id
     <where>
       <if test="accCtrlProcess.accCtrlProId != null">
         acp.acc_ctrl_pro_id = #{accCtrlProcess.accCtrlProId}
@@ -387,13 +377,6 @@
     <if test="page != null and page.current != null and  page.pageSize != null ">
       limit #{page.current},#{page.pageSize}
     </if>
-    ) acp
-    left join file_info fi1 on acp.face_panorama_id=fi1.file_id
-    left join file_info fi2 on acp.face_pic_id=fi2.file_id
-    left join file_info fi3 on acp.face_match_id=fi3.file_id
-    left join access_control ac on ac.access_control_id = acp.access_control_id
-    left join role_accesscontrol_auth au on au.access_control_id = acp.access_control_id
-
   </select>
 
   <insert id="insertRecord" parameterType="com.summit.dao.entity.AccCtrlProcess">

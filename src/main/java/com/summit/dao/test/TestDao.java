@@ -147,7 +147,7 @@ public class TestDao {
     @Test
     public void insertACRecord() throws ParseException {
         AccessControlInfo accessControlInfo = new AccessControlInfo("ac02","门禁2","lid06","lc06",null,"did01","devip01",null,"did02","devip02",null,2,"un02",
-                temeFormat.parse("2019-08-13 11:10:10"),temeFormat.parse("2019-08-13 12:11:10"),null,"东经107.40","北纬33.42");
+                temeFormat.parse("2019-08-13 11:10:10"),temeFormat.parse("2019-08-13 12:11:10"),"东经107.40","北纬33.42");
         int record = accessControlDao.insert(accessControlInfo);
         System.out.println(record);
     }

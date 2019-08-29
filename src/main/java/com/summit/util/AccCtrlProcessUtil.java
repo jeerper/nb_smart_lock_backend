@@ -109,8 +109,8 @@ public class AccCtrlProcessUtil {
      */
     public Integer getLockStatus(LockRequest lockRequest) {
         try {
-            //休眠半秒再查询状态
-            Thread.sleep(100);
+            //休眠0.2秒再查询状态
+            Thread.sleep(200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
