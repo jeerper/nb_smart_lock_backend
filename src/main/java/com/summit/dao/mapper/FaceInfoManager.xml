@@ -61,7 +61,7 @@
           face_id=#{faceid}
         </where>
     </select>
-    <select id="selectFaceIdByUserNameAndCardId" parameterType="java.lang.String" resultMap="java.lang.String" >
+    <select id="selectFaceIdByUserNameAndCardId" resultType="java.lang.String" >
         SELECT
         face_id
         FROM  face_info
