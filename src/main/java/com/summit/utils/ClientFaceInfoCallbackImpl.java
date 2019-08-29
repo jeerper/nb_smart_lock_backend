@@ -218,9 +218,9 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                 FileUtil.writeBytes(faceInfo.getFacePic(), picturePathFacePic);
 
                 AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(faceInfo, type, facePanoramaFile, facePicFile, processResult, failReason);
-                AccCtrlRealTimeEntity accCtrlRealTimeEntity = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess);
+
                 //在事务控制下插入门禁操作记录、门禁实时信息、告警
-                insertData(type, accCtrlProcess, accCtrlRealTimeEntity);
+                insertData(type, accCtrlProcess);
             }
         }catch (Exception e){
             log.error("摄像头上报信息处理异常",e);
@@ -230,7 +230,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
 
     //加入事务控制
     @Transactional(propagation= Propagation.REQUIRED,rollbackFor = {Exception.class} )
-    private void insertData(String type, AccCtrlProcess accCtrlProcess, AccCtrlRealTimeEntity accCtrlRealTimeEntity) {
+    private void insertData(String type, AccCtrlProcess accCtrlProcess) {
 
         try {
             accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess);
@@ -252,10 +252,11 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                 throw new ErrorMsgException("门禁操作告警信息入库失败");
             }
         }
-
+        //插入操作记录后更新门禁状态后再获取实时状态信息
+        AccCtrlRealTimeEntity accCtrlRealTimeEntity = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess);
         try {
-            if(accCtrlProcess != null)
-                accCtrlRealTimeEntity.setAccCtrlProId(accCtrlProcess.getAccCtrlProId());
+//            if(accCtrlProcess != null)
+//                accCtrlRealTimeEntity.setAccCtrlProId(accCtrlProcess.getAccCtrlProId());
             if(alarm != null)
                 accCtrlRealTimeEntity.setAlarmId(alarm.getAlarmId());
             accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity);

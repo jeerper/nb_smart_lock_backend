@@ -46,11 +46,6 @@ public class AlarmServiceImpl implements AlarmService {
             log.error("告警信息为空");
             return CommonConstants.UPDATE_ERROR;
         }
-        List<String> roles = LockAuthCtrl.getRoles();
-//        if(lockProcessDao.selectLockProcessById(alarm.getAccCtrlProId(),roles) == null){
-//            log.warn("此告警对应锁操作记录不存在");
-////            return -1;
-//        }
         return alarmDao.insert(alarm);
     }
 

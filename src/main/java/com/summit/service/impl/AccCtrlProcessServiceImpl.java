@@ -339,7 +339,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         if(accCtrlProcess == null) {
             accCtrlProcess = new AccCtrlProcess();
         }
-        int rowsCount = accCtrlProcessDao.selectConutByCondition(new AccCtrlProcess(), null, null, LockAuthCtrl.getRoles());
+        int rowsCount = accCtrlProcessDao.selectConutByCondition(accCtrlProcess, start, end, LockAuthCtrl.getRoles());
         Pageable pageable = PageConverter.getPageable(page, rowsCount);
         PageConverter.convertPage(page);
         Page<AccCtrlProcess> backPage = new Page<>();
