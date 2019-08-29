@@ -383,7 +383,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 oldEntryCameraIp = oldEntryCameraDevice.getDeviceIp();
 
             if(deviceIp != null){
-                if(!deviceIp.equals(oldEntryCameraIp) || (lockCode != null && !lockCode.equals(oldLockCode))){
+                if(!deviceIp.equals(oldEntryCameraIp)){
                     CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
                     if(cameraDevice != null){
                         log.error("更新入口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
@@ -394,6 +394,17 @@ public class AccessControlServiceImpl implements AccessControlService {
                     } catch (Exception e) {
                         log.error("更新入口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
                         throw new ErrorMsgException("更新入口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
+                    }
+                }
+                if(lockCode != null && !lockCode.equals(oldLockCode)){
+                    try {
+                        CameraDevice device = new CameraDevice();
+                        device.setDevId(devId);
+                        device.setLockCode(lockCode);
+                        cameraDeviceService.updateDevice(device);
+                    } catch (Exception e) {
+                        log.error("更新入口摄像头{}对应的锁信息失败", deviceIp);
+                        throw new ErrorMsgException("更新入口摄像头" + deviceIp + "对应的锁信息失败");
                     }
                 }
             }
@@ -413,7 +424,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             if(oldExitcameraDevice != null)
                 oldExitCameraIp = oldExitcameraDevice.getDeviceIp();
             if(deviceIp != null){
-                if(!deviceIp.equals(oldExitCameraIp) || (lockCode != null && !lockCode.equals(oldLockCode))){
+                if(!deviceIp.equals(oldExitCameraIp)){
                     CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
                     if(cameraDevice != null){
                         log.error("更新出口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
@@ -424,6 +435,17 @@ public class AccessControlServiceImpl implements AccessControlService {
                     } catch (Exception e) {
                         log.error("更新出口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
                         throw new ErrorMsgException("更新出口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
+                    }
+                }
+                if(lockCode != null && !lockCode.equals(oldLockCode)){
+                    try {
+                        CameraDevice device = new CameraDevice();
+                        device.setDevId(devId);
+                        device.setLockCode(lockCode);
+                        cameraDeviceService.updateDevice(device);
+                    } catch (Exception e) {
+                        log.error("更新出口摄像头{}对应的锁信息失败", deviceIp);
+                        throw new ErrorMsgException("更新出口摄像头" + deviceIp + "对应的锁信息失败");
                     }
                 }
             }
