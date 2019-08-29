@@ -1,5 +1,6 @@
 package com.summit.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.summit.cbb.utils.page.Page;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoEntity;
@@ -91,5 +92,10 @@ public class FaceInfoServiceImplTest {
         List<FaceInfo> faceInfoList = faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity, null);
         System.out.println(faceInfoList);
     }
-
+    @Test
+    public void select2(){
+        QueryWrapper<FaceInfo> wrapper=new QueryWrapper<>();
+        List<FaceInfo> faceInfoList = faceInfoManagerDao.selectList(wrapper);
+        System.out.println(faceInfoList);
+    }
 }

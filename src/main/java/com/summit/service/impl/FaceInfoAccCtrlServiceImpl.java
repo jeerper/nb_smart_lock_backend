@@ -55,6 +55,7 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
                  for(String faceid:faceids){
                      if(faceid !=null && faceid.equals(faceInfoAccCtrl.getFaceid())){
                          needDel=false;
+                         break;
                      }
                  }
                  if(needDel){
@@ -67,6 +68,7 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
                  for(FaceInfoAccCtrl faceInfoAccCtrl:faceInfoAccCtrls){
                      if(faceid !=null && faceid.equals(faceInfoAccCtrl.getFaceid())){
                          needAdd=false;
+                         break;
                      }
                  }
                  if(needAdd){
@@ -77,10 +79,9 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
              //若之前此门禁没有对应的人脸信息，则直接添加
              List<FaceInfoAccCtrl> faceInfoCtrls=new ArrayList<>();
              for(String faceid:faceids){
-                 faceInfoAccCtrls.add(new FaceInfoAccCtrl(null,accessControlId,faceid));
+                 faceInfoCtrls.add(new FaceInfoAccCtrl(null,accessControlId,faceid));
              }
              return insertFaceAccCtrl(faceInfoAccCtrls);
-
          }
         return 0;
     }
