@@ -22,13 +22,13 @@ public class FaceInfoAccCtrl {
     @TableId(value = "id",type= IdType.ID_WORKER_STR)
     private String id;
 
-    @ApiModelProperty(value = "人脸信息id",name = "face_id")
-    @TableField(value = "face_id")
-    private String faceid;
-
     @ApiModelProperty(value = "门禁id",name = "accessControlId")
     @TableField(value = "access_control_id")
     private String accessControlId;
+
+    @ApiModelProperty(value = "人脸信息id",name = "faceid")
+    @TableField(value = "face_id")
+    private String faceid;
 
     public FaceInfoAccCtrl() {
     }
