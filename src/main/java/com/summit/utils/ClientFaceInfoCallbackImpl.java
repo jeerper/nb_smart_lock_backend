@@ -32,9 +32,11 @@ import com.summit.service.AccCtrlRealTimeService;
 import com.summit.service.AccessControlService;
 import com.summit.service.AlarmService;
 import com.summit.service.CameraDeviceService;
+import com.summit.service.FaceInfoAccCtrlService;
 import com.summit.service.LockRecordService;
 import com.summit.service.impl.NBLockServiceImpl;
 import com.summit.util.AccCtrlProcessUtil;
+import com.summit.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -44,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -61,6 +64,10 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
     private AccCtrlProcessUtil accCtrlProcessUtil;
     @Autowired
     private AccCtrlRealTimeService accCtrlRealTimeService;
+    @Autowired
+    private AccessControlService accessControlService;
+    @Autowired
+    private FaceInfoAccCtrlService faceInfoAccCtrlService;
 
     @Override
     public void invoke(Object object) {
@@ -150,58 +157,76 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                     if(cameraDevice != null) {
                         String lockCode = cameraDevice.getLockCode();
                         if (lockCode != null) {
-                            LockRequest lockRequest = new LockRequest(null, lockCode, faceInfo.getName(),null);
-                            RestfulEntityBySummit result = null;
-                            try {
-                                result = unLockService.toUnLock(lockRequest);
+                            List<String> accessControlIds = faceInfoAccCtrlService.selectAccCtrlIdByUserNameAndCardId(faceInfo.getName(),faceInfo.getCardId());
+                            AccessControlInfo accessControlInfo = accessControlService.selectAccCtrlByLockCode(lockCode);
+                            if(accessControlInfo == null){
+                                processResult = LcokProcessResultType.ERROR.getCode();
+                                failReason = "未找到此设备对应的门禁";
+                            }else{
+                                String accessControlId = accessControlInfo.getAccessControlId();
+                                boolean haveAccCtrlAuth = haveAccCtrlAuth(accessControlIds, accessControlId);
+                                //此人脸有对应门禁权限，则进行开锁，否则更新门禁为告警状态，并记录开锁结果和原因
+                                if(haveAccCtrlAuth){
+                                    LockRequest lockRequest = new LockRequest(null, lockCode, faceInfo.getName(),null);
+                                    RestfulEntityBySummit result = null;
+                                    try {
+                                        result = unLockService.toUnLock(lockRequest);
 
-                                BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
-                                if(backLockInfo != null){
-                                    String backLockInfoType = backLockInfo.getType();
-                                    String content = backLockInfo.getContent();
-                                    log.debug("rmid={},type={},content={},objx={},time={}",
-                                            backLockInfo.getRmid(), backLockInfoType, content, backLockInfo.getObjx(), backLockInfo.getTime());
+                                        BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
+                                        if(backLockInfo != null){
+                                            String backLockInfoType = backLockInfo.getType();
+                                            String content = backLockInfo.getContent();
+                                            log.debug("rmid={},type={},content={},objx={},time={}",
+                                                    backLockInfo.getRmid(), backLockInfoType, content, backLockInfo.getObjx(), backLockInfo.getTime());
 
-                                    if(LcokProcessResultType.SUCCESS.getCode().equalsIgnoreCase(backLockInfoType)){
-                                        //查询调用查询锁状态接口，若查到状态变为开锁，则改变锁、门禁状态为打开，否则不改变状态
-                                        Integer status = accCtrlProcessUtil.getLockStatus(lockRequest);
-                                        if(status != null){
-                                            if(status == LockStatus.UNLOCK.getCode()){
+                                            if(LcokProcessResultType.SUCCESS.getCode().equalsIgnoreCase(backLockInfoType)){
+                                                //查询调用查询锁状态接口，若查到状态变为开锁，则改变锁、门禁状态为打开，否则不改变状态
+                                                Integer status = accCtrlProcessUtil.getLockStatus(lockRequest);
+                                                if(status != null){
+                                                    if(status == LockStatus.UNLOCK.getCode()){
+                                                        processResult = backLockInfoType;
+                                                    }else if(status == LockStatus.LOCK_CLOSED.getCode()){
+                                                        processResult = LcokProcessResultType.ERROR.getCode();
+                                                        failReason = "未知";
+                                                    }
+                                                    accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCode);
+                                                }
+                                            }else{
                                                 processResult = backLockInfoType;
-                                            }else if(status == LockStatus.LOCK_CLOSED.getCode()){
-                                                processResult = LcokProcessResultType.ERROR.getCode();
-                                                failReason = "未知";
+                                                failReason = content;
+                                                Integer status = accCtrlProcessUtil.getLockStatus(lockRequest);
+                                                if(status != null){
+                                                    accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCode);
+                                                }
                                             }
-                                            accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCode);
+                                        }else{
+                                            log.error("开锁时返回记录为空");
+                                            failReason = "开锁时返回记录为空";
+                                            //查询调用查询锁状态接口，根据查到状态改变锁和门禁状态，
+                                            Integer status = accCtrlProcessUtil.getLockStatus(lockRequest);
+                                            if(status != null ){
+                                                if(status == LockStatus.UNLOCK.getCode()){
+                                                    processResult = LcokProcessResultType.SUCCESS.getCode();
+
+                                                }else if(status == LockStatus.LOCK_CLOSED.getCode()){
+                                                    processResult = LcokProcessResultType.ERROR.getCode();
+                                                    failReason = "未知";
+                                                }
+                                                accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCode);
+                                            }
                                         }
-                                    }else{
-                                        processResult = backLockInfoType;
-                                        failReason = content;
-                                        Integer status = accCtrlProcessUtil.getLockStatus(lockRequest);
-                                        if(status != null){
-                                            accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCode);
-                                        }
+                                    } catch (Exception e) {
+                                        if(e instanceof ErrorMsgException)
+                                            log.error(((ErrorMsgException) e).getErrorMsg());
+                                        else log.error("开锁失败,{}",e.getMessage());
                                     }
                                 }else{
-                                    log.error("开锁时返回记录为空");
-                                    failReason = "开锁时返回记录为空";
-                                    //查询调用查询锁状态接口，根据查到状态改变锁和门禁状态，
-                                    Integer status = accCtrlProcessUtil.getLockStatus(lockRequest);
-                                    if(status != null ){
-                                        if(status == LockStatus.UNLOCK.getCode()){
-                                            processResult = LcokProcessResultType.SUCCESS.getCode();
-
-                                        }else if(status == LockStatus.LOCK_CLOSED.getCode()){
-                                            processResult = LcokProcessResultType.ERROR.getCode();
-                                            failReason = "未知";
-                                        }
-                                        accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCode);
-                                    }
+                                    log.error("用户{}无打开门禁{}的权限", faceInfo.getName(), accessControlId);
+                                    processResult = LcokProcessResultType.ERROR.getCode();
+                                    failReason = "用户" + faceInfo.getName() + "无打开门禁" + accessControlId + "的权限";
+                                    accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(AccCtrlStatus.ALARM.getCode(),lockCode);
+                                    type = "Alarm";
                                 }
-                            } catch (Exception e) {
-                                if(e instanceof ErrorMsgException)
-                                    log.error(((ErrorMsgException) e).getErrorMsg());
-                                else log.error("开锁失败,{}",e.getMessage());
                             }
 
                         }else{
@@ -226,6 +251,19 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             log.error("摄像头上报信息处理异常",e);
         }
 
+    }
+
+    /**
+     *  判断刷脸人有无开锁权限
+     * @param accessControlIds 人脸关联的所以门禁的id
+     * @param accessControlId 本次刷脸设备对应的门禁id
+     * @return 是否具有开锁权限
+     */
+    private boolean haveAccCtrlAuth(List<String> accessControlIds, String accessControlId) {
+        if(CommonUtil.isEmptyList(accessControlIds)){
+            return false;
+        }
+        return accessControlIds.contains(accessControlId);
     }
 
     //加入事务控制
