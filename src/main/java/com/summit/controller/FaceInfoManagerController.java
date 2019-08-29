@@ -51,7 +51,6 @@ public class FaceInfoManagerController {
   @PostMapping(value = "insertFaceInfo")
   public RestfulEntityBySummit<Integer>  insertFaceInfo(@RequestBody FaceInfoManagerEntity faceInfoManagerEntity) throws ParseException {
        //System.out.println(faceInfoManagerEntity+"ddd");
-       String time=CommonConstants.snapshotTimeFormat.format(new Date());
        String  base64Str=faceInfoManagerEntity.getFaceImage();
         FaceInfo faceInfo=new FaceInfo();
         if(SummitTools.stringNotNull(base64Str)){
@@ -134,6 +133,7 @@ public class FaceInfoManagerController {
     }
     return  ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"分页全部查询人脸信息成功",faceInfoPage);
   }
+
   @ApiOperation(value = "更新人脸信息")
   @PutMapping(value = "/updateFaceInfo")
   public RestfulEntityBySummit<String> updateFaceInfo(@ApiParam(value = "包含人脸信息")@RequestBody FaceInfo faceInfo ){
@@ -142,6 +142,41 @@ public class FaceInfoManagerController {
       return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"人脸信息为空",null);
     }
     String msg="更新人脸信息失败";
+    String  base64Str=faceInfo.getFaceImage();
+    if(SummitTools.stringNotNull(base64Str)){
+      StringBuffer fileName = new StringBuffer();
+      fileName.append(UUID.randomUUID().toString().replaceAll("-", ""));
+      if (base64Str.indexOf("data:image/png;") != -1) {
+        base64Str = base64Str.replace("data:image/png;base64,", "");
+        fileName.append(".png");
+      } else if (base64Str.indexOf("data:image/jpeg;") != -1) {
+        base64Str = base64Str.replace("data:image/jpeg;base64,", "");
+        fileName.append(".jpeg");
+      }
+      String picId= IdWorker.getIdStr();
+      String facePicPath=new StringBuilder()
+              .append(SystemUtil.getUserInfo().getCurrentDir())
+              .append(File.separator)
+              .append(MainAction.SnapshotFileName)
+              .append(File.separator)
+              .append(picId)
+              .append("_Face.jpg")
+              .toString();
+      String faceUrl=new StringBuilder()
+              .append("/")
+              .append(MainAction.SnapshotFileName)
+              .append("/")
+              .append(picId)
+              .append("_Face.jpg")
+              .toString();
+      faceInfo.setFaceImage(faceUrl);
+      byte[] bytes = Base64.getDecoder().decode(base64Str);
+      try {
+        FileUtil.writeBytes(bytes,facePicPath);
+      } catch (Exception e) {
+        log.error("保存人脸图片异常");
+      }
+    }
     try {
       faceInfoManagerService.updateFaceInfo(faceInfo);
     } catch (Exception e) {
@@ -186,7 +221,7 @@ public class FaceInfoManagerController {
     }
     return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"根据id查询人脸信息成功",faceInfo);
   }
-
+   
 
 
   private String getErrorMsg(String msg,Exception e){
