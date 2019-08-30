@@ -219,7 +219,7 @@ public class FaceInfoManagerController {
     }
     return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"根据id查询人脸信息成功",faceInfo);
   }
-   @ApiOperation(value = "查询全部人脸信息，包括人脸信息的id和name",notes = "无论有无门禁权限都全部查询")
+   @ApiOperation(value = "查询全部人脸信息，包括人脸信息的id和name以及人脸图片",notes = "无论有无门禁权限都全部查询")
    @GetMapping(value = "/selectAllFaceInfo")
    public RestfulEntityBySummit<List<SimpleFaceInfo>> selectAllFaceInfo(){
      List<SimpleFaceInfo> simpleFaceInfos=new ArrayList<>();
@@ -228,7 +228,7 @@ public class FaceInfoManagerController {
        System.out.println(faceInfos+"aaa");
        if(faceInfos !=null){
          for(FaceInfo faceInfo:faceInfos){
-           simpleFaceInfos.add(new SimpleFaceInfo(faceInfo.getFaceid(),faceInfo.getUserName()));
+           simpleFaceInfos.add(new SimpleFaceInfo(faceInfo.getFaceid(),faceInfo.getUserName(),faceInfo.getFaceImage()));
          }
        }
      } catch (Exception e) {

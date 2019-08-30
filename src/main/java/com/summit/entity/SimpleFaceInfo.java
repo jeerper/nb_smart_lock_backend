@@ -17,4 +17,6 @@ public class SimpleFaceInfo {
     private String faceid;
     @ApiModelProperty(value = "人脸信息名称",name = "userName")
     private String userName;
+    @ApiModelProperty(value = "人脸图片",name = "faceImage")
+    private String faceImage;
 }
