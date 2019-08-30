@@ -43,6 +43,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Slf4j
 @Component
@@ -68,6 +70,8 @@ public class AccCtrlProcessUtil {
     @Autowired
     private AccCtrlRealTimeService accCtrlRealTimeService;
 
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();;
+
     /**
      * 根据开锁操作返回状态更新相应门禁和锁状态、实时信息状态
      * @param status 开锁操作返回状态
@@ -86,7 +90,6 @@ public class AccCtrlProcessUtil {
             //直接根据锁编号更新门禁状态
             accessControlDao.update(accessControlInfo, new UpdateWrapper<AccessControlInfo>().eq("lock_code", lockCode));
 
-            //同时更新门禁实时信息
             AccCtrlRealTimeEntity accCtrlRealTimeEntity = new AccCtrlRealTimeEntity();
             accCtrlRealTimeEntity.setAccCtrlStatus(status);
             accCtrlRealTimeEntity.setLockStatus(status);
@@ -247,24 +250,26 @@ public class AccCtrlProcessUtil {
                 backLockInfo = (BackLockInfo) backData;
                 String type = backLockInfo.getType();
 
-                Integer status = getLockStatus(lockRequest);
-                if(LcokProcessResultType.SUCCESS.getCode().equalsIgnoreCase(type)
-                        && status != null && status == LockStatus.UNLOCK.getCode()){
+                String content = backLockInfo.getContent();
+                Integer objx = backLockInfo.getObjx();
+
+                if(LcokProcessResultType.SUCCESS.getCode().equalsIgnoreCase(type)){
                     accCtrlProcess.setProcessResult(LcokProcessResultType.SUCCESS.getCode());
                 }else{
+
                     accCtrlProcess.setProcessResult(LcokProcessResultType.ERROR.getCode());
-                    String content = backLockInfo.getContent();
                     if(CommonUtil.isEmptyStr(content))
                         accCtrlProcess.setFailReason("未知");
                     else
                         accCtrlProcess.setFailReason(content);
                 }
-                if(status != null){
-                    if(status == LockStatus.UNLOCK.getCode() || status == LockStatus.LOCK_CLOSED.getCode()){
-                        //改变锁、门禁状态为当前状态
-                        toUpdateAccCtrlAndLockStatus(status,lockCode);
-                    }
-                }
+                //改为全局扫描更新
+                //若状态是开锁，或开锁失败且状态为4终端不在线，则更改锁、门禁、实时状态
+//                if(objx != null && (objx == LockStatus.UNLOCK.getCode()
+//                        || objx == LockStatus.NOT_ONLINE.getCode() || "终端不在线".equals(content))){
+//                    //改变锁、门禁状态为当前状态
+//                    toUpdateAccCtrlAndLockStatus(objx,lockCode);
+//                }
 
             }else{
                 accCtrlProcess.setProcessResult(LcokProcessResultType.ERROR.getCode());
@@ -276,14 +281,6 @@ public class AccCtrlProcessUtil {
             log.info("门禁操作记录入库成功");
         } catch (Exception e) {
             log.error("门禁操作记录入库失败");
-        }
-
-        AccCtrlRealTimeEntity accCtrlRealTimeEntity = getAccCtrlRealTimeEntity(accCtrlProcess);
-        try {
-            accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity);
-            log.info("门禁实时信息入库成功");
-        } catch (Exception e) {
-            log.error("门禁实时信息入库失败");
         }
 
     }

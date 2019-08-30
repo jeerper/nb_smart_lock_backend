@@ -89,15 +89,18 @@ public class AlarmController {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,msg + "开锁失败",null);
             }
             Object data = result.getData();
+            String resultMsg = result.getMsg();
+
             accCtrlProcessUtil.toInsertAndUpdateData(data,lockRequest);
-            noUpdatedStatus = false;
+//            noUpdatedStatus = false;
             BackLockInfo backLockInfo = null;
-            msg = "开锁结果：" + result.getMsg() + ";";
+
+            msg = "开锁结果：" + resultMsg + ";";
             if((data instanceof BackLockInfo)){
                 backLockInfo = (BackLockInfo) data;
                 msg = "开锁结果：" + backLockInfo.getContent();
                 if(!LcokProcessResultType.SUCCESS.getCode().equals(backLockInfo.getType())){
-                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,result.getMsg(),null);
+                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, resultMsg,null);
                 }
             }
         }
@@ -116,7 +119,7 @@ public class AlarmController {
         LockRequest lockRequest = new LockRequest();
         lockRequest.setLockId(lockId);
         lockRequest.setOperName(operName);
-        if(noUpdatedStatus){
+//        if(noUpdatedStatus){
             //若上面未更新过告警，这里更新锁和门禁为当前真实状态
             String lockCodeById = accCtrlProcessUtil.getLockCodeById(lockId);
             try {
@@ -125,7 +128,7 @@ public class AlarmController {
             } catch (Exception e) {
                 log.error(msg + "获取锁状态失败");
             }
-        }
+//        }
         try {
             alarmService.updateAlarm(alarm);
         } catch (Exception e) {

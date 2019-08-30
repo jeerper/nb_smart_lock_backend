@@ -116,7 +116,7 @@ public class NBLockServiceImpl {
                 .flatMap(new Func1<BackLockInfo, Observable<BackLockInfo>>() {
                     @Override
                     public Observable<BackLockInfo> call(BackLockInfo backLockInfo) {
-                        log.info("{}" , backLockInfo);
+                        log.debug("{}" , backLockInfo);
                         backLockInfos[0] = backLockInfo;
 
                         if(backLockInfo != null){
@@ -149,7 +149,7 @@ public class NBLockServiceImpl {
             //最后的业务逻辑
             @Override
             public void onCompleted() {
-                log.info("请求完成");
+                log.debug("请求完成");
             }
             @Override
             public void onError(Throwable e) {
@@ -174,7 +174,7 @@ public class NBLockServiceImpl {
         }
         if(terminalNum == null){
             LockInfo lockInfo = lockInfoService.selectLockById(lockId);
-            if(lockInfo == null || lockInfo.getLockId() == null)
+            if(lockInfo == null || lockInfo.getLockCode() == null)
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993 );
             lockRequest.setTerminalNum(lockInfo.getLockCode());
         }
@@ -186,7 +186,7 @@ public class NBLockServiceImpl {
                 .flatMap(new Func1<BackLockInfo, Observable<BackLockInfo>>() {
                     @Override
                     public Observable<BackLockInfo> call(BackLockInfo backLockInfo) {
-                        log.info("{}" , backLockInfo);
+                        log.debug("{}" , backLockInfo);
                         queryBackLockInfo[0] = backLockInfo;
                         if(backLockInfo != null){
                             String type = backLockInfo.getType();
@@ -217,7 +217,7 @@ public class NBLockServiceImpl {
         }).subscribe(new Observer<BackLockInfo>() {
             @Override
             public void onCompleted() {
-                log.info("请求完成");
+                log.debug("请求完成");
             }
             @Override
             public void onError(Throwable e) {
@@ -250,7 +250,7 @@ public class NBLockServiceImpl {
                 .flatMap(new Func1<SafeReportInfo, Observable<SafeReportInfo>>() {
                     @Override
                     public Observable<SafeReportInfo> call(SafeReportInfo safeReport) {
-                        log.info("{}" ,safeReport);
+                        log.debug("{}" ,safeReport);
                         safeReportRusult[0] = safeReport;
                         return null;
                     }
@@ -271,7 +271,7 @@ public class NBLockServiceImpl {
         }).subscribe(new Observer<SafeReportInfo>() {
             @Override
             public void onCompleted() {
-                log.info("请求完成");
+                log.debug("请求完成");
             }
             @Override
             public void onError(Throwable e) {

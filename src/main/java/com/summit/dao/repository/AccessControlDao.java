@@ -20,4 +20,10 @@ public interface AccessControlDao  extends BaseMapper<AccessControlInfo> {
     List<AccessControlInfo> selectHaveHistoryByPage(@Param("page") SimplePage page, @Param("roles") List<String> roles);
 
     Integer selectHaveHistoryCountByPage(@Param("page") SimplePage page, @Param("roles") List<String> roles);
+
+    List<String>  selectAllAccessControlIds(@Param("roles") List<String> roles);
+
+    List<String>  selectAllLockCodes(@Param("roles") List<String> roles);
+
+    Integer  selectStatusLockCode(@Param("lockCode") String lockCode, @Param("roles") List<String> roles);
 }

@@ -1,6 +1,7 @@
 package com.summit.service.impl;
 
 import com.summit.dao.entity.AccessControlInfo;
+import com.summit.dao.repository.AccessControlDao;
 import com.summit.service.AccessControlService;
 import com.summit.util.LockAuthCtrl;
 import org.junit.Test;
@@ -19,6 +20,8 @@ public class AccessControlServiceImplTest {
 
     @Autowired
     private AccessControlService accessControlService;
+    @Autowired
+    private AccessControlDao accessControlDao;
 
     @Test
     public void selectAccCtrlById() {
@@ -28,7 +31,11 @@ public class AccessControlServiceImplTest {
     }
 
     @Test
-    public void selectAccCtrlByIdBeyondAuthority() {
+    public void selectAllAccessControlIds() {
+//        List<String> aaa = accessControlDao.selectAllAccessControlIds(null);
+//        List<String> aaa = accessControlDao.selectAllLockCodes(null);
+        Integer aaa = accessControlDao.selectStatusLockCode("ssszzz",null);
+        System.out.println(aaa);
     }
     @Test
     public void selectAllAccessControl() {

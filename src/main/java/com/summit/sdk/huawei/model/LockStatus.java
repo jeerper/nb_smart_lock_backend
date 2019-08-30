@@ -4,7 +4,8 @@ public enum LockStatus {
 
     UNLOCK(1,"打开"),
     LOCK_CLOSED(2,"锁定"),
-    LOCK_ALARM(3,"告警");
+    LOCK_ALARM(3,"告警"),
+    NOT_ONLINE (4,"不在线");
 
     private int code;
     private String description;
