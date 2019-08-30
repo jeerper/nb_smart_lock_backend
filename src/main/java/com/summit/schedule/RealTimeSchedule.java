@@ -43,7 +43,7 @@ public class RealTimeSchedule {
             Integer currentStatus = accessControlDao.selectStatusLockCode(lockCode, null);
             Integer status = accCtrlProcessUtil.getLockStatus(lockRequest);
             //当前数据库状态不为告警，则更新门禁为当前查询外部接口所得结果
-            if(status != null && currentStatus != null && currentStatus != LockStatus.LOCK_ALARM.getCode())
+            if(status != null && currentStatus != null && !status.equals(currentStatus) && currentStatus != LockStatus.LOCK_ALARM.getCode())
                 accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(status, lockCode);
         }
     }
