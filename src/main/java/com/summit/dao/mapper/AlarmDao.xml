@@ -13,6 +13,7 @@
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="updatetime" jdbcType="VARCHAR" property="updatetime" />
     <result column="process_remark" jdbcType="VARCHAR" property="processRemark" />
+    <result column="acc_ctrl_status" jdbcType="VARCHAR" property="accCtrlStatus" />
 
     <association property="accCtrlProcess" javaType="com.summit.dao.entity.AccCtrlProcess">
         <result column="acc_ctrl_pro_id" jdbcType="VARCHAR" property="accCtrlProId" />
@@ -109,7 +110,7 @@
     </sql>
 
   <select id="selectAlarmById" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select
+    select ac.status acc_ctrl_status,
     <include refid="Alarm_Have_Alias_List" />,
     <include refid="AccCtrl_Have_Alias_List" />,
     <include refid="Face_Panorama_Alias_List" />,
@@ -128,10 +129,11 @@
           </where>
           ) au on au.access_control_id = acp.access_control_id
       </if>
-
     left join file_info fi1 on acp.face_panorama_id=fi1.file_id
     left join file_info fi2 on acp.face_pic_id=fi2.file_id
     left join file_info fi3 on acp.face_match_id=fi3.file_id
+    left join access_control ac on ac.access_control_id=acp.access_control_id
+
     <where>
       al.alarm_id=#{alarmId}
     </where>

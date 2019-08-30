@@ -14,6 +14,7 @@ import com.summit.entity.LockRequest;
 import com.summit.entity.UpdateAlarmParam;
 import com.summit.exception.ErrorMsgException;
 import com.summit.sdk.huawei.model.LcokProcessResultType;
+import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.service.AlarmService;
 import com.summit.service.impl.NBLockServiceImpl;
 import com.summit.util.CommonUtil;
@@ -91,17 +92,26 @@ public class AlarmController {
             Object data = result.getData();
             String resultMsg = result.getMsg();
 
-            accCtrlProcessUtil.toInsertAndUpdateData(data,lockRequest);
-//            noUpdatedStatus = false;
+
             BackLockInfo backLockInfo = null;
 
             msg = "开锁结果：" + resultMsg + ";";
             if((data instanceof BackLockInfo)){
                 backLockInfo = (BackLockInfo) data;
-                msg = "开锁结果：" + backLockInfo.getContent();
+                String content = backLockInfo.getContent();
+                msg = "开锁结果：" + content;
+//                if(backLockInfo.getObjx() != LockStatus.NOT_ONLINE.getCode()
+//                        && !"终端不在线".equals(content)
+//                        && !content.contains("编号不存在")){
+//                    accCtrlProcessUtil.toInsertAndUpdateData(data,lockRequest);
+//                }
                 if(!LcokProcessResultType.SUCCESS.getCode().equals(backLockInfo.getType())){
                     return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, resultMsg,null);
+                }else{
+                    accCtrlProcessUtil.toInsertAndUpdateData(data,lockRequest);
                 }
+
+//            noUpdatedStatus = false;
             }
         }
 
