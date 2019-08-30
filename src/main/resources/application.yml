@@ -25,3 +25,5 @@ mybatis-plus:
 
 nbLock:
   baseUrl: http://47.106.35.122:8088/intf/
+  real-time-status:
+    rate: 0/2 * * * * ?
