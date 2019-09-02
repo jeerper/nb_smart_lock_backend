@@ -46,7 +46,7 @@ public class AccessControlInfoController {
     private RealTimeSchedule realTimeSchedule;
 
 
-    @ApiOperation(value = "分页查询全部门禁信息", notes = "分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
+    @ApiOperation(value = "分页条件查询门禁信息", notes = "分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
     @GetMapping(value = "/selectAccCtrlByPage")
     public RestfulEntityBySummit<Page<AccessControlInfo>> selectAccCtrlByPage(@ApiParam(value = "门禁名")  @RequestParam(value = "accessControlName",required = false) String accessControlName,
                                                                               @ApiParam(value = "创建人")  @RequestParam(value = "createby",required = false) String createby,
@@ -60,7 +60,6 @@ public class AccessControlInfoController {
         AccessControlInfo accessControlInfo = new AccessControlInfo(accessControlName,createby,lockCode,entryCameraIp,exitCameraIp,status);
         try {
             controlInfoPage = accessControlService.selectAccCtrlByPage(accessControlInfo, new SimplePage(current, pageSize));
-//            filterAccCtrlInfo(controlInfoPage);
         } catch (Exception e) {
             log.error("分页查询全部门禁信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"分页查询全部门禁信息失败", controlInfoPage);
