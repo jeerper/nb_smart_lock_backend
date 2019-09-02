@@ -95,4 +95,13 @@ public class AccessControlInfo {
     private String latitude;
 
     public AccessControlInfo(){}
+
+    public AccessControlInfo(String accessControlName, String createby, String lockCode, String entryCameraIp, String exitCameraIp, Integer status){
+        this.accessControlName = accessControlName;
+        this.createby = createby;
+        this.lockCode = lockCode;
+        this.entryCameraIp = entryCameraIp;
+        this.exitCameraIp = exitCameraIp;
+        this.status = status;
+    }
 }

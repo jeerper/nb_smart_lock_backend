@@ -12,8 +12,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class AccessControlServiceImplTest {
@@ -45,7 +43,10 @@ public class AccessControlServiceImplTest {
 
     @Test
     public void selectAllAccessControl2() {
-        List<AccessControlInfo> accessControlInfos = accessControlService.selectCondition(new AccessControlInfo(),null);
+        AccessControlInfo accessControlInfo = new AccessControlInfo();
+        accessControlInfo.setAccessControlName("山");
+        accessControlInfo.setLockCode("6");
+        List<AccessControlInfo> accessControlInfos = accessControlService.selectCondition(accessControlInfo,null);
         System.out.println(accessControlInfos);
     }
 }

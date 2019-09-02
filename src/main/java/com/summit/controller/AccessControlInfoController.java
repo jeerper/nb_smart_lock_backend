@@ -48,11 +48,18 @@ public class AccessControlInfoController {
 
     @ApiOperation(value = "分页查询全部门禁信息", notes = "分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
     @GetMapping(value = "/selectAccCtrlByPage")
-    public RestfulEntityBySummit<Page<AccessControlInfo>> selectAccCtrlByPage(@ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current",required = false) Integer current,
-                                                                                    @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize",required = false) Integer pageSize){
+    public RestfulEntityBySummit<Page<AccessControlInfo>> selectAccCtrlByPage(@ApiParam(value = "门禁名")  @RequestParam(value = "accessControlName",required = false) String accessControlName,
+                                                                              @ApiParam(value = "创建人")  @RequestParam(value = "createby",required = false) String createby,
+                                                                              @ApiParam(value = "锁编号")  @RequestParam(value = "lockCode",required = false) String lockCode,
+                                                                              @ApiParam(value = "入口摄像头ip")  @RequestParam(value = "入口摄像头",required = false) String entryCameraIp,
+                                                                              @ApiParam(value = "出口摄像头ip")  @RequestParam(value = "出口摄像头",required = false) String exitCameraIp,
+                                                                              @ApiParam(value = "门禁状态")  @RequestParam(value = "status",required = false) Integer status,
+                                                                              @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
+                                                                              @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize",required = false) Integer pageSize){
         Page<AccessControlInfo> controlInfoPage = null;
+        AccessControlInfo accessControlInfo = new AccessControlInfo(accessControlName,createby,lockCode,entryCameraIp,exitCameraIp,status);
         try {
-            controlInfoPage = accessControlService.selectAccCtrlByPage(new SimplePage(current, pageSize));
+            controlInfoPage = accessControlService.selectAccCtrlByPage(accessControlInfo, new SimplePage(current, pageSize));
 //            filterAccCtrlInfo(controlInfoPage);
         } catch (Exception e) {
             log.error("分页查询全部门禁信息失败");

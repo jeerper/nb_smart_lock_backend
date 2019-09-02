@@ -115,13 +115,15 @@ public class AccessControlServiceImpl implements AccessControlService {
      * @return 门禁信息列表
      */
     @Override
-    public Page<AccessControlInfo> selectAccCtrlByPage(SimplePage page) {
-
-        List<AccessControlInfo> accessControls = accessControlDao.selectCondition(new AccessControlInfo(), null, LockAuthCtrl.getRoles());
+    public Page<AccessControlInfo> selectAccCtrlByPage(AccessControlInfo accessControlInfo,SimplePage page) {
+        if(accessControlInfo == null){
+            accessControlInfo = new AccessControlInfo();
+        }
+        List<AccessControlInfo> accessControls = accessControlDao.selectCondition(accessControlInfo, null, LockAuthCtrl.getRoles());
         int rowsCount = accessControls == null ? 0 : accessControls.size();
         Pageable pageable = PageConverter.getPageable(page, rowsCount);
         PageConverter.convertPage(page);
-        List<AccessControlInfo> accessControlInfos = accessControlDao.selectCondition(new AccessControlInfo(), page, LockAuthCtrl.getRoles());
+        List<AccessControlInfo> accessControlInfos = accessControlDao.selectCondition(accessControlInfo, page, LockAuthCtrl.getRoles());
         Page<AccessControlInfo> backPage = new Page<>();
         backPage.setContent(accessControlInfos);
         backPage.setPageable(pageable);

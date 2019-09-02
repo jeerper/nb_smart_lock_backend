@@ -225,11 +225,17 @@
       <if test="accessControlInfo.lockCode != null">
         and ac.lock_code like concat('%', #{accessControlInfo.lockCode}, '%')
       </if>
+      <if test="accessControlInfo.entryCameraIp != null">
+        and ac.entry_camera_ip like concat('%', #{accessControlInfo.entryCameraIp}, '%')
+      </if>
+      <if test="accessControlInfo.exitCameraIp != null">
+        and ac.exit_camera_ip like concat('%', #{accessControlInfo.exitCameraIp}, '%')
+      </if>
       <if test="accessControlInfo.status != null">
         and ac.status = #{accessControlInfo.status}
       </if>
       <if test="accessControlInfo.createby != null">
-        and ac.createby = #{accessControlInfo.createby}
+        and ac.createby like concat('%', #{accessControlInfo.createby}, '%')
       </if>
       <if test="accessControlInfo.createtime != null">
         and ac.createtime = #{accessControlInfo.createtime}
