@@ -115,7 +115,8 @@ public class AccCtrlProcessUtil {
             //休眠0.2秒再查询状态
             Thread.sleep(200);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.error("查询锁状态时发生异常,{}",e.getMessage());
+            return null;
         }
         RestfulEntityBySummit back = null;
         try {
