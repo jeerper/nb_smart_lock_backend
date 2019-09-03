@@ -17,6 +17,7 @@ import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.entity.SimpleFaceInfo;
 import com.summit.exception.ErrorMsgException;
 import com.summit.service.FaceInfoManagerService;
+import com.summit.util.CommonUtil;
 import com.summit.util.SummitTools;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -89,8 +90,8 @@ public class FaceInfoManagerController {
           faceInfo.setGender(faceInfoManagerEntity.getGender());
           faceInfo.setProvince(faceInfoManagerEntity.getProvince());
           faceInfo.setCity(faceInfoManagerEntity.getCity());
-          Date birthday1 = CommonConstants.dateFormat.parse(faceInfoManagerEntity.getBirthday());
-          faceInfo.setBirthday(birthday1);
+          Date birth = CommonUtil.dateFormat.get().parse(faceInfoManagerEntity.getBirthday());
+          faceInfo.setBirthday(birth);
           faceInfo.setCardType(faceInfoManagerEntity.getCardType());
           faceInfo.setCardId(faceInfoManagerEntity.getCardId());
           try {

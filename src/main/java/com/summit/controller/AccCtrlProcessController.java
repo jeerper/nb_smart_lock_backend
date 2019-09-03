@@ -59,8 +59,8 @@ public class AccCtrlProcessController {
                                                                            @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
                                                                            @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         Page<AccCtrlProcess> accCtrlProcessPage = null;
-        Date start = CommonUtil.parseStrToDate(startTime, CommonConstants.STARTTIMEMARK);
-        Date end = CommonUtil.parseStrToDate(endTime,CommonConstants.ENDTIMEMARK);
+        Date start = CommonUtil.strToDate(startTime, CommonConstants.STARTTIMEMARK);
+        Date end = CommonUtil.strToDate(endTime,CommonConstants.ENDTIMEMARK);
         try {
             AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
             if(!CommonUtil.isEmptyStr(accCtrlProId))

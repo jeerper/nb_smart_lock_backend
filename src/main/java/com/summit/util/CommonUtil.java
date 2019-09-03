@@ -3,7 +3,11 @@ package com.summit.util;
 import com.summit.constants.CommonConstants;
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -11,17 +15,22 @@ import java.util.List;
 @Slf4j
 public class CommonUtil {
 
+    public static ThreadLocal<DateFormat> timeFormat = ThreadLocal.withInitial(() -> new SimpleDateFormat(CommonConstants.timeFormat));
+    public static ThreadLocal<DateFormat> dateFormat = ThreadLocal.withInitial(() -> new SimpleDateFormat(CommonConstants.dateFormat));
+    public static ThreadLocal<DateFormat> snapshotTimeFormat = ThreadLocal.withInitial(() -> new SimpleDateFormat(CommonConstants.snapshotTimeFormat));
+    public static ThreadLocal<DateFormat> frontTimeFormat = ThreadLocal.withInitial(() -> new SimpleDateFormat(CommonConstants.frontTimeFormat));
+
     /**
      * string类型时间转换为Date
      * @param time 待转换string类型时间
      * @param mark 开始或结束时间标志，用于打印日志
      * @return Date类型的时间
      */
-    public static Date parseStrToDate(String time, String mark){
+    public static Date strToDate(String time, String mark){
 
         if(time != null && !"".equals(time)){
             try {
-                return CommonConstants.timeFormat.parse(time);
+                return timeFormat.get().parse(time);
             } catch (ParseException e) {
                 String msg = "";
                 if(CommonConstants.STARTTIMEMARK.equalsIgnoreCase(mark)){
@@ -33,6 +42,31 @@ public class CommonUtil {
             }
         }
         return null;
+    }
+
+    /**
+     * string类型时间转换为Date
+     * @param time 待转换string类型时间
+     * @param pattern 格式
+     * @return Date类型日期
+     * @throws ParseException 日期转换异常
+     */
+    public static Date parseStr2Date(String time,String pattern) throws ParseException {
+        if (CommonUtil.isEmptyStr(time) || CommonUtil.isEmptyStr(pattern))
+            return null;
+        return new SimpleDateFormat(pattern).parse(time);
+    }
+
+    /**
+     * Date类型时间格式化为string
+     * @param time 待转换string类型时间
+     * @param pattern 格式
+     * @return String类型日期
+     */
+    public static String formmatDate2Str(Date time,String pattern) {
+        if (time == null || CommonUtil.isEmptyStr(pattern))
+            return null;
+        return new SimpleDateFormat(pattern).format(time);
     }
 
     /**

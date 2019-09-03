@@ -88,8 +88,9 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                     type = "Unlock";
                 }
                 String deviceIp = faceInfo.getDeviceIp();
-                String snapshotTime = CommonConstants.snapshotTimeFormat.format(new Date());
-                String snapshotDate = CommonConstants.dateFormat.format(new Date());
+                Date date = new Date();
+                String snapshotTime = CommonUtil.snapshotTimeFormat.get().format(date);
+                String snapshotDate = CommonUtil.dateFormat.get().format(date);
                 String picturePathFacePanorama = new StringBuilder()
                         .append(SystemUtil.getUserInfo().getCurrentDir())
                         .append(File.separator)

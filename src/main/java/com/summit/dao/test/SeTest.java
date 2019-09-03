@@ -34,7 +34,7 @@ public class SeTest {
     @Test
     public void testDate() throws ParseException {
         String time = "2019-08-16T05:55:59.689Z";
-        Date parse = CommonConstants.frontTimeFormat.parse(time);
+        Date parse = CommonUtil.frontTimeFormat.get().parse(time);
         System.out.println(parse);
     }
     @Test

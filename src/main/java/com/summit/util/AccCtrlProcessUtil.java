@@ -309,7 +309,7 @@ public class AccCtrlProcessUtil {
             accCtrlProcess.setGender(faceInfo.getGender().getGenderCode());
         try {
             if(faceInfo.getBirthday() != null)
-                accCtrlProcess.setBirthday(CommonConstants.dateFormat.parse(faceInfo.getBirthday()));
+                accCtrlProcess.setBirthday(CommonUtil.dateFormat.get().parse(faceInfo.getBirthday()));
         } catch (ParseException e) {
             log.error("生日格式有误");
         }
@@ -460,7 +460,7 @@ public class AccCtrlProcessUtil {
                     Date birthday = accCtrlProcess.getBirthday();
                     try {
                         if(birthday != null)
-                            accCtrlRealTimeInfo.setBirthday(CommonConstants.dateFormat.format(birthday));
+                            accCtrlRealTimeInfo.setBirthday(CommonUtil.dateFormat.get().format(birthday));
                     } catch (Exception e) {
                         log.error("生日格式有误");
                     }
@@ -473,7 +473,7 @@ public class AccCtrlProcessUtil {
                     accCtrlRealTimeInfo.setFaceLibType(accCtrlProcess.getFaceLibType());
                     try {
                         if(accCtrlProcess.getProcessTime() != null)
-                            accCtrlRealTimeInfo.setPicSnapshotTime(CommonConstants.timeFormat.format(accCtrlProcess.getProcessTime()));
+                            accCtrlRealTimeInfo.setPicSnapshotTime(CommonUtil.timeFormat.get().format(accCtrlProcess.getProcessTime()));
                     } catch (Exception e) {
                         log.error("操作时间格式有误");
                     }

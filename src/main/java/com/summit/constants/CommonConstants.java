@@ -27,22 +27,22 @@ public class CommonConstants {
     /**
      * 时间戳格式转换
      */
-    public static final SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final String timeFormat = "yyyy-MM-dd HH:mm:ss";
 
     /**
      * 前台默认格式
      */
-    public static final SimpleDateFormat frontTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    public static final String frontTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     /**
-     * snapshotTime时间戳格式转换
+     * snapshotTime时间戳格式
      */
-    public static final SimpleDateFormat snapshotTimeFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
+    public static final String snapshotTimeFormat = "yyyy-MM-dd_HH.mm.ss";
 
     /**
-     * 日期格式转换
+     * 日期格式
      */
-    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    public static final String dateFormat = "yyyy-MM-dd";
 
     /**
      * 人脸全景图名称后缀
