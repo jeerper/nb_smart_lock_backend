@@ -110,11 +110,11 @@ public class AccCtrlProcessUtil {
      * @param lockRequest 请求参数
      * @return 开锁状态
      */
-    public Integer getLockStatus(LockRequest lockRequest) {
+    public Integer getLockStatus(LockRequest lockRequest){
         try {
             //休眠0.2秒再查询状态
             Thread.sleep(200);
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             log.error("查询锁状态时发生异常,{}",e.getMessage());
             return null;
         }
