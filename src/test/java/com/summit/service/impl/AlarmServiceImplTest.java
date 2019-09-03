@@ -71,6 +71,14 @@ public class AlarmServiceImplTest {
     }
 
     @Test
+    public void selectCountByCondition() {
+        Alarm alarm  = new Alarm();
+        alarm.setAlarmStatus(0);
+        Integer count = alarmDao.selectCountByCondition(alarm,null,null,null);
+        System.out.println(count);
+    }
+
+    @Test
     public void selectByAccCtrlProId() {
         Alarm alarm = alarmDao.selectByAccCtrlProId("1166896782903349250", null);
         System.out.println(alarm);

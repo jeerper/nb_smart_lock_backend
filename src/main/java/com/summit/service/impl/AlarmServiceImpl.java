@@ -374,8 +374,8 @@ public class AlarmServiceImpl implements AlarmService {
             return null;
         }
         List<String> roles = LockAuthCtrl.getRoles();
-        List<Alarm> alarmList = alarmDao.selectCondition(alarm, start, end, null, roles);
-        int rowsCount = alarmList == null ? 0 : alarmList.size();
+        Integer count = alarmDao.selectCountByCondition(alarm, start, end, null);
+        int rowsCount = count == null ? 0 : count;
         Pageable pageable = PageConverter.getPageable(page, rowsCount);
         PageConverter.convertPage(page);
         Page<Alarm> backPage = new Page<>();

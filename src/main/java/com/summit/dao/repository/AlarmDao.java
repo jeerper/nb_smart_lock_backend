@@ -23,4 +23,9 @@ public interface AlarmDao  extends BaseMapper<Alarm> {
     Integer selectAlarmCountByStatus(@Param("alarmStatus") Integer alarmStatus, @Param("roles") List<String> roles);
 
     List<Alarm> selectAlarmsByAccCtrlProIds(@Param("accCtrlProIds") List<String> accCtrlProIds);
+
+    Integer selectCountByCondition(@Param("alarm") Alarm alarm,
+                                   @Param("start") Date start,
+                                   @Param("end") Date end,
+                                   @Param("roles") List<String> roles);
 }

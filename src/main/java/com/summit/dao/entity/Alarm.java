@@ -62,7 +62,7 @@ public class Alarm {
     private String processRemark;
     @ApiModelProperty(value="当前门禁状态",name="processRemark")
     @TableField(exist = false)
-    private String accCtrlStatus;
+    private Integer accCtrlStatus;
 
     public Alarm(){}
 }
