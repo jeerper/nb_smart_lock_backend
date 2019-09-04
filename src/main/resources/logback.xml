@@ -72,6 +72,8 @@
 	<logger name="com.summit.dao" level="error"/>
 	<logger name="com.summit.common.redis.user.UserInfoCache" level="error"/>
 	<logger name="com.summit.sdk.huawei" level="debug"/>
+	<logger name="com.summit.service.impl.NBLockServiceImpl" level="error"/>
+
 
 
 
