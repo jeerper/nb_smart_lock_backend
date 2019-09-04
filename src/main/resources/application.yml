@@ -3,7 +3,7 @@ sdk:
   userName: "admin"
   password: "HuaWei123"
 #  localhost: "${Registry_Center_IP:192.168.141.222}"
-  localhost: "${Registry_Center_IP:192.168.141.155}"
+  localhost: "${Registry_Center_IP:192.168.141.222}"
 server:
   port: 22233
 spring:
@@ -25,5 +25,3 @@ mybatis-plus:
 
 nbLock:
   baseUrl: http://47.106.35.122:8088/intf/
-  real-time-status:
-    rate: 0/2 * * * * ?

@@ -34,8 +34,8 @@ public class RealTimeSchedule {
     /**
      * 实时刷新锁、门禁、实时状态
      */
-    @Scheduled(cron = "${nbLock.real-time-status.rate}")
-//    @Scheduled(fixedRate=1000)
+
+    @Scheduled(fixedDelay=2000)
     public void refreshStatus() {
         LockRequest lockRequest = new LockRequest();
         for(String lockCode : lockCodes) {
