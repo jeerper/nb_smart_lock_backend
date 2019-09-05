@@ -14,19 +14,18 @@ import com.summit.entity.LockRequest;
 import com.summit.entity.UpdateAlarmParam;
 import com.summit.exception.ErrorMsgException;
 import com.summit.sdk.huawei.model.LcokProcessResultType;
-import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.service.AlarmService;
 import com.summit.service.impl.NBLockServiceImpl;
-import com.summit.util.CommonUtil;
 import com.summit.util.AccCtrlProcessUtil;
+import com.summit.util.CommonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -220,7 +219,7 @@ public class AlarmController {
             alarm.setAlarmStatus(alarmStatus);
             alarms = alarmService.selectAlarmConditionByPage(alarm, start, end, new SimplePage(current,pageSize));
         } catch (Exception e) {
-            log.error("条件查询告警信息失败");
+            log.error("条件查询告警信息失败",e);
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"条件查询告警信息失败", alarms);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"条件查询告警信息成功", alarms);
