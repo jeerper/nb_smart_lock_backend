@@ -33,9 +33,11 @@ import org.springframework.web.bind.annotation.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -195,8 +197,9 @@ public class FaceInfoAccCtrlController {
                         PU_FACE_RECORD addface=new PU_FACE_RECORD();
                         addface.enCardType=faceInfo.getCardType();
                         addface.enGender=faceInfo.getGender();
-                        addface.szBirthday=Arrays.copyOf(CommonConstants.dateFormat.format
-                                (faceInfo.getBirthday()).getBytes(),32);
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        String birthday = sdf.format(faceInfo.getBirthday());
+                        addface.szBirthday=Arrays.copyOf(birthday.getBytes(),32);
                         addface.szCardID=Arrays.copyOf(faceInfo.getCardId().getBytes(),32);
                         addface.szCity=Arrays.copyOf(faceInfo.getCity().getBytes(),48);
                         addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("gbk"),64);
@@ -285,8 +288,9 @@ public class FaceInfoAccCtrlController {
                             PU_FACE_RECORD addface=new PU_FACE_RECORD();
                             addface.enCardType=faceInfo.getCardType();
                             addface.enGender=faceInfo.getGender();
-                            addface.szBirthday=Arrays.copyOf(CommonConstants.dateFormat.format
-                                    (faceInfo.getBirthday()).getBytes(),32);
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                            String birthday = sdf.format(faceInfo.getBirthday());
+                            addface.szBirthday=Arrays.copyOf(birthday.getBytes(),32);
                             addface.szCardID=Arrays.copyOf(faceInfo.getCardId().getBytes(),32);
                             addface.szCity=Arrays.copyOf(faceInfo.getCity().getBytes(),48);
                             addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("gbk"),64);
@@ -317,7 +321,9 @@ public class FaceInfoAccCtrlController {
                             String gender=faceInfojson.getStr("Gender");
                             faceInfo.setGender(Integer.parseInt(gender));
                             String birthday=faceInfojson.getStr("Birthday");
-                            faceInfo.setBirthday(CommonConstants.dateFormat.parse(birthday));
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                            Date birthday1 = sdf.parse(birthday);
+                            faceInfo.setBirthday(birthday1);
                             String province=faceInfojson.getStr("Province");
                             faceInfo.setProvince(province);
                             String city = faceInfojson.getStr("City");
@@ -412,8 +418,9 @@ public class FaceInfoAccCtrlController {
                                 PU_FACE_RECORD addfaceInfo=new PU_FACE_RECORD();
                                 addfaceInfo.enCardType=qiantaiFaceInfo.getCardType();
                                 addfaceInfo.enGender=qiantaiFaceInfo.getGender();
-                                addfaceInfo.szBirthday=Arrays.copyOf(CommonConstants.dateFormat.format
-                                        (qiantaiFaceInfo.getBirthday()).getBytes(),32);
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                String birthday = sdf.format(qiantaiFaceInfo.getBirthday());
+                                addfaceInfo.szBirthday=Arrays.copyOf(birthday.getBytes(),32);
                                 addfaceInfo.szCardID=Arrays.copyOf(qiantaiFaceInfo.getCardId().getBytes(),32);
                                 addfaceInfo.szCity=Arrays.copyOf(qiantaiFaceInfo.getCity().getBytes(),48);
                                 addfaceInfo.szName=Arrays.copyOf(qiantaiFaceInfo.getUserName().getBytes("gbk"),64);
