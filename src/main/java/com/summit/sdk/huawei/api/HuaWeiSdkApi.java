@@ -80,7 +80,7 @@ public class HuaWeiSdkApi {
             initStatus = HWPuSDKLibrary.INSTANCE.IVS_PU_InitEx(new NativeLong(3), (ByteBuffer) null,
                     new NativeLong(6060),new NativeLong(sdkPort),pstCertFilePath);
         } else {
-            initStatus = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_InitEx(new NativeLong(3), (ByteBuffer) null,
+            initStatus = HWPuSDKLinuxLibrary.SSL_INSTANCE.IVS_PU_InitEx(new NativeLong(3), (ByteBuffer) null,
                     new NativeLong(6060),new NativeLong(sdkPort),pstCertFilePath);
         }
         log.debug("SDK加载状态:" + initStatus);
