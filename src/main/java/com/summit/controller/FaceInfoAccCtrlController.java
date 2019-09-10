@@ -138,18 +138,13 @@ public class FaceInfoAccCtrlController {
                 puFaceLibSetS.ulChannelId=new NativeLong(101);
                 boolean addFaceLib = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(ulIdentifyId, puFaceLibSetS);
                 HuaWeiSdkApi.printReturnMsg();
-                //新建完取人脸库信息
-                String getfacelibpath2 = new String(new File(".").getCanonicalPath() + "\\facelib\\faceLib.json");
-                String jason2 = readFile(getfacelibpath2);
-                JSONObject object1=new JSONObject(jason2);
-                JSONArray faceListsArry1 = object1.getJSONArray("FaceListsArry");
-                JSONObject facelibinfo=faceListsArry1.getJSONObject(0);
-                szLibName=facelibinfo.getStr("FaceListName");
-                enLibType = Integer.parseInt(facelibinfo.getStr("FaceListType"));
-                ulFaceLibID = Integer.parseInt(facelibinfo.getStr("ID"));
-                uiThreshold=Integer.parseInt(facelibinfo.getStr("Threshold"));
                 if (addFaceLib){//人脸库添加成功，接着添加人脸信息，循环添加
                     System.out.println("人脸库添加成功");
+                    //新建完再次人脸库查询人脸库取人脸库信息,并且给人脸库信息赋值
+                    szLibName="人脸库";
+                    enLibType = 2;
+                    ulFaceLibID = 1;
+                    uiThreshold=90;
                     //添加人脸信息，循环添加
                     for(FaceInfo faceInfo:faceInfoList){
                         //设置人脸库对象
@@ -173,7 +168,9 @@ public class FaceInfoAccCtrlController {
                         addface.szCardID=Arrays.copyOf(faceInfo.getCardId().getBytes(),32);
                         addface.szCity=Arrays.copyOf(faceInfo.getCity().getBytes(),48);
                         addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("gbk"),64);
-                        addface.szPicPath=Arrays.copyOf(FileUtil.getAbsolutePath(faceInfo.getFaceImage()).getBytes(),128);
+                        String absolutePath = new String(new File(".").getCanonicalPath() + faceInfo.getFaceImage());
+                        System.out.println(absolutePath+"图片路径");
+                        addface.szPicPath=Arrays.copyOf(absolutePath.getBytes(),128);
                         addface.szProvince=Arrays.copyOf(faceInfo.getProvince().getBytes(),32);
                         puFaceInfoAdd.stRecord=addface;
                         String filename = faceInfo.getFaceImage().substring(faceInfo.getFaceImage().lastIndexOf("/")+1);
