@@ -2,10 +2,19 @@ package com.summit.sdk.huawei.model;
 
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import lombok.Data;
 
+@Data
 public class DeviceInfo {
     private Pointer deviceIpPointer;
     private NativeLong ulIdentifyId;
+    private NativeLong  ulChannelId;
+
+    public DeviceInfo(Pointer deviceIpPointer, NativeLong ulIdentifyId, NativeLong ulChannelId) {
+        this.deviceIpPointer = deviceIpPointer;
+        this.ulIdentifyId = ulIdentifyId;
+        this.ulChannelId = ulChannelId;
+    }
 
     public DeviceInfo(Pointer deviceIpPointer, NativeLong ulIdentifyId) {
         this.deviceIpPointer = deviceIpPointer;

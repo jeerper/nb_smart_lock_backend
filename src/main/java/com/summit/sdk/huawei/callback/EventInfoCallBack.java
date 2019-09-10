@@ -102,7 +102,7 @@ public class EventInfoCallBack implements HWPuSDKLibrary.pfGetEventInfoCallBack 
 
                 Pointer deviceIpPointer = new Memory(1024);
                 deviceIpPointer.setString(0, deviceIp);
-                deviceMap.put(deviceIp, new DeviceInfo(deviceIpPointer, arg.ulIdentifyID));
+                deviceMap.put(deviceIp, new DeviceInfo(deviceIpPointer, arg.ulIdentifyID,arg.ulChannelId));
 
 //                boolean alarmCallBackBindStatus = HWPuSDKLibrary.INSTANCE.IVS_PU_AlarmInfoStatesCallBack(arg.ulIdentifyID, pfGetAlarmInfoCallBack,
 //                        deviceIpPointer);
@@ -143,6 +143,7 @@ public class EventInfoCallBack implements HWPuSDKLibrary.pfGetEventInfoCallBack 
                 break;
             case HWPuSDKLibrary.PU_EVENT_TYPE.PU_EVENT_TYPE_SEND_RECV_ERROR:
                 log.debug("发送或接收失败");
+                HuaWeiSdkApi.printReturnMsg();
                 HWPuSDKLibrary.INSTANCE.IVS_PU_StopAllRealPlay(arg.ulIdentifyID);
                 HWPuSDKLibrary.INSTANCE.IVS_PU_Logout(arg.ulIdentifyID);
                 removeDeviceMapByUlIdentifyId(arg.ulIdentifyID);

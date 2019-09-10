@@ -9,7 +9,7 @@ import java.util.List;
  * a tool written by <a href="http://ochafik.com/">Olivier Chafik</a> that <a href="http://code.google.com/p/jnaerator/wiki/CreditsAndLicense">uses a few opensource projects.</a>.<br>
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
-public abstract class FACE_FIND_CONDITION extends Structure {
+public class FACE_FIND_CONDITION extends Structure {
 	/**
 	 * \ufffd\ufffd\ufffd\ufffd<br>
 	 * C type : CHAR[(64)]
@@ -55,12 +55,13 @@ public abstract class FACE_FIND_CONDITION extends Structure {
 	 * C type : PU_FEATURE_STATUS_TYPE_E
 	 */
 	public int enFeatureStatus;
+	public byte[] szReserve = new byte[32-4];
 	/** Conversion Error : sizeof(int) */
 	public FACE_FIND_CONDITION() {
-		super();
+		this.setAlignType(ALIGN_NONE);
 	}
 	protected List<String > getFieldOrder() {
-		return Arrays.asList("szName", "enGender", "szProvince", "szCity", "enCardType", "szCardID", "szBirthdayStart", "szBirthdayEnd", "enFeatureStatus");
+		return Arrays.asList("szName", "enGender", "szProvince", "szCity", "enCardType", "szCardID", "szBirthdayStart", "szBirthdayEnd", "enFeatureStatus","szReserve");
 	}
 	/**
 	 * @param szName \ufffd\ufffd\ufffd\ufffd<br>
@@ -106,6 +107,7 @@ public abstract class FACE_FIND_CONDITION extends Structure {
 		this.szBirthdayEnd = szBirthdayEnd;
 		this.enFeatureStatus = enFeatureStatus;
 	}
+
 	public FACE_FIND_CONDITION(Pointer peer) {
 		super(peer);
 	}

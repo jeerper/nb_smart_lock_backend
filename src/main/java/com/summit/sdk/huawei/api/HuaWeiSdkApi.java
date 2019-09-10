@@ -1,24 +1,35 @@
 package com.summit.sdk.huawei.api;
 
+import cn.hutool.core.io.FileUtil;
 import com.summit.sdk.huawei.HWPuSDKLibrary;
 import com.summit.sdk.huawei.HWPuSDKLinuxLibrary;
+import com.summit.sdk.huawei.PU_CERT_FILE_PATH_PARA;
 import com.summit.sdk.huawei.callback.ClientFaceInfoCallback;
 import com.summit.sdk.huawei.callback.EventInfoCallBack;
 import com.summit.sdk.huawei.callback.linux.EventInfoLinuxCallBack;
 import com.summit.sdk.huawei.model.DeviceInfo;
+import com.summit.sdk.huawei.PU_CERT_FILE_PATH_PARA_S;
+import com.summit.sdk.huawei.model.JNAGlobalVariant;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Platform;
+import com.sun.jna.Pointer;
 import com.sun.jna.ptr.NativeLongByReference;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.jdbc.Null;
 
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public class HuaWeiSdkApi {
-
-    private static final ConcurrentHashMap<String, DeviceInfo> DEVICE_MAP = new ConcurrentHashMap<>();
+    public HuaWeiSdkApi(){}
+    public static final ConcurrentHashMap<String, DeviceInfo> DEVICE_MAP = new ConcurrentHashMap<>();
 
     private long sdkPort;
 
@@ -53,14 +64,24 @@ public class HuaWeiSdkApi {
     /**
      * SDK初始化
      */
-    public void init() {
+    public void init() throws IOException {
         System.setProperty("jna.debug_load", "true");
         System.setProperty("jna.debug_load.jna", "true");
         boolean initStatus;
+        PU_CERT_FILE_PATH_PARA pstCertFilePath=new PU_CERT_FILE_PATH_PARA();
+        String cerabsolutePath = FileUtil.getAbsolutePath("cert/cacert.cer");
+        String pemabsolutePath = FileUtil.getAbsolutePath("cert/cert.pem");
+        String keyabsolutePath = FileUtil.getAbsolutePath("cert/key.pem");
+        pstCertFilePath.szCACertFilePath=Arrays.copyOf(cerabsolutePath.getBytes(),512);
+        pstCertFilePath.szCertFilePath=Arrays.copyOf(pemabsolutePath.getBytes(),512);
+        pstCertFilePath.szKeyFilePath=Arrays.copyOf(keyabsolutePath.getBytes(),512);
+        pstCertFilePath.szKeyPasswd="715AO1FEC11AD58A".getBytes();
         if (Platform.isWindows()) {
-            initStatus = HWPuSDKLibrary.INSTANCE.IVS_PU_Init(new NativeLong(3), (String) null, new NativeLong(sdkPort));
+            initStatus = HWPuSDKLibrary.INSTANCE.IVS_PU_InitEx(new NativeLong(3), (ByteBuffer) null,
+                    new NativeLong(6060),new NativeLong(sdkPort),pstCertFilePath);
         } else {
-            initStatus = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_Init(new NativeLong(3), (String) null, new NativeLong(sdkPort));
+            initStatus = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_InitEx(new NativeLong(3), (ByteBuffer) null,
+                    new NativeLong(6060),new NativeLong(sdkPort),pstCertFilePath);
         }
         log.debug("SDK加载状态:" + initStatus);
         if (!initStatus) {
@@ -132,4 +153,6 @@ public class HuaWeiSdkApi {
         DEVICE_MAP.remove(cameraIp);
         return rebootStatus;
     }
+
+
 }

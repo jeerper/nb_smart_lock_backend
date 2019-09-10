@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.io.IOException;
 
 @Slf4j
 @Component
@@ -26,7 +27,7 @@ public class SdkClient {
     private String localhost;
 
     @PostConstruct
-    public void init() {
+    public void init() throws IOException {
         huaWeiSdkApi = new HuaWeiSdkApi(port, userName, password, localhost, clientFaceInfoCallback);
         huaWeiSdkApi.init();
     }

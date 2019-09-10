@@ -11,6 +11,9 @@ import java.util.List;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public class PU_FACE_LIB_S extends Structure {
+	public PU_FACE_LIB_S(){
+		this.setAlignType(ALIGN_NONE);
+	}
 	/** \ufffd\ufffd\ufffd\ufffd\ufffd\ufffdID */
 	public NativeLong ulFaceLibID;
 	/**
@@ -29,9 +32,9 @@ public class PU_FACE_LIB_S extends Structure {
 	public byte[] szLibName = new byte[(64) + 1];
 	/** C type : CHAR[32] */
 	public byte[] szReserve = new byte[32];
-	public PU_FACE_LIB_S() {
+	/*public PU_FACE_LIB_S() {
 		super();
-	}
+	}*/
 	protected List<String > getFieldOrder() {
 		return Arrays.asList("ulFaceLibID", "enLibType", "isControl", "uiThreshold", "szLibName", "szReserve");
 	}
@@ -45,7 +48,7 @@ public class PU_FACE_LIB_S extends Structure {
 	 * C type : CHAR[(64) + 1]<br>
 	 * @param szReserve C type : CHAR[32]
 	 */
-	public PU_FACE_LIB_S(NativeLong ulFaceLibID, int enLibType, boolean isControl, NativeLong uiThreshold, byte szLibName[], byte szReserve[]) {
+	/*public PU_FACE_LIB_S(NativeLong ulFaceLibID, int enLibType, boolean isControl, NativeLong uiThreshold, byte szLibName[], byte szReserve[]) {
 		super();
 		this.ulFaceLibID = ulFaceLibID;
 		this.enLibType = enLibType;
@@ -57,14 +60,14 @@ public class PU_FACE_LIB_S extends Structure {
 		if ((szReserve.length != this.szReserve.length)) 
 			throw new IllegalArgumentException("Wrong array size !");
 		this.szReserve = szReserve;
-	}
+	}*/
 	public PU_FACE_LIB_S(Pointer peer) {
 		super(peer);
 	}
-	public static class ByReference extends PU_FACE_LIB_S implements Structure.ByReference {
+	/*public static class ByReference extends PU_FACE_LIB_S implements Structure.ByReference {
 		
 	};
 	public static class ByValue extends PU_FACE_LIB_S implements Structure.ByValue {
 		
-	};
+	};*/
 }

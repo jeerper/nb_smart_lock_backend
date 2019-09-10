@@ -10,7 +10,7 @@ import java.util.List;
  * a tool written by <a href="http://ochafik.com/">Olivier Chafik</a> that <a href="http://code.google.com/p/jnaerator/wiki/CreditsAndLicense">uses a few opensource projects.</a>.<br>
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a> , <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
-public abstract class PU_FACE_LIB_IMPORT_S extends Structure {
+public class PU_FACE_LIB_IMPORT_S extends Structure {
 	/** \u0368\ufffd\ufffdID */
 	public NativeLong ulChannelId;
 	/**
@@ -40,10 +40,10 @@ public abstract class PU_FACE_LIB_IMPORT_S extends Structure {
 	public byte[] szImportResult = new byte[256];
 	/** \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdID */
 	public NativeLong taskID;
-	/** Conversion Error : sizeof(ULONG) */
 	public PU_FACE_LIB_IMPORT_S() {
-		super();
+		this.setAlignType(ALIGN_NONE);
 	}
+	/** Conversion Error : sizeof(ULONG) */
 	protected List<String > getFieldOrder() {
 		return Arrays.asList("ulChannelId", "enPacketType", "stFacelib", "szPath", "szFileName", "szImportResult", "taskID");
 	}

@@ -26,7 +26,7 @@ public class PU_FACE_INFO_ADD_S extends Structure {
 	/** C type : CHAR[32] */
 	public byte[] szReserve = new byte[32];
 	public PU_FACE_INFO_ADD_S() {
-		super();
+		this.setAlignType(ALIGN_NONE);
 	}
 	protected List<String > getFieldOrder() {
 		return Arrays.asList("ulChannelId", "stFacelib", "stRecord", "szReserve");
@@ -39,7 +39,7 @@ public class PU_FACE_INFO_ADD_S extends Structure {
 	 * C type : PU_FACE_RECORD_S<br>
 	 * @param szReserve C type : CHAR[32]
 	 */
-	public PU_FACE_INFO_ADD_S(NativeLong ulChannelId, PU_FACE_LIB_S stFacelib, PU_FACE_RECORD stRecord, byte szReserve[]) {
+	/*public PU_FACE_INFO_ADD_S(NativeLong ulChannelId, PU_FACE_LIB_S stFacelib, PU_FACE_RECORD stRecord, byte szReserve[]) {
 		super();
 		this.ulChannelId = ulChannelId;
 		this.stFacelib = stFacelib;
@@ -47,7 +47,7 @@ public class PU_FACE_INFO_ADD_S extends Structure {
 		if ((szReserve.length != this.szReserve.length)) 
 			throw new IllegalArgumentException("Wrong array size !");
 		this.szReserve = szReserve;
-	}
+	}*/
 	public PU_FACE_INFO_ADD_S(Pointer peer) {
 		super(peer);
 	}

@@ -16875,4 +16875,7 @@ public interface HWPuSDKLinuxLibrary extends Library {
 	 * <i>native declaration : E:\video\HWPuSDK.h:12289</i>
 	 */
 	NativeLong IVS_PU_SetJsonMessageCallBack(NativeLong ulIdentifyID, HWPuSDKLibrary.pfJsonMsgCallBack fMessageCallBack, Pointer pUserData);
+
+	public boolean IVS_PU_InitEx(NativeLong ulLinkMode, String szLocalIP, NativeLong ulLocalPort, NativeLong ulLocalTlsPort,
+								 PU_CERT_FILE_PATH_PARA_S.ByReference pstCertFilePath);
 }

@@ -16269,6 +16269,7 @@ public interface HWPuSDKLibrary extends StdCallLibrary  {
 	 * Original signature : <code>BOOL IVS_PU_AddOneFaceV2(ULONG, PU_FACE_INFO_ADD_S*, CHAR*)</code><br>
 	 * <i>native declaration : E:\video\HWPuSDK.h:12038</i>
 	 */
+	boolean IVS_PU_AddOneFaceV2(NativeLong ulIdentifyID, PU_FACE_INFO_ADD_S pstOneFaceInfo, String pcPicname);
 	boolean IVS_PU_AddOneFaceV2(NativeLong ulIdentifyID, PU_FACE_INFO_ADD_S pstOneFaceInfo, ByteBuffer pcPicname);
 	/**
 	 * \ufffd\ufffd\u0221\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\u03e2<br>
@@ -16876,4 +16877,7 @@ public interface HWPuSDKLibrary extends StdCallLibrary  {
 	 * <i>native declaration : E:\video\HWPuSDK.h:12289</i>
 	 */
 	NativeLong IVS_PU_SetJsonMessageCallBack(NativeLong ulIdentifyID, HWPuSDKLibrary.pfJsonMsgCallBack fMessageCallBack, Pointer pUserData);
+
+	public boolean IVS_PU_InitEx(NativeLong ulLinkMode, String szLocalIP, NativeLong ulLocalPort, NativeLong ulLocalTlsPort,
+							 PU_CERT_FILE_PATH_PARA_S.ByReference pstCertFilePath);
 }

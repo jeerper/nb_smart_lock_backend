@@ -6,6 +6,7 @@ import com.summit.util.CommonUtil;
 import io.swagger.models.auth.In;
 import org.junit.Test;
 
+import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,5 +87,10 @@ public class SeTest {
     }
     void aaa(Object obj){
         obj = null;
+    }
+    @Test
+    public void test1(){
+        URL url = this.getClass().getClassLoader().getResource("sdk/windows/lib/cert/cacert.cer");
+        System.out.println(url.getPath());
     }
 }

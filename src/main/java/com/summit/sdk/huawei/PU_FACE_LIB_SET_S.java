@@ -25,9 +25,12 @@ public class PU_FACE_LIB_SET_S extends Structure {
 	public PU_FACE_LIB_S stFacelib;
 	/** C type : CHAR[32] */
 	public byte[] szReserve = new byte[32];
-	public PU_FACE_LIB_SET_S() {
-		super();
+	public PU_FACE_LIB_SET_S(){
+		this.setAlignType(ALIGN_NONE);
 	}
+	/*public PU_FACE_LIB_SET_S() {
+		super();
+	}*/
 	protected List<String > getFieldOrder() {
 		return Arrays.asList("ulChannelId", "enOptType", "stFacelib", "szReserve");
 	}

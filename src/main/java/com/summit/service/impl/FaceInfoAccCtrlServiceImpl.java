@@ -86,7 +86,7 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
              for(String faceid:faceids){
                  faceInfoCtrls.add(new FaceInfoAccCtrl(null,accessControlId,faceid));
              }
-             //System.out.println("aaa"+faceInfoCtrls);
+             //System.out.println("TestPath"+faceInfoCtrls);
              return insertFaceAccCtrl(faceInfoCtrls);
          }
         return 0;

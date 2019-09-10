@@ -97,8 +97,8 @@ public class FaceInfoManagerController {
             faceInfoManagerService.insertFaceInfo(faceInfo);
           } catch (Exception e) {
             e.printStackTrace();
-            log.error("录入人脸信息失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"录入人脸信息失败", CommonConstants.UPDATE_ERROR);
+            log.error("人脸信息录入名称已存在");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸信息录入名称已存在", CommonConstants.UPDATE_ERROR);
           }
           return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"录入人脸信息成功", 0);
   }
@@ -225,13 +225,14 @@ public class FaceInfoManagerController {
      List<SimpleFaceInfo> simpleFaceInfos=new ArrayList<>();
      try {
        List<FaceInfo> faceInfos=faceInfoManagerService.selectAllFaceInfo(null);
-       System.out.println(faceInfos+"aaa");
+       System.out.println(faceInfos+"TestPath");
        if(faceInfos !=null){
          for(FaceInfo faceInfo:faceInfos){
            simpleFaceInfos.add(new SimpleFaceInfo(faceInfo.getFaceid(),faceInfo.getUserName(),faceInfo.getFaceImage()));
          }
        }
      } catch (Exception e) {
+       e.printStackTrace();
         log.error("查询全部的人脸信息失败");
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询全部人脸信息失败",simpleFaceInfos);
      }

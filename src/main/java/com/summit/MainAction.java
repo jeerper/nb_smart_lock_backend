@@ -19,6 +19,8 @@ public class MainAction {
 //    @Autowired
 //    SimpMessagingTemplate messagingTemplate;
     public static final String SnapshotFileName="snapshot";
+    public static final String FaceLib="facelib";
+    public static final String FaceInfo="faceInfo";
     public static void main(String[] args) {
         SpringApplication.run(MainAction.class, args);
     }
