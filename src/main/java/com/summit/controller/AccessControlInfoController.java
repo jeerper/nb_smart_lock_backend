@@ -78,8 +78,6 @@ public class AccessControlInfoController {
         String msg = "录入门禁信息失败";
         try {
             accessControlService.insertAccCtrl(accessControlInfo);
-            //门禁发生变化后，刷新lockCode列表
-            realTimeSchedule.refreshIdsCall();
             //录入后立即给当前用户授权改门禁
             if(uerInfo != null){
                 String[] roles = uerInfo.getRoles();
@@ -123,8 +121,6 @@ public class AccessControlInfoController {
         String msg = "删除门禁信息失败";
         try {
             accessControlService.delBatchAccCtrlByAccCtrlId(accessControlIds);
-            //门禁发生变化后，刷新lockCode列表
-            realTimeSchedule.refreshIdsCall();
         } catch (Exception e) {
             msg = getErrorMsg(msg, e);
             log.error(msg);

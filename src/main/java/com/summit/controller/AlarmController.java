@@ -13,7 +13,7 @@ import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.entity.UpdateAlarmParam;
 import com.summit.exception.ErrorMsgException;
-import com.summit.sdk.huawei.model.LcokProcessResultType;
+import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.service.AlarmService;
 import com.summit.service.impl.NBLockServiceImpl;
 import com.summit.util.AccCtrlProcessUtil;
@@ -104,7 +104,7 @@ public class AlarmController {
 //                        && !content.contains("编号不存在")){
 //                    accCtrlProcessUtil.toInsertAndUpdateData(data,lockRequest);
 //                }
-                if(!LcokProcessResultType.SUCCESS.getCode().equals(backLockInfo.getType())){
+                if(LockProcessResultType.CommandSuccess.getCode()!=backLockInfo.getObjx()){
                     return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, resultMsg,null);
                 }else{
                     accCtrlProcessUtil.toInsertAndUpdateData(data,lockRequest);

@@ -21,15 +21,11 @@ public interface AccCtrlRealTimeDao extends BaseMapper<AccCtrlRealTimeEntity> {
     /**
      * 条件分页查询门禁实时信息，可指定时间段
      * @param accCtrlRealTimeEntity
-     * @param start 最近更新时间起始时间
-     * @param end 最近更新时间截止时间
      * @param page 简单分页对象
      * @param roles 当前用户管理角色列表
      * @return 门禁实时信息list
      */
     List<AccCtrlRealTimeEntity> selectCondition(@Param("accCtrlRealTimeEntity") AccCtrlRealTimeEntity accCtrlRealTimeEntity,
-                                         @Param("start") Date start,
-                                         @Param("end") Date end,
                                          @Param("page") SimplePage page,
                                          @Param("roles") List<String> roles);
 

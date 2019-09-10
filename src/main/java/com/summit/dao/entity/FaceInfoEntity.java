@@ -58,20 +58,13 @@ public class FaceInfoEntity {
     @ApiModelProperty(value="人脸库类型",name="faceLibType")
     @TableField(value = "face_lib_type")
     private Integer faceLibType;
-//    @TableField(value = "face_panorama_id")
-//    private String facePanoramaId;
 
     @ApiModelProperty(value="人脸全景图",name="facePanorama",hidden = true)
     private FileInfo facePanorama = new FileInfo();
 
-//    @TableField(value = "face_pic_id")
-//    private String facePicId;
-
     @ApiModelProperty(value="人脸识别抠图",name="facePic",hidden = true)
     private FileInfo facePic = new FileInfo();
 
-//    @TableField(value = "face_match_id")
-//    private String faceMatchId;
 
     @ApiModelProperty(value="人脸识别和人脸库中匹配的图片",name="faceMatch",hidden = true)
     private FileInfo faceMatch = new FileInfo();

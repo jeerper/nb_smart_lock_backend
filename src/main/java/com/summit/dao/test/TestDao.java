@@ -105,15 +105,7 @@ public class TestDao {
         Integer result = alarmDao.selectAlarmCountByStatus(0, roles);
         System.out.println(result);
     }
-    @Test
-    public void insertACPRecord() throws ParseException {
-        AccCtrlProcess accCtrlProcess = new AccCtrlProcess("acp002","ac01","门禁1","did03","192.168.141.141","entry","lid05","NB100002",null,"uid01","un01",1,dateFormat.parse("1994-01-01"),
-                "甘肃","庆阳",0,"123",98f,"白名单",2,1,"success","","","","","","","","","",
-                null,null,null,null,temeFormat.parse("2019-08-12 15:10:10"), 1);
-        int record = accCtrlProcessDao.insertRecord(accCtrlProcess);
 
-        System.out.println(record);
-    }
 
     @Test
     public void selectAccCtrlProcessByLockCode() throws ParseException {

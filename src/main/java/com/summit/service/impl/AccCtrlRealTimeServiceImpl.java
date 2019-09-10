@@ -1,6 +1,5 @@
 package com.summit.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
 import com.summit.constants.CommonConstants;
@@ -48,8 +47,7 @@ public class AccCtrlRealTimeServiceImpl implements AccCtrlRealTimeService {
             return accCtrlRealTimeDao.insert(accCtrlRealTimeEntity);
         }
         //id不为空则是更新
-        accCtrlRealTimeDao.deleteById(accCrtlRealTimeId);
-        return accCtrlRealTimeDao.insert(accCtrlRealTimeEntity);
+        return accCtrlRealTimeDao.updateById(accCtrlRealTimeEntity);
     }
 
     /**
@@ -80,11 +78,11 @@ public class AccCtrlRealTimeServiceImpl implements AccCtrlRealTimeService {
             accCtrlRealTimeEntity = new AccCtrlRealTimeEntity();
         }
         List<String> roles = LockAuthCtrl.getRoles();
-        List<AccCtrlRealTimeEntity> realTimeEntities = accCtrlRealTimeDao.selectCondition(accCtrlRealTimeEntity, start, end, null, roles);
+        List<AccCtrlRealTimeEntity> realTimeEntities = accCtrlRealTimeDao.selectCondition(accCtrlRealTimeEntity, null, roles);
         int rowsCount = realTimeEntities == null ? 0 : realTimeEntities.size();
         Pageable pageable = PageConverter.getPageable(page, rowsCount);
         PageConverter.convertPage(page);
-        List<AccCtrlRealTimeEntity> accCtrlRealTimeEntities = accCtrlRealTimeDao.selectCondition(accCtrlRealTimeEntity, start, end, page, roles);
+        List<AccCtrlRealTimeEntity> accCtrlRealTimeEntities = accCtrlRealTimeDao.selectCondition(accCtrlRealTimeEntity, page, roles);
         Page<AccCtrlRealTimeEntity> backPage = new Page<>();
         backPage.setContent(accCtrlRealTimeEntities);
         backPage.setPageable(pageable);
