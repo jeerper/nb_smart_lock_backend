@@ -16269,6 +16269,7 @@ public interface HWPuSDKLinuxLibrary extends Library {
 	 * <i>native declaration : E:\video\HWPuSDK.h:12038</i>
 	 */
 	boolean IVS_PU_AddOneFaceV2(NativeLong ulIdentifyID, PU_FACE_INFO_ADD_S pstOneFaceInfo, ByteBuffer pcPicname);
+	boolean IVS_PU_AddOneFaceV2(NativeLong ulIdentifyID, PU_FACE_INFO_ADD_S pstOneFaceInfo, String pcPicname);
 	/**
 	 * \ufffd\ufffd\u0221\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\u03e2<br>
 	 * Original signature : <code>BOOL IVS_PU_GetFaceLib(ULONG, PU_FACE_LIB_GET_S*)</code><br>
