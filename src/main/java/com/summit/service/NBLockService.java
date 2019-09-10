@@ -4,6 +4,7 @@ import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.entity.ReportParam;
 import com.summit.entity.SafeReportInfo;
+import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
 import rx.Observable;
@@ -20,7 +21,7 @@ public interface NBLockService {
      * @return BackLockInfo对象
      */
     @POST("unlock.jhtml")
-    Observable<BackLockInfo> unLock(@Body LockRequest lockRequest);
+    Call<BackLockInfo> unLock(@Body LockRequest lockRequest);
 
     /**
      * 查询锁状态
@@ -28,7 +29,7 @@ public interface NBLockService {
      * @return BackLockInfo对象
      */
     @POST("lockstatus.jhtml")
-    Observable<BackLockInfo> queryLockStatus(@Body LockRequest lockRequest);
+    Call<BackLockInfo> queryLockStatus(@Body LockRequest lockRequest);
 
     /**
      * 查询平安报信息

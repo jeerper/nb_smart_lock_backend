@@ -1,6 +1,7 @@
 package com.summit.service.impl;
 
 import com.summit.dao.entity.AccessControlInfo;
+import com.summit.dao.repository.AccessControlDao;
 import com.summit.service.AccessControlService;
 import com.summit.util.LockAuthCtrl;
 import org.junit.Test;
@@ -11,14 +12,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class AccessControlServiceImplTest {
 
     @Autowired
     private AccessControlService accessControlService;
+    @Autowired
+    private AccessControlDao accessControlDao;
 
     @Test
     public void selectAccCtrlById() {
@@ -28,7 +29,11 @@ public class AccessControlServiceImplTest {
     }
 
     @Test
-    public void selectAccCtrlByIdBeyondAuthority() {
+    public void selectAllAccessControlIds() {
+//        List<String> aaa = accessControlDao.selectAllAccessControlIds(null);
+//        List<String> aaa = accessControlDao.selectAllLockCodes(null);
+        Integer aaa = accessControlDao.selectStatusLockCode("ssszzz",null);
+        System.out.println(aaa);
     }
     @Test
     public void selectAllAccessControl() {
@@ -38,7 +43,10 @@ public class AccessControlServiceImplTest {
 
     @Test
     public void selectAllAccessControl2() {
-        List<AccessControlInfo> accessControlInfos = accessControlService.selectCondition(new AccessControlInfo(),null);
+        AccessControlInfo accessControlInfo = new AccessControlInfo();
+        accessControlInfo.setAccessControlName("山");
+        accessControlInfo.setLockCode("6");
+        List<AccessControlInfo> accessControlInfos = accessControlService.selectCondition(accessControlInfo,null);
         System.out.println(accessControlInfos);
     }
 }

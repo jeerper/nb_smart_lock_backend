@@ -66,12 +66,15 @@
 	<logger name="io.lettuce" level="error"/>
 	<logger name="com.netflix" level="error"/>
 	<logger name="springfox" level="error"/>
+	<logger name="io.swagger" level="error"/>
 	<logger name="org.apache" level="error"/>
 	<logger name="com.baomidou" level="error"/>
 	<logger name="org.mybatis" level="error"/>
 	<logger name="com.summit.dao" level="error"/>
 	<logger name="com.summit.common.redis.user.UserInfoCache" level="error"/>
 	<logger name="com.summit.sdk.huawei" level="debug"/>
+	<logger name="com.summit.service.impl.NBLockServiceImpl" level="error"/>
+
 
 
 

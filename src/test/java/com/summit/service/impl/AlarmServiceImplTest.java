@@ -38,7 +38,7 @@ public class AlarmServiceImplTest {
 //                facePanorama,facePic,faceMatch,dateFormat.parse("2019-7-24 00:00:00"));
         Alarm alarm = new Alarm("aid02","an02",processId,
                 null,null,null,dateFormat.parse("2019-8-03 00:03:00"),1,
-                "p1","d1",new Date(),"r1");
+                "p1","d1",new Date(),"r1",null);
 
         alarmService.insertAlarm(alarm);
     }
@@ -48,7 +48,7 @@ public class AlarmServiceImplTest {
         String processId = "pid01";
         Alarm alarm = new Alarm("aid01","an01",processId,
                 null,null,null,dateFormat.parse("2019-7-24 00:01:01"),
-                1,"p2","d2",new Date(),"r2");
+                1,"p2","d2",new Date(),"r2",null);
         alarmService.updateAlarm(alarm);
     }
 
@@ -66,8 +66,16 @@ public class AlarmServiceImplTest {
 
     @Test
     public void selectAlarmById() {
-        Alarm alarm = alarmService.selectAlarmById("1166896782987235330");
+        Alarm alarm = alarmService.selectAlarmById("1167390622789668865");
         System.out.println(alarm);
+    }
+
+    @Test
+    public void selectCountByCondition() {
+        Alarm alarm  = new Alarm();
+        alarm.setAlarmStatus(0);
+        Integer count = alarmDao.selectCountByCondition(alarm,null,null,null);
+        System.out.println(count);
     }
 
     @Test

@@ -25,6 +25,7 @@ public class PU_FACE_INFO_ADD_S extends Structure {
 	public PU_FACE_RECORD stRecord;
 	/** C type : CHAR[32] */
 	public byte[] szReserve = new byte[32];
+
 	public PU_FACE_INFO_ADD_S() {
 		this.setAlignType(ALIGN_NONE);
 	}

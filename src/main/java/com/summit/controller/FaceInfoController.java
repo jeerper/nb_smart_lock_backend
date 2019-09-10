@@ -10,6 +10,7 @@ import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.FaceInfoEntity;
 import com.summit.dao.entity.FileInfo;
 import com.summit.service.FaceInfoService;
+import com.summit.util.CommonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
@@ -56,7 +57,7 @@ public class FaceInfoController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"人脸识别抠图为空", CommonConstants.UPDATE_ERROR);
         }
         String name = faceInfoEntity.getUserName();
-        String time = CommonConstants.snapshotTimeFormat.format(new Date());
+        String time = CommonUtil.snapshotTimeFormat.get().format(new Date());
 
         String picturePathFacePanorama = new StringBuilder()
                 .append(SystemUtil.getUserInfo().getCurrentDir())

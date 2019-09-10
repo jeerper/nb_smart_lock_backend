@@ -32,11 +32,11 @@ public interface AccessControlService {
     AccessControlInfo selectAccCtrlByLockCode(String lockCode);
 
     /**
-     * 分页查询全部门禁信息
+     * 分页条件查询门禁信息
      * @param page 分页对象
      * @return 门禁信息列表分页对象
      */
-    Page<AccessControlInfo> selectAccCtrlByPage(SimplePage page);
+    Page<AccessControlInfo> selectAccCtrlByPage(AccessControlInfo accessControlInfo, SimplePage page);
 
     /**
      * 分页查询全部有操作记录的门禁信息

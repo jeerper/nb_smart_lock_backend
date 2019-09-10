@@ -3,7 +3,8 @@ package com.summit.sdk.huawei.model;
 public enum AccCtrlStatus {
     OPEN(1,"打开"),
     CLOSED(2,"锁定"),
-    ALARM(3,"告警");
+    ALARM(3,"告警"),
+    NOT_ONLINE (4,"不在线");
 
     private int code;
     private String description;
