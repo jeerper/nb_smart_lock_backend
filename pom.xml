@@ -118,6 +118,10 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
+                            <nonFilteredFileExtensions>
+                                <nonFilteredFileExtension>cer</nonFilteredFileExtension>
+                                <nonFilteredFileExtension>pem</nonFilteredFileExtension>
+                            </nonFilteredFileExtensions>
                             <encoding>UTF-8</encoding>
                             <outputDirectory>${project.build.directory}/config</outputDirectory>
                             <!--将以下文件复制到config文件夹下 -->
@@ -128,6 +132,7 @@
                                         <include>logback*.xml</include>
                                         <include>*.properties</include>
                                         <include>*.yml</include>
+                                        <exclude>cert*/**</exclude>
                                     </includes>
                                     <filtering>true</filtering>
                                 </resource>
@@ -210,6 +215,7 @@
                         <exclude>*.h</exclude>
                         <exclude>win32*/**</exclude>
                         <exclude>linux-x86-64*/**</exclude>
+                        <exclude>cert*/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>
