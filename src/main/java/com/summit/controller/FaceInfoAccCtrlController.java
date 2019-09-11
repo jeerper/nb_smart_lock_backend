@@ -131,7 +131,7 @@ public class FaceInfoAccCtrlController {
                 PU_FACE_LIB_SET_S puFaceLibSetS =new PU_FACE_LIB_SET_S();
                 puFaceLibSetS.enOptType=1;//新增人脸库
                 PU_FACE_LIB_S  stFacelib=new PU_FACE_LIB_S();
-                stFacelib.szLibName=Arrays.copyOf("人脸库".getBytes("gbk"),65);//名单库的名称
+                stFacelib.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);//名单库的名称
                 stFacelib.uiThreshold=new NativeLong(90);//布控的阀值
                 stFacelib.enLibType=2;//人脸库类型
                 puFaceLibSetS.stFacelib=stFacelib;
@@ -167,7 +167,7 @@ public class FaceInfoAccCtrlController {
                         addface.szBirthday=Arrays.copyOf(birthday.getBytes(),32);
                         addface.szCardID=Arrays.copyOf(faceInfo.getCardId().getBytes(),32);
                         addface.szCity=Arrays.copyOf(faceInfo.getCity().getBytes(),48);
-                        addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("gbk"),64);
+                        addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("utf8"),64);
                         String absolutePath = new String(new File(".").getCanonicalPath() + faceInfo.getFaceImage());
                         System.out.println(absolutePath+"图片路径");
                         addface.szPicPath=Arrays.copyOf(absolutePath.getBytes(),128);
@@ -213,7 +213,7 @@ public class FaceInfoAccCtrlController {
                 faceInfoFindS.szFindResultPath= Arrays.copyOf(faceInfoPath.getBytes(),129);
                 PU_FACE_LIB_S facelib2 = new PU_FACE_LIB_S();
                 facelib2.ulFaceLibID=new NativeLong(ulFaceLibID);
-                facelib2.szLibName=Arrays.copyOf(szLibName.getBytes("GBK"),65);
+                facelib2.szLibName=Arrays.copyOf(szLibName.getBytes("utf8"),65);
                 facelib2.enLibType=enLibType;
                 facelib2.uiThreshold=new NativeLong(uiThreshold);
                 FACE_FIND_CONDITION faceFindCondition=new FACE_FIND_CONDITION();
@@ -260,7 +260,7 @@ public class FaceInfoAccCtrlController {
                             addface.szBirthday=Arrays.copyOf(birthday.getBytes(),32);
                             addface.szCardID=Arrays.copyOf(faceInfo.getCardId().getBytes(),32);
                             addface.szCity=Arrays.copyOf(faceInfo.getCity().getBytes(),48);
-                            addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("gbk"),64);
+                            addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("utf8"),64);
                             String absolutePath = new String(new File(".").getCanonicalPath() + faceInfo.getFaceImage());
                             System.out.println(absolutePath+"图片路径");
                             addface.szPicPath=Arrays.copyOf(absolutePath.getBytes(),128);
@@ -313,7 +313,7 @@ public class FaceInfoAccCtrlController {
                                 puFaceInfoDeleteS.ulChannelId=new NativeLong(101);
                                 PU_FACE_LIB_S facelib = new PU_FACE_LIB_S();
                                 facelib.ulFaceLibID=new NativeLong(ulFaceLibID);
-                                facelib.szLibName=Arrays.copyOf(szLibName.getBytes("GBK"),65);
+                                facelib.szLibName=Arrays.copyOf(szLibName.getBytes("utf8"),65);
                                 facelib.enLibType=enLibType;
                                 facelib.uiThreshold=new NativeLong(uiThreshold);
                                 puFaceInfoDeleteS.stFacelib=facelib;
@@ -345,7 +345,7 @@ public class FaceInfoAccCtrlController {
                                 puFaceInfoDeleteS.ulChannelId=new NativeLong(101);
                                 PU_FACE_LIB_S facelib = new PU_FACE_LIB_S();
                                 facelib.ulFaceLibID=new NativeLong(ulFaceLibID);
-                                facelib.szLibName=Arrays.copyOf(szLibName.getBytes("GBK"),65);
+                                facelib.szLibName=Arrays.copyOf(szLibName.getBytes("utf8"),65);
                                 facelib.enLibType=enLibType;
                                 facelib.uiThreshold=new NativeLong(uiThreshold);
                                 puFaceInfoDeleteS.stFacelib=facelib;
@@ -390,7 +390,7 @@ public class FaceInfoAccCtrlController {
                                 addfaceInfo.szBirthday=Arrays.copyOf(birthday.getBytes(),32);
                                 addfaceInfo.szCardID=Arrays.copyOf(qiantaiFaceInfo.getCardId().getBytes(),32);
                                 addfaceInfo.szCity=Arrays.copyOf(qiantaiFaceInfo.getCity().getBytes(),48);
-                                addfaceInfo.szName=Arrays.copyOf(qiantaiFaceInfo.getUserName().getBytes("gbk"),64);
+                                addfaceInfo.szName=Arrays.copyOf(qiantaiFaceInfo.getUserName().getBytes("utf8"),64);
                                 String absolutePath = new String(new File(".").getCanonicalPath() + qiantaiFaceInfo.getFaceImage());
                                 System.out.println(absolutePath+"图片路径");
                                 addfaceInfo.szPicPath=Arrays.copyOf(absolutePath.getBytes(),128);
