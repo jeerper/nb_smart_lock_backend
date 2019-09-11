@@ -60,6 +60,7 @@ public class AccessControlProcessSchedule {
 //                LockProcessResultType.Failure;
 
             } else {
+                //TODO：调度器加入线程池
                 //TODO：更新process_result状态
                 log.debug(lockStatus.toString());
             }
