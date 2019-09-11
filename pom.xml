@@ -132,7 +132,7 @@
                                         <include>logback*.xml</include>
                                         <include>*.properties</include>
                                         <include>*.yml</include>
-                                        <exclude>cert*/**</exclude>
+                                        <include>cert*/**</include>
                                     </includes>
                                     <filtering>true</filtering>
                                 </resource>

@@ -61,12 +61,12 @@
           face_id=#{faceid}
         </where>
     </select>
-    <select id="selectFaceIdByUserNameAndCardId" resultType="java.lang.String" >
+    <select id="selectFaceIdByUserName" resultType="java.lang.String" >
         SELECT
         face_id
         FROM  face_info
         <where>
-           user_name=#{userName} AND card_id=#{cardId}
+           user_name=#{userName}
         </where>
     </select>
 </mapper>

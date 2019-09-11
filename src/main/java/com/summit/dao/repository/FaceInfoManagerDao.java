@@ -1,7 +1,6 @@
 package com.summit.dao.repository;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.summit.cbb.utils.page.Page;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.SimplePage;
 import com.summit.entity.FaceInfoManagerEntity;
@@ -19,5 +18,5 @@ public interface FaceInfoManagerDao extends BaseMapper<FaceInfo> {
 
     FaceInfo selectFaceInfoByID(@Param("faceid") String faceid);
 
-    String selectFaceIdByUserNameAndCardId(@Param("userName") String userName, @Param("cardId") String cardId);
+    String selectFaceIdByUserName(@Param("userName") String userName);
 }

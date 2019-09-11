@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.entity.UserInfo;
 import com.summit.common.web.filter.UserContextHolder;
-import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccCtrlRealTimeEntity;
 import com.summit.dao.entity.AccessControlInfo;
@@ -22,12 +21,13 @@ import com.summit.dao.repository.LockInfoDao;
 import com.summit.entity.AccCtrlRealTimeInfo;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
-import com.summit.exception.ErrorMsgException;
 import com.summit.sdk.huawei.model.AccCtrlStatus;
 import com.summit.sdk.huawei.model.AlarmStatus;
+import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.sdk.huawei.model.FaceInfo;
-import com.summit.sdk.huawei.model.LcokProcessResultType;
+
 import com.summit.sdk.huawei.model.LockProcessMethod;
+import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessType;
 import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.service.AccCtrlProcessService;
@@ -43,8 +43,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Slf4j
 @Component
@@ -70,7 +68,6 @@ public class AccCtrlProcessUtil {
     @Autowired
     private AccCtrlRealTimeService accCtrlRealTimeService;
 
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();;
 
     /**
      * 根据开锁操作返回状态更新相应门禁和锁状态、实时信息状态
@@ -111,20 +108,11 @@ public class AccCtrlProcessUtil {
      * @return 开锁状态
      */
     public Integer getLockStatus(LockRequest lockRequest){
-        try {
-            //休眠0.2秒再查询状态
-            Thread.sleep(200);
-        } catch (Exception e) {
-            log.error("查询锁状态时发生异常,{}",e.getMessage());
-            return null;
-        }
         RestfulEntityBySummit back = null;
         try {
             back = nbLockServiceImpl.toQueryLockStatus(lockRequest);
         } catch (Exception e) {
-            if(e instanceof ErrorMsgException)
-                log.error(((ErrorMsgException) e).getErrorMsg());
-            else log.error("开锁失败,{}",e.getMessage());
+            log.error("查询开锁状态失败",e);
             return null;
         }
         Object backData = back.getData();
@@ -244,7 +232,7 @@ public class AccCtrlProcessUtil {
         //设置操作结果及失败原因
         BackLockInfo backLockInfo = null;
         if(backData == null){
-            accCtrlProcess.setProcessResult(LcokProcessResultType.ERROR.getCode());
+            accCtrlProcess.setProcessResult(String.valueOf(LockProcessResultType.Failure.getCode()));
             accCtrlProcess.setFailReason("未知");
         }else{
             if((backData instanceof BackLockInfo)){
@@ -254,15 +242,14 @@ public class AccCtrlProcessUtil {
                 String content = backLockInfo.getContent();
                 Integer objx = backLockInfo.getObjx();
 
-                if(LcokProcessResultType.SUCCESS.getCode().equalsIgnoreCase(type)){
-                    accCtrlProcess.setProcessResult(LcokProcessResultType.SUCCESS.getCode());
-                }else{
+                accCtrlProcess.setProcessResult(String.valueOf(objx));
 
-                    accCtrlProcess.setProcessResult(LcokProcessResultType.ERROR.getCode());
-                    if(CommonUtil.isEmptyStr(content))
+                if(LockProcessResultType.CommandSuccess.getCode()!=objx){
+                    if(CommonUtil.isEmptyStr(content)){
                         accCtrlProcess.setFailReason("未知");
-                    else
+                    } else{
                         accCtrlProcess.setFailReason(content);
+                    }
                 }
                 //改为全局扫描更新
                 //若状态是开锁，或开锁失败且状态为4终端不在线，则更改锁、门禁、实时状态
@@ -273,7 +260,7 @@ public class AccCtrlProcessUtil {
 //                }
 
             }else{
-                accCtrlProcess.setProcessResult(LcokProcessResultType.ERROR.getCode());
+                accCtrlProcess.setProcessResult(String.valueOf(LockProcessResultType.Exception.getCode()));
                 accCtrlProcess.setFailReason("未知");
             }
         }
@@ -297,7 +284,7 @@ public class AccCtrlProcessUtil {
      * @param failReason 人脸识别或门禁操作识别原因
      * @return 组装好的门禁操作记录信息对象
      */
-    public AccCtrlProcess getAccCtrlProcess(FaceInfo faceInfo, String type, FileInfo facePanoramaFile, FileInfo facePicFile, String processResult, String failReason) {
+    public AccCtrlProcess getAccCtrlProcess(FaceInfo faceInfo, CameraUploadType type, FileInfo facePanoramaFile, FileInfo facePicFile, String processUuid , LockProcessResultType processResult, String failReason) {
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         String deviceIp = faceInfo.getDeviceIp();
         accCtrlProcess.setDeviceIp(deviceIp);
@@ -353,29 +340,30 @@ public class AccCtrlProcessUtil {
             accessControlInfo.setLockCode(lockCode);
             accessControlInfo.setUpdatetime(picSnapshotTime == null ? null : picSnapshotTime.toJdkDate());
         }
-        if("Unlock".equals(type)){
+        if(CameraUploadType.Unlock==type){
             //改为在开锁真正成功后更新状态
-//            accessControlInfo.setStatus(AccCtrlStatus.OPEN.getCode());
             accCtrlProcess.setProcessType(LockProcessType.UNLOCK.getCode());
-            accCtrlProcess.setProcessResult(processResult);
             //刷脸成功后开锁操作也有可能失败,成功则failReason=null
             accCtrlProcess.setFailReason(failReason);
-        }else if("Alarm".equals(type)){
+        }else if(CameraUploadType.Alarm==type){
             accessControlInfo.setStatus(AccCtrlStatus.ALARM.getCode());
             accCtrlProcess.setProcessType(LockProcessType.LOCK_ALARM.getCode());
-            accCtrlProcess.setProcessResult(LcokProcessResultType.ERROR.getCode());
+
             if(CommonUtil.isEmptyStr(failReason)){
                 accCtrlProcess.setFailReason("匹配度过低");
             }else{
                 accCtrlProcess.setFailReason(failReason);
             }
-
         }else{
             //关锁
             accessControlInfo.setStatus(AccCtrlStatus.CLOSED.getCode());
             accCtrlProcess.setProcessType(LockProcessType.CLOSE_LOCK.getCode());
-            accCtrlProcess.setProcessResult("success");
+
         }
+        //用于查询开锁状态的命令ID
+        accCtrlProcess.setProcessUuid(processUuid);
+        //指令下发返回的结果
+        accCtrlProcess.setProcessResult(String.valueOf(processResult.getCode()));
         accCtrlProcess.setAccessControlInfo(accessControlInfo);
         return accCtrlProcess;
     }
@@ -522,11 +510,13 @@ public class AccCtrlProcessUtil {
 
         //设置门禁状态、经度、纬度需要查询门禁
         if(accessControlInfo != null){
-            accCtrlRealTimeEntity.setAccCtrlStatus(accessControlInfo.getStatus());
+            //只有当为报警状态时，才传入上报类型，更新门禁状态，其他状态由轮训器更改
+            if(accCtrlProcess.getProcessType()==LockProcessType.LOCK_ALARM.getCode()){
+                accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());
+            }
             accCtrlRealTimeEntity.setLongitude(accessControlInfo.getLongitude());
             accCtrlRealTimeEntity.setLatitude(accessControlInfo.getLatitude());
         }
-//        accCtrlRealTimeEntity.setLockStatus();
         accCtrlRealTimeEntity.setDevId(accCtrlProcess.getDeviceId());
         accCtrlRealTimeEntity.setDeviceIp(accCtrlProcess.getDeviceIp());
         accCtrlRealTimeEntity.setDeviceType(accCtrlProcess.getDeviceType());

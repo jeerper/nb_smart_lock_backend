@@ -2,8 +2,8 @@ package com.summit.sdk.huawei.model;
 
 public enum LockStatus {
 
-    UNLOCK(1,"打开"),
-    LOCK_CLOSED(2,"锁定"),
+    UNLOCK(1,"开锁"),
+    LOCK_CLOSED(2,"关锁"),
     LOCK_ALARM(3,"告警"),
     NOT_ONLINE (4,"不在线");
 

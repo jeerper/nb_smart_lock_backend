@@ -36,6 +36,11 @@ public class LockRequest {
      */
     @ApiModelProperty(value="当前操作记录id",name="accCtrlProId")
     private String accCtrlProId;
+    /**
+     * 开锁指令下发uuid
+     */
+    @ApiModelProperty(value="开锁指令下发uuid",name="uuid")
+    private String uuid;
 
 
     public LockRequest(){}
