@@ -49,7 +49,12 @@ public class FaceInfoManagerController {
   @PostMapping(value = "insertFaceInfo")
   public RestfulEntityBySummit<Integer>  insertFaceInfo(@RequestBody FaceInfoManagerEntity faceInfoManagerEntity) throws ParseException {
        //System.out.println(faceInfoManagerEntity+"ddd");
-       String  base64Str=faceInfoManagerEntity.getFaceImage();
+        String  base64Str=faceInfoManagerEntity.getFaceImage();
+        System.out.println("人脸图片："+base64Str);
+        if(base64Str==null || base64Str.isEmpty()){
+          log.error("人脸图片为空");
+          return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"人脸图片为空",null);
+        }
         FaceInfo faceInfo=new FaceInfo();
         if(SummitTools.stringNotNull(base64Str)){
           StringBuffer fileName = new StringBuffer();
