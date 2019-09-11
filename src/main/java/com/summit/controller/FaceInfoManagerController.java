@@ -250,7 +250,7 @@ public class FaceInfoManagerController {
        log.error("查询全部的省份失败");
        return  ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询全部的省份失败",provinces);
      }
-     return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询全部的省份成功",provinces);
+     return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询全部的省份成功",provinces);
    }
 
    @ApiOperation(value = "根据省份的编号查询省份所对应的所有的城市")
