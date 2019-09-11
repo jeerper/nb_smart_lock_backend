@@ -132,7 +132,9 @@ public class AlarmController {
             //若上面未更新过告警，这里更新锁和门禁为当前真实状态
             String lockCodeById = accCtrlProcessUtil.getLockCodeById(lockId);
             try {
-                Integer status = accCtrlProcessUtil.getLockStatus(lockRequest);
+                BackLockInfo backLockInfo= accCtrlProcessUtil.getLockStatus(lockRequest);
+
+                Integer status=backLockInfo.getObjx();
                 accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCodeById);
             } catch (Exception e) {
                 log.error(msg + "获取锁状态失败");

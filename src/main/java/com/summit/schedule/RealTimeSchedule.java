@@ -3,6 +3,7 @@ package com.summit.schedule;
 
 import com.summit.dao.entity.AccCtrlRealTimeEntity;
 import com.summit.dao.repository.AccCtrlRealTimeDao;
+import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.util.AccCtrlProcessUtil;
@@ -31,13 +32,17 @@ public class RealTimeSchedule {
 
     @Scheduled(fixedDelay = 2000)
     public void refreshRealTimeLockStatus() {
-        List<AccCtrlRealTimeEntity> accCtrlRealTimeList= accCtrlRealTimeDao.selectCondition(null, null, null);
+        List<AccCtrlRealTimeEntity> accCtrlRealTimeList = accCtrlRealTimeDao.selectCondition(null, null, null);
         LockRequest lockRequest = new LockRequest();
         for (AccCtrlRealTimeEntity accCtrlRealTime : accCtrlRealTimeList) {
 
             lockRequest.setTerminalNum(accCtrlRealTime.getLockCode());
             //锁的真实状态
-            Integer lockStatus = accCtrlProcessUtil.getLockStatus(lockRequest);
+            BackLockInfo backLockInfo = accCtrlProcessUtil.getLockStatus(lockRequest);
+            if (backLockInfo == null) {
+                continue;
+            }
+            Integer lockStatus = backLockInfo.getObjx();
             //数据库中，门禁实时表中门禁的状态
             Integer currentLockStatus = accCtrlRealTime.getAccCtrlStatus();
             //如果任意状态为空，则不更新数据
@@ -53,11 +58,11 @@ public class RealTimeSchedule {
                 continue;
             }
             //锁的真实状态和数据库中的状态一致，不更新实时状态
-            if(lockStatus.equals(currentLockStatus)){
+            if (lockStatus.equals(currentLockStatus)) {
                 continue;
             }
             //todo:如果锁是关锁状态，是否需要加入历史操作表？
-            AccCtrlRealTimeEntity accCtrlRealTimeEntity=new AccCtrlRealTimeEntity();
+            AccCtrlRealTimeEntity accCtrlRealTimeEntity = new AccCtrlRealTimeEntity();
             accCtrlRealTimeEntity.setAccCrtlRealTimeId(accCtrlRealTime.getAccCrtlRealTimeId());
             accCtrlRealTimeEntity.setAccCtrlStatus(lockStatus);
             accCtrlRealTimeEntity.setUpdatetime(new Date());

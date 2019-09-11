@@ -4,6 +4,7 @@ package com.summit.schedule;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.repository.AccCtrlProcessDao;
 import com.summit.dao.repository.AccCtrlRealTimeDao;
+import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.util.AccCtrlProcessUtil;
@@ -39,20 +40,29 @@ public class AccessControlProcessSchedule {
         LockRequest lockRequest = new LockRequest();
         for (AccCtrlProcess accCtrlProcessEntity : accCtrlProcessList) {
 
-            lockRequest.setTerminalNum(accCtrlProcessEntity.getLockCode());
-            lockRequest.setUuid(accCtrlProcessEntity.getProcessUuid());
-            lockRequest.setOperName(accCtrlProcessEntity.getAccessControlInfo().getCreateby());
-            //锁的真实状态
-            Integer lockStatus = accCtrlProcessUtil.getLockStatus(lockRequest);
-            if (lockStatus == null) {
-                //更新process_result状态为失败，和fail_reason失败原因
-//                LockProcessResultType.Failure;
-
-            }else{
-                log.debug(lockStatus.toString());
+            String processUuid = accCtrlProcessEntity.getProcessUuid();
+            if (processUuid == null || "".equals(processUuid)) {
+                continue;
             }
 
+            lockRequest.setTerminalNum(accCtrlProcessEntity.getLockCode());
+            lockRequest.setUuid(processUuid);
+            lockRequest.setOperName(accCtrlProcessEntity.getAccessControlInfo().getCreateby());
+            //锁的真实状态
+            BackLockInfo backLockInfo = accCtrlProcessUtil.getLockStatus(lockRequest);
+            if (backLockInfo == null) {
+                continue;
+            }
 
+            Integer lockStatus = backLockInfo.getObjx();
+            if (lockStatus == null) {
+                //TODO：更新process_result状态为失败，和fail_reason失败原因
+//                LockProcessResultType.Failure;
+
+            } else {
+                //TODO：更新process_result状态
+                log.debug(lockStatus.toString());
+            }
 
 
         }
