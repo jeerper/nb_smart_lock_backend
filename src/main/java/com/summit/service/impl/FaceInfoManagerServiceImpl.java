@@ -5,9 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
 import com.summit.constants.CommonConstants;
-import com.summit.dao.entity.FaceInfo;
-import com.summit.dao.entity.SimplePage;
+import com.summit.dao.entity.*;
+import com.summit.dao.repository.CityDao;
 import com.summit.dao.repository.FaceInfoManagerDao;
+import com.summit.dao.repository.ProvinceDao;
 import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.service.FaceInfoManagerService;
 import com.summit.util.PageConverter;
@@ -25,6 +26,10 @@ import java.util.List;
 public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
     @Autowired
     private FaceInfoManagerDao faceInfoManagerDao;
+    @Autowired
+    private ProvinceDao provinceDao;
+    @Autowired
+    private CityDao cityDao;
 
     /**
      * 插入人脸信息
@@ -113,6 +118,27 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
     public List<FaceInfo> selectAllFaceInfo(SimplePage page) {
         QueryWrapper<FaceInfo> wrapper=new QueryWrapper<>();
         return faceInfoManagerDao.selectList(wrapper);
+    }
+
+    /**
+     * 查询所有的省份
+     * @param page
+     * @return 省份信息列表
+     */
+    @Override
+    public List<Province> selectProvince(SimplePage page) {
+        QueryWrapper<Province> wrapper=new QueryWrapper<>();
+        return provinceDao.selectList(wrapper);
+    }
+
+    @Override
+    public List<City> selectCityByProvinceId(String provinceId) {
+        if(provinceId==null){
+            log.error("省份编号为空");
+            return null;
+        }
+        QueryWrapper<City> wrapper=new QueryWrapper<>();
+        return cityDao.selectList(wrapper.eq("provinceid",provinceId));
     }
 
 

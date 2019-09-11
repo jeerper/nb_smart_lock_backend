@@ -11,8 +11,7 @@ import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
 import com.summit.constants.CommonConstants;
-import com.summit.dao.entity.FaceInfo;
-import com.summit.dao.entity.SimplePage;
+import com.summit.dao.entity.*;
 import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.entity.SimpleFaceInfo;
 import com.summit.exception.ErrorMsgException;
@@ -226,7 +225,7 @@ public class FaceInfoManagerController {
      List<SimpleFaceInfo> simpleFaceInfos=new ArrayList<>();
      try {
        List<FaceInfo> faceInfos=faceInfoManagerService.selectAllFaceInfo(null);
-       System.out.println(faceInfos+"TestPath");
+       //System.out.println(faceInfos+"TestPath");
        if(faceInfos !=null){
          for(FaceInfo faceInfo:faceInfos){
            simpleFaceInfos.add(new SimpleFaceInfo(faceInfo.getFaceid(),faceInfo.getUserName(),faceInfo.getFaceImage()));
@@ -240,6 +239,41 @@ public class FaceInfoManagerController {
      return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询全部人脸信息成功",simpleFaceInfos);
    }
 
+   @ApiOperation(value = "查询全部的省份")
+   @GetMapping(value = "/selectProvince")
+   public RestfulEntityBySummit<List<Province>> selectProvince(){
+     List<Province> provinces=null;
+     try {
+        provinces = faceInfoManagerService.selectProvince(null);
+     } catch (Exception e) {
+       e.printStackTrace();
+       log.error("查询全部的省份失败");
+       return  ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询全部的省份失败",provinces);
+     }
+     return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询全部的省份成功",provinces);
+   }
+
+   @ApiOperation(value = "根据省份的编号查询省份所对应的所有的城市")
+   @GetMapping(value = "/selectCityByProvinceId")
+   public RestfulEntityBySummit<List<String>> selectCityByProvinceId(@ApiParam(value = "省份编号")@RequestParam(value = "provinceId",required = false)String provinceId){
+     if(provinceId==null){
+       log.error("省份编号为空");
+       return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"省份编号为空",null);
+     }
+     List<String> cityNames=new ArrayList<>();
+     try {
+       List<City> cities= faceInfoManagerService.selectCityByProvinceId(provinceId);
+       if(cities!=null){
+         for(City city:cities){
+           cityNames.add(city.getCityName());
+         }
+       }
+     } catch (Exception e) {
+       log.error("查询城市信息列表失败");
+       return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询城市信息列表失败",cityNames);
+     }
+     return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询城市信息列表成功",cityNames);
+   }
 
   private String getErrorMsg(String msg,Exception e){
     if(e instanceof ErrorMsgException){

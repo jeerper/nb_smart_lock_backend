@@ -1,7 +1,9 @@
 package com.summit.service;
 
 import com.summit.cbb.utils.page.Page;
+import com.summit.dao.entity.City;
 import com.summit.dao.entity.FaceInfo;
+import com.summit.dao.entity.Province;
 import com.summit.dao.entity.SimplePage;
 import com.summit.entity.FaceInfoManagerEntity;
 
@@ -58,4 +60,18 @@ public interface FaceInfoManagerService {
      * @return 人脸信息列表
      */
     List<FaceInfo> selectAllFaceInfo(SimplePage page);
+
+    /**
+     * 查询所有的省份
+     * @param page
+     * @return 省份列表
+     */
+    List<Province> selectProvince(SimplePage page);
+
+    /**
+     * 根据省份的编号查询省份所对应的所有的城市
+     * @param provinceId
+     * @return 城市列表
+     */
+    List<City> selectCityByProvinceId(String provinceId);
 }
