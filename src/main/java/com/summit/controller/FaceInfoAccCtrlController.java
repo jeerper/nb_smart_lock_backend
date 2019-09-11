@@ -121,7 +121,7 @@ public class FaceInfoAccCtrlController {
         HuaWeiSdkApi.printReturnMsg();
         if(getFaceLib){
             System.out.println("查询人脸库成功");
-            String getfacelibpath1 = new String(new File(".").getCanonicalPath() + "\\facelib\\faceLib.json");
+            String getfacelibpath1 = new String(new File(".").getCanonicalPath() + File.separator +"facelib"+File.separator+"faceLib.json");
             String json = readFile(getfacelibpath1);
             JSONObject object=new JSONObject(json);
             JSONArray faceListsArry = object.getJSONArray("FaceListsArry");
@@ -187,7 +187,7 @@ public class FaceInfoAccCtrlController {
                     System.out.println("人脸库添加失败");
                 }
             }else { //说明有人脸库取第一个人脸库
-                String getfacelibpath2 = new String(new File(".").getCanonicalPath() + "\\facelib\\faceLib.json");
+                String getfacelibpath2 = new String(new File(".").getCanonicalPath() +File.separator +"facelib"+File.separator+"faceLib.json");
                 String jason2 = readFile(getfacelibpath2);
                 JSONObject object1=new JSONObject(jason2);
                 JSONArray faceListsArry1 = object1.getJSONArray("FaceListsArry");
@@ -233,7 +233,7 @@ public class FaceInfoAccCtrlController {
                 if (getFace){
                     System.out.println("查询人脸信息成功");
                     //查询到人脸信息json数据
-                    String getfaceInfoPath = new String(new File(".").getCanonicalPath() + "\\faceInfo\\faceInfo.json");
+                    String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator+"faceInfo"+File.separator+"faceInfo.json");
                     String facejson = readFile(getfaceInfoPath);
                     JSONObject objectface=new JSONObject(facejson);
                     JSONArray faceRecordArry = objectface.getJSONArray("FaceRecordArry");
