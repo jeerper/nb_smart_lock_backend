@@ -88,9 +88,16 @@ public class FaceInfoAccCtrlController {
         //把人脸信息集合加入到对应摄像头的ip中
 
         //把人脸信息集合先加入到入口摄像头中
-        DeviceInfo deviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(entryCameraIp);
-        NativeLong ulIdentifyId = deviceInfo.getUlIdentifyId();
-        System.out.println(ulIdentifyId+"：ulIdentifyId");
+        DeviceInfo entrydeviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(entryCameraIp);
+        NativeLong entryIdentifyId = entrydeviceInfo.getUlIdentifyId();
+        //NativeLong entryIdentifyId=new NativeLong(2);
+        System.out.println(entryIdentifyId+"：entryIdentifyId");
+
+        //把人脸信息再加入到出口摄像头中
+        DeviceInfo exitdeviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(exitCameraIp);
+      //  NativeLong exitIdentifyId = exitdeviceInfo.getUlIdentifyId();
+        NativeLong exitIdentifyId=new NativeLong(2);
+        System.out.println(exitIdentifyId+"：exitIdentifyId");
 
         /**1 先查询人脸库，如果有人脸库，再查询人脸信息，如果没有则新建人脸库，直接添加人脸信息，如果有人脸库，没有人脸信息，直接添加人脸信息
          * 2 如果有人脸库再查询人脸信息，
@@ -111,15 +118,16 @@ public class FaceInfoAccCtrlController {
         if(!f.exists()){
             f.mkdirs();
         }
-        String faceLib=facelibPath+"/faceLib.json";
+        String faceLib=facelibPath+File.separator+"faceLib.json";
         faceLibGetS.szFindResultPath= Arrays.copyOf(faceLib.getBytes(),128);
-        boolean getFaceLib =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_GetFaceLib(ulIdentifyId, faceLibGetS);
+        boolean getFaceLib =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_GetFaceLib(entryIdentifyId, faceLibGetS);
+        boolean exitgetFaceLib =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_GetFaceLib(exitIdentifyId, faceLibGetS);
         Integer enLibType=null;//人脸库类型
         Integer ulFaceLibID=null;//人脸库id
         String szLibName=null;//人脸库名称
         Integer uiThreshold=null;//布控的阀值
         HuaWeiSdkApi.printReturnMsg();
-        if(getFaceLib){
+        if(getFaceLib || exitgetFaceLib){
             System.out.println("查询人脸库成功");
             String getfacelibpath1 = new String(new File(".").getCanonicalPath() + File.separator +"facelib"+File.separator+"faceLib.json");
             String json = readFile(getfacelibpath1);
@@ -136,9 +144,10 @@ public class FaceInfoAccCtrlController {
                 stFacelib.enLibType=2;//人脸库类型
                 puFaceLibSetS.stFacelib=stFacelib;
                 puFaceLibSetS.ulChannelId=new NativeLong(101);
-                boolean addFaceLib = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(ulIdentifyId, puFaceLibSetS);
+                boolean addFaceLib = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(entryIdentifyId, puFaceLibSetS);
+                boolean exitaddFaceLib2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, puFaceLibSetS);
                 HuaWeiSdkApi.printReturnMsg();
-                if (addFaceLib){//人脸库添加成功，接着添加人脸信息，循环添加
+                if (addFaceLib || exitaddFaceLib2 ){//人脸库添加成功，接着添加人脸信息，循环添加
                     System.out.println("人脸库添加成功");
                     //新建完再次人脸库查询人脸库取人脸库信息,并且给人脸库信息赋值
                     szLibName="人脸库";
@@ -175,9 +184,10 @@ public class FaceInfoAccCtrlController {
                         puFaceInfoAdd.stRecord=addface;
                         String filename = faceInfo.getFaceImage().substring(faceInfo.getFaceImage().lastIndexOf("/")+1);
                         System.out.println(filename);
-                        boolean addface2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(ulIdentifyId, puFaceInfoAdd, filename);
+                        boolean addface2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
+                        boolean exitaddface2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
                         HuaWeiSdkApi.printReturnMsg();
-                        if(addface2){
+                        if(addface2 || exitaddface2){
                             System.out.println("添加人脸信息成功");
                         }else {
                             System.out.println("添加人脸信息失败");
@@ -229,8 +239,9 @@ public class FaceInfoAccCtrlController {
                 faceInfoFindS.stFacelib=facelib2;
                 faceInfoFindS.uStartIndex=0;
                 //faceInfoFindS.uFindNum=2;
-                boolean getFace =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(ulIdentifyId, faceInfoFindS);
-                if (getFace){
+                boolean getFace =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(entryIdentifyId, faceInfoFindS);
+                boolean exitgetFace =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitIdentifyId, faceInfoFindS);
+                if (getFace || exitgetFace){
                     System.out.println("查询人脸信息成功");
                     //查询到人脸信息json数据
                     String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator+"faceInfo"+File.separator+"faceInfo.json");
@@ -268,9 +279,10 @@ public class FaceInfoAccCtrlController {
                             puFaceInfoAdd.stRecord=addface;
                             String filename = faceInfo.getFaceImage().substring(faceInfo.getFaceImage().lastIndexOf("/")+1);
                             System.out.println(filename);
-                            boolean addfaceinfo = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(ulIdentifyId, puFaceInfoAdd, filename);
+                            boolean addfaceinfo = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
+                            boolean exitaddfaceinfo = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
                             HuaWeiSdkApi.printReturnMsg();
-                            if(addfaceinfo){
+                            if(addfaceinfo || exitaddfaceinfo){
                                 System.out.println("添加人脸信息成功");
                             }else {
                                 System.out.println("添加人脸信息失败");
@@ -317,9 +329,10 @@ public class FaceInfoAccCtrlController {
                                 facelib.enLibType=enLibType;
                                 facelib.uiThreshold=new NativeLong(uiThreshold);
                                 puFaceInfoDeleteS.stFacelib=facelib;
-                                boolean del =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(ulIdentifyId, puFaceInfoDeleteS);
+                                boolean del =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryIdentifyId, puFaceInfoDeleteS);
+                                boolean exitdel =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitIdentifyId, puFaceInfoDeleteS);
                                 HuaWeiSdkApi.printReturnMsg();
-                                if(del){
+                                if(del || exitdel){
                                     System.out.println("删除人脸信息成功");
                                 }else {
                                     System.out.println("删除人脸信息失败");
@@ -349,9 +362,10 @@ public class FaceInfoAccCtrlController {
                                 facelib.enLibType=enLibType;
                                 facelib.uiThreshold=new NativeLong(uiThreshold);
                                 puFaceInfoDeleteS.stFacelib=facelib;
-                                boolean del = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(ulIdentifyId, puFaceInfoDeleteS);
+                                boolean del = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryIdentifyId, puFaceInfoDeleteS);
+                                boolean exitdel = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitIdentifyId, puFaceInfoDeleteS);
                                 HuaWeiSdkApi.printReturnMsg();
-                                if(del){
+                                if(del || exitdel){
                                     System.out.println("删除人脸信息成功");
                                 }else {
                                     System.out.println("删除人脸信息失败");
@@ -398,9 +412,10 @@ public class FaceInfoAccCtrlController {
                                 puFaceInfoAdd.stRecord=addfaceInfo;
                                 String filename = qiantaiFaceInfo.getFaceImage().substring(qiantaiFaceInfo.getFaceImage().lastIndexOf("/")+1);
                                 System.out.println(filename);
-                                boolean addOneFaceV2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(ulIdentifyId, puFaceInfoAdd, filename);
+                                boolean addOneFaceV2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
+                                boolean exitaddOneFaceV2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
                                 HuaWeiSdkApi.printReturnMsg();
-                                if(addOneFaceV2){
+                                if(addOneFaceV2 || exitaddOneFaceV2){
                                     System.out.println("添加人脸信息成功2");
                                 }else {
                                     System.out.println("添加人脸信息失败2");
@@ -415,13 +430,8 @@ public class FaceInfoAccCtrlController {
         }else{
             System.out.println("查询人脸库失败");
         }
-        //把人脸信息再加入到出口摄像头中
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁授权成功",null);
     }
-
-
-
-
 
     @ApiOperation(value = "根据门禁id查询已经授权的人脸信息列表",notes = "查询已经和门禁关联的人脸信息列表")
     @GetMapping(value = "/selectFaceInfoByAccCtrlId")
@@ -444,6 +454,7 @@ public class FaceInfoAccCtrlController {
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询人脸信息列表成功",ids);
     }
+
 
     public String readFile(String path){
         BufferedReader  reader=null;
