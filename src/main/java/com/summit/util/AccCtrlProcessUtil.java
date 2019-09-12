@@ -107,7 +107,7 @@ public class AccCtrlProcessUtil {
      * @param lockRequest 请求参数
      * @return 开锁状态
      */
-    public Integer getLockStatus(LockRequest lockRequest){
+    public BackLockInfo getLockStatus(LockRequest lockRequest){
         RestfulEntityBySummit back = null;
         try {
             back = nbLockServiceImpl.toQueryLockStatus(lockRequest);
@@ -116,8 +116,11 @@ public class AccCtrlProcessUtil {
             return null;
         }
         Object backData = back.getData();
+        if(backData==null){
+            return null;
+        }
         if((backData instanceof BackLockInfo)){
-            return ((BackLockInfo) backData).getObjx();
+            return (BackLockInfo) backData;
         }
         return null;
     }
@@ -232,7 +235,7 @@ public class AccCtrlProcessUtil {
         //设置操作结果及失败原因
         BackLockInfo backLockInfo = null;
         if(backData == null){
-            accCtrlProcess.setProcessResult(String.valueOf(LockProcessResultType.Failure.getCode()));
+            accCtrlProcess.setProcessResult(LockProcessResultType.Failure.getCode());
             accCtrlProcess.setFailReason("未知");
         }else{
             if((backData instanceof BackLockInfo)){
@@ -242,7 +245,7 @@ public class AccCtrlProcessUtil {
                 String content = backLockInfo.getContent();
                 Integer objx = backLockInfo.getObjx();
 
-                accCtrlProcess.setProcessResult(String.valueOf(objx));
+                accCtrlProcess.setProcessResult(objx);
 
                 if(LockProcessResultType.CommandSuccess.getCode()!=objx){
                     if(CommonUtil.isEmptyStr(content)){
@@ -260,7 +263,7 @@ public class AccCtrlProcessUtil {
 //                }
 
             }else{
-                accCtrlProcess.setProcessResult(String.valueOf(LockProcessResultType.Exception.getCode()));
+                accCtrlProcess.setProcessResult(LockProcessResultType.Exception.getCode());
                 accCtrlProcess.setFailReason("未知");
             }
         }
@@ -363,7 +366,7 @@ public class AccCtrlProcessUtil {
         //用于查询开锁状态的命令ID
         accCtrlProcess.setProcessUuid(processUuid);
         //指令下发返回的结果
-        accCtrlProcess.setProcessResult(String.valueOf(processResult.getCode()));
+        accCtrlProcess.setProcessResult(processResult.getCode());
         accCtrlProcess.setAccessControlInfo(accessControlInfo);
         return accCtrlProcess;
     }

@@ -95,7 +95,7 @@ public class AccCtrlProcess {
 
     @ApiModelProperty(value="开锁结果：1：下发指令成功 2：异常 4：不在线 5：未回复 6：成功 7：失败 8：消息有误 9：不支持的消息",name="processResult")
     @TableField(value = "process_result")
-    private String processResult;
+    private int processResult;
     @ApiModelProperty(value="门禁操作失败原因，error：失败   success：成功",name="processResult")
     @TableField(value = "fail_reason")
     private String failReason;
