@@ -118,7 +118,6 @@ public class NBLockServiceImpl {
 
         try {
             BackLockInfo backLockInfo = httpClient.nbLockService.queryLockStatus(lockRequest).execute().body();
-            log.debug("{}", backLockInfo);
             queryBackLockInfo[0] = backLockInfo;
             if (backLockInfo == null) {
                 resultCode[0] = ResponseCodeEnum.CODE_9999;
