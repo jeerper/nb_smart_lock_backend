@@ -1,8 +1,9 @@
 package com.summit.dao.repository;
 
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.summit.dao.entity.AccCtrlRealTimeEntity;
-import com.summit.dao.entity.SimplePage;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -25,9 +26,8 @@ public interface AccCtrlRealTimeDao extends BaseMapper<AccCtrlRealTimeEntity> {
      * @param roles 当前用户管理角色列表
      * @return 门禁实时信息list
      */
-    List<AccCtrlRealTimeEntity> selectCondition(@Param("accCtrlRealTimeEntity") AccCtrlRealTimeEntity accCtrlRealTimeEntity,
-                                         @Param("page") SimplePage page,
-                                         @Param("roles") List<String> roles);
+    List<AccCtrlRealTimeEntity> selectCondition(Page page, @Param("accCtrlRealTimeEntity") AccCtrlRealTimeEntity accCtrlRealTimeEntity,
+                                                 @Param("roles") List<String> roles);
 
     /**
      * 根据门禁实时id查询最近更新时间

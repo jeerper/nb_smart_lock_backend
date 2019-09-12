@@ -121,10 +121,6 @@
             </where>
         </if>
         order by pic_snapshot_time desc
-        <if test="page != null and page.current != null and  page.pageSize != null ">
-            limit #{page.current},#{page.pageSize}
-        </if>
-
     </select>
 
     <select id="selectUpdatetimeById" resultType="java.util.Date">
