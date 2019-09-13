@@ -116,6 +116,7 @@ public class AlarmController {
 
             unlockProcessUuid = backLockInfo.getRmid();
 
+
             AccCtrlProcess currentAccCtrlProcess = accCtrlProcessDao.selectOne(Wrappers.<AccCtrlProcess>lambdaQuery()
                     .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProId));
 
@@ -141,7 +142,7 @@ public class AlarmController {
             alarmId = alarm.getAlarmId();
         }
         //处理告警业务
-        if (alarmId != null && !"".equals(alarmId)) {
+        if (alarmId != null && !"".equals(alarmId) && !"".equals(processRemark)) {
             //更新告警表
             alarmDao.update(null, Wrappers.<Alarm>lambdaUpdate()
                     .set(Alarm::getAlarmStatus, alarmStatus)
