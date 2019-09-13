@@ -12,7 +12,6 @@ import com.summit.dao.entity.SimplePage;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.entity.UpdateAlarmParam;
-import com.summit.exception.ErrorMsgException;
 import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.service.AlarmService;
 import com.summit.service.impl.NBLockServiceImpl;
@@ -49,10 +48,10 @@ public class AlarmController {
 
     @ApiOperation(value = "更新门禁告警状态", notes = "alarmId为null或空串则不进行更新告警操作")
     @PutMapping(value = "/updateAlarmStatus")
-        public RestfulEntityBySummit<String> updateAlarmStatus(@RequestBody UpdateAlarmParam updateAlarmParam) {
-        if(updateAlarmParam == null){
+    public RestfulEntityBySummit<String> updateAlarmStatus(@RequestBody UpdateAlarmParam updateAlarmParam) {
+        if (updateAlarmParam == null) {
             log.error("参数为空");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"参数为空",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "参数为空", null);
         }
         String alarmId = updateAlarmParam.getAlarmId();
         String accCtrlProId = updateAlarmParam.getAccCtrlProId();
@@ -69,54 +68,47 @@ public class AlarmController {
         String processRemark = updateAlarmParam.getProcessRemark();
         String operName = null;
         UserInfo userInfo = UserContextHolder.getUserInfo();
-        if(userInfo != null)
+        if (userInfo != null)
             operName = userInfo.getName();
-        if(needUnLock){
+        if (needUnLock) {
+
             LockRequest lockRequest = new LockRequest();
             lockRequest.setLockId(lockId);
             lockRequest.setOperName(operName);
             lockRequest.setAccCtrlProId(accCtrlProId);
-            RestfulEntityBySummit result = null;
-            try {
-                result = nbLockServiceImpl.toUnLock(lockRequest);
-            } catch (Exception e) {
-                log.error("开锁失败,{}",e.getMessage());
-                if(e instanceof ErrorMsgException)
-                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, ((ErrorMsgException) e).getErrorMsg(),null);
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999);
+
+            RestfulEntityBySummit result = nbLockServiceImpl.toUnLock(lockRequest);
+            if (result == null) {
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg + "开锁失败", null);
             }
-            if(result == null){
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,msg + "开锁失败",null);
+
+            BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
+
+            if(backLockInfo==null){
+               return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "开锁失败", null);
             }
-            Object data = result.getData();
-            String resultMsg = result.getMsg();
-
-
-            BackLockInfo backLockInfo = null;
-
-            msg = "开锁结果：" + resultMsg + ";";
-            if((data instanceof BackLockInfo)){
-                backLockInfo = (BackLockInfo) data;
-                String content = backLockInfo.getContent();
-                msg = "开锁结果：" + content;
-//                if(backLockInfo.getObjx() != LockStatus.NOT_ONLINE.getCode()
-//                        && !"终端不在线".equals(content)
-//                        && !content.contains("编号不存在")){
-//                    accCtrlProcessUtil.toInsertAndUpdateData(data,lockRequest);
-//                }
-                if(LockProcessResultType.CommandSuccess.getCode()!=backLockInfo.getObjx()){
-                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, resultMsg,null);
-                }else{
-                    accCtrlProcessUtil.toInsertAndUpdateData(data,lockRequest);
-                }
-
-//            noUpdatedStatus = false;
+            if(backLockInfo.getObjx()==null){
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"开锁失败:"+backLockInfo.getContent() , null);
             }
+            if(backLockInfo.getObjx()!=LockProcessResultType.CommandSuccess.getCode()){
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"开锁失败:"+backLockInfo.getContent() , null);
+            }
+
+            //开锁指令下发成功的处理逻辑
+            //处理结果
+            LockProcessResultType processResult = LockProcessResultType.codeOf(backLockInfo.getObjx());
+            //开锁处理UUID
+            String unlockProcessUuid = backLockInfo.getRmid();
+
+//            accCtrlProcessUtil.toInsertAndUpdateData(data, lockRequest);
+
+
+
         }
 
-        if(alarmId == null){
+        if (alarmId == null) {
             log.info("没有对应的告警信息");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有对应的告警信息",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有对应的告警信息", null);
         }
         Alarm alarm = new Alarm();
         alarm.setAlarmId(alarmId);
@@ -129,43 +121,42 @@ public class AlarmController {
         lockRequest.setLockId(lockId);
         lockRequest.setOperName(operName);
 //        if(noUpdatedStatus){
-            //若上面未更新过告警，这里更新锁和门禁为当前真实状态
-            String lockCodeById = accCtrlProcessUtil.getLockCodeById(lockId);
-            try {
-                BackLockInfo backLockInfo= accCtrlProcessUtil.getLockStatus(lockRequest);
+        //若上面未更新过告警，这里更新锁和门禁为当前真实状态
+        String lockCodeById = accCtrlProcessUtil.getLockCodeById(lockId);
+        try {
+            BackLockInfo backLockInfo = accCtrlProcessUtil.getLockStatus(lockRequest);
 
-                Integer status=backLockInfo.getObjx();
-                accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(status,lockCodeById);
-            } catch (Exception e) {
-                log.error(msg + "获取锁状态失败");
-            }
+            Integer status = backLockInfo.getObjx();
+            accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(status, lockCodeById);
+        } catch (Exception e) {
+            log.error(msg + "获取锁状态失败");
+        }
 //        }
         try {
             alarmService.updateAlarm(alarm);
         } catch (Exception e) {
             log.error(msg + "更新告警状态失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,msg + "更新告警状态失败",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg + "更新告警状态失败", null);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,msg + "更新告警状态成功",null);
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, msg + "更新告警状态成功", null);
     }
 
 
     @ApiOperation(value = "用告警id列表批量删除门禁告警信息", notes = "alarmIds不能为空")
     @DeleteMapping(value = "/delAlarmByIdBatch")
     public RestfulEntityBySummit<String> delAlarmByIdBatch(@ApiParam(value = "门禁告警id数组", required = true) @RequestParam(value = "alarmIds") List<String> alarmIds) {
-        if(CommonUtil.isEmptyList(alarmIds)){
+        if (CommonUtil.isEmptyList(alarmIds)) {
             log.error("告警id为空");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警id为空",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "告警id为空", null);
         }
         try {
             alarmService.delAlarmByIdBatch(alarmIds);
         } catch (Exception e) {
             log.error("删除告警信息失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"删除告警信息失败",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "删除告警信息失败", null);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"删除告警信息成功",null);
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "删除告警信息成功", null);
     }
-
 
 
     @ApiOperation(value = "查询当前用户所有未处理的告警数量", notes = "查询当前用户所有未处理的告警数量")
@@ -177,54 +168,59 @@ public class AlarmController {
             alarmCount = alarmService.selectAlarmCountByStatus(1);
         } catch (Exception e) {
             log.error("查询未处理告警数量失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询未处理告警数量失败", null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "查询未处理告警数量失败", null);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询未处理告警数量成功", alarmCount);
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "查询未处理告警数量成功", alarmCount);
     }
 
     @ApiOperation(value = "根据告警id查询告警信息", notes = "alarmId不能为空。查询唯一一条告警信息")
     @GetMapping(value = "/queryAlarmById")
-    public RestfulEntityBySummit<Alarm> queryAlarmById(@ApiParam(value = "门禁告警id", required = true) @RequestParam(value = "alarmId") String alarmId){
-        if(alarmId == null){
+    public RestfulEntityBySummit<Alarm> queryAlarmById(@ApiParam(value = "门禁告警id", required = true) @RequestParam(value = "alarmId") String alarmId) {
+        if (alarmId == null) {
             log.error("告警id为空");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"告警id为空",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "告警id为空", null);
         }
         Alarm alarm = null;
         try {
             alarm = alarmService.selectAlarmById(alarmId);
         } catch (Exception e) {
             log.error("根据告警id查询告警信息失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"根据告警id查询告警信息失败", alarm);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "根据告警id查询告警信息失败", alarm);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"根据告警id查询告警信息成功", alarm);
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "根据告警id查询告警信息成功", alarm);
     }
 
 
-    @ApiOperation(value = "根据所传一个或多个条件组合分页查询告警信息", notes = "各字段都为空则查询全部。时间信息为空或不合法则无时间限制。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
+    @ApiOperation(value = "根据所传一个或多个条件组合分页查询告警信息", notes = "各字段都为空则查询全部。时间信息为空或不合法则无时间限制。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1" +
+            "，pageSize<=0则查不到结果")
     @GetMapping(value = "/queryAlarmCondition")
-    public RestfulEntityBySummit<Page<Alarm>> queryAlarmCondition(@ApiParam(value = "门禁id，精确匹配") @RequestParam(value = "accessControlId", required = false) String accessControlId,
-                                                                  @ApiParam(value = "门禁名称，模糊匹配") @RequestParam(value = "accessControlName", required = false) String accessControlName,
-                                                                  @ApiParam(value = "门禁告警处理状态，，0已处理，1未处理") @RequestParam(value = "alarmStatus", required = false) Integer alarmStatus,
-                                                                  @ApiParam(value = "起始时间")  @RequestParam(value = "startTime", required = false) String startTime,
-                                                                  @ApiParam(value = "结束时间")  @RequestParam(value = "endTime", required = false) String endTime,
-                                                                  @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
-                                                                  @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+    public RestfulEntityBySummit<Page<Alarm>> queryAlarmCondition(@ApiParam(value = "门禁id，精确匹配") @RequestParam(value = "accessControlId", required
+            = false) String accessControlId,
+                                                                  @ApiParam(value = "门禁名称，模糊匹配") @RequestParam(value = "accessControlName",
+                                                                          required = false) String accessControlName,
+                                                                  @ApiParam(value = "门禁告警处理状态，，0已处理，1未处理") @RequestParam(value = "alarmStatus",
+                                                                          required = false) Integer alarmStatus,
+                                                                  @ApiParam(value = "起始时间") @RequestParam(value = "startTime", required = false) String startTime,
+                                                                  @ApiParam(value = "结束时间") @RequestParam(value = "endTime", required = false) String endTime,
+                                                                  @ApiParam(value = "当前页，大于等于1") @RequestParam(value = "current", required = false) Integer current,
+                                                                  @ApiParam(value = "每页条数，大于等于0") @RequestParam(value = "pageSize", required =
+                                                                          false) Integer pageSize) {
         Page<Alarm> alarms = null;
-        Date start = CommonUtil.strToDate(startTime,CommonConstants.STARTTIMEMARK);
-        Date end = CommonUtil.strToDate(endTime,CommonConstants.ENDTIMEMARK);
+        Date start = CommonUtil.strToDate(startTime, CommonConstants.STARTTIMEMARK);
+        Date end = CommonUtil.strToDate(endTime, CommonConstants.ENDTIMEMARK);
         try {
             Alarm alarm = new Alarm();
-            if(!CommonUtil.isEmptyStr(accessControlId))
+            if (!CommonUtil.isEmptyStr(accessControlId))
                 alarm.setAccessControlId(accessControlId);
-            if(!CommonUtil.isEmptyStr(accessControlName))
+            if (!CommonUtil.isEmptyStr(accessControlName))
                 alarm.setAccessControlName(accessControlName);
             alarm.setAlarmStatus(alarmStatus);
-            alarms = alarmService.selectAlarmConditionByPage(alarm, start, end, new SimplePage(current,pageSize));
+            alarms = alarmService.selectAlarmConditionByPage(alarm, start, end, new SimplePage(current, pageSize));
         } catch (Exception e) {
-            log.error("条件查询告警信息失败",e);
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"条件查询告警信息失败", alarms);
+            log.error("条件查询告警信息失败", e);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "条件查询告警信息失败", alarms);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"条件查询告警信息成功", alarms);
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "条件查询告警信息成功", alarms);
     }
 
 }

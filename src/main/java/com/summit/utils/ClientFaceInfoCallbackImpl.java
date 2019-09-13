@@ -185,14 +185,15 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                                     backLockInfo.getRmid(), backLockInfoType, content, backLockInfo.getObjx(),
                                     backLockInfo.getTime());
 
-                            if ("error".equals(backLockInfoType)) {
-                                failReason = content;
+                            if(backLockInfo.getObjx() == null){
+                                failReason=backLockInfo.getContent();
+                                processResult=  LockProcessResultType.Failure;
+                            }else{
+                                //下发开锁指令后返回的状态码
+                                processResult= LockProcessResultType.codeOf(backLockInfo.getObjx());
+                                //用于查询开锁状态的命令UUID
+                                unlockProcessUuid=backLockInfo.getRmid();
                             }
-                            //下发开锁指令后返回的状态码
-                            processResult= LockProcessResultType.codeOf(backLockInfo.getObjx());
-                            //用于查询开锁状态的命令UUID
-                            unlockProcessUuid=backLockInfo.getRmid();
-
                         } else {
                             //开锁接口调用失败
                             log.debug("开锁接口调用失败");

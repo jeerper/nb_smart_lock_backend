@@ -1,9 +1,11 @@
 package com.summit.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
-import com.summit.dao.entity.LockInfo;
+import com.summit.dao.entity.AccessControlInfo;
+import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
@@ -30,6 +32,8 @@ public class NBLockServiceImpl {
     private LockInfoService lockInfoService;
     @Autowired
     private LockInfoDao lockInfoDao;
+    @Autowired
+    private AccessControlDao accessControlDao;
 
     /**
      * 开锁操作,同时控制超时时间
@@ -59,11 +63,15 @@ public class NBLockServiceImpl {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993);
         }
         if (terminalNum == null) {
-            LockInfo lockInfo = lockInfoDao.selectById(lockId);
-            if (lockInfo == null || lockInfo.getLockId() == null) {
+            AccessControlInfo accessControlInfo= accessControlDao
+                    .selectOne(Wrappers.<AccessControlInfo>lambdaQuery()
+                    .eq(AccessControlInfo::getLockId,lockId)
+                    );
+
+            if (accessControlInfo == null || accessControlInfo.getLockCode() == null) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993);
             }
-            lockRequest.setTerminalNum(lockInfo.getLockCode());
+            lockRequest.setTerminalNum(accessControlInfo.getLockCode());
         }
         final BackLockInfo[] backLockInfos = {null};
         final ResponseCodeEnum[] resultCode = {ResponseCodeEnum.CODE_0000};
@@ -107,10 +115,14 @@ public class NBLockServiceImpl {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993);
         }
         if (terminalNum == null) {
-            LockInfo lockInfo = lockInfoService.selectLockById(lockId);
-            if (lockInfo == null || lockInfo.getLockCode() == null)
+            AccessControlInfo accessControlInfo= accessControlDao
+                    .selectOne(Wrappers.<AccessControlInfo>lambdaQuery()
+                            .eq(AccessControlInfo::getLockId,lockId)
+                    );
+
+            if (accessControlInfo == null || accessControlInfo.getLockCode() == null)
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993);
-            lockRequest.setTerminalNum(lockInfo.getLockCode());
+            lockRequest.setTerminalNum(accessControlInfo.getLockCode());
         }
         final BackLockInfo[] queryBackLockInfo = {null};
         final ResponseCodeEnum[] resultCode = {ResponseCodeEnum.CODE_0000};
