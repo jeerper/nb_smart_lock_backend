@@ -1,80 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.summit.dao.repository.AlarmDao">
-  <resultMap id="BaseResultMap" type="com.summit.dao.entity.Alarm">
-    <result column="alarm_id" jdbcType="VARCHAR" property="alarmId" />
-    <result column="alarm_name" jdbcType="VARCHAR" property="alarmName" />
-    <result column="acc_ctrl_pro_id" jdbcType="VARCHAR" property="accCtrlProId" />
-    <result column="alarm_time" jdbcType="TIMESTAMP" property="alarmTime" />
-    <result column="alarm_status" jdbcType="INTEGER" property="alarmStatus" />
-    <result column="access_control_id" jdbcType="VARCHAR" property="accessControlId" />
-    <result column="access_control_name" jdbcType="VARCHAR" property="accessControlName" />
-    <result column="process_person" jdbcType="VARCHAR" property="processPerson" />
-    <result column="description" jdbcType="VARCHAR" property="description" />
-    <result column="updatetime" jdbcType="VARCHAR" property="updatetime" />
-    <result column="process_remark" jdbcType="VARCHAR" property="processRemark" />
-    <result column="acc_ctrl_status" jdbcType="INTEGER" property="accCtrlStatus" />
+    <resultMap id="BaseResultMap" type="com.summit.dao.entity.Alarm">
+        <result column="alarm_id" jdbcType="VARCHAR" property="alarmId"/>
+        <result column="alarm_name" jdbcType="VARCHAR" property="alarmName"/>
+        <result column="acc_ctrl_pro_id" jdbcType="VARCHAR" property="accCtrlProId"/>
+        <result column="alarm_time" jdbcType="TIMESTAMP" property="alarmTime"/>
+        <result column="alarm_status" jdbcType="INTEGER" property="alarmStatus"/>
+        <result column="access_control_id" jdbcType="VARCHAR" property="accessControlId"/>
+        <result column="access_control_name" jdbcType="VARCHAR" property="accessControlName"/>
+        <result column="process_person" jdbcType="VARCHAR" property="processPerson"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="updatetime" jdbcType="VARCHAR" property="updatetime"/>
+        <result column="process_remark" jdbcType="VARCHAR" property="processRemark"/>
+        <result column="acc_ctrl_status" jdbcType="INTEGER" property="accCtrlStatus"/>
 
-    <association property="accCtrlProcess" javaType="com.summit.dao.entity.AccCtrlProcess">
-        <result column="acc_ctrl_pro_id" jdbcType="VARCHAR" property="accCtrlProId" />
-        <result column="access_control_id" jdbcType="VARCHAR" property="accessControlId" />
-        <result column="access_control_name" jdbcType="VARCHAR" property="accessControlName" />
-        <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
-        <result column="device_ip" jdbcType="VARCHAR" property="deviceIp" />
-        <result column="lock_id" jdbcType="VARCHAR" property="lockId" />
-        <result column="lock_code" jdbcType="VARCHAR" property="lockCode" />
-        <result column="user_id" jdbcType="VARCHAR" property="userId" />
-        <result column="user_name" jdbcType="VARCHAR" property="userName" />
-        <result column="gender" jdbcType="INTEGER" property="gender" />
-        <result column="birthday" jdbcType="TIMESTAMP" property="birthday" />
-        <result column="province" jdbcType="VARCHAR" property="province" />
-        <result column="city" jdbcType="VARCHAR" property="city" />
-        <result column="card_type" jdbcType="INTEGER" property="cardType" />
-        <result column="card_id" jdbcType="VARCHAR" property="cardId" />
-        <result column="face_match_rate" jdbcType="REAL" property="faceMatchRate" />
-        <result column="face_lib_name" jdbcType="VARCHAR" property="faceLibName" />
-        <result column="face_lib_type" jdbcType="INTEGER" property="faceLibType" />
+        <association property="accCtrlProcess" javaType="com.summit.dao.entity.AccCtrlProcess">
+            <result column="acc_ctrl_pro_id" jdbcType="VARCHAR" property="accCtrlProId"/>
+            <result column="access_control_id" jdbcType="VARCHAR" property="accessControlId"/>
+            <result column="access_control_name" jdbcType="VARCHAR" property="accessControlName"/>
+            <result column="device_id" jdbcType="VARCHAR" property="deviceId"/>
+            <result column="device_ip" jdbcType="VARCHAR" property="deviceIp"/>
+            <result column="lock_id" jdbcType="VARCHAR" property="lockId"/>
+            <result column="lock_code" jdbcType="VARCHAR" property="lockCode"/>
+            <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+            <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+            <result column="gender" jdbcType="INTEGER" property="gender"/>
+            <result column="birthday" jdbcType="TIMESTAMP" property="birthday"/>
+            <result column="province" jdbcType="VARCHAR" property="province"/>
+            <result column="city" jdbcType="VARCHAR" property="city"/>
+            <result column="card_type" jdbcType="INTEGER" property="cardType"/>
+            <result column="card_id" jdbcType="VARCHAR" property="cardId"/>
+            <result column="face_match_rate" jdbcType="REAL" property="faceMatchRate"/>
+            <result column="face_lib_name" jdbcType="VARCHAR" property="faceLibName"/>
+            <result column="face_lib_type" jdbcType="INTEGER" property="faceLibType"/>
 
-        <result column="process_type" jdbcType="INTEGER" property="processType" />
-        <result column="process_result" jdbcType="VARCHAR" property="processResult" />
-        <result column="fail_reason" jdbcType="VARCHAR" property="failReason" />
-        <result column="panorama_pic_id" jdbcType="VARCHAR" property="panoramaPicId" />
-        <result column="face_panorama_id" jdbcType="VARCHAR" property="facePanoramaId" />
-        <result column="face_pic_id" jdbcType="VARCHAR" property="facePicId" />
-        <result column="face_match_id" jdbcType="VARCHAR" property="faceMatchId" />
-        <result column="fi1_path" jdbcType="VARCHAR" property="facePanoramaUrl" />
-        <result column="fi2_path" jdbcType="VARCHAR" property="facePicUrl" />
-        <result column="fi3_path" jdbcType="VARCHAR" property="faceMatchUrl" />
-        <result column="process_time" jdbcType="TIMESTAMP" property="processTime" />
+            <result column="process_type" jdbcType="INTEGER" property="processType"/>
+            <result column="process_result" jdbcType="VARCHAR" property="processResult"/>
+            <result column="fail_reason" jdbcType="VARCHAR" property="failReason"/>
+            <result column="panorama_pic_id" jdbcType="VARCHAR" property="panoramaPicId"/>
+            <result column="face_panorama_id" jdbcType="VARCHAR" property="facePanoramaId"/>
+            <result column="face_pic_id" jdbcType="VARCHAR" property="facePicId"/>
+            <result column="face_match_id" jdbcType="VARCHAR" property="faceMatchId"/>
+            <result column="fi1_path" jdbcType="VARCHAR" property="facePanoramaUrl"/>
+            <result column="fi2_path" jdbcType="VARCHAR" property="facePicUrl"/>
+            <result column="fi3_path" jdbcType="VARCHAR" property="faceMatchUrl"/>
+            <result column="process_time" jdbcType="TIMESTAMP" property="processTime"/>
 
-      <association property="facePanorama" javaType="com.summit.dao.entity.FileInfo">
-        <result column="fi1_id" jdbcType="VARCHAR" property="fileId" />
-        <result column="fi1_name" jdbcType="VARCHAR" property="filenName" />
-        <result column="fi1_path" jdbcType="LONGVARCHAR" property="filePath" />
-        <result column="fi1_des" jdbcType="LONGVARCHAR" property="description" />
-      </association>
-      <association property="facePic" javaType="com.summit.dao.entity.FileInfo">
-        <result column="fi2_id" jdbcType="VARCHAR" property="fileId" />
-        <result column="fi2_name" jdbcType="VARCHAR" property="filenName" />
-        <result column="fi2_path" jdbcType="LONGVARCHAR" property="filePath" />
-        <result column="fi2_des" jdbcType="LONGVARCHAR" property="description" />
-      </association>
-      <association property="faceMatch" javaType="com.summit.dao.entity.FileInfo">
-        <result column="fi3_id" jdbcType="VARCHAR" property="fileId" />
-        <result column="fi3_name" jdbcType="VARCHAR" property="filenName" />
-        <result column="fi3_path" jdbcType="LONGVARCHAR" property="filePath" />
-        <result column="fi3_des" jdbcType="LONGVARCHAR" property="description" />
-      </association>
-    </association>
+            <association property="facePanorama" javaType="com.summit.dao.entity.FileInfo">
+                <result column="fi1_id" jdbcType="VARCHAR" property="fileId"/>
+                <result column="fi1_name" jdbcType="VARCHAR" property="filenName"/>
+                <result column="fi1_path" jdbcType="LONGVARCHAR" property="filePath"/>
+                <result column="fi1_des" jdbcType="LONGVARCHAR" property="description"/>
+            </association>
+            <association property="facePic" javaType="com.summit.dao.entity.FileInfo">
+                <result column="fi2_id" jdbcType="VARCHAR" property="fileId"/>
+                <result column="fi2_name" jdbcType="VARCHAR" property="filenName"/>
+                <result column="fi2_path" jdbcType="LONGVARCHAR" property="filePath"/>
+                <result column="fi2_des" jdbcType="LONGVARCHAR" property="description"/>
+            </association>
+            <association property="faceMatch" javaType="com.summit.dao.entity.FileInfo">
+                <result column="fi3_id" jdbcType="VARCHAR" property="fileId"/>
+                <result column="fi3_name" jdbcType="VARCHAR" property="filenName"/>
+                <result column="fi3_path" jdbcType="LONGVARCHAR" property="filePath"/>
+                <result column="fi3_des" jdbcType="LONGVARCHAR" property="description"/>
+            </association>
+        </association>
 
-  </resultMap>
+    </resultMap>
 
 
-  <sql id="Base_Column_List">
+    <sql id="Base_Column_List">
     alarm_id, alarm_name, acc_ctrl_pro_id, alarm_time, alarm_status, process_person, description,
     updatetime, process_remark
   </sql>
-  <sql id="Alarm_Have_Alias_List">
+    <sql id="Alarm_Have_Alias_List">
     al.alarm_id, al.alarm_name, al.acc_ctrl_pro_id, al.alarm_time, al.alarm_status, al.process_person,
     al.description,al.updatetime, al.process_remark
   </sql>
@@ -109,168 +109,171 @@
         fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
     </sql>
 
-  <select id="selectAlarmById" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select ac.status acc_ctrl_status,
-    <include refid="Alarm_Have_Alias_List" />,
-    <include refid="AccCtrl_Have_Alias_List" />,
-    <include refid="Face_Panorama_Alias_List" />,
-    <include refid="Face_Pic_Alias_List" />,
-    <include refid="Face_Match_Alias_List" />
-    from alarm al
-      left join acc_ctrl_process acp on acp.acc_ctrl_pro_id=al.acc_ctrl_pro_id
-      <if test="roles != null">
-          inner join (
-          select distinct <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
-          <where>
-              au.role_id in
-              <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
-                  #{role}
-              </foreach>
-          </where>
-          ) au on au.access_control_id = acp.access_control_id
-      </if>
-    left join file_info fi1 on acp.face_panorama_id=fi1.file_id
-    left join file_info fi2 on acp.face_pic_id=fi2.file_id
-    left join file_info fi3 on acp.face_match_id=fi3.file_id
-    left join access_control ac on ac.access_control_id=acp.access_control_id
+    <select id="selectAlarmById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select ac.status acc_ctrl_status,
+        <include refid="Alarm_Have_Alias_List"/>,
+        <include refid="AccCtrl_Have_Alias_List"/>,
+        <include refid="Face_Panorama_Alias_List"/>,
+        <include refid="Face_Pic_Alias_List"/>,
+        <include refid="Face_Match_Alias_List"/>
+        from alarm al
+        left join acc_ctrl_process acp on acp.acc_ctrl_pro_id=al.acc_ctrl_pro_id
+        <if test="roles != null">
+            inner join (
+            select distinct
+            <include refid="Auth_No_Alias_List"/>
+            from role_accesscontrol_auth au
+            <where>
+                au.role_id in
+                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
+                    #{role}
+                </foreach>
+            </where>
+            ) au on au.access_control_id = acp.access_control_id
+        </if>
+        left join file_info fi1 on acp.face_panorama_id=fi1.file_id
+        left join file_info fi2 on acp.face_pic_id=fi2.file_id
+        left join file_info fi3 on acp.face_match_id=fi3.file_id
+        left join access_control ac on ac.access_control_id=acp.access_control_id
 
-    <where>
-      al.alarm_id=#{alarmId}
-    </where>
-  </select>
-
-
-  <select id="selectByAccCtrlProId" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select
-    <include refid="Alarm_Have_Alias_List" />,
-    <include refid="AccCtrl_Have_Alias_List" />,
-    <include refid="Face_Panorama_Alias_List" />,
-    <include refid="Face_Pic_Alias_List" />,
-    <include refid="Face_Match_Alias_List" />
-    from alarm al
-      left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
-      <if test="roles != null">
-          inner join (
-          select distinct <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
-          <where>
-              au.role_id in
-              <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
-                  #{role}
-              </foreach>
-          </where>
-          ) au on au.access_control_id = acp.access_control_id
-      </if>
-    left join file_info fi1 on acp.face_panorama_id=fi1.file_id
-    left join file_info fi2 on acp.face_pic_id=fi2.file_id
-    left join file_info fi3 on acp.face_match_id=fi3.file_id
-    <where>
-      al.acc_ctrl_pro_id=#{accCtrlProId}
-    </where>
-  </select>
+        <where>
+            al.alarm_id=#{alarmId}
+        </where>
+    </select>
 
 
-  <select id="selectAlarmCountByStatus"  resultType="java.lang.Integer">
-    select  count(distinct alarm_id)
-    from (
-        select al.alarm_id, al.alarm_status from alarm al
+    <select id="selectByAccCtrlProId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Alarm_Have_Alias_List"/>,
+        <include refid="AccCtrl_Have_Alias_List"/>,
+        <include refid="Face_Panorama_Alias_List"/>,
+        <include refid="Face_Pic_Alias_List"/>,
+        <include refid="Face_Match_Alias_List"/>
+        from alarm al
         left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
-      <if test="roles != null">
-          inner join (
-          select distinct <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
-          <where>
-              au.role_id in
-              <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
-                  #{role}
-              </foreach>
-          </where>
-          ) au on au.access_control_id = acp.access_control_id
-      </if>
-    ) al
-      <if test="alarmStatus != null">
-          <where>
-              al.alarm_status=#{alarmStatus}
-          </where>
-      </if>
+        <if test="roles != null">
+            inner join (
+            select distinct
+            <include refid="Auth_No_Alias_List"/>
+            from role_accesscontrol_auth au
+            <where>
+                au.role_id in
+                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
+                    #{role}
+                </foreach>
+            </where>
+            ) au on au.access_control_id = acp.access_control_id
+        </if>
+        left join file_info fi1 on acp.face_panorama_id=fi1.file_id
+        left join file_info fi2 on acp.face_pic_id=fi2.file_id
+        left join file_info fi3 on acp.face_match_id=fi3.file_id
+        <where>
+            al.acc_ctrl_pro_id=#{accCtrlProId}
+        </where>
+    </select>
 
-  </select>
+
+    <select id="selectAlarmCountByStatus" resultType="java.lang.Integer">
+        SELECT
+        count( alarm_id )
+        FROM
+        acc_ctrl_process acp
+        INNER JOIN alarm al ON al.acc_ctrl_pro_id = acp.acc_ctrl_pro_id
+        where
+        acp.process_type=3
+        <if test="roles != null">
+            and acp.access_control_id IN ( SELECT DISTINCT au.access_control_id FROM role_accesscontrol_auth au WHERE au.role_id IN
+            <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
+                #{role}
+            </foreach>
+            )
+        </if>
+        <if test="alarmStatus != null">
+            and al.alarm_status = #{alarmStatus}
+        </if>
+    </select>
 
 
-  <select id="selectCondition" resultMap="BaseResultMap">
-    select
-    <include refid="Alarm_Have_Alias_List" />,
-    <include refid="AccCtrl_Have_Alias_List" />,
-    <include refid="Face_Panorama_Alias_List" />,
-    <include refid="Face_Pic_Alias_List" />,
-    <include refid="Face_Match_Alias_List" />
-    from alarm al
-    left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
-    <if test="roles != null">
-      inner join (
-      select distinct <include refid="Auth_No_Alias_List" /> from role_accesscontrol_auth au
-      <where>
-          au.role_id in
-          <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
-              #{role}
-          </foreach>
-      </where>
-      ) au on au.access_control_id = acp.access_control_id
-    </if>
+    <select id="selectCondition" resultMap="BaseResultMap">
+        select
+        <include refid="Alarm_Have_Alias_List"/>,
+        <include refid="AccCtrl_Have_Alias_List"/>,
+        <include refid="Face_Panorama_Alias_List"/>,
+        <include refid="Face_Pic_Alias_List"/>,
+        <include refid="Face_Match_Alias_List"/>
+        from alarm al
+        left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
+        <if test="roles != null">
+            inner join (
+            select distinct
+            <include refid="Auth_No_Alias_List"/>
+            from role_accesscontrol_auth au
+            <where>
+                au.role_id in
+                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
+                    #{role}
+                </foreach>
+            </where>
+            ) au on au.access_control_id = acp.access_control_id
+        </if>
 
-    left join file_info fi1 on acp.face_panorama_id=fi1.file_id
-    left join file_info fi2 on acp.face_pic_id=fi2.file_id
-    left join file_info fi3 on acp.face_match_id=fi3.file_id
+        left join file_info fi1 on acp.face_panorama_id=fi1.file_id
+        left join file_info fi2 on acp.face_pic_id=fi2.file_id
+        left join file_info fi3 on acp.face_match_id=fi3.file_id
 
-    <where>
-      <if test="alarm.alarmId != null">
-          al.alarm_id = #{alarm.alarmId}
-      </if>
-      <if test="alarm.alarmName != null">
-          and al.alarm_name like concat('%', #{alarm.alarmName}, '%')
-      </if>
-      <if test="alarm.accCtrlProId != null">
-          and al.acc_ctrl_pro_id = #{alarm.accCtrlProId}
-      </if>
-      <if test="alarm.accessControlId != null ">
-          and acp.access_control_id = #{alarm.accessControlId}
-      </if>
-      <if test="alarm.accessControlName != null ">
-          and acp.access_control_name like concat('%', #{alarm.accessControlName}, '%')
-      </if>
-      <if test="alarm.alarmStatus != null">
-          and al.alarm_status = #{alarm.alarmStatus}
-      </if>
-      <if test="alarm.processPerson != null">
-          and al.process_person = #{alarm.processPerson}
-      </if>
-      <if test="alarm.description != null">
-          and al.description like concat('%', #{alarm.description}, '%')
-      </if>
-      <if test="alarm.processRemark != null">
-          and al.process_remark like concat('%', #{alarm.processRemark}, '%')
-      </if>
-      <if test="start != null">
-          and al.alarm_time &gt;= #{start}
-      </if>
-      <if test="end != null">
-          and al.alarm_time &lt;= #{end}
-      </if>
-    </where>
-    order by alarm_time desc
+        <where>
+            <if test="alarm.alarmId != null">
+                al.alarm_id = #{alarm.alarmId}
+            </if>
+            <if test="alarm.alarmName != null">
+                and al.alarm_name like concat('%', #{alarm.alarmName}, '%')
+            </if>
+            <if test="alarm.accCtrlProId != null">
+                and al.acc_ctrl_pro_id = #{alarm.accCtrlProId}
+            </if>
+            <if test="alarm.accessControlId != null ">
+                and acp.access_control_id = #{alarm.accessControlId}
+            </if>
+            <if test="alarm.accessControlName != null ">
+                and acp.access_control_name like concat('%', #{alarm.accessControlName}, '%')
+            </if>
+            <if test="alarm.alarmStatus != null">
+                and al.alarm_status = #{alarm.alarmStatus}
+            </if>
+            <if test="alarm.processPerson != null">
+                and al.process_person = #{alarm.processPerson}
+            </if>
+            <if test="alarm.description != null">
+                and al.description like concat('%', #{alarm.description}, '%')
+            </if>
+            <if test="alarm.processRemark != null">
+                and al.process_remark like concat('%', #{alarm.processRemark}, '%')
+            </if>
+            <if test="start != null">
+                and al.alarm_time &gt;= #{start}
+            </if>
+            <if test="end != null">
+                and al.alarm_time &lt;= #{end}
+            </if>
+        </where>
+        order by alarm_time desc
 
-    <if test="page != null and page.current != null and  page.pageSize != null ">
-      limit #{page.current},#{page.pageSize}
-    </if>
-  </select>
+        <if test="page != null and page.current != null and  page.pageSize != null ">
+            limit #{page.current},#{page.pageSize}
+        </if>
+    </select>
 
-    <select id="selectAlarmsByAccCtrlProIds"  resultMap="BaseResultMap">
-        select distinct <include refid="Base_Column_List" /> from alarm
+    <select id="selectAlarmsByAccCtrlProIds" resultMap="BaseResultMap">
+        select distinct
+        <include refid="Base_Column_List"/>
+        from alarm
         where acc_ctrl_pro_id in
-        <foreach  item="accCtrlProId" collection="accCtrlProIds" index="index"  open="(" separator="," close=")">
+        <foreach item="accCtrlProId" collection="accCtrlProIds" index="index" open="(" separator="," close=")">
             #{accCtrlProId}
         </foreach>
     </select>
 
-    <select id="selectCountByCondition"  resultType="java.lang.Integer">
+    <select id="selectCountByCondition" resultType="java.lang.Integer">
         select
         count(al.alarm_id)
         from alarm al
@@ -280,7 +283,7 @@
             select distinct al.alarm_id from role_accesscontrol_auth au
             <where>
                 au.role_id in
-                <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
+                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
                     #{role}
                 </foreach>
             </where>
