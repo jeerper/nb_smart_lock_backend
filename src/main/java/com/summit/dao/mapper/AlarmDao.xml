@@ -175,7 +175,7 @@
 
     <select id="selectAlarmCountByStatus" resultType="java.lang.Integer">
         SELECT
-        count( alarm_id )
+        count( al.alarm_id )
         FROM
         acc_ctrl_process acp
         INNER JOIN alarm al ON al.acc_ctrl_pro_id = acp.acc_ctrl_pro_id
