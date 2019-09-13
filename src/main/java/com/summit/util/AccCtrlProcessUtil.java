@@ -552,12 +552,9 @@ public class AccCtrlProcessUtil {
                 accCtrlRealTimeEntity.setFacePicUrl(facePic.getFilePath());
             }
         }
-//        accCtrlRealTimeEntity.setFaceMatchUrl();
 
-//        accCtrlRealTimeEntity.setAlarmCount();
 
         if(accCtrlProId != null){
-            accCtrlRealTimeEntity.setAccCtrlProId(accCtrlProId);
             Alarm alarm = alarmDao.selectByAccCtrlProId(accCtrlProId, null);
             if(alarm != null){
                 accCtrlRealTimeEntity.setAlarmId(alarm.getAlarmId());

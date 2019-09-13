@@ -266,9 +266,6 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
         //获取实时状态信息
         AccCtrlRealTimeEntity accCtrlRealTimeEntity = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess);
         try {
-            if (alarm != null) {
-                accCtrlRealTimeEntity.setAlarmId(alarm.getAlarmId());
-            }
             accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity);
             log.info("门禁实时信息数据库操作成功");
         } catch (Exception e) {

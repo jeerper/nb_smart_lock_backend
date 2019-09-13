@@ -1,5 +1,6 @@
 package com.summit.controller;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.cbb.utils.page.Page;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
@@ -7,12 +8,20 @@ import com.summit.common.entity.UserInfo;
 import com.summit.common.util.ResultBuilder;
 import com.summit.common.web.filter.UserContextHolder;
 import com.summit.constants.CommonConstants;
+import com.summit.dao.entity.AccCtrlProcess;
+import com.summit.dao.entity.AccCtrlRealTimeEntity;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.SimplePage;
+import com.summit.dao.repository.AccCtrlProcessDao;
+import com.summit.dao.repository.AccCtrlRealTimeDao;
+import com.summit.dao.repository.AlarmDao;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.entity.UpdateAlarmParam;
+import com.summit.sdk.huawei.model.LockProcessMethod;
 import com.summit.sdk.huawei.model.LockProcessResultType;
+import com.summit.sdk.huawei.model.LockProcessType;
+import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.service.AlarmService;
 import com.summit.service.impl.NBLockServiceImpl;
 import com.summit.util.AccCtrlProcessUtil;
@@ -45,6 +54,14 @@ public class AlarmController {
     private NBLockServiceImpl nbLockServiceImpl;
     @Autowired
     private AccCtrlProcessUtil accCtrlProcessUtil;
+    @Autowired
+    private AlarmDao alarmDao;
+    @Autowired
+    private AccCtrlRealTimeDao accCtrlRealTimeDao;
+
+
+    @Autowired
+    private AccCtrlProcessDao accCtrlProcessDao;
 
     @ApiOperation(value = "更新门禁告警状态", notes = "alarmId为null或空串则不进行更新告警操作")
     @PutMapping(value = "/updateAlarmStatus")
@@ -53,15 +70,10 @@ public class AlarmController {
             log.error("参数为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "参数为空", null);
         }
-        String alarmId = updateAlarmParam.getAlarmId();
-        String accCtrlProId = updateAlarmParam.getAccCtrlProId();
-//        if(alarmId == null && accCtrlProId == null){
-//            log.error("alarmId和processId不能同时为空");
-//            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"alarmId和processId不能同时为空",null);
-//        }
+
 
         String msg = "操作成功";
-        boolean noUpdatedStatus = true;
+
         boolean needUnLock = updateAlarmParam.isNeedUnLock();
         String lockId = updateAlarmParam.getLockId();
         Integer alarmStatus = updateAlarmParam.getAlarmStatus();
@@ -70,12 +82,17 @@ public class AlarmController {
         UserInfo userInfo = UserContextHolder.getUserInfo();
         if (userInfo != null)
             operName = userInfo.getName();
-        if (needUnLock) {
 
+        //开锁指令下发成功的处理逻辑
+        //处理结果
+        Integer processResult = null;
+        //开锁处理UUID
+        String unlockProcessUuid = null;
+        String accCtrlProId = updateAlarmParam.getAccCtrlProId();
+        if (needUnLock) {
             LockRequest lockRequest = new LockRequest();
             lockRequest.setLockId(lockId);
             lockRequest.setOperName(operName);
-            lockRequest.setAccCtrlProId(accCtrlProId);
 
             RestfulEntityBySummit result = nbLockServiceImpl.toUnLock(lockRequest);
             if (result == null) {
@@ -84,59 +101,70 @@ public class AlarmController {
 
             BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
 
-            if(backLockInfo==null){
-               return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "开锁失败", null);
+            if (backLockInfo == null) {
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "开锁失败", null);
             }
-            if(backLockInfo.getObjx()==null){
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"开锁失败:"+backLockInfo.getContent() , null);
+            if (backLockInfo.getObjx() == null) {
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "开锁失败:" + backLockInfo.getContent(), null);
             }
-            if(backLockInfo.getObjx()!=LockProcessResultType.CommandSuccess.getCode()){
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"开锁失败:"+backLockInfo.getContent() , null);
+            if (backLockInfo.getObjx() != LockProcessResultType.CommandSuccess.getCode()) {
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "开锁失败:" + backLockInfo.getContent(), null);
             }
 
             //开锁指令下发成功的处理逻辑
-            //处理结果
-            LockProcessResultType processResult = LockProcessResultType.codeOf(backLockInfo.getObjx());
-            //开锁处理UUID
-            String unlockProcessUuid = backLockInfo.getRmid();
+            processResult = backLockInfo.getObjx();
 
-//            accCtrlProcessUtil.toInsertAndUpdateData(data, lockRequest);
+            unlockProcessUuid = backLockInfo.getRmid();
 
+            AccCtrlProcess currentAccCtrlProcess = accCtrlProcessDao.selectOne(Wrappers.<AccCtrlProcess>lambdaQuery()
+                    .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProId));
 
-
+            //新增门禁操作记录
+            AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
+            accCtrlProcess.setProcessMethod(LockProcessMethod.INTERFACE_BY.getCode());
+            accCtrlProcess.setProcessTime(new Date());
+            accCtrlProcess.setProcessType(LockProcessType.UNLOCK.getCode());
+            accCtrlProcess.setUserName(operName);
+            accCtrlProcess.setAccessControlId(currentAccCtrlProcess.getAccessControlId());
+            accCtrlProcess.setAccessControlName(currentAccCtrlProcess.getAccessControlName());
+            accCtrlProcess.setProcessResult(processResult);
+            accCtrlProcess.setProcessUuid(unlockProcessUuid);
+            accCtrlProcessDao.insert(accCtrlProcess);
         }
 
-        if (alarmId == null) {
-            log.info("没有对应的告警信息");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有对应的告警信息", null);
-        }
-        Alarm alarm = new Alarm();
-        alarm.setAlarmId(alarmId);
-        alarm.setAccCtrlProId(accCtrlProId);
-        alarm.setAlarmStatus(alarmStatus);
-        alarm.setProcessPerson(operName);
-        alarm.setProcessRemark(processRemark);
-        alarm.setUpdatetime(new Date());
-        LockRequest lockRequest = new LockRequest();
-        lockRequest.setLockId(lockId);
-        lockRequest.setOperName(operName);
-//        if(noUpdatedStatus){
-        //若上面未更新过告警，这里更新锁和门禁为当前真实状态
-        String lockCodeById = accCtrlProcessUtil.getLockCodeById(lockId);
-        try {
-            BackLockInfo backLockInfo = accCtrlProcessUtil.getLockStatus(lockRequest);
 
-            Integer status = backLockInfo.getObjx();
-            accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(status, lockCodeById);
-        } catch (Exception e) {
-            log.error(msg + "获取锁状态失败");
+        Alarm alarm = alarmDao.selectOne(Wrappers.<Alarm>lambdaQuery()
+                .eq(Alarm::getAccCtrlProId, accCtrlProId));
+
+        String alarmId = null;
+        if (alarm != null) {
+            alarmId = alarm.getAlarmId();
         }
-//        }
-        try {
-            alarmService.updateAlarm(alarm);
-        } catch (Exception e) {
-            log.error(msg + "更新告警状态失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg + "更新告警状态失败", null);
+        //处理告警业务
+        if (alarmId != null && !"".equals(alarmId)) {
+            //更新告警表
+            alarmDao.update(null, Wrappers.<Alarm>lambdaUpdate()
+                    .set(Alarm::getAlarmStatus, alarmStatus)
+                    .set(Alarm::getProcessPerson, operName)
+                    .set(Alarm::getProcessRemark, processRemark)
+                    .set(Alarm::getUpdatetime, new Date())
+                    .eq(Alarm::getAlarmId, alarmId));
+
+            if (needUnLock) {
+                //更新门禁操作记录
+                accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
+                        .set(AccCtrlProcess::getProcessUuid, unlockProcessUuid)
+                        .set(AccCtrlProcess::getProcessResult, processResult)
+                        .set(AccCtrlProcess::getProcessTime, new Date())
+                        .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProId));
+            } else {
+                //只处理告警任务，不开锁时的业务
+                //更新实时状态为锁定状态
+                accCtrlRealTimeDao.update(null, Wrappers.<AccCtrlRealTimeEntity>lambdaUpdate()
+                        .set(AccCtrlRealTimeEntity::getAccCtrlStatus, LockStatus.LOCK_CLOSED.getCode())
+                        .set(AccCtrlRealTimeEntity::getUpdatetime, new Date())
+                        .eq(AccCtrlRealTimeEntity::getAlarmId, alarmId));
+            }
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, msg + "更新告警状态成功", null);
     }
