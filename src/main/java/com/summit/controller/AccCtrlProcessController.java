@@ -39,14 +39,13 @@ public class AccCtrlProcessController {
             log.error("门禁操作记录id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "门禁操作记录id为空", null);
         }
-        AccCtrlProcess accCtrlProcess = null;
         try {
-            accCtrlProcess = accCtrlProcessService.selectAccCtrlProcessById(accCtrlProId);
+            AccCtrlProcess accCtrlProcess = accCtrlProcessService.selectAccCtrlProcessById(accCtrlProId);
+            return ResultBuilder.buildSuccess(accCtrlProcess);
         } catch (Exception e) {
             log.error("根据id查询门禁操作记录失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "根据id查询门禁操作记录失败", accCtrlProcess);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "根据id查询门禁操作记录成功", accCtrlProcess);
     }
 
     @ApiOperation(value = "根据所传一个或多个条件组合分页查询门禁操作记录", notes = "各字段都为空则查询全部。时间信息为空或不合法则无时间限制。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0" +
