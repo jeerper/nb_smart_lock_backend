@@ -41,12 +41,13 @@ public class AccCrtlRealTimeInfoController {
 
     @ApiOperation(value = "分页查询门禁操作实时信息", notes = "分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
     @GetMapping(value = "/selectAccCtrlRealTimeByPage")
-    public RestfulEntityBySummit<Map<String,Object>> selectAllLockRealTimeInfo(@ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
+    public RestfulEntityBySummit<Map<String,Object>> selectAllLockRealTimeInfo(AccCtrlRealTimeEntity accCtrlRealTimeEntity,
+                                                                               @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
                                                                                @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         Map<String,Object> data = new HashMap<>();
         try {
             //查出有操作记录的门禁并再分页
-            Page<AccCtrlRealTimeEntity> accCtrlRealTimePage = accCtrlRealTimeService.selectByConditionPage(null, null, null, current,pageSize);
+            Page<AccCtrlRealTimeEntity> accCtrlRealTimePage = accCtrlRealTimeService.selectByConditionPage(accCtrlRealTimeEntity, null, null, current,pageSize);
             Integer integer = alarmService.selectAlarmCountByStatus(AlarmStatus.UNPROCESSED.getCode());
             int allAlarmCount = integer == null ? 0 : integer;
             data.put("allAlarmCount",allAlarmCount);
