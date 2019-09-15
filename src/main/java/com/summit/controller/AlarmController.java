@@ -11,7 +11,6 @@ import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccCtrlRealTimeEntity;
 import com.summit.dao.entity.Alarm;
-import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AccCtrlProcessDao;
 import com.summit.dao.repository.AccCtrlRealTimeDao;
 import com.summit.dao.repository.AlarmDao;
@@ -223,33 +222,31 @@ public class AlarmController {
     @ApiOperation(value = "根据所传一个或多个条件组合分页查询告警信息", notes = "各字段都为空则查询全部。时间信息为空或不合法则无时间限制。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1" +
             "，pageSize<=0则查不到结果")
     @GetMapping(value = "/queryAlarmCondition")
-    public RestfulEntityBySummit<Page<Alarm>> queryAlarmCondition(@ApiParam(value = "门禁id，精确匹配") @RequestParam(value = "accessControlId", required
-            = false) String accessControlId,
-                                                                  @ApiParam(value = "门禁名称，模糊匹配") @RequestParam(value = "accessControlName",
-                                                                          required = false) String accessControlName,
-                                                                  @ApiParam(value = "门禁告警处理状态，，0已处理，1未处理") @RequestParam(value = "alarmStatus",
-                                                                          required = false) Integer alarmStatus,
-                                                                  @ApiParam(value = "起始时间") @RequestParam(value = "startTime", required = false) String startTime,
-                                                                  @ApiParam(value = "结束时间") @RequestParam(value = "endTime", required = false) String endTime,
-                                                                  @ApiParam(value = "当前页，大于等于1") @RequestParam(value = "current", required = false) Integer current,
-                                                                  @ApiParam(value = "每页条数，大于等于0") @RequestParam(value = "pageSize", required =
-                                                                          false) Integer pageSize) {
-        Page<Alarm> alarms = null;
+    public RestfulEntityBySummit<Page<Alarm>> queryAlarmCondition(
+            @ApiParam(value = "门禁id，精确匹配") @RequestParam(value = "accessControlId", required = false) String accessControlId,
+            @ApiParam(value = "门禁名称，模糊匹配") @RequestParam(value = "accessControlName", required = false) String accessControlName,
+            @ApiParam(value = "门禁告警处理状态，，0已处理，1未处理") @RequestParam(value = "alarmStatus", required = false) Integer alarmStatus,
+            @ApiParam(value = "起始时间") @RequestParam(value = "startTime", required = false) String startTime,
+            @ApiParam(value = "结束时间") @RequestParam(value = "endTime", required = false) String endTime,
+            @ApiParam(value = "当前页，大于等于1") @RequestParam(value = "current", required = false) Integer current,
+            @ApiParam(value = "每页条数，大于等于0") @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+
+
         Date start = CommonUtil.strToDate(startTime, CommonConstants.STARTTIMEMARK);
         Date end = CommonUtil.strToDate(endTime, CommonConstants.ENDTIMEMARK);
         try {
             Alarm alarm = new Alarm();
-            if (!CommonUtil.isEmptyStr(accessControlId))
-                alarm.setAccessControlId(accessControlId);
-            if (!CommonUtil.isEmptyStr(accessControlName))
-                alarm.setAccessControlName(accessControlName);
+            alarm.setAccessControlId(accessControlId);
+            alarm.setAccessControlName(accessControlName);
             alarm.setAlarmStatus(alarmStatus);
-            alarms = alarmService.selectAlarmConditionByPage(alarm, start, end, new SimplePage(current, pageSize));
+
+            Page<Alarm> alarms= alarmService.selectAlarmConditionByPage(alarm, start, end, current, pageSize);
+
+            return ResultBuilder.buildSuccess(alarms);
         } catch (Exception e) {
             log.error("条件查询告警信息失败", e);
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "条件查询告警信息失败", alarms);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "条件查询告警信息成功", alarms);
     }
 
 }

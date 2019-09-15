@@ -97,7 +97,7 @@ public class TestDao {
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setAccessControlName("门禁1");
         alarm.setAccCtrlProcess(accCtrlProcess);
-        List<Alarm> alarms = alarmDao.selectCondition(alarm, null, null, null, roles);
+        List<Alarm> alarms = alarmDao.selectCondition(null,alarm, null, null,  null);
         System.out.println(alarms);
     }
     @Test
@@ -202,7 +202,7 @@ public class TestDao {
 
     @Test
     public void testFilterAlarm(){
-        List<Alarm> alarms = alarmService.selectAll(null,null,null);
+        List<Alarm> alarms = alarmService.selectAll(null,null,null,null);
         System.out.println(alarms);
 //        LockAuthCtrl.toFilterAlarms(alarms);
 

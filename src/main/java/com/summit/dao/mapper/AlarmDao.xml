@@ -71,16 +71,16 @@
 
 
     <sql id="Base_Column_List">
-    alarm_id, alarm_name, acc_ctrl_pro_id, alarm_time, alarm_status, process_person, description,
+        alarm_id, alarm_name, acc_ctrl_pro_id, alarm_time, alarm_status, process_person, description,
     updatetime, process_remark
-  </sql>
+    </sql>
     <sql id="Alarm_Have_Alias_List">
-    al.alarm_id, al.alarm_name, al.acc_ctrl_pro_id, al.alarm_time, al.alarm_status, al.process_person,
+        al.alarm_id, al.alarm_name, al.acc_ctrl_pro_id, al.alarm_time, al.alarm_status, al.process_person,
     al.description,al.updatetime, al.process_remark
-  </sql>
+    </sql>
     <sql id="AccCtrl_Have_Alias_List">
-        acp.acc_ctrl_pro_id, acp.access_control_id, acp.access_control_name, acp.device_id, acp.device_ip,
-        acp.device_type, acp.lock_id, acp.lock_code,
+        acp.acc_ctrl_pro_id, ac.access_control_id, ac.access_control_name, acp.device_id, acp.device_ip,
+        acp.device_type, ac.lock_id, ac.lock_code,
         acp.user_id, acp.user_name, acp.gender, acp.birthday, acp.province, acp.city, acp.card_type, acp.card_id,
         acp.face_match_rate, acp.face_lib_name, acp.face_lib_type, acp.process_type, acp.process_result,
         acp.fail_reason, acp.panorama_pic_id, acp.face_panorama_id, acp.face_pic_id, acp.face_match_id,
@@ -150,25 +150,22 @@
         <include refid="Face_Pic_Alias_List"/>,
         <include refid="Face_Match_Alias_List"/>
         from alarm al
-        left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
-        <if test="roles != null">
-            inner join (
-            select distinct
-            <include refid="Auth_No_Alias_List"/>
-            from role_accesscontrol_auth au
-            <where>
-                au.role_id in
-                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
-                    #{role}
-                </foreach>
-            </where>
-            ) au on au.access_control_id = acp.access_control_id
-        </if>
+        inner join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
+        inner join access_control ac on ac.access_control_id = acp.access_control_id
         left join file_info fi1 on acp.face_panorama_id=fi1.file_id
         left join file_info fi2 on acp.face_pic_id=fi2.file_id
         left join file_info fi3 on acp.face_match_id=fi3.file_id
         <where>
-            al.acc_ctrl_pro_id=#{accCtrlProId}
+            <if test="roles != null">
+                and acp.access_control_id IN ( SELECT DISTINCT au.access_control_id FROM role_accesscontrol_auth au WHERE au.role_id IN
+                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
+                    #{role}
+                </foreach>
+                )
+            </if>
+            <if test="accCtrlProId != null">
+                and al.acc_ctrl_pro_id=#{accCtrlProId}
+            </if>
         </where>
     </select>
 
@@ -202,52 +199,18 @@
         <include refid="Face_Pic_Alias_List"/>,
         <include refid="Face_Match_Alias_List"/>
         from alarm al
-        left join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
-        <if test="roles != null">
-            inner join (
-            select distinct
-            <include refid="Auth_No_Alias_List"/>
-            from role_accesscontrol_auth au
-            <where>
-                au.role_id in
-                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
-                    #{role}
-                </foreach>
-            </where>
-            ) au on au.access_control_id = acp.access_control_id
-        </if>
-
+        inner join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
+        inner join access_control ac on ac.access_control_id = acp.access_control_id
         left join file_info fi1 on acp.face_panorama_id=fi1.file_id
         left join file_info fi2 on acp.face_pic_id=fi2.file_id
         left join file_info fi3 on acp.face_match_id=fi3.file_id
-
         <where>
-            <if test="alarm.alarmId != null">
-                al.alarm_id = #{alarm.alarmId}
-            </if>
-            <if test="alarm.alarmName != null">
-                and al.alarm_name like concat('%', #{alarm.alarmName}, '%')
-            </if>
-            <if test="alarm.accCtrlProId != null">
-                and al.acc_ctrl_pro_id = #{alarm.accCtrlProId}
-            </if>
-            <if test="alarm.accessControlId != null ">
-                and acp.access_control_id = #{alarm.accessControlId}
-            </if>
-            <if test="alarm.accessControlName != null ">
-                and acp.access_control_name like concat('%', #{alarm.accessControlName}, '%')
-            </if>
-            <if test="alarm.alarmStatus != null">
-                and al.alarm_status = #{alarm.alarmStatus}
-            </if>
-            <if test="alarm.processPerson != null">
-                and al.process_person = #{alarm.processPerson}
-            </if>
-            <if test="alarm.description != null">
-                and al.description like concat('%', #{alarm.description}, '%')
-            </if>
-            <if test="alarm.processRemark != null">
-                and al.process_remark like concat('%', #{alarm.processRemark}, '%')
+            <if test="roles != null">
+                and acp.access_control_id IN ( SELECT DISTINCT au.access_control_id FROM role_accesscontrol_auth au WHERE au.role_id IN
+                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
+                    #{role}
+                </foreach>
+                )
             </if>
             <if test="start != null">
                 and al.alarm_time &gt;= #{start}
@@ -255,12 +218,37 @@
             <if test="end != null">
                 and al.alarm_time &lt;= #{end}
             </if>
+            <if test="alarm != null">
+                <if test="alarm.alarmId != null">
+                    al.alarm_id = #{alarm.alarmId}
+                </if>
+                <if test="alarm.alarmName != null">
+                    and al.alarm_name like concat('%', #{alarm.alarmName}, '%')
+                </if>
+                <if test="alarm.accCtrlProId != null">
+                    and al.acc_ctrl_pro_id = #{alarm.accCtrlProId}
+                </if>
+                <if test="alarm.accessControlId != null ">
+                    and ac.access_control_id = #{alarm.accessControlId}
+                </if>
+                <if test="alarm.accessControlName != null ">
+                    and ac.access_control_name like concat('%', #{alarm.accessControlName}, '%')
+                </if>
+                <if test="alarm.alarmStatus != null">
+                    and al.alarm_status = #{alarm.alarmStatus}
+                </if>
+                <if test="alarm.processPerson != null">
+                    and al.process_person = #{alarm.processPerson}
+                </if>
+                <if test="alarm.description != null">
+                    and al.description like concat('%', #{alarm.description}, '%')
+                </if>
+                <if test="alarm.processRemark != null">
+                    and al.process_remark like concat('%', #{alarm.processRemark}, '%')
+                </if>
+            </if>
         </where>
-        order by alarm_time desc
-
-        <if test="page != null and page.current != null and  page.pageSize != null ">
-            limit #{page.current},#{page.pageSize}
-        </if>
+        order by al.alarm_time desc
     </select>
 
     <select id="selectAlarmsByAccCtrlProIds" resultMap="BaseResultMap">

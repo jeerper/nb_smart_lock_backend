@@ -100,14 +100,15 @@ public class AlarmServiceImpl implements AlarmService {
      * 查询所有
      * @param start 开始时间
      * @param end 截止时间
-     * @param page 分页对象
      * @return 告警记录列表
      */
     @Override
-    public List<Alarm> selectAll(Date start, Date end, SimplePage page) {
-        PageConverter.convertPage(page);
-        List<String> roles = LockAuthCtrl.getRoles();
-        return alarmDao.selectCondition(new Alarm(), start, end, page,roles);
+    public List<Alarm> selectAll(Date start, Date end, Integer current, Integer pageSize) {
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Alarm> pageParam = null;
+        if (current != null && pageSize != null) {
+            pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
+        }
+        return alarmDao.selectCondition(pageParam,null, start, end, LockAuthCtrl.getRoles());
     }
 
     /**
@@ -144,35 +145,29 @@ public class AlarmServiceImpl implements AlarmService {
      * @param alarmName 告警名
      * @param start 开始时间
      * @param end 截止时间
-     * @param page 分页对象
      * @return 告警记录列表
      */
     @Override
-    public List<Alarm> selectAlarmByName(String alarmName, Date start, Date end, SimplePage page) {
-        if(alarmName == null){
-            log.error("告警名称为空");
-            return null;
+    public List<Alarm> selectAlarmByName(String alarmName, Date start, Date end, Integer current, Integer pageSize) {
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Alarm> pageParam = null;
+
+        if (current != null && pageSize != null) {
+            pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
         }
-        PageConverter.convertPage(page);
         Alarm alarm = new Alarm();
         alarm.setAlarmName(alarmName);
-        List<String> roles = LockAuthCtrl.getRoles();
-        return alarmDao.selectCondition(alarm, start, end, page, roles);
+
+        return alarmDao.selectCondition(pageParam,alarm, start, end, LockAuthCtrl.getRoles());
     }
 
     /**
      * 根据告警name（或者说类型）查询，用selectCondition实现，不带时间重载
      * @param alarmName 告警名
-     * @param page 分页对象
      * @return 告警记录列表
      */
     @Override
-    public List<Alarm> selectAlarmByName(String alarmName, SimplePage page) {
-        if(alarmName == null){
-            log.error("告警名称为空");
-            return null;
-        }
-        return selectAlarmByName(alarmName, null, null, page);
+    public List<Alarm> selectAlarmByName(String alarmName,Integer current, Integer pageSize) {
+        return selectAlarmByName(alarmName, null, null, current,pageSize);
     }
 
     /**
@@ -180,35 +175,28 @@ public class AlarmServiceImpl implements AlarmService {
      * @param alarmStatus 告警状态
      * @param start 开始时间
      * @param end 截止时间
-     * @param page 分页对象
      * @return 告警记录列表
      */
     @Override
-    public List<Alarm> selectAlarmByStatus(Integer alarmStatus, Date start, Date end, SimplePage page) {
-        if(alarmStatus == null){
-            log.error("告警状态为空");
-            return null;
+    public List<Alarm> selectAlarmByStatus(Integer alarmStatus, Date start, Date end, Integer current, Integer pageSize) {
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Alarm> pageParam = null;
+        if (current != null && pageSize != null) {
+            pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
         }
-        PageConverter.convertPage(page);
         Alarm alarm = new Alarm();
         alarm.setAlarmStatus(alarmStatus);
-        List<String> roles = LockAuthCtrl.getRoles();
-        return alarmDao.selectCondition(alarm, start, end, page, roles);
+        return alarmDao.selectCondition(pageParam,alarm, start, end, LockAuthCtrl.getRoles());
     }
 
     /**
      * 根据告警状态查询，用selectCondition实现，不带时间重载
      * @param alarmStatus 告警状态
-     * @param page 分页对象
      * @return 告警记录列表
      */
     @Override
-    public List<Alarm> selectAlarmByStatus(Integer alarmStatus, SimplePage page) {
-        if(alarmStatus == null){
-            log.error("告警状态为空");
-            return null;
-        }
-        return selectAlarmByStatus(alarmStatus, null, null, page);
+    public List<Alarm> selectAlarmByStatus(Integer alarmStatus, Integer current, Integer pageSize) {
+
+        return selectAlarmByStatus(alarmStatus, null, null, current,pageSize);
     }
 
     /**
@@ -364,39 +352,31 @@ public class AlarmServiceImpl implements AlarmService {
      * @param alarm 告警对象
      * @param start 开始时间
      * @param end 截止时间
-     * @param page 分页对象
      * @return 告警记录Page对象
      */
     @Override
-    public Page<Alarm> selectAlarmConditionByPage(Alarm alarm, Date start, Date end, SimplePage page) {
-        if(alarm == null){
-            log.error("告警信息为空");
-            return null;
+    public Page<Alarm> selectAlarmConditionByPage(Alarm alarm, Date start, Date end,  Integer current, Integer pageSize) {
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Alarm> pageParam = null;
+        if (current != null && pageSize != null) {
+            pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
         }
-        List<String> roles = LockAuthCtrl.getRoles();
-        Integer count = alarmDao.selectCountByCondition(alarm, start, end, null);
-        int rowsCount = count == null ? 0 : count;
-        Pageable pageable = PageConverter.getPageable(page, rowsCount);
-        PageConverter.convertPage(page);
-        Page<Alarm> backPage = new Page<>();
-        List<Alarm> alarms = alarmDao.selectCondition(alarm, start, end, page, roles);
-        backPage.setContent(alarms);
-        backPage.setPageable(pageable);
-        return backPage;
+        List<Alarm> alarms = alarmDao.selectCondition(pageParam,alarm, start, end, LockAuthCtrl.getRoles());
+        Pageable pageable = null;
+        if (pageParam != null) {
+            pageable = new Pageable((int) pageParam.getTotal(), (int) pageParam.getPages(), (int) pageParam.getCurrent(), (int) pageParam.getSize()
+                    , alarms.size());
+        }
+        return new Page<>(alarms, pageable);
     }
 
     /**
      * 根据alarm对象所带条件查询，不带时间段重载
      * @param alarm 告警对象
-     * @param page 分页对象
      * @return 告警记录Page对象
      */
     @Override
-    public Page<Alarm> selectAlarmConditionByPage(Alarm alarm, SimplePage page) {
-        if(alarm == null){
-            log.error("告警信息为空");
-            return null;
-        }
-        return selectAlarmConditionByPage(alarm, null, null, page);
+    public Page<Alarm> selectAlarmConditionByPage(Alarm alarm, Integer current, Integer pageSize) {
+
+        return selectAlarmConditionByPage(alarm, null, null, current,pageSize);
     }
 }

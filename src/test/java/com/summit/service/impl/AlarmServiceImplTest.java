@@ -60,7 +60,7 @@ public class AlarmServiceImplTest {
     @Test
     public void selectAll() {
 
-        List<Alarm> alarms = alarmService.selectAll(null,null,new SimplePage(14,2));
+        List<Alarm> alarms = alarmService.selectAll(null,null,14,2);
         System.out.println(alarms);
     }
 
@@ -96,7 +96,7 @@ public class AlarmServiceImplTest {
 
     @Test
     public void selectAlarmByStatus() {
-        List<Alarm> alarms = alarmService.selectAlarmByStatus(1, null);
+        List<Alarm> alarms = alarmService.selectAlarmByStatus(1, null,null);
         System.out.println(alarms);
     }
 
@@ -134,7 +134,7 @@ public class AlarmServiceImplTest {
     public void selectAlarmCondition() {
         Alarm alarm = new Alarm();
         alarm.setAccessControlName("门禁");
-        Page<Alarm> alarmPage = alarmService.selectAlarmConditionByPage(alarm, null);
+        Page<Alarm> alarmPage = alarmService.selectAlarmConditionByPage(alarm, null,null);
         System.out.println(alarmPage);
     }
 

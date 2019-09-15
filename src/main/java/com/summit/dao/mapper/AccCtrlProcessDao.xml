@@ -82,7 +82,7 @@
     panorama_pic_id, face_panorama_id, face_pic_id, face_match_id, process_time, process_method
     </sql>
     <sql id="AccCtrl_Have_Alias_List">
-        acp.acc_ctrl_pro_id, acp.access_control_id, acp.access_control_name, acp.device_id, acp.device_ip, acp.device_type,
+        acp.acc_ctrl_pro_id, ac.access_control_id, ac.access_control_name, acp.device_id, acp.device_ip, acp.device_type,
     ac.lock_id, ac.lock_code,
     acp.user_id, acp.user_name, acp.gender, acp.birthday, acp.province, acp.city, acp.card_type, acp.card_id,
     acp.face_match_rate, acp.face_lib_name, acp.face_lib_type, acp.process_type,acp.process_uuid, acp.process_result,acp.fail_reason,
@@ -311,10 +311,10 @@
                     and acp.acc_ctrl_pro_id = #{accCtrlProcess.accCtrlProId}
                 </if>
                 <if test="accCtrlProcess.accessControlId != null">
-                    and acp.access_control_id = #{accCtrlProcess.accessControlId}
+                    and ac.access_control_id = #{accCtrlProcess.accessControlId}
                 </if>
                 <if test="accCtrlProcess.accessControlName != null">
-                    and acp.access_control_name like concat('%', #{accCtrlProcess.accessControlName}, '%')
+                    and ac.access_control_name like concat('%', #{accCtrlProcess.accessControlName}, '%')
                 </if>
                 <if test="accCtrlProcess.deviceId != null">
                     and acp.device_id = #{accCtrlProcess.deviceId}

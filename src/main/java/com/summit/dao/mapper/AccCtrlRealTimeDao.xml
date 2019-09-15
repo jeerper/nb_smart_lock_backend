@@ -48,7 +48,7 @@
     </sql>
 
     <sql id="RealTime_Have_Alias_List">
-        ar.acc_crtl_realtime_id, ar.access_control_id, ar.access_control_name, ac.lock_id,ac.lock_code,
+        ar.acc_crtl_realtime_id, ac.access_control_id, ac.access_control_name, ac.lock_id,ac.lock_code,
         ar.acc_ctrl_status, ar.lock_status, ar.dev_id, ar.device_ip, ar.device_type, ar.face_id,
         ar.user_id, ar.user_name, ar.name, ar.gender, ar.birthday, ar.province, ar.city,
         ar.card_type, ar.card_id, ar.face_match_rate, ar.face_lib_name, ar.face_lib_type,ar.face_panorama_url,
@@ -101,10 +101,10 @@
             </if>
             <if test="accCtrlRealTimeEntity != null">
                 <if test="accCtrlRealTimeEntity.accessControlId != null">
-                    and ar.access_control_id = #{accCtrlRealTimeEntity.accessControlId}
+                    and ac.access_control_id = #{accCtrlRealTimeEntity.accessControlId}
                 </if>
                 <if test="accCtrlRealTimeEntity.accessControlName != null">
-                    and ar.access_control_name like concat('%', #{accCtrlRealTimeEntity.accessControlName}, '%')
+                    and ac.access_control_name like concat('%', #{accCtrlRealTimeEntity.accessControlName}, '%')
                 </if>
                 <if test="accCtrlRealTimeEntity.accCtrlStatus != null">
                     and ar.acc_ctrl_status = #{accCtrlRealTimeEntity.accCtrlStatus}
