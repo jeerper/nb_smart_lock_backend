@@ -366,7 +366,9 @@ public class AccCtrlProcessUtil {
         //用于查询开锁状态的命令ID
         accCtrlProcess.setProcessUuid(processUuid);
         //指令下发返回的结果
-        accCtrlProcess.setProcessResult(processResult.getCode());
+        if(processResult!=null){
+            accCtrlProcess.setProcessResult(processResult.getCode());
+        }
         accCtrlProcess.setAccessControlInfo(accessControlInfo);
         return accCtrlProcess;
     }
@@ -516,6 +518,8 @@ public class AccCtrlProcessUtil {
             //只有当为报警状态时，才传入上报类型，更新门禁状态，其他状态由轮训器更改
             if(accCtrlProcess.getProcessType()==LockProcessType.LOCK_ALARM.getCode()){
                 accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());
+            }else if(accCtrlProcess.getProcessResult()!=null&&LockProcessResultType.codeOf(accCtrlProcess.getProcessResult()) !=LockProcessResultType.CommandSuccess){
+                accCtrlRealTimeEntity.setAccCtrlStatus(LockProcessType.CLOSE_LOCK.getCode());
             }
             accCtrlRealTimeEntity.setLongitude(accessControlInfo.getLongitude());
             accCtrlRealTimeEntity.setLatitude(accessControlInfo.getLatitude());
