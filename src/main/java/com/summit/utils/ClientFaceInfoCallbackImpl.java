@@ -242,33 +242,24 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
     //加入事务控制
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
     public void insertData(CameraUploadType type, AccCtrlProcess accCtrlProcess) {
-
         try {
+            log.info("门禁操作记录信息入库");
             //插入门禁操作记录并更新门禁信息表和锁信息表(门禁信息表和锁信息表中都含有门禁状态)
             accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess);
-            log.info("门禁操作记录信息入库成功");
-        } catch (Exception e) {
-            log.error("门禁操作记录信息入库失败");
-            throw new ErrorMsgException("门禁操作记录信息入库失败");
-        }
-
-        //获取实时状态信息
-        AccCtrlRealTimeEntity accCtrlRealTimeEntity = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess);
-
-        //如果是告警类型需要同时插入告警表
-        if (CameraUploadType.Alarm == type) {
-            log.debug("门禁操作告警信息入库");
-            Alarm alarm = accCtrlProcessUtil.getAlarm(accCtrlProcess);
-            alarmService.insertAlarm(alarm);
-            accCtrlRealTimeEntity.setAlarmId(alarm.getAlarmId());
-        }
-
-        try {
+            //获取实时状态信息
+            AccCtrlRealTimeEntity accCtrlRealTimeEntity = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess);
+            //如果是告警类型需要同时插入告警表
+            if (CameraUploadType.Alarm == type) {
+                log.info("门禁操作告警信息入库");
+                Alarm alarm = accCtrlProcessUtil.getAlarm(accCtrlProcess);
+                alarmService.insertAlarm(alarm);
+                accCtrlRealTimeEntity.setAlarmId(alarm.getAlarmId());
+            }
+            log.info("门禁实时信息入库");
             accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity);
-            log.info("门禁实时信息数据库操作成功");
         } catch (Exception e) {
-            log.error("门禁实时信息数据库操作失败");
-            throw new ErrorMsgException("门禁实时信息数据库操作失败");
+            log.error("门禁操作信息入库失败", e);
+            throw new ErrorMsgException("门禁操作信息入库失败");
         }
     }
 
