@@ -1,20 +1,10 @@
 package com.summit.util;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.summit.common.entity.UserInfo;
 import com.summit.common.web.filter.UserContextHolder;
-import com.summit.dao.entity.Alarm;
-import com.summit.dao.entity.LockInfo;
-import com.summit.dao.entity.LockProcess;
-import com.summit.dao.entity.LockRole;
-import com.summit.dao.repository.LockInfoDao;
-import com.summit.dao.repository.LockRoleDao;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

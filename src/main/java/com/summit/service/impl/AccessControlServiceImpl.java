@@ -111,23 +111,27 @@ public class AccessControlServiceImpl implements AccessControlService {
 
     /**
      * 分页查询全部门禁信息
-     * @param page 分页对象
      * @return 门禁信息列表
      */
     @Override
-    public Page<AccessControlInfo> selectAccCtrlByPage(AccessControlInfo accessControlInfo,SimplePage page) {
+    public Page<AccessControlInfo> selectAccCtrlByPage(AccessControlInfo accessControlInfo,Integer current, Integer pageSize) {
         if(accessControlInfo == null){
             accessControlInfo = new AccessControlInfo();
         }
-        List<AccessControlInfo> accessControls = accessControlDao.selectCondition(accessControlInfo, null, LockAuthCtrl.getRoles());
-        int rowsCount = accessControls == null ? 0 : accessControls.size();
-        Pageable pageable = PageConverter.getPageable(page, rowsCount);
-        PageConverter.convertPage(page);
-        List<AccessControlInfo> accessControlInfos = accessControlDao.selectCondition(accessControlInfo, page, LockAuthCtrl.getRoles());
-        Page<AccessControlInfo> backPage = new Page<>();
-        backPage.setContent(accessControlInfos);
-        backPage.setPageable(pageable);
-        return backPage;
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<AccCtrlRealTimeEntity> pageParam = null;
+
+        if (current != null && pageSize != null) {
+            pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
+        }
+
+        List<AccessControlInfo> accessControls = accessControlDao.selectCondition(pageParam,accessControlInfo,LockAuthCtrl.getRoles());
+
+        Pageable pageable = null;
+        if (pageParam != null) {
+            pageable = new Pageable((int) pageParam.getTotal(), (int) pageParam.getPages(), (int) pageParam.getCurrent(), (int) pageParam.getSize()
+                    , accessControls.size());
+        }
+        return new Page<>(accessControls, pageable);
     }
 
     /**
@@ -164,16 +168,19 @@ public class AccessControlServiceImpl implements AccessControlService {
     /**
      * 条件查询门禁信息
      * @param accessControlInfo 门禁信息对象
-     * @param page 分页对象
      * @return 门禁信息列表
      */
     @Override
-    public List<AccessControlInfo> selectCondition(AccessControlInfo accessControlInfo, SimplePage page) {
-        PageConverter.convertPage(page);
+    public List<AccessControlInfo> selectCondition(AccessControlInfo accessControlInfo, Integer current, Integer pageSize) {
         if(accessControlInfo == null){
             accessControlInfo = new AccessControlInfo();
         }
-        return accessControlDao.selectCondition(accessControlInfo, page, LockAuthCtrl.getRoles());
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<AccCtrlRealTimeEntity> pageParam = null;
+
+        if (current != null && pageSize != null) {
+            pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
+        }
+        return accessControlDao.selectCondition(pageParam,accessControlInfo,  LockAuthCtrl.getRoles());
     }
 
     /**

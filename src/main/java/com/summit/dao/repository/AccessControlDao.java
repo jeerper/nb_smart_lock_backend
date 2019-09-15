@@ -1,6 +1,7 @@
 package com.summit.dao.repository;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.SimplePage;
 import org.apache.ibatis.annotations.Param;
@@ -13,9 +14,8 @@ public interface AccessControlDao  extends BaseMapper<AccessControlInfo> {
 
     AccessControlInfo selectAccCtrlByLockCode(@Param("lockCode")String lockCode, @Param("roles") List<String> roles);
 
-    List<AccessControlInfo> selectCondition(@Param("accessControlInfo") AccessControlInfo accessControlInfo,
-                                   @Param("page") SimplePage page,
-                                   @Param("roles") List<String> roles);
+    List<AccessControlInfo> selectCondition(Page page, @Param("accessControlInfo") AccessControlInfo accessControlInfo,
+                                            @Param("roles") List<String> roles);
 
     List<AccessControlInfo> selectHaveHistoryByPage(@Param("page") SimplePage page, @Param("roles") List<String> roles);
 

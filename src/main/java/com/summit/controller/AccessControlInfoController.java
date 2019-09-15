@@ -9,7 +9,6 @@ import com.summit.common.web.filter.UserContextHolder;
 import com.summit.dao.entity.AccCtrlRole;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.SimpleAccCtrlInfo;
-import com.summit.dao.entity.SimplePage;
 import com.summit.exception.ErrorMsgException;
 import com.summit.schedule.RealTimeSchedule;
 import com.summit.service.AccCtrlRoleService;
@@ -59,7 +58,7 @@ public class AccessControlInfoController {
         Page<AccessControlInfo> controlInfoPage = null;
         AccessControlInfo accessControlInfo = new AccessControlInfo(accessControlName,createby,lockCode,entryCameraIp,exitCameraIp,status);
         try {
-            controlInfoPage = accessControlService.selectAccCtrlByPage(accessControlInfo, new SimplePage(current, pageSize));
+            controlInfoPage = accessControlService.selectAccCtrlByPage(accessControlInfo, current, pageSize);
         } catch (Exception e) {
             log.error("分页查询全部门禁信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"分页查询全部门禁信息失败", controlInfoPage);

@@ -156,7 +156,7 @@ public class TestDao {
     public void selectCondition() throws ParseException {
         AccessControlInfo accessControlInfo = new AccessControlInfo();
         accessControlInfo.setLockCode("NB100002");
-        List<AccessControlInfo> records = accessControlDao.selectCondition(accessControlInfo, null,roles);
+        List<AccessControlInfo> records = accessControlDao.selectCondition(null,accessControlInfo,roles);
         System.out.println(records);
     }
 

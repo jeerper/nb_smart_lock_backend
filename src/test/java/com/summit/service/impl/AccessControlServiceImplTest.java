@@ -46,7 +46,7 @@ public class AccessControlServiceImplTest {
         AccessControlInfo accessControlInfo = new AccessControlInfo();
         accessControlInfo.setAccessControlName("山");
         accessControlInfo.setLockCode("6");
-        List<AccessControlInfo> accessControlInfos = accessControlService.selectCondition(accessControlInfo,null);
+        List<AccessControlInfo> accessControlInfos = accessControlService.selectCondition(accessControlInfo,null,null);
         System.out.println(accessControlInfos);
     }
 }
