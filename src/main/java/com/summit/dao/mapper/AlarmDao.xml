@@ -110,34 +110,29 @@
     </sql>
 
     <select id="selectAlarmById" parameterType="java.lang.String" resultMap="BaseResultMap">
-        select ac.status acc_ctrl_status,
+        select acp.process_type acc_ctrl_status,
         <include refid="Alarm_Have_Alias_List"/>,
         <include refid="AccCtrl_Have_Alias_List"/>,
         <include refid="Face_Panorama_Alias_List"/>,
         <include refid="Face_Pic_Alias_List"/>,
         <include refid="Face_Match_Alias_List"/>
         from alarm al
-        left join acc_ctrl_process acp on acp.acc_ctrl_pro_id=al.acc_ctrl_pro_id
-        <if test="roles != null">
-            inner join (
-            select distinct
-            <include refid="Auth_No_Alias_List"/>
-            from role_accesscontrol_auth au
-            <where>
-                au.role_id in
-                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
-                    #{role}
-                </foreach>
-            </where>
-            ) au on au.access_control_id = acp.access_control_id
-        </if>
+        inner join acc_ctrl_process acp on acp.acc_ctrl_pro_id=al.acc_ctrl_pro_id
+        inner join access_control ac on ac.access_control_id=acp.access_control_id
         left join file_info fi1 on acp.face_panorama_id=fi1.file_id
         left join file_info fi2 on acp.face_pic_id=fi2.file_id
         left join file_info fi3 on acp.face_match_id=fi3.file_id
-        left join access_control ac on ac.access_control_id=acp.access_control_id
-
         <where>
-            al.alarm_id=#{alarmId}
+            <if test="roles != null">
+                and acp.access_control_id IN ( SELECT DISTINCT au.access_control_id FROM role_accesscontrol_auth au WHERE au.role_id IN
+                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
+                    #{role}
+                </foreach>
+                )
+            </if>
+            <if test="alarmId != null">
+                and al.alarm_id=#{alarmId}
+            </if>
         </where>
     </select>
 

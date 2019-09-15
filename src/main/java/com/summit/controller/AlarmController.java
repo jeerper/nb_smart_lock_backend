@@ -208,14 +208,13 @@ public class AlarmController {
             log.error("告警id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "告警id为空", null);
         }
-        Alarm alarm = null;
         try {
-            alarm = alarmService.selectAlarmById(alarmId);
+            Alarm alarm = alarmService.selectAlarmById(alarmId);
+            return ResultBuilder.buildSuccess(alarm);
         } catch (Exception e) {
-            log.error("根据告警id查询告警信息失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "根据告警id查询告警信息失败", alarm);
+            log.error("根据告警id查询告警信息失败",e);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "根据告警id查询告警信息成功", alarm);
     }
 
 

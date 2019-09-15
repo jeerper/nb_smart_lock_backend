@@ -118,12 +118,7 @@ public class AlarmServiceImpl implements AlarmService {
      */
     @Override
     public Alarm selectAlarmById(String alarmId) {
-        if(alarmId == null){
-            log.error("告警id为空");
-            return null;
-        }
-        List<String> roles = LockAuthCtrl.getRoles();
-        return alarmDao.selectAlarmById(alarmId, roles);
+        return alarmDao.selectAlarmById(alarmId, LockAuthCtrl.getRoles());
     }
 
     /**
