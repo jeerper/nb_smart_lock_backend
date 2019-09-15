@@ -381,7 +381,6 @@ public class AccCtrlProcessUtil {
         alarm.setAlarmTime(accCtrlProcess.getProcessTime());
         alarm.setAlarmStatus(AlarmStatus.UNPROCESSED.getCode());
         alarm.setDescription(accCtrlProcess.getFailReason());
-        alarm.setUpdatetime(new Date());
         return alarm;
     }
 
@@ -475,13 +474,6 @@ public class AccCtrlProcessUtil {
             }
         }
 
-
-        if(accCtrlProId != null){
-            Alarm alarm = alarmDao.selectByAccCtrlProId(accCtrlProId, null);
-            if(alarm != null){
-                accCtrlRealTimeEntity.setAlarmId(alarm.getAlarmId());
-            }
-        }
         accCtrlRealTimeEntity.setUpdatetime(new Date());
 
         return accCtrlRealTimeEntity;

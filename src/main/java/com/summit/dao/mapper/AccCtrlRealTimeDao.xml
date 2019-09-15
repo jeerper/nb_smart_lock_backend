@@ -65,20 +65,14 @@
         <include refid="RealTime_Have_Alias_List"/>
         from acc_crtl_realtime ar
         inner join access_control ac on ar.access_control_id=ac.access_control_id
-        <if test="roles != null">
-            inner join (
-            select
-            <include refid="Auth_No_Alias_List"/>
-            from role_accesscontrol_auth au
-            <where>
-                au.role_id in
+        <where>
+            <if test="roles != null">
+                and ar.access_control_id IN ( SELECT DISTINCT au.access_control_id FROM role_accesscontrol_auth au WHERE au.role_id IN
                 <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
                     #{role}
                 </foreach>
-            </where>
-            ) au on au.access_control_id = ar.access_control_id
-        </if>
-        <where>
+                )
+            </if>
             <if test="accessControlId != null">
                 ar.access_control_id = #{accessControlId}
             </if>

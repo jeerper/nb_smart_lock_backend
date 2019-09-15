@@ -42,10 +42,6 @@ public class AlarmServiceImpl implements AlarmService {
      */
     @Override
     public int insertAlarm(Alarm alarm) {
-        if(alarm == null){
-            log.error("告警信息为空");
-            return CommonConstants.UPDATE_ERROR;
-        }
         return alarmDao.insert(alarm);
     }
 

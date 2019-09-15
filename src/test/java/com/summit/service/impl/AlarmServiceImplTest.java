@@ -4,7 +4,9 @@ import com.summit.cbb.utils.page.Page;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AlarmDao;
+import com.summit.sdk.huawei.model.AlarmStatus;
 import com.summit.service.AlarmService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
+@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class AlarmServiceImplTest {
@@ -29,18 +31,17 @@ public class AlarmServiceImplTest {
     SimplePage page = new SimplePage(1, 3);
 
     @Test
-    public void insertAlarm() throws ParseException {
-//        FileInfo facePanorama = new FileInfo("10","10n","10p","10d");
-//        FileInfo facePic = new FileInfo("11","11n","11p","11d");
-//        FileInfo faceMatch = new FileInfo("12","12n","12p","12d");
-        String processId = "pid02";
-//        LockProcess lockProcess = new LockProcess(processId,"devip01","lc01",null,"user01","un01",1,"sus","",
-//                facePanorama,facePic,faceMatch,dateFormat.parse("2019-7-24 00:00:00"));
-        Alarm alarm = new Alarm("aid02","an02",processId,
-                null,null,null,dateFormat.parse("2019-8-03 00:03:00"),1,
-                "p1","d1",new Date(),"r1",null);
+    public void insertAlarm() {
 
+        Alarm alarm = new Alarm();
+        alarm.setAccCtrlProId("123123213213123");
+        alarm.setAlarmTime(new Date());
+        alarm.setAlarmStatus(AlarmStatus.UNPROCESSED.getCode());
+        alarm.setDescription("哈哈");
         alarmService.insertAlarm(alarm);
+        log.debug(alarm.getAlarmId());
+
+
     }
 
     @Test
