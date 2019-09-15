@@ -1,6 +1,7 @@
 package com.summit.dao.repository;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.SimplePage;
 import org.apache.ibatis.annotations.Param;
@@ -16,11 +17,10 @@ public interface AccCtrlProcessDao extends BaseMapper<AccCtrlProcess> {
                                        @Param("page") SimplePage page,
                                        @Param("roles") List<String> roles);
 
-    List<AccCtrlProcess> selectCondition(@Param("accCtrlProcess") AccCtrlProcess accCtrlProcess,
-                                      @Param("start") Date start,
-                                      @Param("end") Date end,
-                                      @Param("page") SimplePage page,
-                                      @Param("roles") List<String> roles);
+    List<AccCtrlProcess> selectCondition(Page page, @Param("accCtrlProcess") AccCtrlProcess accCtrlProcess,
+                                         @Param("start") Date start,
+                                         @Param("end") Date end,
+                                         @Param("roles") List<String> roles);
 
     List<AccCtrlProcess> selectRecodByAccessControlIds(@Param("accessControlIds") List<String> accessControlIds);
 

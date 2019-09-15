@@ -293,27 +293,27 @@
         <include refid="Face_Pic_Alias_List"/>,
         <include refid="Face_Match_Alias_List"/>
         from acc_ctrl_process acp
-        <if test="roles != null">
-            inner join (
-            select
-            <include refid="Auth_No_Alias_List"/>
-            from role_accesscontrol_auth au
-            <where>
-                au.role_id in
-                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
-                    #{role}
-                </foreach>
-            </where>
-            ) au on au.access_control_id = acp.access_control_id
-        </if>
         left join file_info fi1 on acp.face_panorama_id=fi1.file_id
         left join file_info fi2 on acp.face_pic_id=fi2.file_id
         left join file_info fi3 on acp.face_match_id=fi3.file_id
-        left join access_control ac on ac.access_control_id = acp.access_control_id
-        <if test="accCtrlProcess != null">
-            <where>
+        inner join access_control ac on ac.access_control_id = acp.access_control_id
+        <where>
+            <if test="roles != null">
+                and acp.access_control_id IN ( SELECT DISTINCT au.access_control_id FROM role_accesscontrol_auth au WHERE au.role_id IN
+                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
+                    #{role}
+                </foreach>
+                )
+            </if>
+            <if test="start != null">
+                and acp.process_time &gt;= #{start}
+            </if>
+            <if test="end != null">
+                and acp.process_time &lt;= #{end}
+            </if>
+            <if test="accCtrlProcess != null">
                 <if test="accCtrlProcess.accCtrlProId != null">
-                    acp.acc_ctrl_pro_id = #{accCtrlProcess.accCtrlProId}
+                    and acp.acc_ctrl_pro_id = #{accCtrlProcess.accCtrlProId}
                 </if>
                 <if test="accCtrlProcess.accessControlId != null">
                     and acp.access_control_id = #{accCtrlProcess.accessControlId}
@@ -378,18 +378,9 @@
                 <if test="accCtrlProcess.failReason != null">
                     and acp.fail_reason like concat('%', #{accCtrlProcess.processResult}, '%')
                 </if>
-                <if test="start != null">
-                    and acp.process_time &gt;= #{start}
-                </if>
-                <if test="end != null">
-                    and acp.process_time &lt;= #{end}
-                </if>
-            </where>
-        </if>
-        order by process_time desc
-        <if test="page != null and page.current != null and  page.pageSize != null ">
-            limit #{page.current},#{page.pageSize}
-        </if>
+            </if>
+        </where>
+        order by acp.process_time desc
     </select>
 
     <insert id="insertRecord" parameterType="com.summit.dao.entity.AccCtrlProcess">

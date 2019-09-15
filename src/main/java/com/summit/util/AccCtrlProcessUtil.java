@@ -18,14 +18,12 @@ import com.summit.dao.repository.AccCtrlRealTimeDao;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.LockInfoDao;
-import com.summit.entity.AccCtrlRealTimeInfo;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.sdk.huawei.model.AccCtrlStatus;
 import com.summit.sdk.huawei.model.AlarmStatus;
 import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.sdk.huawei.model.FaceInfo;
-
 import com.summit.sdk.huawei.model.LockProcessMethod;
 import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessType;
@@ -40,7 +38,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -404,86 +401,7 @@ public class AccCtrlProcessUtil {
         return alarms.get(0);
     }
 
-    /**
-     * 根据门禁信息列表查询组装门禁实时信息列表
-     * @param accessControlInfos 门禁信息列表
-     * @return 门禁实时信息列表
-     */
-    public List<AccCtrlRealTimeInfo> getLockRealTimeInfo(List<AccessControlInfo> accessControlInfos) {
-        if (CommonUtil.isEmptyList(accessControlInfos))
-            return null;
-        List<AccCtrlRealTimeInfo> accCtrlRealTimeInfos = new ArrayList<>();
-        for (AccessControlInfo accCtrl : accessControlInfos){
-            if(accCtrl == null)
-                continue;
-            String accessControlId = accCtrl.getAccessControlId();
-            AccCtrlRealTimeInfo accCtrlRealTimeInfo = new AccCtrlRealTimeInfo();
-            if(accessControlId != null){
-                accCtrlRealTimeInfo.setAccessControlId(accessControlId);
-                accCtrlRealTimeInfo.setAccessControlName(accCtrl.getAccessControlName());
-                accCtrlRealTimeInfo.setAccCtrlStatus(accCtrl.getStatus());
-                accCtrlRealTimeInfo.setLockId(accCtrl.getLockId());
-                accCtrlRealTimeInfo.setLockCode(accCtrl.getLockCode());
-                accCtrlRealTimeInfo.setLongitude(accCtrl.getLongitude());
-                accCtrlRealTimeInfo.setLatitude(accCtrl.getLatitude());
-//                accCtrlRealTimeInfo.setLockCode(accCtrl.getLockCode());
-                List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessService.selectAccCtrlProcessByAccCtrlId(accessControlId,null);
 
-                if(CommonUtil.isEmptyList(accCtrlProcesses)){
-                    continue;
-                }
-                //取最新的一条操作记录(dao sql已排好序)
-                AccCtrlProcess accCtrlProcess = accCtrlProcesses.get(0);
-                if(accCtrlProcess != null){
-                    String userName = accCtrlProcess.getUserName();
-                    //门禁记录中操作的具体摄像头
-                    accCtrlRealTimeInfo.setDeviceIp(accCtrlProcess.getDeviceIp());
-                    accCtrlRealTimeInfo.setDeviceType(accCtrlProcess.getDeviceType());
-                    accCtrlRealTimeInfo.setName(userName);
-                    String accCtrlProId = accCtrlProcess.getAccCtrlProId();
-                    if(accCtrlProId != null){
-                        accCtrlRealTimeInfo.setAccCtrlProId(accCtrlProId);
-                        Alarm alarm = alarmDao.selectByAccCtrlProId(accCtrlProId, null);
-                        if(alarm != null){
-                            accCtrlRealTimeInfo.setAlarmId(alarm.getAlarmId());
-                        }
-                    }
-
-                    accCtrlRealTimeInfo.setGender(accCtrlProcess.getGender());
-                    Date birthday = accCtrlProcess.getBirthday();
-                    try {
-                        if(birthday != null)
-                            accCtrlRealTimeInfo.setBirthday(CommonUtil.dateFormat.get().format(birthday));
-                    } catch (Exception e) {
-                        log.error("生日格式有误");
-                    }
-                    accCtrlRealTimeInfo.setProvince(accCtrlProcess.getProvince());
-                    accCtrlRealTimeInfo.setCity(accCtrlProcess.getCity());
-                    accCtrlRealTimeInfo.setCardId(accCtrlProcess.getCardId());
-                    accCtrlRealTimeInfo.setCardType(accCtrlProcess.getCardType());
-                    accCtrlRealTimeInfo.setFaceMatchRate(accCtrlProcess.getFaceMatchRate());
-                    accCtrlRealTimeInfo.setFaceLibName(accCtrlProcess.getFaceLibName());
-                    accCtrlRealTimeInfo.setFaceLibType(accCtrlProcess.getFaceLibType());
-                    try {
-                        if(accCtrlProcess.getProcessTime() != null)
-                            accCtrlRealTimeInfo.setPicSnapshotTime(CommonUtil.timeFormat.get().format(accCtrlProcess.getProcessTime()));
-                    } catch (Exception e) {
-                        log.error("操作时间格式有误");
-                    }
-                    FileInfo facePanorama = accCtrlProcess.getFacePanorama();
-                    if(facePanorama != null){
-                        accCtrlRealTimeInfo.setFacePanoramaUrl(facePanorama.getFilePath());
-                    }
-                    FileInfo facePic = accCtrlProcess.getFacePic();
-                    if(facePic != null){
-                        accCtrlRealTimeInfo.setFacePicUrl(facePic.getFilePath());
-                    }
-                }
-            }
-            accCtrlRealTimeInfos.add(accCtrlRealTimeInfo);
-        }
-        return accCtrlRealTimeInfos;
-    }
 
     /**
      * 通过门禁操作信息对象组装门禁实时信息对象以进行入库操作

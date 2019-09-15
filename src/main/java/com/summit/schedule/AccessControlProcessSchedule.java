@@ -38,7 +38,7 @@ public class AccessControlProcessSchedule {
     public void refreshAccessControlProcessLockStatus() {
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setProcessResult(LockProcessResultType.CommandSuccess.getCode());
-        List<AccCtrlProcess> accCtrlProcessList = accCtrlProcessDao.selectCondition(accCtrlProcess, null, null, null, null);
+        List<AccCtrlProcess> accCtrlProcessList = accCtrlProcessDao.selectCondition(null,accCtrlProcess,null, null, null);
         LockRequest lockRequest = new LockRequest();
         for (AccCtrlProcess accCtrlProcessEntity : accCtrlProcessList) {
 

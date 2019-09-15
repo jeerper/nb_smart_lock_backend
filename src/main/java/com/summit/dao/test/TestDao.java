@@ -129,7 +129,7 @@ public class TestDao {
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setAccCtrlProId("acp001");
         accCtrlProcess.setLockCode("NB100002");
-        List<AccCtrlProcess> records = accCtrlProcessDao.selectCondition(accCtrlProcess, null,null,null, roles);
+        List<AccCtrlProcess> records = accCtrlProcessDao.selectCondition(null, accCtrlProcess,null,null, roles);
 
         System.out.println(records);
     }
