@@ -46,10 +46,9 @@ public interface AlarmService {
      * 查询所有
      * @param start 开始时间
      * @param end 截止时间
-     * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm> selectAll(Date start, Date end, SimplePage page);
+    List<Alarm> selectAll(Date start, Date end,Integer current, Integer pageSize);
 
     /**
      * 根据告警Id查询唯一告警记录
@@ -70,37 +69,33 @@ public interface AlarmService {
      * @param alarmName 告警名
      * @param start 开始时间
      * @param end 截止时间
-     * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm> selectAlarmByName(String alarmName, Date start, Date end, SimplePage page);
+    List<Alarm> selectAlarmByName(String alarmName, Date start, Date end, Integer current, Integer pageSize);
 
     /**
      * 根据告警name（或者说类型）查询，用selectCondition实现，不带时间重载
      * @param alarmName 告警名
-     * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm> selectAlarmByName(String alarmName, SimplePage page);
+    List<Alarm> selectAlarmByName(String alarmName,Integer current, Integer pageSize);
 
     /**
      * 根据告警状态查询，用selectCondition实现，可指定时间段
      * @param alarmStatus 告警状态
      * @param start 开始时间
      * @param end 截止时间
-     * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm> selectAlarmByStatus(Integer alarmStatus, Date start, Date end, SimplePage page);
+    List<Alarm> selectAlarmByStatus(Integer alarmStatus, Date start, Date end, Integer current, Integer pageSize);
     //不带时间重载
 
     /**
      * 根据告警状态查询，用selectCondition实现，不带时间重载
      * @param alarmStatus 告警状态
-     * @param page 分页对象
      * @return 告警记录列表
      */
-    List<Alarm> selectAlarmByStatus(Integer alarmStatus, SimplePage page);
+    List<Alarm> selectAlarmByStatus(Integer alarmStatus, Integer current, Integer pageSize);
 
 
     /**
@@ -169,17 +164,15 @@ public interface AlarmService {
      * @param alarm 告警对象
      * @param start 开始时间
      * @param end 截止时间
-     * @param page 分页对象
      * @return 告警记录列表
      */
-    Page<Alarm> selectAlarmConditionByPage(Alarm alarm, Date start, Date end, SimplePage page);
+    Page<Alarm> selectAlarmConditionByPage(Alarm alarm, Date start, Date end, Integer current, Integer pageSize);
 
     /**
      * 根据alarm对象所带条件查询，不带时间段重载
      * @param alarm 告警对象
-     * @param page 分页对象
      * @return 告警记录列表
      */
-    Page<Alarm> selectAlarmConditionByPage(Alarm alarm, SimplePage page);
+    Page<Alarm> selectAlarmConditionByPage(Alarm alarm,Integer current, Integer pageSize);
 
 }

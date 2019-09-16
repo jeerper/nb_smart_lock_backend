@@ -2,7 +2,6 @@ package com.summit.service;
 
 import com.summit.cbb.utils.page.Page;
 import com.summit.dao.entity.AccCtrlRealTimeEntity;
-import com.summit.dao.entity.SimplePage;
 
 import java.util.Date;
 import java.util.List;
@@ -30,12 +29,9 @@ public interface AccCtrlRealTimeService {
      * @param accCtrlRealTimeEntity 门禁实时信息对象
      * @param start 最近更新时间起始时间
      * @param end 最近更新时间截止时间
-     * @param page 简单分页对象
      * @return 门禁实时信息分页
      */
-    Page<AccCtrlRealTimeEntity> selectByConditionPage(AccCtrlRealTimeEntity accCtrlRealTimeEntity,
-                                                Date start, Date end, SimplePage page);
-
+    Page<AccCtrlRealTimeEntity> selectByConditionPage(AccCtrlRealTimeEntity accCtrlRealTimeEntity, Date start, Date end,Integer current, Integer pageSize);
 
     /**
      * 根据门禁实时id查询最近更新时间毫秒值

@@ -97,7 +97,7 @@ public class TestDao {
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setAccessControlName("门禁1");
         alarm.setAccCtrlProcess(accCtrlProcess);
-        List<Alarm> alarms = alarmDao.selectCondition(alarm, null, null, null, roles);
+        List<Alarm> alarms = alarmDao.selectCondition(null,alarm, null, null,  null);
         System.out.println(alarms);
     }
     @Test
@@ -129,7 +129,7 @@ public class TestDao {
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setAccCtrlProId("acp001");
         accCtrlProcess.setLockCode("NB100002");
-        List<AccCtrlProcess> records = accCtrlProcessDao.selectCondition(accCtrlProcess, null,null,null, roles);
+        List<AccCtrlProcess> records = accCtrlProcessDao.selectCondition(null, accCtrlProcess,null,null, roles);
 
         System.out.println(records);
     }
@@ -156,7 +156,7 @@ public class TestDao {
     public void selectCondition() throws ParseException {
         AccessControlInfo accessControlInfo = new AccessControlInfo();
         accessControlInfo.setLockCode("NB100002");
-        List<AccessControlInfo> records = accessControlDao.selectCondition(accessControlInfo, null,roles);
+        List<AccessControlInfo> records = accessControlDao.selectCondition(null,accessControlInfo,roles);
         System.out.println(records);
     }
 
@@ -202,7 +202,7 @@ public class TestDao {
 
     @Test
     public void testFilterAlarm(){
-        List<Alarm> alarms = alarmService.selectAll(null,null,null);
+        List<Alarm> alarms = alarmService.selectAll(null,null,null,null);
         System.out.println(alarms);
 //        LockAuthCtrl.toFilterAlarms(alarms);
 

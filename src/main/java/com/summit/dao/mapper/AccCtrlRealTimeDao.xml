@@ -48,7 +48,7 @@
     </sql>
 
     <sql id="RealTime_Have_Alias_List">
-        ar.acc_crtl_realtime_id, ar.access_control_id, ar.access_control_name, ac.lock_id,ac.lock_code,
+        ar.acc_crtl_realtime_id, ac.access_control_id, ac.access_control_name, ac.lock_id,ac.lock_code,
         ar.acc_ctrl_status, ar.lock_status, ar.dev_id, ar.device_ip, ar.device_type, ar.face_id,
         ar.user_id, ar.user_name, ar.name, ar.gender, ar.birthday, ar.province, ar.city,
         ar.card_type, ar.card_id, ar.face_match_rate, ar.face_lib_name, ar.face_lib_type,ar.face_panorama_url,
@@ -65,20 +65,14 @@
         <include refid="RealTime_Have_Alias_List"/>
         from acc_crtl_realtime ar
         inner join access_control ac on ar.access_control_id=ac.access_control_id
-        <if test="roles != null">
-            inner join (
-            select
-            <include refid="Auth_No_Alias_List"/>
-            from role_accesscontrol_auth au
-            <where>
-                au.role_id in
+        <where>
+            <if test="roles != null">
+                and ar.access_control_id IN ( SELECT DISTINCT au.access_control_id FROM role_accesscontrol_auth au WHERE au.role_id IN
                 <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
                     #{role}
                 </foreach>
-            </where>
-            ) au on au.access_control_id = ar.access_control_id
-        </if>
-        <where>
+                )
+            </if>
             <if test="accessControlId != null">
                 ar.access_control_id = #{accessControlId}
             </if>
@@ -91,40 +85,30 @@
         <include refid="RealTime_Have_Alias_List"/>
         from acc_crtl_realtime ar
         inner join access_control ac on ar.access_control_id=ac.access_control_id
-        <if test="roles != null">
-            inner join (
-            select
-            <include refid="Auth_No_Alias_List"/>
-            from role_accesscontrol_auth au
-            <where>
-                au.role_id in
+        <where>
+            <if test="roles != null">
+                and ar.access_control_id IN ( SELECT DISTINCT au.access_control_id FROM role_accesscontrol_auth au WHERE au.role_id IN
                 <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
                     #{role}
                 </foreach>
-            </where>
-            ) au on au.access_control_id = ar.access_control_id
-        </if>
-        <if test="accCtrlRealTimeEntity != null">
-            <where>
+                )
+            </if>
+            <if test="accCtrlRealTimeEntity != null">
                 <if test="accCtrlRealTimeEntity.accessControlId != null">
-                    ar.access_control_id = #{accCtrlRealTimeEntity.accessControlId}
+                    and ac.access_control_id = #{accCtrlRealTimeEntity.accessControlId}
                 </if>
                 <if test="accCtrlRealTimeEntity.accessControlName != null">
-                    and ar.access_control_name like concat('%', #{accCtrlRealTimeEntity.accessControlName}, '%')
+                    and ac.access_control_name like concat('%', #{accCtrlRealTimeEntity.accessControlName}, '%')
                 </if>
                 <if test="accCtrlRealTimeEntity.accCtrlStatus != null">
                     and ar.acc_ctrl_status = #{accCtrlRealTimeEntity.accCtrlStatus}
                 </if>
                 <if test="accCtrlRealTimeEntity.name != null">
-                    ar.name like concat('%', #{accCtrlRealTimeEntity.name}, '%')
+                    and ar.name like concat('%', #{accCtrlRealTimeEntity.name}, '%')
                 </if>
-            </where>
-        </if>
+            </if>
+        </where>
         order by pic_snapshot_time desc
-        <if test="page != null and page.current != null and  page.pageSize != null ">
-            limit #{page.current},#{page.pageSize}
-        </if>
-
     </select>
 
     <select id="selectUpdatetimeById" resultType="java.util.Date">

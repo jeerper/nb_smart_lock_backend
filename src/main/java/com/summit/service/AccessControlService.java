@@ -33,10 +33,9 @@ public interface AccessControlService {
 
     /**
      * 分页条件查询门禁信息
-     * @param page 分页对象
      * @return 门禁信息列表分页对象
      */
-    Page<AccessControlInfo> selectAccCtrlByPage(AccessControlInfo accessControlInfo, SimplePage page);
+    Page<AccessControlInfo> selectAccCtrlByPage(AccessControlInfo accessControlInfo, Integer current, Integer pageSize);
 
     /**
      * 分页查询全部有操作记录的门禁信息
@@ -55,10 +54,9 @@ public interface AccessControlService {
     /**
      * 条件查询门禁信息
      * @param accessControlInfo 门禁信息对象
-     * @param page 分页对象
      * @return 门禁信息列表
      */
-    List<AccessControlInfo> selectCondition(AccessControlInfo accessControlInfo, SimplePage page);
+    List<AccessControlInfo> selectCondition(AccessControlInfo accessControlInfo, Integer current, Integer pageSize);
 
     /**
      * 插入门禁信息

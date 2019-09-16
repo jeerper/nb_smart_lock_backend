@@ -9,7 +9,6 @@ import com.summit.common.web.filter.UserContextHolder;
 import com.summit.dao.entity.AccCtrlRole;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.SimpleAccCtrlInfo;
-import com.summit.dao.entity.SimplePage;
 import com.summit.exception.ErrorMsgException;
 import com.summit.schedule.RealTimeSchedule;
 import com.summit.service.AccCtrlRoleService;
@@ -56,15 +55,15 @@ public class AccessControlInfoController {
                                                                               @ApiParam(value = "门禁状态")  @RequestParam(value = "status",required = false) Integer status,
                                                                               @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
                                                                               @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize",required = false) Integer pageSize){
-        Page<AccessControlInfo> controlInfoPage = null;
+
         AccessControlInfo accessControlInfo = new AccessControlInfo(accessControlName,createby,lockCode,entryCameraIp,exitCameraIp,status);
         try {
-            controlInfoPage = accessControlService.selectAccCtrlByPage(accessControlInfo, new SimplePage(current, pageSize));
+            Page<AccessControlInfo> controlInfoPage  = accessControlService.selectAccCtrlByPage(accessControlInfo, current, pageSize);
+            return ResultBuilder.buildSuccess(controlInfoPage);
         } catch (Exception e) {
-            log.error("分页查询全部门禁信息失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"分页查询全部门禁信息失败", controlInfoPage);
+            log.error("分页查询全部门禁信息失败",e);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"分页查询全部门禁信息成功", controlInfoPage);
     }
 
     @ApiOperation(value = "录入门禁信息", notes = "录入门禁信息时同时录入锁信息和设备信息")

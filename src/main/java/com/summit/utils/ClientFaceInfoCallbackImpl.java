@@ -143,7 +143,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
 
                 FaceLibType faceLibType = faceInfo.getFaceLibType();
                 //开锁处理UUID
-                String unlockProcessUuid=null;
+                String unlockProcessUuid = null;
                 //处理结果
                 LockProcessResultType processResult = null;
                 //失败原因
@@ -151,12 +151,12 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                 if (faceLibType.equals(FaceLibType.FACE_LIB_WHITE)) {
                     //通过对应的摄像头IP找到对应的锁信息
                     CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
-                    if(cameraDevice == null){
+                    if (cameraDevice == null) {
                         log.debug("没有找到ip地址为{}的摄像头记录", deviceIp);
                         return;
                     }
                     String lockCode = cameraDevice.getLockCode();
-                    if(lockCode==null){
+                    if (lockCode == null) {
                         log.debug("没有找到ip地址为{}的摄像头对应的锁编号", deviceIp);
                         return;
                     }
@@ -171,7 +171,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                             accessControlInfo.getAccessControlId());
                     //此人脸有对应门禁权限，则进行开锁，否则更新门禁为告警状态，并记录开锁结果和原因
                     if (count > 0) {
-                        LockRequest lockRequest = new LockRequest(null, lockCode, faceInfo.getName(), null,null);
+                        LockRequest lockRequest = new LockRequest(null, lockCode, faceInfo.getName(), null, null);
                         RestfulEntityBySummit result = null;
                         //调用开锁接口
                         result = unLockService.toUnLock(lockRequest);
@@ -185,14 +185,15 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                                     backLockInfo.getRmid(), backLockInfoType, content, backLockInfo.getObjx(),
                                     backLockInfo.getTime());
 
-                            if ("error".equals(backLockInfoType)) {
-                                failReason = content;
+                            if (backLockInfo.getObjx() == null) {
+                                failReason = backLockInfo.getContent();
+                                processResult = LockProcessResultType.Failure;
+                            } else {
+                                //下发开锁指令后返回的状态码
+                                processResult = LockProcessResultType.codeOf(backLockInfo.getObjx());
+                                //用于查询开锁状态的命令UUID
+                                unlockProcessUuid = backLockInfo.getRmid();
                             }
-                            //下发开锁指令后返回的状态码
-                            processResult= LockProcessResultType.codeOf(backLockInfo.getObjx());
-                            //用于查询开锁状态的命令UUID
-                            unlockProcessUuid=backLockInfo.getRmid();
-
                         } else {
                             //开锁接口调用失败
                             log.debug("开锁接口调用失败");
@@ -201,7 +202,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                         }
                     } else {
                         log.debug("用户{}没有打开门禁{}的权限", faceInfo.getName(), accessControlInfo.getAccessControlId());
-                        processResult =LockProcessResultType.Failure;
+                        processResult = LockProcessResultType.Failure;
                         failReason = "用户" + faceInfo.getName() + "没有打开门禁" + accessControlInfo.getAccessControlId() + "的权限";
                         //todo:考虑问题,是否要重复更新:门禁,实时,锁信息表
 //                        accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(AccCtrlStatus.ALARM.getCode(), lockCode);
@@ -212,7 +213,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                 FileUtil.writeBytes(faceInfo.getFacePanorama(), picturePathFacePanorama);
                 FileUtil.writeBytes(faceInfo.getFacePic(), picturePathFacePic);
 
-                AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(faceInfo, type, facePanoramaFile, facePicFile,unlockProcessUuid, processResult, failReason);
+                AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(faceInfo, type, facePanoramaFile, facePicFile,
+                        unlockProcessUuid, processResult, failReason);
 
                 //在事务控制下插入门禁操作记录、门禁实时信息、告警
                 ApplicationContextUtil.getBean(ClientFaceInfoCallbackImpl.class).insertData(type, accCtrlProcess);
@@ -240,39 +242,24 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
     //加入事务控制
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
     public void insertData(CameraUploadType type, AccCtrlProcess accCtrlProcess) {
-
         try {
+            log.info("门禁操作记录信息入库");
             //插入门禁操作记录并更新门禁信息表和锁信息表(门禁信息表和锁信息表中都含有门禁状态)
             accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess);
-            log.info("门禁操作记录信息入库成功");
-        } catch (Exception e) {
-            log.error("门禁操作记录信息入库失败");
-            throw new ErrorMsgException("门禁操作记录信息入库失败");
-        }
-
-        //如果是告警类型需要同时插入告警表
-        Alarm alarm = null;
-        if (CameraUploadType.Alarm==type) {
-            alarm = accCtrlProcessUtil.getAlarm(accCtrlProcess);
-            try {
+            //获取实时状态信息
+            AccCtrlRealTimeEntity accCtrlRealTimeEntity = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess);
+            //如果是告警类型需要同时插入告警表
+            if (CameraUploadType.Alarm == type) {
+                log.info("门禁操作告警信息入库");
+                Alarm alarm = accCtrlProcessUtil.getAlarm(accCtrlProcess);
                 alarmService.insertAlarm(alarm);
-                log.info("门禁操作告警信息入库成功");
-            } catch (Exception e) {
-                log.error("门禁操作告警信息入库失败");
-                throw new ErrorMsgException("门禁操作告警信息入库失败");
-            }
-        }
-        //获取实时状态信息
-        AccCtrlRealTimeEntity accCtrlRealTimeEntity = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess);
-        try {
-            if (alarm != null) {
                 accCtrlRealTimeEntity.setAlarmId(alarm.getAlarmId());
             }
+            log.info("门禁实时信息入库");
             accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity);
-            log.info("门禁实时信息数据库操作成功");
         } catch (Exception e) {
-            log.error("门禁实时信息数据库操作失败");
-            throw new ErrorMsgException("门禁实时信息数据库操作失败");
+            log.error("门禁操作信息入库失败", e);
+            throw new ErrorMsgException("门禁操作信息入库失败");
         }
     }
 

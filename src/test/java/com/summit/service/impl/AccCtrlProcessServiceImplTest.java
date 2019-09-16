@@ -40,12 +40,12 @@ public class AccCtrlProcessServiceImplTest {
 //        accCtrlProcess.setAccCtrlProId("1163356805951225858");
 //        accCtrlProcess.setAccessControlName("门");
 //        accCtrlProcess.setProcessType(3);
-        Page<AccCtrlProcess> accCtrlProcessPage = accCtrlProcessService.selectAccCtrlProcessCondition(accCtrlProcess,null);
+        Page<AccCtrlProcess> accCtrlProcessPage = accCtrlProcessService.selectAccCtrlProcessCondition(null,null,null,null,null);
         System.out.println(accCtrlProcessPage);
     }
     @Test
     public void selectAccCtrlProcessByLockCode() {
-        List<AccCtrlProcess> accCtrlProcesss = accCtrlProcessService.selectAccCtrlProcessByLockCode("NB100002", null, null, null);
+        List<AccCtrlProcess> accCtrlProcesss = accCtrlProcessService.selectAccCtrlProcessByLockCode("NB100002",null, null);
         System.out.println(accCtrlProcesss);
     }
 

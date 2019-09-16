@@ -10,6 +10,7 @@ public enum LockProcessResultType {
     Failure(7,"失败"),
     MessageError(8,"消息错误"),
     NotSupportMessage(9,"不支持的消息");
+
     private int code;
 
     private String description;
