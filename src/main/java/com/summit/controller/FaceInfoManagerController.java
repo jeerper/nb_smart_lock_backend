@@ -2,6 +2,8 @@ package com.summit.controller;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IORuntimeException;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import cn.hutool.system.SystemUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -15,9 +17,15 @@ import com.summit.dao.entity.*;
 import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.entity.SimpleFaceInfo;
 import com.summit.exception.ErrorMsgException;
+import com.summit.sdk.huawei.*;
+import com.summit.sdk.huawei.api.HuaWeiSdkApi;
+import com.summit.sdk.huawei.model.DeviceInfo;
+import com.summit.service.FaceInfoAccCtrlService;
 import com.summit.service.FaceInfoManagerService;
 import com.summit.util.CommonUtil;
 import com.summit.util.SummitTools;
+import com.sun.jna.NativeLong;
+import com.sun.jna.Platform;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -29,8 +37,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -45,6 +53,8 @@ import java.util.*;
 public class FaceInfoManagerController {
   @Autowired
   private FaceInfoManagerService faceInfoManagerService;
+  @Autowired
+  private FaceInfoAccCtrlService faceInfoAccCtrlService;
   @ApiOperation(value = "录入人脸信息",notes = "返回不是-1则为成功")
   @PostMapping(value = "insertFaceInfo")
   public RestfulEntityBySummit<Integer>  insertFaceInfo(@RequestBody FaceInfoManagerEntity faceInfoManagerEntity) throws ParseException {
@@ -139,14 +149,19 @@ public class FaceInfoManagerController {
 
   @ApiOperation(value = "更新人脸信息")
   @PutMapping(value = "/updateFaceInfo")
-  public RestfulEntityBySummit<String> updateFaceInfo(@ApiParam(value = "包含人脸信息")@RequestBody FaceInfo faceInfo ){
+  public RestfulEntityBySummit<String> updateFaceInfo(@ApiParam(value = "包含人脸信息")@RequestBody FaceInfo faceInfo ) throws IOException, ParseException {
     if(faceInfo==null){
       log.error("人脸信息为空");
       return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"人脸信息为空",null);
     }
+    //更新之前找到原来的人脸信息
+    String selectoldfaceid = faceInfo.getFaceid();
+    FaceInfo oldFaceInfo = faceInfoManagerService.selectFaceInfoByID(selectoldfaceid);
+    String ulFaceId=null;
     String msg="更新人脸信息失败";
     String  base64Str=faceInfo.getFaceImage();
-    if(SummitTools.stringNotNull(base64Str)){
+    System.out.println(base64Str+"qqqqq");
+    if(SummitTools.stringNotNull(base64Str) && base64Str!=null && base64Str!=""){
       StringBuffer fileName = new StringBuffer();
       fileName.append(UUID.randomUUID().toString().replaceAll("-", ""));
       if (base64Str.indexOf("data:image/png;") != -1) {
@@ -188,8 +203,170 @@ public class FaceInfoManagerController {
       log.error(msg);
       return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,msg,null);
     }
+    /**
+     * 编辑人脸信息的时候和摄像头同步
+     * 1 查询摄像头中的人脸信息，得到人脸信息的id
+     * 2 修改人脸信息
+     */
+    String faceid = faceInfo.getFaceid();
+    List<AccessControlInfo> accessControlInfos=faceInfoAccCtrlService.seleAccCtrlInfoByFaceID(faceid);
+    System.out.println("门禁信息"+accessControlInfos);
+    if(accessControlInfos !=null && !accessControlInfos.isEmpty()){
+      List<String> cameraIps=new ArrayList<>();
+      for(AccessControlInfo accessControlInfo:accessControlInfos){
+        String entryCameraIp = accessControlInfo.getEntryCameraIp();
+        String exitCameraIp = accessControlInfo.getExitCameraIp();
+        cameraIps.add(entryCameraIp);
+        //cameraIps.add(exitCameraIp);
+      }
+      System.out.println("当前人脸所关联的入口和出口摄像头ip"+cameraIps);
+      String camraIp = cameraIps.get(0);
+      DeviceInfo deviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(camraIp);
+      NativeLong ulIdentifyId = deviceInfo.getUlIdentifyId();
+    //查询人脸库的人脸信息
+      String faceinfoPath=new StringBuilder()
+            .append(SystemUtil.getUserInfo().getCurrentDir())
+            .append(File.separator)
+            .append(MainAction.UpdateFaceInfo)
+            .toString();
+      File face=new File(faceinfoPath);
+      if(!face.exists()){
+      face.mkdirs();
+      }
+      PU_FACE_INFO_FIND_S faceInfoFindS = new PU_FACE_INFO_FIND_S();
+      faceInfoFindS.ulChannelId=new NativeLong(101);
+      String faceInfoPath=faceinfoPath+"/updatefaceInfo.json";
+      faceInfoFindS.szFindResultPath= Arrays.copyOf(faceInfoPath.getBytes(),129);
+      PU_FACE_LIB_S facelib2 = new PU_FACE_LIB_S();
+      facelib2.ulFaceLibID=new NativeLong(1);
+      if(Platform.isWindows()){
+        facelib2.szLibName=Arrays.copyOf("人脸库".getBytes("gbk"),65);
+      }else {
+        facelib2.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);
+      }
+      facelib2.enLibType=2;
+      facelib2.uiThreshold=new NativeLong(90);
+      FACE_FIND_CONDITION faceFindCondition=new FACE_FIND_CONDITION();
+      faceFindCondition.enFeatureStatus=1;
+      faceFindCondition.szName= ByteBuffer.allocate(64).put("".getBytes()).array();
+      faceFindCondition.szProvince=ByteBuffer.allocate(32).put("".getBytes()).array();
+      faceFindCondition.szCity=ByteBuffer.allocate(48).put("".getBytes()).array();
+      faceFindCondition.szCardID=ByteBuffer.allocate(32).put("".getBytes()).array();
+      faceFindCondition.szCity=ByteBuffer.allocate(48).put("".getBytes()).array();
+      faceFindCondition.enGender=-1;
+      faceFindCondition.enCardType=-1;
+      faceInfoFindS.stCondition=faceFindCondition;
+      faceInfoFindS.stFacelib=facelib2;
+      faceInfoFindS.uStartIndex=0;
+      boolean getFace;
+      if(Platform.isWindows()){
+         getFace =HWPuSDKLibrary.INSTANCE.IVS_PU_FindFaceInfo(ulIdentifyId, faceInfoFindS);
+      }else {
+         getFace =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(ulIdentifyId, faceInfoFindS);
+      }
+      if (getFace){
+        System.out.println("查询人脸信息成功");
+        //查询到人脸信息json数据
+        String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator+"updatefaceInfo"+File.separator+"updatefaceInfo.json");
+        String facejson = readFile(getfaceInfoPath);
+        JSONObject objectface=new JSONObject(facejson);
+        JSONArray faceRecordArry = objectface.getJSONArray("FaceRecordArry");
+        System.out.println("人脸信息集合："+faceRecordArry);
+        ArrayList<FaceInfo> faceInfos=new ArrayList<>();
+        for (int i=0; i<faceRecordArry.size();i++){
+          FaceInfo updatefaceInfo=new FaceInfo();
+          JSONObject faceInfojson=faceRecordArry.getJSONObject(i);
+          updatefaceInfo.setFaceid(faceInfojson.getStr("ID"));
+          String userName=faceInfojson.getStr("Name");
+          System.out.println("用户名："+userName);
+          updatefaceInfo.setUserName(userName);
+          String gender=faceInfojson.getStr("Gender");
+          updatefaceInfo.setGender(Integer.parseInt(gender));
+          String birthday=faceInfojson.getStr("Birthday");
+          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+          Date birthday1 = sdf.parse(birthday);
+          updatefaceInfo.setBirthday(birthday1);
+          String province=faceInfojson.getStr("Province");
+          updatefaceInfo.setProvince(province);
+          String city = faceInfojson.getStr("City");
+          updatefaceInfo.setCity(city);
+          String cardType = faceInfojson.getStr("CardType");
+          updatefaceInfo.setCardType(Integer.parseInt(cardType));
+          String cardID = faceInfojson.getStr("CardID");
+          updatefaceInfo.setCardId(cardID);
+          faceInfos.add(updatefaceInfo);
+        }
+        System.out.println("原来的人脸信息"+oldFaceInfo);
+        System.out.println("从摄像头查询到的人脸集合对象："+faceInfos);
+        for (FaceInfo houtaifaceInfo:faceInfos){
+          if (houtaifaceInfo.getUserName().equals(oldFaceInfo.getUserName())){
+            ulFaceId=houtaifaceInfo.getFaceid();
+          }
+        }
+      }
+      PU_FACE_INFO_MODIFY_S  updateFaceInfo=new PU_FACE_INFO_MODIFY_S();
+      updateFaceInfo.ulChannelId=new NativeLong(101);
+        PU_FACE_LIB_S stFacelib=new PU_FACE_LIB_S();
+        stFacelib.ulFaceLibID=new NativeLong(1);
+        stFacelib.uiThreshold=new NativeLong(90);
+        stFacelib.enLibType=2;
+        if (Platform.isWindows()){
+          stFacelib.szLibName=Arrays.copyOf("人脸库".getBytes("gbk"),65);//名单库的名称
+        }else {
+          stFacelib.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);//名单库的名称
+        }
+        stFacelib.isControl=true;
+      updateFaceInfo.stFacelib=stFacelib;
+        PU_FACE_RECORD puFaceRecord=new PU_FACE_RECORD();
+        if (Platform.isWindows()){
+          puFaceRecord.szProvince=Arrays.copyOf(faceInfo.getProvince().getBytes("gbk"),32);
+        }else {
+          puFaceRecord.szProvince=Arrays.copyOf(faceInfo.getProvince().getBytes("utf8"),32);
+        }
+        if (SummitTools.stringNotNull(base64Str) && base64Str!=null && base64Str!=""){
+          String absolutePath = new String(new File(".").getCanonicalPath() + faceInfo.getFaceImage());
+          System.out.println(absolutePath+"图片路径");
+          puFaceRecord.szPicPath=Arrays.copyOf(absolutePath.getBytes(),128);
+        }else {
+          String absolutePath = new String(new File(".").getCanonicalPath() +oldFaceInfo.getFaceImage());
+          System.out.println(absolutePath+"图片路径");
+          puFaceRecord.szPicPath=Arrays.copyOf(absolutePath.getBytes(),128);
+        }
+        if(Platform.isWindows()){
+          puFaceRecord.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("gbk"),64);
+          puFaceRecord.szCity=Arrays.copyOf(faceInfo.getCity().getBytes("gbk"),48);
+        }else {
+          puFaceRecord.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("utf8"),64);
+          puFaceRecord.szCity=Arrays.copyOf(faceInfo.getCity().getBytes("utf8"),48);
+        }
+        puFaceRecord.szCardID=Arrays.copyOf(faceInfo.getCardId().getBytes(),32);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String birthday = sdf.format(faceInfo.getBirthday());
+        System.out.println(birthday);
+        puFaceRecord.szBirthday=Arrays.copyOf(birthday.getBytes(),32);
+        puFaceRecord.enGender=faceInfo.getGender();
+        puFaceRecord.enCardType=faceInfo.getCardType();
+        puFaceRecord.ulFaceId=new NativeLong(Integer.parseInt(ulFaceId));
+      updateFaceInfo.stRecord=puFaceRecord;
+      boolean update;
+      if(Platform.isWindows()){
+         update = HWPuSDKLibrary.INSTANCE.IVS_PU_FaceInfoModify(ulIdentifyId, updateFaceInfo);
+      }else {
+         update = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FaceInfoModify(ulIdentifyId, updateFaceInfo);
+      }
+      HuaWeiSdkApi.printReturnMsg();
+      if(update){
+        System.out.println("更新摄像头人脸信息成功");
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息成功",null);
+      }else{
+        System.out.println("更新摄像头人脸信息失败");
+      return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息失败",null);
+      }
+    }
     return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息成功",null);
   }
+
+
 
   @ApiOperation(value = "删除人脸信息，参数为id数组",notes = "根据人脸id删除人脸信息")
   @DeleteMapping(value = "/delfaceInfoByIdBatch")
@@ -208,6 +385,7 @@ public class FaceInfoManagerController {
     }
     return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"删除人脸信息成功",null);
   }
+
   @ApiOperation(value = "根据id查询人脸信息",notes = "faceid不能为空，查询唯一一条人脸信息")
   @GetMapping(value = "/queryFaceInfoById")
   public RestfulEntityBySummit<FaceInfo> queryFaceInfoById(@ApiParam(value = "人脸信息id",required = true)@RequestParam(value = "faceid")String faceid){
@@ -224,6 +402,9 @@ public class FaceInfoManagerController {
     }
     return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"根据id查询人脸信息成功",faceInfo);
   }
+
+
+
    @ApiOperation(value = "查询全部人脸信息，包括人脸信息的id和name以及人脸图片",notes = "无论有无门禁权限都全部查询")
    @GetMapping(value = "/selectAllFaceInfo")
    public RestfulEntityBySummit<List<SimpleFaceInfo>> selectAllFaceInfo(){
@@ -287,6 +468,23 @@ public class FaceInfoManagerController {
     return  msg;
   }
 
+  public String readFile(String path){
+    BufferedReader reader=null;
+    String lastStr="";
+    try {
+      FileInputStream fileInputStream = new FileInputStream(path);
+      InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
+      reader=new BufferedReader(inputStreamReader);
+      String tempString=null;
+      while ((tempString = reader.readLine()) != null){
+        lastStr+=tempString;
+      }
+      reader.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return lastStr;
+  }
 
 
 

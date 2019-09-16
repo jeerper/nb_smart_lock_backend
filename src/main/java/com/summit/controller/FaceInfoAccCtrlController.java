@@ -20,6 +20,7 @@ import com.summit.service.FaceInfoAccCtrlService;
 import com.summit.service.FaceInfoManagerService;
 import com.sun.jna.IntegerType;
 import com.sun.jna.NativeLong;
+import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
@@ -120,8 +121,16 @@ public class FaceInfoAccCtrlController {
         }
         String faceLib=facelibPath+File.separator+"faceLib.json";
         faceLibGetS.szFindResultPath= Arrays.copyOf(faceLib.getBytes(),128);
-        boolean getFaceLib =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_GetFaceLib(entryIdentifyId, faceLibGetS);
-        boolean exitgetFaceLib =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_GetFaceLib(exitIdentifyId, faceLibGetS);
+        boolean getFaceLib;
+        boolean exitgetFaceLib;
+        if(Platform.isWindows()){
+             getFaceLib =HWPuSDKLibrary.INSTANCE.IVS_PU_GetFaceLib(entryIdentifyId, faceLibGetS);
+             exitgetFaceLib =HWPuSDKLibrary.INSTANCE.IVS_PU_GetFaceLib(exitIdentifyId, faceLibGetS);
+        }else {
+             getFaceLib =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_GetFaceLib(entryIdentifyId, faceLibGetS);
+             exitgetFaceLib =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_GetFaceLib(exitIdentifyId, faceLibGetS);
+        }
+
         Integer enLibType=null;//人脸库类型
         Integer ulFaceLibID=null;//人脸库id
         String szLibName=null;//人脸库名称
@@ -139,13 +148,24 @@ public class FaceInfoAccCtrlController {
                 PU_FACE_LIB_SET_S puFaceLibSetS =new PU_FACE_LIB_SET_S();
                 puFaceLibSetS.enOptType=1;//新增人脸库
                 PU_FACE_LIB_S  stFacelib=new PU_FACE_LIB_S();
-                stFacelib.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);//名单库的名称
+                if(Platform.isWindows()){
+                    stFacelib.szLibName=Arrays.copyOf("人脸库".getBytes("gbk"),65);//windows名单库的名称
+                }else {
+                    stFacelib.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);//名单库的名称
+                }
                 stFacelib.uiThreshold=new NativeLong(90);//布控的阀值
                 stFacelib.enLibType=2;//人脸库类型
                 puFaceLibSetS.stFacelib=stFacelib;
                 puFaceLibSetS.ulChannelId=new NativeLong(101);
-                boolean addFaceLib = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(entryIdentifyId, puFaceLibSetS);
-                boolean exitaddFaceLib2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, puFaceLibSetS);
+                boolean addFaceLib;
+                boolean exitaddFaceLib2;
+                if(Platform.isWindows()){
+                     addFaceLib = HWPuSDKLibrary.INSTANCE.IVS_PU_SetFaceLib(entryIdentifyId, puFaceLibSetS);
+                     exitaddFaceLib2 = HWPuSDKLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, puFaceLibSetS);
+                }else {
+                     addFaceLib = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(entryIdentifyId, puFaceLibSetS);
+                     exitaddFaceLib2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, puFaceLibSetS);
+                }
                 HuaWeiSdkApi.printReturnMsg();
                 if (addFaceLib || exitaddFaceLib2 ){//人脸库添加成功，接着添加人脸信息，循环添加
                     System.out.println("人脸库添加成功");
@@ -176,7 +196,11 @@ public class FaceInfoAccCtrlController {
                         addface.szBirthday=Arrays.copyOf(birthday.getBytes(),32);
                         addface.szCardID=Arrays.copyOf(faceInfo.getCardId().getBytes(),32);
                         addface.szCity=Arrays.copyOf(faceInfo.getCity().getBytes(),48);
-                        addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("utf8"),64);
+                        if(Platform.isWindows()){
+                            addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("gbk"),64);
+                        }else {
+                            addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("utf8"),64);
+                        }
                         String absolutePath = new String(new File(".").getCanonicalPath() + faceInfo.getFaceImage());
                         System.out.println(absolutePath+"图片路径");
                         addface.szPicPath=Arrays.copyOf(absolutePath.getBytes(),128);
@@ -184,8 +208,15 @@ public class FaceInfoAccCtrlController {
                         puFaceInfoAdd.stRecord=addface;
                         String filename = faceInfo.getFaceImage().substring(faceInfo.getFaceImage().lastIndexOf("/")+1);
                         System.out.println(filename);
-                        boolean addface2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
-                        boolean exitaddface2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
+                        boolean addface2;
+                        boolean exitaddface2;
+                        if(Platform.isWindows()){
+                             addface2 = HWPuSDKLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
+                             exitaddface2 = HWPuSDKLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
+                        }else {
+                             addface2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
+                             exitaddface2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
+                        }
                         HuaWeiSdkApi.printReturnMsg();
                         if(addface2 || exitaddface2){
                             System.out.println("添加人脸信息成功");
@@ -223,7 +254,11 @@ public class FaceInfoAccCtrlController {
                 faceInfoFindS.szFindResultPath= Arrays.copyOf(faceInfoPath.getBytes(),129);
                 PU_FACE_LIB_S facelib2 = new PU_FACE_LIB_S();
                 facelib2.ulFaceLibID=new NativeLong(ulFaceLibID);
-                facelib2.szLibName=Arrays.copyOf(szLibName.getBytes("utf8"),65);
+                if(Platform.isWindows()){
+                    facelib2.szLibName=Arrays.copyOf(szLibName.getBytes("gbk"),65);
+                }else {
+                    facelib2.szLibName=Arrays.copyOf(szLibName.getBytes("utf8"),65);
+                }
                 facelib2.enLibType=enLibType;
                 facelib2.uiThreshold=new NativeLong(uiThreshold);
                 FACE_FIND_CONDITION faceFindCondition=new FACE_FIND_CONDITION();
@@ -239,8 +274,15 @@ public class FaceInfoAccCtrlController {
                 faceInfoFindS.stFacelib=facelib2;
                 faceInfoFindS.uStartIndex=0;
                 //faceInfoFindS.uFindNum=2;
-                boolean getFace =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(entryIdentifyId, faceInfoFindS);
-                boolean exitgetFace =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitIdentifyId, faceInfoFindS);
+                boolean getFace;
+                boolean exitgetFace;
+                if(Platform.isWindows()){
+                     getFace =HWPuSDKLibrary.INSTANCE.IVS_PU_FindFaceInfo(entryIdentifyId, faceInfoFindS);
+                     exitgetFace =HWPuSDKLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitIdentifyId, faceInfoFindS);
+                }else {
+                     getFace =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(entryIdentifyId, faceInfoFindS);
+                     exitgetFace =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitIdentifyId, faceInfoFindS);
+                }
                 if (getFace || exitgetFace){
                     System.out.println("查询人脸信息成功");
                     //查询到人脸信息json数据
@@ -271,7 +313,11 @@ public class FaceInfoAccCtrlController {
                             addface.szBirthday=Arrays.copyOf(birthday.getBytes(),32);
                             addface.szCardID=Arrays.copyOf(faceInfo.getCardId().getBytes(),32);
                             addface.szCity=Arrays.copyOf(faceInfo.getCity().getBytes(),48);
-                            addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("utf8"),64);
+                            if(Platform.isWindows()){
+                                addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("gbk"),64);
+                            }else {
+                                addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("utf8"),64);
+                            }
                             String absolutePath = new String(new File(".").getCanonicalPath() + faceInfo.getFaceImage());
                             System.out.println(absolutePath+"图片路径");
                             addface.szPicPath=Arrays.copyOf(absolutePath.getBytes(),128);
@@ -279,8 +325,15 @@ public class FaceInfoAccCtrlController {
                             puFaceInfoAdd.stRecord=addface;
                             String filename = faceInfo.getFaceImage().substring(faceInfo.getFaceImage().lastIndexOf("/")+1);
                             System.out.println(filename);
-                            boolean addfaceinfo = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
-                            boolean exitaddfaceinfo = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
+                            boolean addfaceinfo;
+                            boolean exitaddfaceinfo;
+                            if(Platform.isWindows()){
+                                 addfaceinfo = HWPuSDKLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
+                                 exitaddfaceinfo = HWPuSDKLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
+                            }else {
+                                 addfaceinfo = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
+                                 exitaddfaceinfo = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
+                            }
                             HuaWeiSdkApi.printReturnMsg();
                             if(addfaceinfo || exitaddfaceinfo){
                                 System.out.println("添加人脸信息成功");
@@ -325,12 +378,24 @@ public class FaceInfoAccCtrlController {
                                 puFaceInfoDeleteS.ulChannelId=new NativeLong(101);
                                 PU_FACE_LIB_S facelib = new PU_FACE_LIB_S();
                                 facelib.ulFaceLibID=new NativeLong(ulFaceLibID);
-                                facelib.szLibName=Arrays.copyOf(szLibName.getBytes("utf8"),65);
+                                if(Platform.isWindows()){
+                                    facelib.szLibName=Arrays.copyOf(szLibName.getBytes("gbk"),65);
+                                }else {
+                                    facelib.szLibName=Arrays.copyOf(szLibName.getBytes("utf8"),65);
+                                }
                                 facelib.enLibType=enLibType;
                                 facelib.uiThreshold=new NativeLong(uiThreshold);
                                 puFaceInfoDeleteS.stFacelib=facelib;
-                                boolean del =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryIdentifyId, puFaceInfoDeleteS);
-                                boolean exitdel =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitIdentifyId, puFaceInfoDeleteS);
+                                boolean del;
+                                boolean exitdel;
+                                if(Platform.isWindows()){
+                                     del =HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryIdentifyId, puFaceInfoDeleteS);
+                                     exitdel =HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitIdentifyId, puFaceInfoDeleteS);
+                                }else {
+                                     del =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryIdentifyId, puFaceInfoDeleteS);
+                                     exitdel =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitIdentifyId, puFaceInfoDeleteS);
+                                }
+
                                 HuaWeiSdkApi.printReturnMsg();
                                 if(del || exitdel){
                                     System.out.println("删除人脸信息成功");
@@ -362,8 +427,15 @@ public class FaceInfoAccCtrlController {
                                 facelib.enLibType=enLibType;
                                 facelib.uiThreshold=new NativeLong(uiThreshold);
                                 puFaceInfoDeleteS.stFacelib=facelib;
-                                boolean del = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryIdentifyId, puFaceInfoDeleteS);
-                                boolean exitdel = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitIdentifyId, puFaceInfoDeleteS);
+                                boolean del;
+                                boolean exitdel;
+                                if(Platform.isWindows()){
+                                     del = HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryIdentifyId, puFaceInfoDeleteS);
+                                     exitdel = HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitIdentifyId, puFaceInfoDeleteS);
+                                }else {
+                                     del = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryIdentifyId, puFaceInfoDeleteS);
+                                     exitdel = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitIdentifyId, puFaceInfoDeleteS);
+                                }
                                 HuaWeiSdkApi.printReturnMsg();
                                 if(del || exitdel){
                                     System.out.println("删除人脸信息成功");
@@ -412,8 +484,15 @@ public class FaceInfoAccCtrlController {
                                 puFaceInfoAdd.stRecord=addfaceInfo;
                                 String filename = qiantaiFaceInfo.getFaceImage().substring(qiantaiFaceInfo.getFaceImage().lastIndexOf("/")+1);
                                 System.out.println(filename);
-                                boolean addOneFaceV2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
-                                boolean exitaddOneFaceV2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
+                                boolean addOneFaceV2;
+                                boolean exitaddOneFaceV2;
+                                if(Platform.isWindows()){
+                                    addOneFaceV2 = HWPuSDKLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
+                                    exitaddOneFaceV2 = HWPuSDKLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
+                                }else {
+                                    addOneFaceV2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
+                                    exitaddOneFaceV2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
+                                }
                                 HuaWeiSdkApi.printReturnMsg();
                                 if(addOneFaceV2 || exitaddOneFaceV2){
                                     System.out.println("添加人脸信息成功2");
