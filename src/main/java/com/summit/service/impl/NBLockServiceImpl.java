@@ -56,23 +56,21 @@ public class NBLockServiceImpl {
     }
 
     private RestfulEntityBySummit unLock(LockRequest lockRequest) {
-        String lockId = "";
-        String terminalNum;
-        if (lockRequest == null
-                || ((terminalNum = lockRequest.getTerminalNum()) == null && (lockId = lockRequest.getLockId()) == null)) {
+
+        if (lockRequest == null || (lockRequest.getTerminalNum() == null && lockRequest.getLockId() == null)) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993);
         }
-        if (terminalNum == null) {
-            AccessControlInfo accessControlInfo= accessControlDao
-                    .selectOne(Wrappers.<AccessControlInfo>lambdaQuery()
-                    .eq(AccessControlInfo::getLockId,lockId)
-                    );
 
-            if (accessControlInfo == null || accessControlInfo.getLockCode() == null) {
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993);
-            }
-            lockRequest.setTerminalNum(accessControlInfo.getLockCode());
+        AccessControlInfo accessControlInfo = accessControlDao
+                .selectOne(Wrappers.<AccessControlInfo>lambdaQuery()
+                        .eq(lockRequest.getLockId()!=null,AccessControlInfo::getLockId, lockRequest.getLockId())
+                        .eq(lockRequest.getTerminalNum()!=null,AccessControlInfo::getLockCode, lockRequest.getTerminalNum()));
+
+        if (accessControlInfo == null || accessControlInfo.getLockCode() == null) {
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993);
         }
+        lockRequest.setTerminalNum(accessControlInfo.getLockCode());
+
         final BackLockInfo[] backLockInfos = {null};
         final ResponseCodeEnum[] resultCode = {ResponseCodeEnum.CODE_0000};
         ResponseCodeEnum resultCodeEnum = ResponseCodeEnum.CODE_0000;
@@ -83,10 +81,13 @@ public class NBLockServiceImpl {
             backLockInfos[0] = backLockInfo;
             if (backLockInfo != null) {
                 Integer status = backLockInfo.getObjx();
-                if (status==null||LockProcessResultType.CommandSuccess.getCode()!=status) {
+                if (status == null || LockProcessResultType.CommandSuccess.getCode() != status) {
                     resultCode[0] = ResponseCodeEnum.CODE_9999;
                     msg[0] = backLockInfo.getContent();
                 }
+                //todo:插入门禁开关锁记录统计表
+
+
             } else {
                 resultCode[0] = ResponseCodeEnum.CODE_9999;
                 msg[0] = ResponseCodeEnum.CODE_9999.getMessage();
@@ -115,9 +116,9 @@ public class NBLockServiceImpl {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993);
         }
         if (terminalNum == null) {
-            AccessControlInfo accessControlInfo= accessControlDao
+            AccessControlInfo accessControlInfo = accessControlDao
                     .selectOne(Wrappers.<AccessControlInfo>lambdaQuery()
-                            .eq(AccessControlInfo::getLockId,lockId)
+                            .eq(AccessControlInfo::getLockId, lockId)
                     );
 
             if (accessControlInfo == null || accessControlInfo.getLockCode() == null)
