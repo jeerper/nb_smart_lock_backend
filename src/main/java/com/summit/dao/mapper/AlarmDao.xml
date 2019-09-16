@@ -13,6 +13,7 @@
         <result column="description" jdbcType="VARCHAR" property="description"/>
         <result column="updatetime" jdbcType="VARCHAR" property="updatetime"/>
         <result column="process_remark" jdbcType="VARCHAR" property="processRemark"/>
+        <result column="process_result" jdbcType="INTEGER" property="processResult"/>
         <result column="acc_ctrl_status" jdbcType="INTEGER" property="accCtrlStatus"/>
 
         <association property="accCtrlProcess" javaType="com.summit.dao.entity.AccCtrlProcess">
@@ -36,7 +37,7 @@
             <result column="face_lib_type" jdbcType="INTEGER" property="faceLibType"/>
 
             <result column="process_type" jdbcType="INTEGER" property="processType"/>
-            <result column="process_result" jdbcType="VARCHAR" property="processResult"/>
+            <result column="acc_process_result" jdbcType="VARCHAR" property="processResult"/>
             <result column="fail_reason" jdbcType="VARCHAR" property="failReason"/>
             <result column="panorama_pic_id" jdbcType="VARCHAR" property="panoramaPicId"/>
             <result column="face_panorama_id" jdbcType="VARCHAR" property="facePanoramaId"/>
@@ -76,13 +77,13 @@
     </sql>
     <sql id="Alarm_Have_Alias_List">
         al.alarm_id, al.alarm_name, al.acc_ctrl_pro_id, al.alarm_time, al.alarm_status, al.process_person,
-    al.description,al.updatetime, al.process_remark
+    al.description,al.updatetime, al.process_remark,acp.process_result
     </sql>
     <sql id="AccCtrl_Have_Alias_List">
         acp.acc_ctrl_pro_id, ac.access_control_id, ac.access_control_name, acp.device_id, acp.device_ip,
         acp.device_type, ac.lock_id, ac.lock_code,
         acp.user_id, acp.user_name, acp.gender, acp.birthday, acp.province, acp.city, acp.card_type, acp.card_id,
-        acp.face_match_rate, acp.face_lib_name, acp.face_lib_type, acp.process_type, acp.process_result,
+        acp.face_match_rate, acp.face_lib_name, acp.face_lib_type, acp.process_type, acp.process_result acc_process_result,
         acp.fail_reason, acp.panorama_pic_id, acp.face_panorama_id, acp.face_pic_id, acp.face_match_id,
         acp.process_time
     </sql>

@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -44,14 +43,7 @@ public class AlarmServiceImplTest {
 
     }
 
-    @Test
-    public void updateAlarm() throws ParseException {
-        String processId = "pid01";
-        Alarm alarm = new Alarm("aid01","an01",processId,
-                null,null,null,dateFormat.parse("2019-7-24 00:01:01"),
-                1,"p2","d2",new Date(),"r2",null);
-        alarmService.updateAlarm(alarm);
-    }
+
 
     @Test
     public void delLockAlarmById() {
