@@ -178,12 +178,6 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
 
                         BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
                         if (backLockInfo != null) {
-                            //开锁接口返回的结果
-                            String backLockInfoType = backLockInfo.getType();
-                            String content = backLockInfo.getContent();
-                            log.debug("rmid={},type={},content={},objx={},time={}",
-                                    backLockInfo.getRmid(), backLockInfoType, content, backLockInfo.getObjx(),
-                                    backLockInfo.getTime());
 
                             if (backLockInfo.getObjx() == null) {
                                 failReason = backLockInfo.getContent();
@@ -205,7 +199,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                     } else {
                         log.debug("用户{}没有打开门禁{}的权限", faceInfo.getName(), accessControlInfo.getAccessControlId());
                         processResult = LockProcessResultType.Failure;
-                        failReason = "用户" + faceInfo.getName() + "没有打开门禁" + accessControlInfo.getAccessControlId() + "的权限";
+                        failReason = "用户" + faceInfo.getName() + "没有打开门禁" + accessControlInfo.getAccessControlName() + "的权限";
                         //todo:考虑问题,是否要重复更新:门禁,实时,锁信息表
 //                        accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(AccCtrlStatus.ALARM.getCode(), lockCode);
                         type = CameraUploadType.Alarm;

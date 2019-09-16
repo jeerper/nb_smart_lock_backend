@@ -1,12 +1,12 @@
 package com.summit.dao.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -56,7 +56,7 @@ public class AccCtrlRealTimeEntity {
     //最近锁操作记录对应的人脸信息
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @ApiModelProperty(value="对应人脸信息id",name="faceId")
-    @TableField(value = "face_id")
+    @TableField(value = "face_id",updateStrategy= FieldStrategy.IGNORED)
     private String faceId;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @ApiModelProperty(value="用户id",name="userId")
@@ -67,36 +67,36 @@ public class AccCtrlRealTimeEntity {
     @TableField(value = "user_name")
     private String userName;
     @ApiModelProperty(value="姓名",name="name")
-    @TableField(value = "name")
+    @TableField(value = "name",updateStrategy= FieldStrategy.IGNORED)
     private String name;
     @ApiModelProperty(value="性别。0男，1女，2未知",name="gender")
-    @TableField(value = "gender")
+    @TableField(value = "gender",updateStrategy= FieldStrategy.IGNORED)
     private Integer gender;
     @JsonFormat(pattern="yyyy-MM-dd", timezone="GMT+8")
     @ApiModelProperty(value="生日",name="birthday")
-    @TableField(value = "birthday")
+    @TableField(value = "birthday",updateStrategy= FieldStrategy.IGNORED)
     private Date birthday;
 
     @ApiModelProperty(value="省份",name="province")
-    @TableField(value = "province")
+    @TableField(value = "province",updateStrategy= FieldStrategy.IGNORED)
     private String province;
     @ApiModelProperty(value="城市",name="city")
-    @TableField(value = "city")
+    @TableField(value = "city",updateStrategy= FieldStrategy.IGNORED)
     private String city;
     @ApiModelProperty(value="证件类型，0：身份证，1：护照，2：军官证，3：驾驶证，4：其他",name="cardType")
-    @TableField(value = "card_type")
+    @TableField(value = "card_type",updateStrategy= FieldStrategy.IGNORED)
     private Integer cardType;
     @ApiModelProperty(value="证件id",name="cardId")
-    @TableField(value = "card_id")
+    @TableField(value = "card_id",updateStrategy= FieldStrategy.IGNORED)
     private String cardId;
     @ApiModelProperty(value="匹配率",name="faceMatchRate")
     @TableField(value = "face_match_rate")
     private Float faceMatchRate;
     @ApiModelProperty(value="人脸库名称",name="faceLibName")
-    @TableField(value = "face_lib_name")
+    @TableField(value = "face_lib_name",updateStrategy= FieldStrategy.IGNORED)
     private String faceLibName;
     @ApiModelProperty(value="人脸库类型，0：未知，1：黑名单，2：白名单，3：报警",name="faceLibType")
-    @TableField(value = "face_lib_type")
+    @TableField(value = "face_lib_type",updateStrategy= FieldStrategy.IGNORED)
     private Integer faceLibType;
 
     @ApiModelProperty(value="全景图url",name="facePanoramaUrl")
@@ -121,10 +121,10 @@ public class AccCtrlRealTimeEntity {
     private Integer alarmCount;
 
     @ApiModelProperty(value="经度",name="longitude")
-    @TableField(value = "longitude")
+    @TableField(value = "longitude",updateStrategy= FieldStrategy.IGNORED)
     private String longitude;
     @ApiModelProperty(value="纬度",name="latitude")
-    @TableField(value = "latitude")
+    @TableField(value = "latitude",updateStrategy= FieldStrategy.IGNORED)
     private String latitude;
     @ApiModelProperty(value="告警id",name="alarmId")
     @TableField(value = "alarm_id")

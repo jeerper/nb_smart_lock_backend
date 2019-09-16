@@ -467,49 +467,6 @@ public class AccessControlServiceImpl implements AccessControlService {
             log.error("更新门禁{}失败", accessControlId);
             throw new ErrorMsgException("更新门禁" + accessControlId +"失败");
         }
-
-        String newControlName = accessControlInfo.getAccessControlName();
-        try {
-            //更新门禁信息成功后需要同步更新门禁操作记录表(access_control_name,device_ip,lock_code)，并且将设备的锁编号更新
-            //accessControlName、lockCode可以同时更新
-            AccCtrlProcess newAccCtrlProcess = new AccCtrlProcess();
-            newAccCtrlProcess.setAccessControlName(newControlName);
-            newAccCtrlProcess.setLockCode(lockCode);
-            accCtrlProcessDao.update(newAccCtrlProcess,new UpdateWrapper<AccCtrlProcess>().eq("access_control_id",accessControlId));
-            //dviceIp,入口摄像头和出口ip的记录需要分次更新
-            AccCtrlProcess newEntryCameraAccCtrlProcess = new AccCtrlProcess();
-            newEntryCameraAccCtrlProcess.setDeviceIp(newEntryCameraIp);
-            accCtrlProcessDao.update(newEntryCameraAccCtrlProcess,new UpdateWrapper<AccCtrlProcess>().eq("device_ip",oldEntryCameraIp));
-            AccCtrlProcess newExitAccCtrlProcess = new AccCtrlProcess();
-            newExitAccCtrlProcess.setDeviceIp(newExitCameraIp);
-            accCtrlProcessDao.update(newExitAccCtrlProcess,new UpdateWrapper<AccCtrlProcess>().eq("device_ip",oldExitCameraIp));
-
-        } catch (Exception e) {
-            log.error("更新门禁操作记录失败");
-            throw new ErrorMsgException("更新门禁操作记录失败");
-        }
-
-        //更新门禁实时信息表
-        try {
-            //accessControlName、lockCode可以同时更新
-            AccCtrlRealTimeEntity newRealTimeEntity = new AccCtrlRealTimeEntity();
-            newRealTimeEntity.setAccessControlName(newControlName);
-            newRealTimeEntity.setLockCode(lockCode);
-            accCtrlRealTimeDao.update(newRealTimeEntity, new UpdateWrapper<AccCtrlRealTimeEntity>().eq("access_control_id",accessControlId));
-            //dviceIp,入口摄像头和出口ip的记录需要分次更新，当前门禁实时记录中是哪种摄像头则更新时哪种
-            AccCtrlRealTimeEntity newEntryRealTimeEntity = new AccCtrlRealTimeEntity();
-            newEntryRealTimeEntity.setDeviceIp(newEntryCameraIp);
-            accCtrlRealTimeDao.update(newEntryRealTimeEntity, new UpdateWrapper<AccCtrlRealTimeEntity>().eq("device_ip",oldEntryCameraIp));
-
-            AccCtrlRealTimeEntity newExitRealTimeEntity = new AccCtrlRealTimeEntity();
-            newExitRealTimeEntity.setDeviceIp(newExitCameraIp);
-            accCtrlRealTimeDao.update(newExitRealTimeEntity, new UpdateWrapper<AccCtrlRealTimeEntity>().eq("device_ip",oldExitCameraIp));
-
-        } catch (Exception e) {
-            log.error("更新门禁实时信息失败");
-            throw new ErrorMsgException("更新门禁实时信息失败");
-        }
-
         return result;
     }
 
