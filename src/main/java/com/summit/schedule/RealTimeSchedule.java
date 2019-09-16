@@ -10,6 +10,7 @@ import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.util.AccCtrlProcessUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -30,7 +31,7 @@ public class RealTimeSchedule {
      * 实时刷新门禁的锁实时状态
      */
 
-//    @Scheduled(fixedDelay = 2000)
+    @Scheduled(fixedDelay = 2000)
     public void refreshRealTimeLockStatus() {
         List<AccCtrlRealTimeEntity> accCtrlRealTimeList = accCtrlRealTimeDao.selectCondition(null, null, null);
         LockRequest lockRequest = new LockRequest();
@@ -57,7 +58,7 @@ public class RealTimeSchedule {
             if (lockStatus == LockStatus.LOCK_CLOSED.getCode() && currentLockStatus == LockStatus.LOCK_ALARM.getCode()) {
                 continue;
             }
-            log.debug("锁当前状态:" + LockStatus.codeOf(lockStatus).getDescription());
+            //log.debug("锁当前状态:" + LockStatus.codeOf(lockStatus).getDescription());
 
             //锁的真实状态和数据库中的状态一致，不更新实时状态
             if (lockStatus.equals(currentLockStatus)) {

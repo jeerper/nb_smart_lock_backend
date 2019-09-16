@@ -10,6 +10,7 @@ import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.util.AccCtrlProcessUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -31,7 +32,7 @@ public class AccessControlProcessSchedule {
      * 实时刷新门禁的锁实时状态
      */
 
-//    @Scheduled(fixedDelay = 2000)
+    @Scheduled(fixedDelay = 2000)
     public void refreshAccessControlProcessLockStatus() {
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setProcessResult(LockProcessResultType.CommandSuccess.getCode());
@@ -47,6 +48,11 @@ public class AccessControlProcessSchedule {
             lockRequest.setTerminalNum(accCtrlProcessEntity.getLockCode());
             lockRequest.setUuid(processUuid);
             //锁的真实状态
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             BackLockInfo backLockInfo = accCtrlProcessUtil.getLockStatus(lockRequest);
             if (backLockInfo == null) {
                 accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
@@ -66,6 +72,7 @@ public class AccessControlProcessSchedule {
                         .set(AccCtrlProcess::getProcessTime, new Date())
                         .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProcessEntity.getAccCtrlProId()));
             } else {
+                log.debug("开锁结果:"+LockProcessResultType.codeOf(lockStatus).getDescription());
                 //更新process_result状态
                 accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
                         .set(AccCtrlProcess::getProcessResult, lockStatus)

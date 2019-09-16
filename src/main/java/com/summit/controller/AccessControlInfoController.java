@@ -10,7 +10,6 @@ import com.summit.dao.entity.AccCtrlRole;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.SimpleAccCtrlInfo;
 import com.summit.exception.ErrorMsgException;
-import com.summit.schedule.RealTimeSchedule;
 import com.summit.service.AccCtrlRoleService;
 import com.summit.service.AccessControlService;
 import com.summit.util.CommonUtil;
@@ -41,8 +40,7 @@ public class AccessControlInfoController {
     private AccessControlService accessControlService;
     @Autowired
     private AccCtrlRoleService accCtrlRoleService;
-    @Autowired
-    private RealTimeSchedule realTimeSchedule;
+
 
 
     @ApiOperation(value = "分页条件查询门禁信息", notes = "分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")

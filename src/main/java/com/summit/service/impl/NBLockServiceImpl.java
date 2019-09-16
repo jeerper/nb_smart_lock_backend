@@ -109,28 +109,28 @@ public class NBLockServiceImpl {
 
 
     private RestfulEntityBySummit getLockStatus(LockRequest lockRequest) {
-        String lockId = "";
-        String terminalNum;
-        if (lockRequest == null
-                || ((terminalNum = lockRequest.getTerminalNum()) == null && (lockId = lockRequest.getLockId()) == null)) {
+
+        if (lockRequest == null || (lockRequest.getTerminalNum() == null && lockRequest.getLockId() == null)) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993);
         }
-        if (terminalNum == null) {
-            AccessControlInfo accessControlInfo = accessControlDao
-                    .selectOne(Wrappers.<AccessControlInfo>lambdaQuery()
-                            .eq(AccessControlInfo::getLockId, lockId)
-                    );
 
-            if (accessControlInfo == null || accessControlInfo.getLockCode() == null)
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993);
-            lockRequest.setTerminalNum(accessControlInfo.getLockCode());
+        AccessControlInfo accessControlInfo = accessControlDao
+                .selectOne(Wrappers.<AccessControlInfo>lambdaQuery()
+                        .eq(lockRequest.getLockId()!=null,AccessControlInfo::getLockId, lockRequest.getLockId())
+                        .eq(lockRequest.getTerminalNum()!=null,AccessControlInfo::getLockCode, lockRequest.getTerminalNum()));
+
+        if (accessControlInfo == null || accessControlInfo.getLockCode() == null) {
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993);
         }
+        lockRequest.setTerminalNum(accessControlInfo.getLockCode());
+
         final BackLockInfo[] queryBackLockInfo = {null};
         final ResponseCodeEnum[] resultCode = {ResponseCodeEnum.CODE_0000};
         final String[] msg = {ResponseCodeEnum.CODE_0000.getMessage()};
 
         try {
             BackLockInfo backLockInfo = httpClient.nbLockService.queryLockStatus(lockRequest).execute().body();
+            log.debug("{}", backLockInfo);
             queryBackLockInfo[0] = backLockInfo;
             if (backLockInfo == null) {
                 resultCode[0] = ResponseCodeEnum.CODE_9999;
