@@ -22,7 +22,7 @@ public class AccCtrlRealTimeEntity {
     @TableId(value = "acc_crtl_realtime_id", type = IdType.ID_WORKER_STR)
     private String accCrtlRealTimeId;
     @ApiModelProperty(value="门禁id",name="accessControlId")
-    @TableId(value = "access_control_id")
+    @TableField(value = "access_control_id")
     private String accessControlId;
     @ApiModelProperty(value="门禁名称",name="accessControlName")
     @TableField(value = "access_control_name")
