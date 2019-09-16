@@ -358,7 +358,47 @@ public class FaceInfoManagerController {
       HuaWeiSdkApi.printReturnMsg();
       if(update){
         System.out.println("更新摄像头人脸信息成功");
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息成功",null);
+        //更新成功接着提取特征值
+          //提取特征值
+          PU_FACE_FEATURE_EXTRACT_S puFaceFeatureExtractS=new PU_FACE_FEATURE_EXTRACT_S();
+          puFaceFeatureExtractS.stFacelib=stFacelib;
+          puFaceFeatureExtractS.ulChannelId=new NativeLong(101);
+          //puFaceFeatureExtractS.taskID=new NativeLong(1);
+          boolean getTeZheng;
+          if(Platform.isWindows()){
+              getTeZheng = HWPuSDKLibrary.INSTANCE.IVS_PU_FeatureExtract(ulIdentifyId,puFaceFeatureExtractS);
+          }else {
+              getTeZheng = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FeatureExtract(ulIdentifyId,puFaceFeatureExtractS);
+          }
+          if (getTeZheng){
+              //接着布控
+              PU_FACE_LIB_SET_S puFaceLibSetS2 =new PU_FACE_LIB_SET_S();
+              puFaceLibSetS2.enOptType=2;//修改人脸库
+              PU_FACE_LIB_S  stFacelib2=new PU_FACE_LIB_S();
+              if(Platform.isWindows()){
+                  stFacelib2.szLibName=Arrays.copyOf("人脸库".getBytes("gbk"),65);//windows名单库的名称
+              }else {
+                  stFacelib2.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);//名单库的名称
+              }
+              stFacelib2.uiThreshold=new NativeLong(90);//布控的阀值
+              stFacelib2.enLibType=2;//人脸库类型2为白名单
+              stFacelib2.isControl=true;//修改为布控
+              stFacelib2.ulFaceLibID=new NativeLong(1);
+              puFaceLibSetS2.stFacelib=stFacelib2;
+              puFaceLibSetS2.ulChannelId=new NativeLong(101);
+              boolean bukong;
+              if(Platform.isWindows()){
+                  bukong = HWPuSDKLibrary.INSTANCE.IVS_PU_SetFaceLib(ulIdentifyId, puFaceLibSetS2);
+              }else {
+                  bukong = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(ulIdentifyId, puFaceLibSetS2);
+              }
+              if (bukong){
+                  System.out.println("修改布控成功");
+                  return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息成功",null);
+              }
+          }else {
+              return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息失败",null);
+          }
       }else{
         System.out.println("更新摄像头人脸信息失败");
       return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息失败",null);
