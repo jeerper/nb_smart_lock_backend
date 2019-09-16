@@ -160,6 +160,7 @@ public class FaceInfoManagerController {
     String ulFaceId=null;
     String msg="更新人脸信息失败";
     String  base64Str=faceInfo.getFaceImage();
+    String faceUrl=null;
     System.out.println(base64Str+"qqqqq");
     if(SummitTools.stringNotNull(base64Str) && base64Str!=null && base64Str!=""){
       StringBuffer fileName = new StringBuffer();
@@ -180,7 +181,7 @@ public class FaceInfoManagerController {
               .append(picId)
               .append("_Face.jpg")
               .toString();
-      String faceUrl=new StringBuilder()
+       faceUrl=new StringBuilder()
               .append("/")
               .append(MainAction.SnapshotFileName)
               .append("/")
@@ -323,8 +324,8 @@ public class FaceInfoManagerController {
         }else {
           puFaceRecord.szProvince=Arrays.copyOf(faceInfo.getProvince().getBytes("utf8"),32);
         }
-        if (SummitTools.stringNotNull(base64Str) && base64Str!=null && base64Str!=""){
-          String absolutePath = new String(new File(".").getCanonicalPath() + faceInfo.getFaceImage());
+        if (SummitTools.stringNotNull(base64Str) && base64Str!=null && base64Str !=""){
+          String absolutePath = new String(new File(".").getCanonicalPath() + faceUrl);
           System.out.println(absolutePath+"图片路径");
           puFaceRecord.szPicPath=Arrays.copyOf(absolutePath.getBytes(),128);
         }else {
