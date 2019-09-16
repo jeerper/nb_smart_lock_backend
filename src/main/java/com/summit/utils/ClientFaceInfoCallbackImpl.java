@@ -191,6 +191,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                             } else {
                                 //下发开锁指令后返回的状态码
                                 processResult = LockProcessResultType.codeOf(backLockInfo.getObjx());
+                                log.debug("开锁成功");
+                                log.debug("下发开锁指令后返回的状态码:"+processResult.getDescription());
                                 //用于查询开锁状态的命令UUID
                                 unlockProcessUuid = backLockInfo.getRmid();
                             }

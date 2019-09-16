@@ -82,8 +82,8 @@ public class NBLockServiceImpl {
             log.debug("{}", backLockInfo);
             backLockInfos[0] = backLockInfo;
             if (backLockInfo != null) {
-                int status = backLockInfo.getObjx();
-                if (LockProcessResultType.CommandSuccess.getCode()!=status) {
+                Integer status = backLockInfo.getObjx();
+                if (status==null||LockProcessResultType.CommandSuccess.getCode()!=status) {
                     resultCode[0] = ResponseCodeEnum.CODE_9999;
                     msg[0] = backLockInfo.getContent();
                 }

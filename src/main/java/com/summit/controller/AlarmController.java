@@ -101,13 +101,13 @@ public class AlarmController {
             BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
 
             if (backLockInfo == null) {
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "开锁失败", null);
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "开锁失败", null);
             }
             if (backLockInfo.getObjx() == null) {
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "开锁失败:" + backLockInfo.getContent(), null);
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "开锁失败:" + backLockInfo.getContent(), null);
             }
             if (backLockInfo.getObjx() != LockProcessResultType.CommandSuccess.getCode()) {
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "开锁失败:" + backLockInfo.getContent(), null);
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "开锁失败:" + backLockInfo.getContent(), null);
             }
 
             //开锁指令下发成功的处理逻辑
