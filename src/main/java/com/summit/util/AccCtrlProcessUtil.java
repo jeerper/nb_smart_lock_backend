@@ -2,7 +2,6 @@ package com.summit.util;
 
 import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.entity.UserInfo;
 import com.summit.common.web.filter.UserContextHolder;
@@ -27,7 +26,6 @@ import com.summit.sdk.huawei.model.FaceInfo;
 import com.summit.sdk.huawei.model.LockProcessMethod;
 import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessType;
-import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.service.AccCtrlProcessService;
 import com.summit.service.AccCtrlRealTimeService;
 import com.summit.service.AccessControlService;
@@ -66,38 +64,7 @@ public class AccCtrlProcessUtil {
     private AccCtrlRealTimeService accCtrlRealTimeService;
 
 
-    /**
-     * 根据开锁操作返回状态更新相应门禁和锁状态、实时信息状态
-     * @param status 开锁操作返回状态
-     * @param lockCode 当前摄像头对应锁编号
-     */
-    public void toUpdateAccCtrlAndLockStatus(Integer status, String lockCode) {
-        if(status == null)
-            return;
-        AccCtrlStatus accCtrlStatus =  AccCtrlStatus.codeOf(status);
-        LockStatus lockStatus = LockStatus.codeOf(status);
-        //状态不合法则不更新
-        if(accCtrlStatus != null){
-            AccessControlInfo accessControlInfo = new AccessControlInfo();
-            accessControlInfo.setStatus(status);
-            accessControlInfo.setUpdatetime(new Date());
-            //直接根据锁编号更新门禁状态
-            accessControlDao.update(accessControlInfo, new UpdateWrapper<AccessControlInfo>().eq("lock_code", lockCode));
 
-            AccCtrlRealTimeEntity accCtrlRealTimeEntity = new AccCtrlRealTimeEntity();
-            accCtrlRealTimeEntity.setAccCtrlStatus(status);
-            accCtrlRealTimeEntity.setLockStatus(status);
-            accCtrlRealTimeEntity.setUpdatetime(new Date());
-            accCtrlRealTimeDao.update(accCtrlRealTimeEntity, new UpdateWrapper<AccCtrlRealTimeEntity>().eq("lock_code", lockCode));
-        }
-        //状态不合法则不更新
-        if(lockStatus != null){
-            LockInfo lockInfo = new LockInfo();
-            lockInfo.setStatus(lockStatus.getCode());
-            lockInfo.setUpdatetime(new Date());
-            lockInfoDao.update(lockInfo, new UpdateWrapper<LockInfo>().eq("lock_code", lockCode));
-        }
-    }
 
     /**
      * 查询开锁状态

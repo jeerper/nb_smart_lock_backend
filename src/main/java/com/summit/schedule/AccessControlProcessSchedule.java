@@ -4,7 +4,6 @@ package com.summit.schedule;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.repository.AccCtrlProcessDao;
-import com.summit.dao.repository.AccCtrlRealTimeDao;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.sdk.huawei.model.LockProcessResultType;
@@ -24,8 +23,7 @@ public class AccessControlProcessSchedule {
     @Autowired
     private AccCtrlProcessUtil accCtrlProcessUtil;
 
-    @Autowired
-    private AccCtrlRealTimeDao accCtrlRealTimeDao;
+
     @Autowired
     private AccCtrlProcessDao accCtrlProcessDao;
 

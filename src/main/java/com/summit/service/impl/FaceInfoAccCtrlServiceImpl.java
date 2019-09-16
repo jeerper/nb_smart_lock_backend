@@ -122,6 +122,9 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
             return 0;
         }
         String faceid= faceInfoManagerDao.selectFaceIdByUserName(userName);
+        if(faceid==null){
+            return 0;
+        }
         return faceInfoAccCtrlDao.selectCountAccCtrlIdByFaceIdAndAccessControlId(faceid,accessControlId);
     }
 

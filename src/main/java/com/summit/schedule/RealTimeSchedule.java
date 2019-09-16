@@ -1,6 +1,7 @@
 package com.summit.schedule;
 
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.dao.entity.AccCtrlRealTimeEntity;
 import com.summit.dao.repository.AccCtrlRealTimeDao;
 import com.summit.entity.BackLockInfo;
@@ -57,17 +58,17 @@ public class RealTimeSchedule {
             if (lockStatus == LockStatus.LOCK_CLOSED.getCode() && currentLockStatus == LockStatus.LOCK_ALARM.getCode()) {
                 continue;
             }
+            log.debug("锁当前状态:" + LockStatus.codeOf(lockStatus).getDescription());
+
             //锁的真实状态和数据库中的状态一致，不更新实时状态
             if (lockStatus.equals(currentLockStatus)) {
                 continue;
             }
-            //todo:如果锁是关锁状态，是否需要加入历史操作表？
-            AccCtrlRealTimeEntity accCtrlRealTimeEntity = new AccCtrlRealTimeEntity();
-            accCtrlRealTimeEntity.setAccCrtlRealTimeId(accCtrlRealTime.getAccCrtlRealTimeId());
-            accCtrlRealTimeEntity.setAccCtrlStatus(lockStatus);
-            accCtrlRealTimeEntity.setUpdatetime(new Date());
             //更新门禁实时表
-            accCtrlRealTimeDao.updateById(accCtrlRealTimeEntity);
+            accCtrlRealTimeDao.update(null, Wrappers.<AccCtrlRealTimeEntity>lambdaUpdate()
+                    .set(AccCtrlRealTimeEntity::getAccCtrlStatus, lockStatus)
+                    .set(AccCtrlRealTimeEntity::getUpdatetime, new Date())
+                    .eq(AccCtrlRealTimeEntity::getAccCrtlRealTimeId, accCtrlRealTime.getAccCrtlRealTimeId()));
         }
     }
 }
