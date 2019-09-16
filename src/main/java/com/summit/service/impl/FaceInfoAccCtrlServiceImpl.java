@@ -2,9 +2,11 @@ package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.summit.constants.CommonConstants;
+import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
 import com.summit.dao.repository.FaceInfoAccCtrlDao;
 import com.summit.dao.repository.FaceInfoManagerDao;
+import com.summit.service.AccessControlService;
 import com.summit.service.FaceInfoAccCtrlService;
 import com.summit.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,8 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
     private FaceInfoAccCtrlDao faceInfoAccCtrlDao;
     @Autowired
     private FaceInfoManagerDao faceInfoManagerDao;
+    @Autowired
+    private AccessControlService accessControlService;
 
     /**
      * 批量刷新指定人脸关联的门禁",notes = "为指定的人脸信息更新门禁权限，所传的人脸信息之前没有关联某门禁且所传列表中有添加，之前已关联过门禁而所传列表中有则不添加，之前已关联过门禁而所传列表中没有则删除
@@ -119,6 +123,20 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
         }
         String faceid= faceInfoManagerDao.selectFaceIdByUserName(userName);
         return faceInfoAccCtrlDao.selectCountAccCtrlIdByFaceIdAndAccessControlId(faceid,accessControlId);
+    }
+
+    @Override
+    public List<AccessControlInfo> seleAccCtrlInfoByFaceID(String faceid) {
+        QueryWrapper<FaceInfoAccCtrl> wrapper=new QueryWrapper<>();
+        List<FaceInfoAccCtrl> faceInfoAccCtrls = faceInfoAccCtrlDao.selectList(wrapper.eq("face_id", faceid));
+        System.out.println(faceInfoAccCtrls+"关联门禁");
+        List<AccessControlInfo> accessControlInfos=new ArrayList<>();
+        for(FaceInfoAccCtrl faceInfoAccCtrl:faceInfoAccCtrls){
+            AccessControlInfo accessControlInfo = accessControlService.selectAccCtrlByIdBeyondAuthority(faceInfoAccCtrl.getAccessControlId());
+            accessControlInfos.add(accessControlInfo);
+        }
+        System.out.println("关联门禁"+accessControlInfos);
+        return accessControlInfos;
     }
 
     private int insertFaceAccCtrl(List<FaceInfoAccCtrl> faceInfoAccCtrls) {
