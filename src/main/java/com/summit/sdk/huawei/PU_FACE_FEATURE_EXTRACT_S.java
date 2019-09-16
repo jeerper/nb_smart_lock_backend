@@ -23,7 +23,7 @@ public class PU_FACE_FEATURE_EXTRACT_S extends Structure {
 	/** C type : CHAR[32] */
 	public byte[] szReserve = new byte[32];
 	public PU_FACE_FEATURE_EXTRACT_S() {
-		super();
+		this.setAlignType(ALIGN_NONE);
 	}
 	protected List<String > getFieldOrder() {
 		return Arrays.asList("ulChannelId", "stFacelib", "taskID", "szReserve");
