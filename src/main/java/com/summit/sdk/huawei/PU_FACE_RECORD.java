@@ -61,7 +61,7 @@ public class PU_FACE_RECORD extends Structure {
 	/** C type : CHAR[32] */
 	public byte[] szReserve = new byte[32];
 	public PU_FACE_RECORD() {
-		super();
+		this.setAlignType(ALIGN_NONE);
 	}
 	protected List<String > getFieldOrder() {
 		return Arrays.asList("ulFaceId", "szName", "enGender", "szBirthday", "szProvince", "szCity", "enCardType", "szCardID", "szExtensionField", "szPicPath", "szReserve");

@@ -75,7 +75,7 @@ public class FaceInfoAccCtrlController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸门禁授权失败",null);
         }
         log.error("人脸门禁授权成功");
-        AccessControlInfo accessControlInfo = accessControlService.selectAccCtrlById(accessControlId);
+        AccessControlInfo accessControlInfo = accessControlService.selectAccCtrlByIdBeyondAuthority(accessControlId);
         String entryCameraIp = accessControlInfo.getEntryCameraIp();
         String exitCameraIp = accessControlInfo.getExitCameraIp();
         System.out.println(entryCameraIp+"入口摄像头ip");
@@ -182,7 +182,11 @@ public class FaceInfoAccCtrlController {
                         stFacelib1.enLibType=enLibType;
                         stFacelib1.isControl=true;
                         stFacelib1.ulFaceLibID=new NativeLong(ulFaceLibID);
-                        stFacelib1.szLibName=Arrays.copyOf(szLibName.getBytes(),65);
+                        if(Platform.isWindows()){
+                            stFacelib1.szLibName=Arrays.copyOf(szLibName.getBytes("GBK"),65);
+                        }else {
+                            stFacelib1.szLibName=Arrays.copyOf(szLibName.getBytes("utf8"),65);
+                        }
                         stFacelib1.uiThreshold=new NativeLong(uiThreshold);
                         //设置添加人脸信息的对象
                         PU_FACE_INFO_ADD_S  puFaceInfoAdd = new PU_FACE_INFO_ADD_S();
@@ -196,29 +200,29 @@ public class FaceInfoAccCtrlController {
                         String birthday = sdf.format(faceInfo.getBirthday());
                         addface.szBirthday=Arrays.copyOf(birthday.getBytes(),32);
                         addface.szCardID=Arrays.copyOf(faceInfo.getCardId().getBytes(),32);
-                        addface.szCity=Arrays.copyOf(faceInfo.getCity().getBytes(),48);
                         if(Platform.isWindows()){
-                            addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("gbk"),64);
+                            addface.szCity=Arrays.copyOf(faceInfo.getCity().getBytes("GBK"),48);
+                            addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("GBK"),64);
+                            addface.szProvince=Arrays.copyOf(faceInfo.getProvince().getBytes("GBK"),32);
                         }else {
+                            addface.szCity=Arrays.copyOf(faceInfo.getCity().getBytes("utf8"),48);
                             addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("utf8"),64);
+                            addface.szProvince=Arrays.copyOf(faceInfo.getProvince().getBytes("utf8"),32);
                         }
                         String absolutePath = new String(new File(".").getCanonicalPath() + faceInfo.getFaceImage());
-                        System.out.println(absolutePath+"图片路径");
                         addface.szPicPath=Arrays.copyOf(absolutePath.getBytes(),128);
-                        addface.szProvince=Arrays.copyOf(faceInfo.getProvince().getBytes(),32);
                         puFaceInfoAdd.stRecord=addface;
                         String filename = faceInfo.getFaceImage().substring(faceInfo.getFaceImage().lastIndexOf("/")+1);
                         System.out.println(filename);
                         boolean addface2;
                         boolean exitaddface2;
                         if(Platform.isWindows()){
-                             addface2 = HWPuSDKLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
-                             exitaddface2 = HWPuSDKLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
+                            addface2 = HWPuSDKLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
+                            exitaddface2 = HWPuSDKLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
                         }else {
-                             addface2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
-                             exitaddface2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
+                            addface2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
+                            exitaddface2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
                         }
-                        HuaWeiSdkApi.printReturnMsg();
                         if(addface2 || exitaddface2){
                             System.out.println("添加人脸信息成功");
                             //添加完人脸信息之后需要提取特征值
@@ -342,7 +346,11 @@ public class FaceInfoAccCtrlController {
                             stFacelib1.enLibType=enLibType;
                             stFacelib1.isControl=true;
                             stFacelib1.ulFaceLibID=new NativeLong(ulFaceLibID);
-                            stFacelib1.szLibName=Arrays.copyOf(szLibName.getBytes(),65);
+                            if (Platform.isWindows()){
+                                stFacelib1.szLibName=Arrays.copyOf(szLibName.getBytes("gbk"),65);
+                            }else {
+                                stFacelib1.szLibName=Arrays.copyOf(szLibName.getBytes("utf8"),65);
+                            }
                             stFacelib1.uiThreshold=new NativeLong(uiThreshold);
                             //设置添加人脸信息的对象
                             PU_FACE_INFO_ADD_S  puFaceInfoAdd = new PU_FACE_INFO_ADD_S();
@@ -356,16 +364,18 @@ public class FaceInfoAccCtrlController {
                             String birthday = sdf.format(faceInfo.getBirthday());
                             addface.szBirthday=Arrays.copyOf(birthday.getBytes(),32);
                             addface.szCardID=Arrays.copyOf(faceInfo.getCardId().getBytes(),32);
-                            addface.szCity=Arrays.copyOf(faceInfo.getCity().getBytes(),48);
                             if(Platform.isWindows()){
                                 addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("gbk"),64);
+                                addface.szCity=Arrays.copyOf(faceInfo.getCity().getBytes("gbk"),48);
+                                addface.szProvince=Arrays.copyOf(faceInfo.getProvince().getBytes("gbk"),32);
                             }else {
                                 addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("utf8"),64);
+                                addface.szCity=Arrays.copyOf(faceInfo.getCity().getBytes("utf8"),48);
+                                addface.szProvince=Arrays.copyOf(faceInfo.getProvince().getBytes("utf8"),32);
                             }
                             String absolutePath = new String(new File(".").getCanonicalPath() + faceInfo.getFaceImage());
                             System.out.println(absolutePath+"图片路径");
                             addface.szPicPath=Arrays.copyOf(absolutePath.getBytes(),128);
-                            addface.szProvince=Arrays.copyOf(faceInfo.getProvince().getBytes(),32);
                             puFaceInfoAdd.stRecord=addface;
                             String filename = faceInfo.getFaceImage().substring(faceInfo.getFaceImage().lastIndexOf("/")+1);
                             System.out.println(filename);
@@ -509,7 +519,11 @@ public class FaceInfoAccCtrlController {
                                 puFaceInfoDeleteS.ulChannelId=new NativeLong(101);
                                 PU_FACE_LIB_S facelib = new PU_FACE_LIB_S();
                                 facelib.ulFaceLibID=new NativeLong(ulFaceLibID);
-                                facelib.szLibName=Arrays.copyOf(szLibName.getBytes("utf8"),65);
+                                if(Platform.isWindows()){
+                                    facelib.szLibName=Arrays.copyOf(szLibName.getBytes("gbk"),65);
+                                }else {
+                                    facelib.szLibName=Arrays.copyOf(szLibName.getBytes("utf8"),65);
+                                }
                                 facelib.enLibType=enLibType;
                                 facelib.uiThreshold=new NativeLong(uiThreshold);
                                 puFaceInfoDeleteS.stFacelib=facelib;
@@ -547,7 +561,11 @@ public class FaceInfoAccCtrlController {
                                 stFacelib1.enLibType=enLibType;
                                 stFacelib1.isControl=true;
                                 stFacelib1.ulFaceLibID=new NativeLong(ulFaceLibID);
-                                stFacelib1.szLibName=Arrays.copyOf(szLibName.getBytes(),65);
+                                if (Platform.isWindows()){
+                                    stFacelib1.szLibName=Arrays.copyOf(szLibName.getBytes("gbk"),65);
+                                }else {
+                                    stFacelib1.szLibName=Arrays.copyOf(szLibName.getBytes("utf8"),65);
+                                }
                                 stFacelib1.uiThreshold=new NativeLong(uiThreshold);
                                 //设置添加人脸信息的对象
                                 PU_FACE_INFO_ADD_S  puFaceInfoAdd = new PU_FACE_INFO_ADD_S();
@@ -561,12 +579,18 @@ public class FaceInfoAccCtrlController {
                                 String birthday = sdf.format(qiantaiFaceInfo.getBirthday());
                                 addfaceInfo.szBirthday=Arrays.copyOf(birthday.getBytes(),32);
                                 addfaceInfo.szCardID=Arrays.copyOf(qiantaiFaceInfo.getCardId().getBytes(),32);
-                                addfaceInfo.szCity=Arrays.copyOf(qiantaiFaceInfo.getCity().getBytes(),48);
-                                addfaceInfo.szName=Arrays.copyOf(qiantaiFaceInfo.getUserName().getBytes("utf8"),64);
+                                if(Platform.isWindows()){
+                                    addfaceInfo.szCity=Arrays.copyOf(qiantaiFaceInfo.getCity().getBytes("gbk"),48);
+                                    addfaceInfo.szName=Arrays.copyOf(qiantaiFaceInfo.getUserName().getBytes("gbk"),64);
+                                    addfaceInfo.szProvince=Arrays.copyOf(qiantaiFaceInfo.getProvince().getBytes("gbk"),32);
+                                }else {
+                                    addfaceInfo.szCity=Arrays.copyOf(qiantaiFaceInfo.getCity().getBytes("utf8"),48);
+                                    addfaceInfo.szName=Arrays.copyOf(qiantaiFaceInfo.getUserName().getBytes("utf8"),64);
+                                    addfaceInfo.szProvince=Arrays.copyOf(qiantaiFaceInfo.getProvince().getBytes("utf8"),32);
+                                }
                                 String absolutePath = new String(new File(".").getCanonicalPath() + qiantaiFaceInfo.getFaceImage());
                                 System.out.println(absolutePath+"图片路径");
                                 addfaceInfo.szPicPath=Arrays.copyOf(absolutePath.getBytes(),128);
-                                addfaceInfo.szProvince=Arrays.copyOf(qiantaiFaceInfo.getProvince().getBytes(),32);
                                 puFaceInfoAdd.stRecord=addfaceInfo;
                                 String filename = qiantaiFaceInfo.getFaceImage().substring(qiantaiFaceInfo.getFaceImage().lastIndexOf("/")+1);
                                 System.out.println(filename);
