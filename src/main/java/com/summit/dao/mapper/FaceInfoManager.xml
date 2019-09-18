@@ -23,7 +23,7 @@
         )
     </insert>
     <sql id="faceInfoCloum">
-      face_id,user_name,gender,birthday,province,city,card_type,card_id,face_image
+      face_id,user_name,gender,birthday,province,city,card_type,card_id,face_image,face_type
     </sql>
     <select id="selectFaceInfoByPage" parameterType="com.summit.entity.FaceInfoManagerEntity" resultMap="facemanager">
         SELECT
@@ -47,6 +47,9 @@
             </if>
             <if test="faceInfoManagerEntity.cardType !=null">
                 AND card_type=#{faceInfoManagerEntity.cardType}
+            </if>
+            <if test="faceInfoManagerEntity.faceType !=null">
+                AND face_type=#{faceInfoManagerEntity.faceType}
             </if>
         </where>
         <if test="page !=null and page.current !=null and page.pageSize !=null">

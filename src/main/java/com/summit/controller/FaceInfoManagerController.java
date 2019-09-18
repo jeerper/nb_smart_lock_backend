@@ -126,6 +126,7 @@ public class FaceInfoManagerController {
                                                                     @ApiParam(value = "城市")@RequestParam(value = "city",required = false,defaultValue ="")String city,
                                                                     @ApiParam(value = "性别，0：男，1：女，2：未知")@RequestParam(value = "gender",required = false)Integer gender,
                                                                     @ApiParam(value = "证件类型，0：身份证，1：护照，2：军官证，3：驾驶证，4：未知")@RequestParam(value = "cardType",required = false)Integer cardType,
+                                                                    @ApiParam(value = "人脸类型，0:内部人员，1:临时人员")@RequestParam(value = "faceType",required = false)Integer faceType,
                                                                     @ApiParam(value = "当前页，大于等于1")@RequestParam(value = "current",required = false)Integer current,
                                                                     @ApiParam(value = "每页条数，大于等于0")@RequestParam(value = "pageSize",required = false)Integer pageSize){
     Page<FaceInfo> faceInfoPage=null;
@@ -138,6 +139,7 @@ public class FaceInfoManagerController {
       faceInfoManagerEntity.setCity(city);
       faceInfoManagerEntity.setGender(gender);
       faceInfoManagerEntity.setCardType(cardType);
+      faceInfoManagerEntity.setFaceType(faceType);
       System.out.println(faceInfoManagerEntity+"ggg");
       faceInfoPage=faceInfoManagerService.selectFaceInfoByPage(faceInfoManagerEntity,new SimplePage(current,pageSize));
     } catch (Exception e) {
