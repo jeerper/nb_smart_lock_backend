@@ -368,4 +368,15 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         return new Page<>(accCtrlProcesses, pageable);
     }
 
+    /**
+     * 根据门禁操作id记录查询当前的操所记录
+     * @param accCtrlProId
+     * @return 当前的操所记录
+     */
+    @Override
+    public AccCtrlProcess selectAccCtrlProcessByAcpId(String accCtrlProId) {
+        AccCtrlProcess accCtrlProcess = accCtrlProcessDao.selectById(accCtrlProId);
+        return accCtrlProcess;
+    }
+
 }

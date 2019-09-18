@@ -129,4 +129,10 @@ public interface AccCtrlProcessService {
      */
     Page<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, Date start, Date end,  Integer current, Integer pageSize);
 
+    /**
+     * 根据门禁操作id记录查询当前的操所记录
+     * @param accCtrlProId
+     * @return 当前的操所记录
+     */
+    AccCtrlProcess selectAccCtrlProcessByAcpId(String accCtrlProId);
 }

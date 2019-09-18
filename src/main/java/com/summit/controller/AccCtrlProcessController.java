@@ -90,17 +90,11 @@ public class AccCtrlProcessController {
             log.error("门禁操作记录id列表为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "门禁操作记录id列表为空", null);
         }
-        try {
-            accCtrlProcessService.delAccCtrlProcessByIdBatch(accCtrlProIds);
-        } catch (Exception e) {
-            log.error("删除门禁操作记录失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "删除门禁操作记录失败", null);
-        }
         //同时删除分析统计表中门禁所对应的开关锁记录数量
         for(String accCtrlProId:accCtrlProIds){
-            AccessControlInfo accessControlInfo = accessControlService.selectAccCtrlByIdBeyondAuthority(accCtrlProId);
-            if (accessControlInfo.getStatus()== 1 || accessControlInfo.getStatus()== 2) {
-                List<AddAccCtrlprocess> addAccCtrlprocesses = addAccCtrlprocessService.selectAddAccCtrlprocessByAccCtrlProId(accCtrlProId);
+            AccCtrlProcess accCtrlProcess = accCtrlProcessService.selectAccCtrlProcessByAcpId(accCtrlProId);
+            if (accCtrlProcess.getProcessType()== 1 || accCtrlProcess.getProcessType()== 2) {
+                List<AddAccCtrlprocess> addAccCtrlprocesses = addAccCtrlprocessService.selectAddAccCtrlprocessByAccCtrlProId(accCtrlProcess.getAccessControlId());
                 if (!CommonUtil.isEmptyList(addAccCtrlprocesses)) {
                     AddAccCtrlprocess addAccCtrlprocess = addAccCtrlprocesses.get(0);
                     Integer accessControlStatusCount = addAccCtrlprocess.getAccessControlStatusCount();
@@ -113,6 +107,12 @@ public class AccCtrlProcessController {
                     addAccCtrlprocessService.update(updateAddAccCtrlprocess);
                 }
             }
+        }
+        try {
+            accCtrlProcessService.delAccCtrlProcessByIdBatch(accCtrlProIds);
+        } catch (Exception e) {
+            log.error("删除门禁操作记录失败");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "删除门禁操作记录失败", null);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "删除门禁操作记录成功", null);
     }
