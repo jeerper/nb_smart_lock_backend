@@ -108,6 +108,7 @@ public class FaceInfoManagerController {
           faceInfo.setBirthday(birth);
           faceInfo.setCardType(faceInfoManagerEntity.getCardType());
           faceInfo.setCardId(faceInfoManagerEntity.getCardId());
+          faceInfo.setFaceType(faceInfoManagerEntity.getFaceType());
           try {
             faceInfoManagerService.insertFaceInfo(faceInfo);
           } catch (Exception e) {

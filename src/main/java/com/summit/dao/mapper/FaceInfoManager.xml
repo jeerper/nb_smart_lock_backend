@@ -16,10 +16,10 @@
     <insert id="insertFaceInfo" parameterType="com.summit.dao.entity.FaceInfo">
         INSERT INTO face_info
         (face_id,face_name,user_name,user_id,gender,birthday,province,city,card_type,
-        card_id,face_match_rate,face_lib_name,face_lib_type,device_ip,pic_snapshot_time,face_lib_id,face_image)
+        card_id,face_match_rate,face_lib_name,face_lib_type,device_ip,pic_snapshot_time,face_lib_id,face_image,face_type)
         VALUES (#{faceid},#{faceName},#{userName},#{userID},#{gender},#{birthday},#{province},#{city},#{cardType},
                 #{cardId},#{faceMatchrate},#{facelibname},#{facelibtype},
-                #{deviceip},#{picsnapshottime},#{facelibid},#{faceImage}
+                #{deviceip},#{picsnapshottime},#{facelibid},#{faceImage},#{faceType}
         )
     </insert>
     <sql id="faceInfoCloum">

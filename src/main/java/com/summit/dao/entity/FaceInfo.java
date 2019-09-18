@@ -105,6 +105,10 @@ public class FaceInfo {
     @TableField(value = "face_image")
     private String faceImage;
 
+    @ApiModelProperty(value = "人脸库类型",name = "faceType")
+    @TableField(value = "face_type")
+    private Integer faceType;
+
     public FaceInfo() {
     }
 }

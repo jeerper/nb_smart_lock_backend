@@ -16,4 +16,5 @@ public class FaceInfoManagerEntity {
     private Integer cardType;
     private String cardId;
     private String faceImage;
+    private Integer faceType;
 }
