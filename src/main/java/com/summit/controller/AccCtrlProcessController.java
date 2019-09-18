@@ -6,12 +6,18 @@ import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
+import com.summit.dao.entity.AccessControlInfo;
+import com.summit.dao.entity.AddAccCtrlprocess;
 import com.summit.service.AccCtrlProcessService;
+import com.summit.service.AccessControlService;
+import com.summit.service.AddAccCtrlprocessService;
 import com.summit.util.CommonUtil;
+import com.summit.util.SummitTools;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.PropertyAccessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +36,10 @@ public class AccCtrlProcessController {
 
     @Autowired
     private AccCtrlProcessService accCtrlProcessService;
+    @Autowired
+    private AddAccCtrlprocessService addAccCtrlprocessService;
+    @Autowired
+    private AccessControlService accessControlService;
 
     @ApiOperation(value = "根据id查询门禁操作记录", notes = "accCtrlProId不能为空。查询唯一一条门禁操作记录")
     @GetMapping(value = "/queryAccCtrlProcessById")
@@ -85,6 +95,24 @@ public class AccCtrlProcessController {
         } catch (Exception e) {
             log.error("删除门禁操作记录失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "删除门禁操作记录失败", null);
+        }
+        //同时删除分析统计表中门禁所对应的开关锁记录数量
+        for(String accCtrlProId:accCtrlProIds){
+            AccessControlInfo accessControlInfo = accessControlService.selectAccCtrlByIdBeyondAuthority(accCtrlProId);
+            if (accessControlInfo.getStatus()== 1 || accessControlInfo.getStatus()== 2) {
+                List<AddAccCtrlprocess> addAccCtrlprocesses = addAccCtrlprocessService.selectAddAccCtrlprocessByAccCtrlProId(accCtrlProId);
+                if (!CommonUtil.isEmptyList(addAccCtrlprocesses)) {
+                    AddAccCtrlprocess addAccCtrlprocess = addAccCtrlprocesses.get(0);
+                    Integer accessControlStatusCount = addAccCtrlprocess.getAccessControlStatusCount();
+                    accessControlStatusCount = accessControlStatusCount - 1;
+                    AddAccCtrlprocess updateAddAccCtrlprocess = new AddAccCtrlprocess();
+                    updateAddAccCtrlprocess.setId(addAccCtrlprocess.getId());
+                    updateAddAccCtrlprocess.setAccessControlId(addAccCtrlprocess.getAccessControlId());
+                    updateAddAccCtrlprocess.setAccessControlStatusCount(accessControlStatusCount);
+                    updateAddAccCtrlprocess.setAccessControlName(addAccCtrlprocess.getAccessControlName());
+                    addAccCtrlprocessService.update(updateAddAccCtrlprocess);
+                }
+            }
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "删除门禁操作记录成功", null);
     }

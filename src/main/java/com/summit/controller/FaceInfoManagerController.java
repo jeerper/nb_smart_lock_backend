@@ -218,7 +218,7 @@ public class FaceInfoManagerController {
         String entryCameraIp = accessControlInfo.getEntryCameraIp();
         String exitCameraIp = accessControlInfo.getExitCameraIp();
         cameraIps.add(entryCameraIp);
-        //cameraIps.add(exitCameraIp);
+        cameraIps.add(exitCameraIp);
       }
       System.out.println("当前人脸所关联的入口和出口摄像头ip"+cameraIps);
       String camraIp = cameraIps.get(0);

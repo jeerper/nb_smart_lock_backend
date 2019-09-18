@@ -19,4 +19,13 @@
             access_control_name=#{accessControlName}
         </where>
     </select>
+    <select id="selectAddAccCtrlprocessDesc" resultMap="accCtrlprocess">
+        SELECT
+        <include refid="accCtrlprocessCloum"/>
+        FROM addup_acc_ctrl_process
+        ORDER BY
+        access_control_status_count
+        ASC
+    </select>
+
 </mapper>

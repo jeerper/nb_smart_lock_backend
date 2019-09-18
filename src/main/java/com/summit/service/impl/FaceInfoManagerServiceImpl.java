@@ -69,6 +69,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         }
         List<FaceInfo> faceInfoList=faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity,null);
        // System.out.println(faceInfoList+"qqq");
+        //faceInfoList=null等于0,不等于null的时候为他本身的大小
         int rowsCount = faceInfoList == null ? 0 : faceInfoList.size();
         Pageable pageable = PageConverter.getPageable(page, rowsCount);
         PageConverter.convertPage(page);
