@@ -130,7 +130,6 @@ public class FaceInfoAccCtrlController {
              getFaceLib =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_GetFaceLib(entryIdentifyId, faceLibGetS);
              exitgetFaceLib =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_GetFaceLib(exitIdentifyId, faceLibGetS);
         }
-
         Integer enLibType=null;//人脸库类型
         Integer ulFaceLibID=null;//人脸库id
         String szLibName=null;//人脸库名称
@@ -168,7 +167,7 @@ public class FaceInfoAccCtrlController {
                      exitaddFaceLib2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, puFaceLibSetS);
                 }
                 HuaWeiSdkApi.printReturnMsg();
-                if (addFaceLib || exitaddFaceLib2 ){//人脸库添加成功，接着添加人脸信息，循环添加
+                if (addFaceLib || exitaddFaceLib2){//人脸库添加成功，接着添加人脸信息，循环添加
                     System.out.println("人脸库添加成功");
                     //新建完再次人脸库查询人脸库取人脸库信息,并且给人脸库信息赋值
                     szLibName="人脸库";
@@ -223,51 +222,8 @@ public class FaceInfoAccCtrlController {
                             addface2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
                             exitaddface2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
                         }
-                        if(addface2 || exitaddface2){
+                        if(addface2 ||exitaddface2 ){
                             System.out.println("添加人脸信息成功");
-                            //添加完人脸信息之后需要提取特征值
-                            PU_FACE_FEATURE_EXTRACT_S puFaceFeatureExtractS=new PU_FACE_FEATURE_EXTRACT_S();
-                            puFaceFeatureExtractS.stFacelib=stFacelib1;
-                            puFaceFeatureExtractS.ulChannelId=new NativeLong(101);
-                            //puFaceFeatureExtractS.taskID=new NativeLong(1);
-                            boolean getTeZheng;
-                            boolean getTeZhengexit;
-                            if(Platform.isWindows()){
-                                 getTeZheng = HWPuSDKLibrary.INSTANCE.IVS_PU_FeatureExtract(entryIdentifyId,puFaceFeatureExtractS);
-                                 getTeZhengexit = HWPuSDKLibrary.INSTANCE.IVS_PU_FeatureExtract(exitIdentifyId,puFaceFeatureExtractS);
-                            }else {
-                                 getTeZheng = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FeatureExtract(entryIdentifyId,puFaceFeatureExtractS);
-                                 getTeZhengexit = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FeatureExtract(exitIdentifyId,puFaceFeatureExtractS);
-                            }
-                            //提取特征值之后接着修改人脸库，使其成为布控状态
-                            if(getTeZheng || getTeZhengexit){
-                                PU_FACE_LIB_SET_S puFaceLibSetS2 =new PU_FACE_LIB_SET_S();
-                                puFaceLibSetS2.enOptType=2;//修改人脸库
-                                PU_FACE_LIB_S  stFacelib2=new PU_FACE_LIB_S();
-                                if(Platform.isWindows()){
-                                    stFacelib2.szLibName=Arrays.copyOf("人脸库".getBytes("gbk"),65);//windows名单库的名称
-                                }else {
-                                    stFacelib2.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);//名单库的名称
-                                }
-                                stFacelib2.uiThreshold=new NativeLong(90);//布控的阀值
-                                stFacelib2.enLibType=2;//人脸库类型2为白名单
-                                stFacelib2.isControl=true;//修改为布控
-                                stFacelib2.ulFaceLibID=new NativeLong(1);
-                                puFaceLibSetS2.stFacelib=stFacelib2;
-                                puFaceLibSetS2.ulChannelId=new NativeLong(101);
-                                boolean bukong;
-                                boolean bukongExit;
-                                if(Platform.isWindows()){
-                                     bukong = HWPuSDKLibrary.INSTANCE.IVS_PU_SetFaceLib(entryIdentifyId, puFaceLibSetS2);
-                                     bukongExit=HWPuSDKLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, puFaceLibSetS2);
-                                }else {
-                                     bukong = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(entryIdentifyId, puFaceLibSetS2);
-                                     bukongExit=HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, puFaceLibSetS2);
-                                }
-                                if (bukong || bukongExit){
-                                    System.out.println("修改布控成功");
-                                }
-                            }
                         }else {
                             System.out.println("添加人脸信息失败");
                         }
@@ -391,48 +347,6 @@ public class FaceInfoAccCtrlController {
                             HuaWeiSdkApi.printReturnMsg();
                             if(addfaceinfo || exitaddfaceinfo){
                                 System.out.println("添加人脸信息成功");
-                                //提取特征值
-                                PU_FACE_FEATURE_EXTRACT_S puFaceFeatureExtractS=new PU_FACE_FEATURE_EXTRACT_S();
-                                puFaceFeatureExtractS.stFacelib=stFacelib1;
-                                puFaceFeatureExtractS.ulChannelId=new NativeLong(101);
-                               // puFaceFeatureExtractS.taskID=new NativeLong(1);
-                                boolean getTeZheng;
-                                boolean getTeZhengexit;
-                                if(Platform.isWindows()){
-                                    getTeZheng = HWPuSDKLibrary.INSTANCE.IVS_PU_FeatureExtract(entryIdentifyId,puFaceFeatureExtractS);
-                                    getTeZhengexit = HWPuSDKLibrary.INSTANCE.IVS_PU_FeatureExtract(exitIdentifyId,puFaceFeatureExtractS);
-                                }else {
-                                    getTeZheng = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FeatureExtract(entryIdentifyId,puFaceFeatureExtractS);
-                                    getTeZhengexit = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FeatureExtract(exitIdentifyId,puFaceFeatureExtractS);
-                                }
-                                if(getTeZheng || getTeZhengexit){
-                                    PU_FACE_LIB_SET_S puFaceLibSetS2 =new PU_FACE_LIB_SET_S();
-                                    puFaceLibSetS2.enOptType=2;//修改人脸库
-                                    PU_FACE_LIB_S  stFacelib2=new PU_FACE_LIB_S();
-                                    if(Platform.isWindows()){
-                                        stFacelib2.szLibName=Arrays.copyOf("人脸库".getBytes("gbk"),65);//windows名单库的名称
-                                    }else {
-                                        stFacelib2.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);//名单库的名称
-                                    }
-                                    stFacelib2.uiThreshold=new NativeLong(90);//布控的阀值
-                                    stFacelib2.enLibType=2;//人脸库类型2为白名单
-                                    stFacelib2.isControl=true;//修改为布控
-                                    stFacelib2.ulFaceLibID=new NativeLong(1);
-                                    puFaceLibSetS2.stFacelib=stFacelib2;
-                                    puFaceLibSetS2.ulChannelId=new NativeLong(101);
-                                    boolean bukong;
-                                    boolean bukongExit;
-                                    if(Platform.isWindows()){
-                                        bukong = HWPuSDKLibrary.INSTANCE.IVS_PU_SetFaceLib(entryIdentifyId, puFaceLibSetS2);
-                                        bukongExit=HWPuSDKLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, puFaceLibSetS2);
-                                    }else {
-                                        bukong = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(entryIdentifyId, puFaceLibSetS2);
-                                        bukongExit=HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, puFaceLibSetS2);
-                                    }
-                                    if (bukong || bukongExit){
-                                        System.out.println("修改布控成功");
-                                    }
-                                }
                             }else {
                                 System.out.println("添加人脸信息失败");
                             }
@@ -606,50 +520,6 @@ public class FaceInfoAccCtrlController {
                                 HuaWeiSdkApi.printReturnMsg();
                                 if(addOneFaceV2 || exitaddOneFaceV2){
                                     System.out.println("添加人脸信息成功2");
-                                    //提取特征值，接着设置布控
-                                    //提取特征值
-                                    PU_FACE_FEATURE_EXTRACT_S puFaceFeatureExtractS=new PU_FACE_FEATURE_EXTRACT_S();
-                                    puFaceFeatureExtractS.stFacelib=stFacelib1;
-                                    puFaceFeatureExtractS.ulChannelId=new NativeLong(101);
-                                    //puFaceFeatureExtractS.taskID=new NativeLong(1);
-                                    boolean getTeZheng;
-                                    boolean getTeZhengexit;
-                                    if(Platform.isWindows()){
-                                        getTeZheng = HWPuSDKLibrary.INSTANCE.IVS_PU_FeatureExtract(entryIdentifyId,puFaceFeatureExtractS);
-                                        getTeZhengexit = HWPuSDKLibrary.INSTANCE.IVS_PU_FeatureExtract(exitIdentifyId,puFaceFeatureExtractS);
-                                    }else {
-                                        getTeZheng = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FeatureExtract(entryIdentifyId,puFaceFeatureExtractS);
-                                        getTeZhengexit = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FeatureExtract(exitIdentifyId,puFaceFeatureExtractS);
-                                    }
-                                    if(getTeZheng || getTeZhengexit){
-                                        //接着设置布控
-                                        PU_FACE_LIB_SET_S puFaceLibSetS2 =new PU_FACE_LIB_SET_S();
-                                        puFaceLibSetS2.enOptType=2;//修改人脸库
-                                        PU_FACE_LIB_S  stFacelib2=new PU_FACE_LIB_S();
-                                        if(Platform.isWindows()){
-                                            stFacelib2.szLibName=Arrays.copyOf("人脸库".getBytes("gbk"),65);//windows名单库的名称
-                                        }else {
-                                            stFacelib2.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);//名单库的名称
-                                        }
-                                        stFacelib2.uiThreshold=new NativeLong(90);//布控的阀值
-                                        stFacelib2.enLibType=2;//人脸库类型2为白名单
-                                        stFacelib2.isControl=true;//修改为布控
-                                        stFacelib2.ulFaceLibID=new NativeLong(1);
-                                        puFaceLibSetS2.stFacelib=stFacelib2;
-                                        puFaceLibSetS2.ulChannelId=new NativeLong(101);
-                                        boolean bukong;
-                                        boolean bukongExit;
-                                        if(Platform.isWindows()){
-                                            bukong = HWPuSDKLibrary.INSTANCE.IVS_PU_SetFaceLib(entryIdentifyId, puFaceLibSetS2);
-                                            bukongExit=HWPuSDKLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, puFaceLibSetS2);
-                                        }else {
-                                            bukong = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(entryIdentifyId, puFaceLibSetS2);
-                                            bukongExit=HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, puFaceLibSetS2);
-                                        }
-                                        if (bukong || bukongExit){
-                                            System.out.println("修改布控成功");
-                                        }
-                                    }
                                 }else {
                                     System.out.println("添加人脸信息失败2");
                                 }
@@ -662,6 +532,65 @@ public class FaceInfoAccCtrlController {
             }
         }else{
             System.out.println("查询人脸库失败");
+        }
+        //添加完人脸信息之后需要提取特征值
+        PU_FACE_LIB_S stFacelib1=new PU_FACE_LIB_S();
+        stFacelib1.enLibType=enLibType;
+        stFacelib1.isControl=true;
+        stFacelib1.ulFaceLibID=new NativeLong(ulFaceLibID);
+        if (Platform.isWindows()){
+            stFacelib1.szLibName=Arrays.copyOf(szLibName.getBytes("gbk"),65);
+        }else {
+            stFacelib1.szLibName=Arrays.copyOf(szLibName.getBytes("utf8"),65);
+        }
+        stFacelib1.uiThreshold=new NativeLong(uiThreshold);
+        PU_FACE_FEATURE_EXTRACT_S puFaceFeatureExtractS=new PU_FACE_FEATURE_EXTRACT_S();
+        puFaceFeatureExtractS.stFacelib=stFacelib1;
+        puFaceFeatureExtractS.ulChannelId=new NativeLong(101);
+        //puFaceFeatureExtractS.taskID=new NativeLong(1);
+        boolean getTeZheng;
+        boolean getTeZhengexit;
+        if(Platform.isWindows()){
+            getTeZheng = HWPuSDKLibrary.INSTANCE.IVS_PU_FeatureExtract(entryIdentifyId,puFaceFeatureExtractS);
+            getTeZhengexit = HWPuSDKLibrary.INSTANCE.IVS_PU_FeatureExtract(exitIdentifyId,puFaceFeatureExtractS);
+        }else {
+            getTeZheng = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FeatureExtract(entryIdentifyId,puFaceFeatureExtractS);
+            getTeZhengexit = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FeatureExtract(exitIdentifyId,puFaceFeatureExtractS);
+        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        //提取特征值之后接着修改人脸库，使其成为布控状态
+        //接着布控
+        PU_FACE_LIB_SET_S puFaceLibSetS2 =new PU_FACE_LIB_SET_S();
+        puFaceLibSetS2.enOptType=2;//修改人脸库
+        PU_FACE_LIB_S  stFacelib2=new PU_FACE_LIB_S();
+        if(Platform.isWindows()){
+            stFacelib2.szLibName=Arrays.copyOf("人脸库".getBytes("GBK"),65);//windows名单库的名称
+        }else {
+            stFacelib2.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);//名单库的名称
+        }
+        stFacelib2.uiThreshold=new NativeLong(90);//布控的阀值
+        stFacelib2.enLibType=2;//人脸库类型2为白名单
+        stFacelib2.isControl=true;//修改为布控
+        stFacelib2.ulFaceLibID=new NativeLong(1);
+        puFaceLibSetS2.stFacelib=stFacelib2;
+        puFaceLibSetS2.ulChannelId=new NativeLong(101);
+        boolean bukong;
+        boolean bukongexit;
+        if(Platform.isWindows()){
+            bukong = HWPuSDKLibrary.INSTANCE.IVS_PU_SetFaceLib(entryIdentifyId, puFaceLibSetS2);
+            bukongexit = HWPuSDKLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, puFaceLibSetS2);
+            HuaWeiSdkApi.printReturnMsg();
+        }else {
+            bukong = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(entryIdentifyId, puFaceLibSetS2);
+            bukongexit = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, puFaceLibSetS2);
+        }
+        if (bukong || bukongexit){
+            System.out.println("修改布控成功");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁授权成功",null);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁授权成功",null);
     }

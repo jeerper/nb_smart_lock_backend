@@ -5,6 +5,7 @@ import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
 import com.summit.dao.entity.AccessControlInfo;
+import com.summit.dao.entity.AddAccCtrlprocess;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.entity.BackLockInfo;
@@ -12,6 +13,7 @@ import com.summit.entity.LockRequest;
 import com.summit.entity.ReportParam;
 import com.summit.entity.SafeReportInfo;
 import com.summit.sdk.huawei.model.LockProcessResultType;
+import com.summit.service.AddAccCtrlprocessService;
 import com.summit.service.LockInfoService;
 import com.summit.util.HttpClient;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +36,8 @@ public class NBLockServiceImpl {
     private LockInfoDao lockInfoDao;
     @Autowired
     private AccessControlDao accessControlDao;
+    @Autowired
+    private AddAccCtrlprocessService addAccCtrlprocessService;
 
     /**
      * 开锁操作,同时控制超时时间
@@ -86,8 +90,25 @@ public class NBLockServiceImpl {
                     msg[0] = backLockInfo.getContent();
                 }
                 //todo:插入门禁开关锁记录统计表
-
-
+                String accessControlName = accessControlInfo.getAccessControlName();
+                String accessControlId = accessControlInfo.getAccessControlId();
+                AddAccCtrlprocess accCtrlprocess=addAccCtrlprocessService.selectAccCtrlByAccCtrlName(accessControlName);
+                if (accCtrlprocess==null){
+                    AddAccCtrlprocess addAccCtrlprocess=new AddAccCtrlprocess();
+                    Integer accessControlStatusCount=0;
+                    addAccCtrlprocess.setAccessControlId(accessControlId);
+                    addAccCtrlprocess.setAccessControlName(accessControlName);
+                    addAccCtrlprocess.setAccessControlStatusCount(accessControlStatusCount);
+                    int add=addAccCtrlprocessService.insert(addAccCtrlprocess);
+                }else {
+                    Integer accessControlStatusCount = accCtrlprocess.getAccessControlStatusCount();
+                    AddAccCtrlprocess addAccCtrlprocess=new AddAccCtrlprocess();
+                    accessControlStatusCount=accessControlStatusCount+1;
+                    addAccCtrlprocess.setAccessControlId(accessControlId);
+                    addAccCtrlprocess.setAccessControlName(accessControlName);
+                    addAccCtrlprocess.setAccessControlStatusCount(accessControlStatusCount);
+                    int updateAddAccCtrl=addAccCtrlprocessService.update(addAccCtrlprocess);
+                }
             } else {
                 resultCode[0] = ResponseCodeEnum.CODE_9999;
                 msg[0] = ResponseCodeEnum.CODE_9999.getMessage();
