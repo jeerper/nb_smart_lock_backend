@@ -12,18 +12,20 @@
        <result column="card_id"  jdbcType="VARCHAR" property="cardId"/>
        <result column="birthday" jdbcType="TIMESTAMP" property="birthday" />
        <result column="face_image" jdbcType="VARCHAR" property="faceImage"/>
+       <result column="face_type" jdbcType="VARCHAR" property="faceType"/>
+       <result column="face_endTime" jdbcType="TIMESTAMP" property="faceEndTime"/>
    </resultMap>
     <insert id="insertFaceInfo" parameterType="com.summit.dao.entity.FaceInfo">
         INSERT INTO face_info
         (face_id,face_name,user_name,user_id,gender,birthday,province,city,card_type,
-        card_id,face_match_rate,face_lib_name,face_lib_type,device_ip,pic_snapshot_time,face_lib_id,face_image,face_type)
+        card_id,face_match_rate,face_lib_name,face_lib_type,device_ip,pic_snapshot_time,face_lib_id,face_image,face_type,face_startTime,face_endTime)
         VALUES (#{faceid},#{faceName},#{userName},#{userID},#{gender},#{birthday},#{province},#{city},#{cardType},
                 #{cardId},#{faceMatchrate},#{facelibname},#{facelibtype},
-                #{deviceip},#{picsnapshottime},#{facelibid},#{faceImage},#{faceType}
+                #{deviceip},#{picsnapshottime},#{facelibid},#{faceImage},#{faceType},#{faceStartTime},#{faceEndTime}
         )
     </insert>
     <sql id="faceInfoCloum">
-      face_id,user_name,gender,birthday,province,city,card_type,card_id,face_image,face_type
+      face_id,user_name,gender,birthday,province,city,card_type,card_id,face_image,face_type,face_endTime
     </sql>
     <select id="selectFaceInfoByPage" parameterType="com.summit.entity.FaceInfoManagerEntity" resultMap="facemanager">
         SELECT
@@ -50,6 +52,9 @@
             </if>
             <if test="faceInfoManagerEntity.faceType !=null">
                 AND face_type=#{faceInfoManagerEntity.faceType}
+            </if>
+            <if test="faceInfoManagerEntity.faceEndTime !=null">
+                AND face_endTime=#{faceInfoManagerEntity.faceEndTime}
             </if>
         </where>
         <if test="page !=null and page.current !=null and page.pageSize !=null">

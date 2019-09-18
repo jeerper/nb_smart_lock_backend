@@ -17,4 +17,5 @@ public class FaceInfoManagerEntity {
     private String cardId;
     private String faceImage;
     private Integer faceType;
+    private String faceEndTime;
 }

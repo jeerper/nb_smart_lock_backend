@@ -109,7 +109,14 @@ public class FaceInfoManagerController {
           faceInfo.setCardType(faceInfoManagerEntity.getCardType());
           faceInfo.setCardId(faceInfoManagerEntity.getCardId());
           faceInfo.setFaceType(faceInfoManagerEntity.getFaceType());
-          try {
+          SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
+          Date date=new Date();
+          String startTime = df.format(date);
+          Date faceStartTime = CommonUtil.dateFormat.get().parse(startTime);
+          faceInfo.setFaceStartTime(faceStartTime);
+          Date faceEndTime = CommonUtil.dateFormat.get().parse(faceInfoManagerEntity.getFaceEndTime());
+          faceInfo.setFaceEndTime(faceEndTime);
+    try {
             faceInfoManagerService.insertFaceInfo(faceInfo);
           } catch (Exception e) {
             e.printStackTrace();
