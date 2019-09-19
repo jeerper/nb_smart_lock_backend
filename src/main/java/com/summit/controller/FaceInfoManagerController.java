@@ -109,13 +109,15 @@ public class FaceInfoManagerController {
           faceInfo.setCardType(faceInfoManagerEntity.getCardType());
           faceInfo.setCardId(faceInfoManagerEntity.getCardId());
           faceInfo.setFaceType(faceInfoManagerEntity.getFaceType());
-          SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
-          Date date=new Date();
-          String startTime = df.format(date);
-          Date faceStartTime = CommonUtil.dateFormat.get().parse(startTime);
-          faceInfo.setFaceStartTime(faceStartTime);
-          Date faceEndTime = CommonUtil.dateFormat.get().parse(faceInfoManagerEntity.getFaceEndTime());
-          faceInfo.setFaceEndTime(faceEndTime);
+          if (faceInfoManagerEntity.getFaceType()!=0) {
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
+            Date date = new Date();
+            String startTime = df.format(date);
+            Date faceStartTime = CommonUtil.dateFormat.get().parse(startTime);
+            faceInfo.setFaceStartTime(faceStartTime);
+            Date faceEndTime = CommonUtil.dateFormat.get().parse(faceInfoManagerEntity.getFaceEndTime());
+            faceInfo.setFaceEndTime(faceEndTime);
+          }
     try {
             faceInfoManagerService.insertFaceInfo(faceInfo);
           } catch (Exception e) {
@@ -222,13 +224,13 @@ public class FaceInfoManagerController {
     String faceid = faceInfo.getFaceid();
     List<AccessControlInfo> accessControlInfos=faceInfoAccCtrlService.seleAccCtrlInfoByFaceID(faceid);
     System.out.println("门禁信息"+accessControlInfos);
-    if(accessControlInfos !=null && !accessControlInfos.isEmpty()){
+    if(!CommonUtil.isEmptyList(accessControlInfos)){
       List<String> cameraIps=new ArrayList<>();
       for(AccessControlInfo accessControlInfo:accessControlInfos){
         String entryCameraIp = accessControlInfo.getEntryCameraIp();
-        String exitCameraIp = accessControlInfo.getExitCameraIp();
+       // String exitCameraIp = accessControlInfo.getExitCameraIp();
         cameraIps.add(entryCameraIp);
-        cameraIps.add(exitCameraIp);
+       // cameraIps.add(exitCameraIp);
       }
       System.out.println("当前人脸所关联的入口和出口摄像头ip"+cameraIps);
       String camraIp = cameraIps.get(0);
