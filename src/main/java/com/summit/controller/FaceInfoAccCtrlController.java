@@ -91,7 +91,6 @@ public class FaceInfoAccCtrlController {
         //把人脸信息集合先加入到入口摄像头中
         DeviceInfo entrydeviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(entryCameraIp);
         NativeLong entryIdentifyId = entrydeviceInfo.getUlIdentifyId();
-        //NativeLong entryIdentifyId=new NativeLong(2);
         System.out.println(entryIdentifyId+"：entryIdentifyId");
 
         //把人脸信息再加入到出口摄像头中

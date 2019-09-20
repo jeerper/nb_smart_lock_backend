@@ -1,10 +1,12 @@
 package com.summit.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.summit.cbb.utils.page.Pageable;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlRealTimeEntity;
+import com.summit.dao.entity.FaceInfoAccCtrl;
 import com.summit.dao.repository.AccCtrlRealTimeDao;
 import com.summit.service.AccCtrlRealTimeService;
 import com.summit.util.CommonUtil;
@@ -132,5 +134,18 @@ public class AccCtrlRealTimeServiceImpl implements AccCtrlRealTimeService {
         if (date == null)
             return null;
         return date.getTime();
+    }
+
+    /**
+     * 根据门禁实时id查询实时记录
+     * @param accessControlId 门禁id
+     * @return 门禁实时记录
+     */
+    @Override
+    public AccCtrlRealTimeEntity selectRealTimeInfoByAccCtrlId(String accessControlId) {
+        QueryWrapper<AccCtrlRealTimeEntity> wrapper=new QueryWrapper<>();
+        List<AccCtrlRealTimeEntity> accCtrlRealTimeEntities = accCtrlRealTimeDao.selectList(wrapper.eq("access_control_id", accessControlId));
+        AccCtrlRealTimeEntity accCtrlRealTimeEntity = accCtrlRealTimeEntities.get(0);
+        return accCtrlRealTimeEntity;
     }
 }

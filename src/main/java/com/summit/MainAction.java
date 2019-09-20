@@ -20,6 +20,7 @@ public class MainAction {
     public static final String SnapshotFileName="snapshot";
     public static final String FaceLib="facelib";
     public static final String FaceInfo="faceInfo";
+    public static final String RealFaceInfo="realfaceInfo";
     public static final String UpdateFaceInfo="updatefaceInfo";
     public static void main(String[] args) {
         SpringApplication.run(MainAction.class, args);

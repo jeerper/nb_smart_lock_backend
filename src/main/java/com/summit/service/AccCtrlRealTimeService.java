@@ -54,4 +54,10 @@ public interface AccCtrlRealTimeService {
      */
     Long selectLastUpdatetime();
 
+    /**
+     * 根据门禁实时id查询实时记录
+     * @param accessControlId 门禁id
+     * @return 门禁实时记录
+     */
+    AccCtrlRealTimeEntity selectRealTimeInfoByAccCtrlId(String accessControlId);
 }

@@ -3,6 +3,10 @@ package com.summit.util;
 import com.summit.constants.CommonConstants;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -105,4 +109,48 @@ public class CommonUtil {
     public static boolean isEmptyStr(String str) {
         return str == null || str.trim().length() == 0;
     }
+
+    /**
+     *
+     * @param beginTime 开始时间
+     * @param endTime 截至时间
+     * @return true 或 false
+     * @throws ParseException
+     */
+    public static boolean isInTime(Date beginTime,Date endTime) throws ParseException {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
+        Date date=new Date();
+        String nowtime = df.format(date);
+        long nowtime1 = df.parse(nowtime).getTime();
+        long biegtime = beginTime.getTime();
+        long endtimeTime = endTime.getTime();
+        if (nowtime1>=biegtime && nowtime1<=endtimeTime){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     *  读取文件的流
+     * @param path
+     * @return 文件内容
+     */
+    public static String readFile(String path){
+        BufferedReader reader=null;
+        String lastStr="";
+        try {
+            FileInputStream fileInputStream = new FileInputStream(path);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
+            reader=new BufferedReader(inputStreamReader);
+            String tempString=null;
+            while ((tempString = reader.readLine()) != null){
+                lastStr+=tempString;
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return lastStr;
+    }
+
 }

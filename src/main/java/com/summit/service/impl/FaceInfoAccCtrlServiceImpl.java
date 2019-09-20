@@ -132,7 +132,7 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
     public List<AccessControlInfo> seleAccCtrlInfoByFaceID(String faceid) {
         QueryWrapper<FaceInfoAccCtrl> wrapper=new QueryWrapper<>();
         List<FaceInfoAccCtrl> faceInfoAccCtrls = faceInfoAccCtrlDao.selectList(wrapper.eq("face_id", faceid));
-        System.out.println(faceInfoAccCtrls+"关联门禁");
+        //System.out.println(faceInfoAccCtrls+"关联门禁");
         List<AccessControlInfo> accessControlInfos=new ArrayList<>();
         for(FaceInfoAccCtrl faceInfoAccCtrl:faceInfoAccCtrls){
             AccessControlInfo accessControlInfo = accessControlService.selectAccCtrlByIdBeyondAuthority(faceInfoAccCtrl.getAccessControlId());

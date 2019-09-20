@@ -119,13 +119,13 @@ public class FaceInfoManagerController {
             faceInfo.setFaceEndTime(faceEndTime);
           }
     try {
-            faceInfoManagerService.insertFaceInfo(faceInfo);
-          } catch (Exception e) {
+      int i = faceInfoManagerService.insertFaceInfo(faceInfo);
+    } catch (Exception e) {
             e.printStackTrace();
             log.error("人脸信息录入名称已存在");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸信息录入名称已存在", CommonConstants.UPDATE_ERROR);
           }
-          return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"录入人脸信息成功", 0);
+          return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"录入人脸信息成功",1);
   }
   @ApiOperation(value = "根据所传一个或多个条件组合分页查询人脸信息记录",notes = "各字段都为空则查询全部。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
   @GetMapping(value = "/selectFaceInfoByPage")
@@ -233,7 +233,7 @@ public class FaceInfoManagerController {
        // cameraIps.add(exitCameraIp);
       }
       System.out.println("当前人脸所关联的入口和出口摄像头ip"+cameraIps);
-      String camraIp = cameraIps.get(0);
+      String camraIp = cameraIps.get(0);//其他摄像头到时需要遍历
       DeviceInfo deviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(camraIp);
       NativeLong ulIdentifyId = deviceInfo.getUlIdentifyId();
     //查询人脸库的人脸信息

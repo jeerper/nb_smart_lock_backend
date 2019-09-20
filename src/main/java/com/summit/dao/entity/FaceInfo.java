@@ -115,7 +115,7 @@ public class FaceInfo {
     @TableField(value = "face_startTime")
     private Date faceStartTime;
 
-    @ApiModelProperty(value = "当前人脸录入开始时间",name = "faceEndTime")
+    @ApiModelProperty(value = "当前人脸有限截至时间",name = "faceEndTime")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern="yyyy-MM-dd", timezone="GMT+8")
     @TableField(value = "face_endTime")

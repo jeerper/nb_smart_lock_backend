@@ -49,4 +49,6 @@ public interface AccCtrlRealTimeDao extends BaseMapper<AccCtrlRealTimeEntity> {
      */
     Date selectLastUpdatetime();
 
+
+
 }
