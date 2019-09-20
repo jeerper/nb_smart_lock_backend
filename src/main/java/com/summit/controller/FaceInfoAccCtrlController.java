@@ -90,12 +90,21 @@ public class FaceInfoAccCtrlController {
 
         //把人脸信息集合先加入到入口摄像头中
         DeviceInfo entrydeviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(entryCameraIp);
-        NativeLong entryIdentifyId = entrydeviceInfo.getUlIdentifyId();
+        NativeLong entryIdentifyId;
+        if (entrydeviceInfo==null){
+            entryIdentifyId=new NativeLong(100);
+        }else {
+            entryIdentifyId= entrydeviceInfo.getUlIdentifyId();
+        }
         System.out.println(entryIdentifyId+"：entryIdentifyId");
-
         //把人脸信息再加入到出口摄像头中
         DeviceInfo exitdeviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(exitCameraIp);
-        NativeLong exitIdentifyId = exitdeviceInfo.getUlIdentifyId();
+        NativeLong exitIdentifyId;
+        if (exitdeviceInfo==null){
+             exitIdentifyId = new NativeLong(222);
+        }else {
+             exitIdentifyId = exitdeviceInfo.getUlIdentifyId();
+        }
         System.out.println(exitIdentifyId+"：exitIdentifyId");
         /**1 先查询人脸库，如果有人脸库，再查询人脸信息，如果没有则新建人脸库，直接添加人脸信息，如果有人脸库，没有人脸信息，直接添加人脸信息
          * 2 如果有人脸库再查询人脸信息，
@@ -274,7 +283,6 @@ public class FaceInfoAccCtrlController {
                 faceInfoFindS.stCondition=faceFindCondition;
                 faceInfoFindS.stFacelib=facelib2;
                 faceInfoFindS.uStartIndex=0;
-                //faceInfoFindS.uFindNum=2;
                 boolean getFace;
                 boolean exitgetFace;
                 if(Platform.isWindows()){
@@ -336,12 +344,13 @@ public class FaceInfoAccCtrlController {
                             boolean exitaddfaceinfo;
                             if(Platform.isWindows()){
                                  addfaceinfo = HWPuSDKLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
+                                 HuaWeiSdkApi.printReturnMsg();
                                  exitaddfaceinfo = HWPuSDKLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
+                                 HuaWeiSdkApi.printReturnMsg();
                             }else {
                                  addfaceinfo = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, puFaceInfoAdd, filename);
                                  exitaddfaceinfo = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, puFaceInfoAdd, filename);
                             }
-                            HuaWeiSdkApi.printReturnMsg();
                             if(addfaceinfo || exitaddfaceinfo){
                                 System.out.println("添加人脸信息成功");
                             }else {

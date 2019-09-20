@@ -236,7 +236,13 @@ public class FaceInfoManagerController {
       System.out.println("当前人脸所关联的入口和出口摄像头ip"+cameraIps);
       for(String cameraIp:cameraIps){
         DeviceInfo deviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(cameraIp);
-        NativeLong ulIdentifyId = deviceInfo.getUlIdentifyId();
+        NativeLong ulIdentifyId;
+        if (deviceInfo==null){
+           ulIdentifyId=new NativeLong(222);
+        }else {
+           ulIdentifyId = deviceInfo.getUlIdentifyId();
+        }
+        System.out.println(ulIdentifyId+"222222");
         //查询人脸库的人脸信息
         String faceinfoPath=new StringBuilder()
                 .append(SystemUtil.getUserInfo().getCurrentDir())
@@ -365,10 +371,9 @@ public class FaceInfoManagerController {
         }else {
           update = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FaceInfoModify(ulIdentifyId, updateFaceInfo);
         }
-        HuaWeiSdkApi.printReturnMsg();
         if(update){
-          System.out.println("更新摄像头人脸信息成功");
-          //更新成功接着提取特征值
+           System.out.println("更新摄像头人脸信息成功");
+          //不管是否更新成功都提取特征值
           //提取特征值
           PU_FACE_FEATURE_EXTRACT_S puFaceFeatureExtractS=new PU_FACE_FEATURE_EXTRACT_S();
           puFaceFeatureExtractS.stFacelib=stFacelib;
@@ -401,15 +406,12 @@ public class FaceInfoManagerController {
           }else {
             bukong = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(ulIdentifyId, puFaceLibSetS2);
           }
-          if (bukong){
-            System.out.println("修改布控成功");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息成功",null);
-          }
         }else{
-          System.out.println("更新摄像头人脸信息失败");
-          return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息失败",null);
+           System.out.println("更新摄像头人脸信息失败");
+          //return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"更新人脸摄像头部分未成功",null);
         }
       }
+      return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸摄像头全部成功",null);
     }
     return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息成功",null);
   }
