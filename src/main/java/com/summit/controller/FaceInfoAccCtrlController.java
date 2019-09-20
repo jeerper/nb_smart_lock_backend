@@ -95,10 +95,8 @@ public class FaceInfoAccCtrlController {
 
         //把人脸信息再加入到出口摄像头中
         DeviceInfo exitdeviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(exitCameraIp);
-      //  NativeLong exitIdentifyId = exitdeviceInfo.getUlIdentifyId();
-        NativeLong exitIdentifyId=new NativeLong(2);
+        NativeLong exitIdentifyId = exitdeviceInfo.getUlIdentifyId();
         System.out.println(exitIdentifyId+"：exitIdentifyId");
-
         /**1 先查询人脸库，如果有人脸库，再查询人脸信息，如果没有则新建人脸库，直接添加人脸信息，如果有人脸库，没有人脸信息，直接添加人脸信息
          * 2 如果有人脸库再查询人脸信息，
          * 3 若传入集合列表为空，则直接删除人脸
