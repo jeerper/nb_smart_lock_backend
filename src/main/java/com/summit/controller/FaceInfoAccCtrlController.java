@@ -541,15 +541,15 @@ public class FaceInfoAccCtrlController {
         }
         //添加完人脸信息之后需要提取特征值
         PU_FACE_LIB_S stFacelib1=new PU_FACE_LIB_S();
-        stFacelib1.enLibType=enLibType;
+        stFacelib1.enLibType=2;
         stFacelib1.isControl=true;
-        stFacelib1.ulFaceLibID=new NativeLong(ulFaceLibID);
+        stFacelib1.ulFaceLibID=new NativeLong(1);
         if (Platform.isWindows()){
-            stFacelib1.szLibName=Arrays.copyOf(szLibName.getBytes("gbk"),65);
+            stFacelib1.szLibName=Arrays.copyOf("人脸库".getBytes("gbk"),65);
         }else {
-            stFacelib1.szLibName=Arrays.copyOf(szLibName.getBytes("utf8"),65);
+            stFacelib1.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);
         }
-        stFacelib1.uiThreshold=new NativeLong(uiThreshold);
+        stFacelib1.uiThreshold=new NativeLong(90);
         PU_FACE_FEATURE_EXTRACT_S puFaceFeatureExtractS=new PU_FACE_FEATURE_EXTRACT_S();
         puFaceFeatureExtractS.stFacelib=stFacelib1;
         puFaceFeatureExtractS.ulChannelId=new NativeLong(101);
@@ -594,11 +594,18 @@ public class FaceInfoAccCtrlController {
             bukong = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(entryIdentifyId, puFaceLibSetS2);
             bukongexit = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, puFaceLibSetS2);
         }
+        if (bukong && bukongexit){
+            System.out.println("修改布控成功");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁出口、入口摄像头授权成功",null);
+        }
         if (bukong || bukongexit){
             System.out.println("修改布控成功");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁授权成功",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁入口摄像头授权成功,出口摄像头ip地址不正确",null);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁授权成功",null);
+        System.out.println("修改布控失败");
+        int i=faceInfoAccCtrlService.deleteFaceAccCtrlByAccCtlId(accessControlId);
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸门禁授权失败,摄像头ip地址不正确",null);
+
     }
 
     @ApiOperation(value = "根据门禁id查询已经授权的人脸信息列表",notes = "查询已经和门禁关联的人脸信息列表")

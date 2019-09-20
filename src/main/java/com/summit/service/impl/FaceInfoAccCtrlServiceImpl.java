@@ -141,6 +141,16 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
         System.out.println("关联门禁"+accessControlInfos);
         return accessControlInfos;
     }
+    /**
+     * 根据门禁id删除门禁授权记录
+     * @param accessControlId
+     * @return -1删除不成功
+     */
+    public int deleteFaceAccCtrlByAccCtlId(String accessControlId) {
+        QueryWrapper<FaceInfoAccCtrl> wrapper=new QueryWrapper<>();
+        int i = faceInfoAccCtrlDao.delete(wrapper.eq("access_control_id", accessControlId));
+        return i;
+    }
 
     private int insertFaceAccCtrl(List<FaceInfoAccCtrl> faceInfoAccCtrls) {
         if(CommonUtil.isEmptyList(faceInfoAccCtrls)){

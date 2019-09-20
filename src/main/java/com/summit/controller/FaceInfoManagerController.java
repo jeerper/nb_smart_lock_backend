@@ -408,10 +408,10 @@ public class FaceInfoManagerController {
           }
         }else{
            System.out.println("更新摄像头人脸信息失败");
-          //return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"更新人脸摄像头部分未成功",null);
+          return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"更新人脸信息成功、更新摄像头人脸信息部分失败,部分摄像头ip地址不正确",null);
         }
       }
-      return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸摄像头全部成功",null);
+      return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息以及摄像头人脸信息全部成功",null);
     }
     return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息成功",null);
   }
