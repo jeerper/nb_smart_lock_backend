@@ -596,11 +596,11 @@ public class FaceInfoAccCtrlController {
         }
         if (bukong && bukongexit){
             System.out.println("修改布控成功");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁出口、入口摄像头授权成功",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁摄像头全部授权成功",null);
         }
         if (bukong || bukongexit){
             System.out.println("修改布控成功");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁入口摄像头授权成功,出口摄像头ip地址不正确",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁摄像头一部分授权成功",null);
         }
         System.out.println("修改布控失败");
         int i=faceInfoAccCtrlService.deleteFaceAccCtrlByAccCtlId(accessControlId);
