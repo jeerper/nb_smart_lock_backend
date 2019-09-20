@@ -228,97 +228,98 @@ public class FaceInfoManagerController {
       List<String> cameraIps=new ArrayList<>();
       for(AccessControlInfo accessControlInfo:accessControlInfos){
         String entryCameraIp = accessControlInfo.getEntryCameraIp();
-       // String exitCameraIp = accessControlInfo.getExitCameraIp();
+        String exitCameraIp = accessControlInfo.getExitCameraIp();
         cameraIps.add(entryCameraIp);
-       // cameraIps.add(exitCameraIp);
+        cameraIps.add(exitCameraIp);
       }
+      // String camraIp = cameraIps.get(0);//其他摄像头到时需要遍历
       System.out.println("当前人脸所关联的入口和出口摄像头ip"+cameraIps);
-      String camraIp = cameraIps.get(0);//其他摄像头到时需要遍历
-      DeviceInfo deviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(camraIp);
-      NativeLong ulIdentifyId = deviceInfo.getUlIdentifyId();
-    //查询人脸库的人脸信息
-      String faceinfoPath=new StringBuilder()
-            .append(SystemUtil.getUserInfo().getCurrentDir())
-            .append(File.separator)
-            .append(MainAction.UpdateFaceInfo)
-            .toString();
-      File face=new File(faceinfoPath);
-      if(!face.exists()){
-      face.mkdirs();
-      }
-      PU_FACE_INFO_FIND_S faceInfoFindS = new PU_FACE_INFO_FIND_S();
-      faceInfoFindS.ulChannelId=new NativeLong(101);
-      String faceInfoPath=faceinfoPath+"/updatefaceInfo.json";
-      faceInfoFindS.szFindResultPath= Arrays.copyOf(faceInfoPath.getBytes(),129);
-      PU_FACE_LIB_S facelib2 = new PU_FACE_LIB_S();
-      facelib2.ulFaceLibID=new NativeLong(1);
-      if(Platform.isWindows()){
-        facelib2.szLibName=Arrays.copyOf("人脸库".getBytes("gbk"),65);
-      }else {
-        facelib2.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);
-      }
-      facelib2.enLibType=2;
-      facelib2.uiThreshold=new NativeLong(90);
-      FACE_FIND_CONDITION faceFindCondition=new FACE_FIND_CONDITION();
-      faceFindCondition.enFeatureStatus=1;
-      faceFindCondition.szName= ByteBuffer.allocate(64).put("".getBytes()).array();
-      faceFindCondition.szProvince=ByteBuffer.allocate(32).put("".getBytes()).array();
-      faceFindCondition.szCity=ByteBuffer.allocate(48).put("".getBytes()).array();
-      faceFindCondition.szCardID=ByteBuffer.allocate(32).put("".getBytes()).array();
-      faceFindCondition.szCity=ByteBuffer.allocate(48).put("".getBytes()).array();
-      faceFindCondition.enGender=-1;
-      faceFindCondition.enCardType=-1;
-      faceInfoFindS.stCondition=faceFindCondition;
-      faceInfoFindS.stFacelib=facelib2;
-      faceInfoFindS.uStartIndex=0;
-      boolean getFace;
-      if(Platform.isWindows()){
-         getFace =HWPuSDKLibrary.INSTANCE.IVS_PU_FindFaceInfo(ulIdentifyId, faceInfoFindS);
-      }else {
-         getFace =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(ulIdentifyId, faceInfoFindS);
-      }
-      if (getFace){
-        System.out.println("查询人脸信息成功");
-        //查询到人脸信息json数据
-        String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator+"updatefaceInfo"+File.separator+"updatefaceInfo.json");
-        String facejson = readFile(getfaceInfoPath);
-        JSONObject objectface=new JSONObject(facejson);
-        JSONArray faceRecordArry = objectface.getJSONArray("FaceRecordArry");
-        System.out.println("人脸信息集合："+faceRecordArry);
-        ArrayList<FaceInfo> faceInfos=new ArrayList<>();
-        for (int i=0; i<faceRecordArry.size();i++){
-          FaceInfo updatefaceInfo=new FaceInfo();
-          JSONObject faceInfojson=faceRecordArry.getJSONObject(i);
-          updatefaceInfo.setFaceid(faceInfojson.getStr("ID"));
-          String userName=faceInfojson.getStr("Name");
-          System.out.println("用户名："+userName);
-          updatefaceInfo.setUserName(userName);
-          String gender=faceInfojson.getStr("Gender");
-          updatefaceInfo.setGender(Integer.parseInt(gender));
-          String birthday=faceInfojson.getStr("Birthday");
-          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-          Date birthday1 = sdf.parse(birthday);
-          updatefaceInfo.setBirthday(birthday1);
-          String province=faceInfojson.getStr("Province");
-          updatefaceInfo.setProvince(province);
-          String city = faceInfojson.getStr("City");
-          updatefaceInfo.setCity(city);
-          String cardType = faceInfojson.getStr("CardType");
-          updatefaceInfo.setCardType(Integer.parseInt(cardType));
-          String cardID = faceInfojson.getStr("CardID");
-          updatefaceInfo.setCardId(cardID);
-          faceInfos.add(updatefaceInfo);
+      for(String cameraIp:cameraIps){
+        DeviceInfo deviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(cameraIp);
+        NativeLong ulIdentifyId = deviceInfo.getUlIdentifyId();
+        //查询人脸库的人脸信息
+        String faceinfoPath=new StringBuilder()
+                .append(SystemUtil.getUserInfo().getCurrentDir())
+                .append(File.separator)
+                .append(MainAction.UpdateFaceInfo)
+                .toString();
+        File face=new File(faceinfoPath);
+        if(!face.exists()){
+          face.mkdirs();
         }
-        System.out.println("原来的人脸信息"+oldFaceInfo);
-        System.out.println("从摄像头查询到的人脸集合对象："+faceInfos);
-        for (FaceInfo houtaifaceInfo:faceInfos){
-          if (houtaifaceInfo.getUserName().equals(oldFaceInfo.getUserName())){
-            ulFaceId=houtaifaceInfo.getFaceid();
+        PU_FACE_INFO_FIND_S faceInfoFindS = new PU_FACE_INFO_FIND_S();
+        faceInfoFindS.ulChannelId=new NativeLong(101);
+        String faceInfoPath=faceinfoPath+"/updatefaceInfo.json";
+        faceInfoFindS.szFindResultPath= Arrays.copyOf(faceInfoPath.getBytes(),129);
+        PU_FACE_LIB_S facelib2 = new PU_FACE_LIB_S();
+        facelib2.ulFaceLibID=new NativeLong(1);
+        if(Platform.isWindows()){
+          facelib2.szLibName=Arrays.copyOf("人脸库".getBytes("gbk"),65);
+        }else {
+          facelib2.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);
+        }
+        facelib2.enLibType=2;
+        facelib2.uiThreshold=new NativeLong(90);
+        FACE_FIND_CONDITION faceFindCondition=new FACE_FIND_CONDITION();
+        faceFindCondition.enFeatureStatus=1;
+        faceFindCondition.szName= ByteBuffer.allocate(64).put("".getBytes()).array();
+        faceFindCondition.szProvince=ByteBuffer.allocate(32).put("".getBytes()).array();
+        faceFindCondition.szCity=ByteBuffer.allocate(48).put("".getBytes()).array();
+        faceFindCondition.szCardID=ByteBuffer.allocate(32).put("".getBytes()).array();
+        faceFindCondition.szCity=ByteBuffer.allocate(48).put("".getBytes()).array();
+        faceFindCondition.enGender=-1;
+        faceFindCondition.enCardType=-1;
+        faceInfoFindS.stCondition=faceFindCondition;
+        faceInfoFindS.stFacelib=facelib2;
+        faceInfoFindS.uStartIndex=0;
+        boolean getFace;
+        if(Platform.isWindows()){
+          getFace =HWPuSDKLibrary.INSTANCE.IVS_PU_FindFaceInfo(ulIdentifyId, faceInfoFindS);
+        }else {
+          getFace =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(ulIdentifyId, faceInfoFindS);
+        }
+        if (getFace){
+          System.out.println("查询人脸信息成功");
+          //查询到人脸信息json数据
+          String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator+"updatefaceInfo"+File.separator+"updatefaceInfo.json");
+          String facejson = readFile(getfaceInfoPath);
+          JSONObject objectface=new JSONObject(facejson);
+          JSONArray faceRecordArry = objectface.getJSONArray("FaceRecordArry");
+          System.out.println("人脸信息集合："+faceRecordArry);
+          ArrayList<FaceInfo> faceInfos=new ArrayList<>();
+          for (int i=0; i<faceRecordArry.size();i++){
+            FaceInfo updatefaceInfo=new FaceInfo();
+            JSONObject faceInfojson=faceRecordArry.getJSONObject(i);
+            updatefaceInfo.setFaceid(faceInfojson.getStr("ID"));
+            String userName=faceInfojson.getStr("Name");
+            System.out.println("用户名："+userName);
+            updatefaceInfo.setUserName(userName);
+            String gender=faceInfojson.getStr("Gender");
+            updatefaceInfo.setGender(Integer.parseInt(gender));
+            String birthday=faceInfojson.getStr("Birthday");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date birthday1 = sdf.parse(birthday);
+            updatefaceInfo.setBirthday(birthday1);
+            String province=faceInfojson.getStr("Province");
+            updatefaceInfo.setProvince(province);
+            String city = faceInfojson.getStr("City");
+            updatefaceInfo.setCity(city);
+            String cardType = faceInfojson.getStr("CardType");
+            updatefaceInfo.setCardType(Integer.parseInt(cardType));
+            String cardID = faceInfojson.getStr("CardID");
+            updatefaceInfo.setCardId(cardID);
+            faceInfos.add(updatefaceInfo);
+          }
+          System.out.println("原来的人脸信息"+oldFaceInfo);
+          System.out.println("从摄像头查询到的人脸集合对象："+faceInfos);
+          for (FaceInfo houtaifaceInfo:faceInfos){
+            if (houtaifaceInfo.getUserName().equals(oldFaceInfo.getUserName())){
+              ulFaceId=houtaifaceInfo.getFaceid();
+            }
           }
         }
-      }
-      PU_FACE_INFO_MODIFY_S  updateFaceInfo=new PU_FACE_INFO_MODIFY_S();
-      updateFaceInfo.ulChannelId=new NativeLong(101);
+        PU_FACE_INFO_MODIFY_S  updateFaceInfo=new PU_FACE_INFO_MODIFY_S();
+        updateFaceInfo.ulChannelId=new NativeLong(101);
         PU_FACE_LIB_S stFacelib=new PU_FACE_LIB_S();
         stFacelib.ulFaceLibID=new NativeLong(1);
         stFacelib.uiThreshold=new NativeLong(90);
@@ -329,7 +330,7 @@ public class FaceInfoManagerController {
           stFacelib.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);//名单库的名称
         }
         stFacelib.isControl=true;
-      updateFaceInfo.stFacelib=stFacelib;
+        updateFaceInfo.stFacelib=stFacelib;
         PU_FACE_RECORD puFaceRecord=new PU_FACE_RECORD();
         if (Platform.isWindows()){
           puFaceRecord.szProvince=Arrays.copyOf(faceInfo.getProvince().getBytes("gbk"),32);
@@ -357,17 +358,17 @@ public class FaceInfoManagerController {
         puFaceRecord.enGender=faceInfo.getGender();
         puFaceRecord.enCardType=faceInfo.getCardType();
         puFaceRecord.ulFaceId=new NativeLong(Integer.parseInt(ulFaceId));
-      updateFaceInfo.stRecord=puFaceRecord;
-      boolean update;
-      if(Platform.isWindows()){
-         update = HWPuSDKLibrary.INSTANCE.IVS_PU_FaceInfoModify(ulIdentifyId, updateFaceInfo);
-      }else {
-         update = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FaceInfoModify(ulIdentifyId, updateFaceInfo);
-      }
-      HuaWeiSdkApi.printReturnMsg();
-      if(update){
-        System.out.println("更新摄像头人脸信息成功");
-        //更新成功接着提取特征值
+        updateFaceInfo.stRecord=puFaceRecord;
+        boolean update;
+        if(Platform.isWindows()){
+          update = HWPuSDKLibrary.INSTANCE.IVS_PU_FaceInfoModify(ulIdentifyId, updateFaceInfo);
+        }else {
+          update = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FaceInfoModify(ulIdentifyId, updateFaceInfo);
+        }
+        HuaWeiSdkApi.printReturnMsg();
+        if(update){
+          System.out.println("更新摄像头人脸信息成功");
+          //更新成功接着提取特征值
           //提取特征值
           PU_FACE_FEATURE_EXTRACT_S puFaceFeatureExtractS=new PU_FACE_FEATURE_EXTRACT_S();
           puFaceFeatureExtractS.stFacelib=stFacelib;
@@ -375,11 +376,11 @@ public class FaceInfoManagerController {
           //puFaceFeatureExtractS.taskID=new NativeLong(1);
           boolean getTeZheng;
           if(Platform.isWindows()){
-              getTeZheng = HWPuSDKLibrary.INSTANCE.IVS_PU_FeatureExtract(ulIdentifyId,puFaceFeatureExtractS);
+            getTeZheng = HWPuSDKLibrary.INSTANCE.IVS_PU_FeatureExtract(ulIdentifyId,puFaceFeatureExtractS);
           }else {
-              getTeZheng = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FeatureExtract(ulIdentifyId,puFaceFeatureExtractS);
+            getTeZheng = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FeatureExtract(ulIdentifyId,puFaceFeatureExtractS);
           }
-         //接着布控
+          //接着布控
           PU_FACE_LIB_SET_S puFaceLibSetS2 =new PU_FACE_LIB_SET_S();
           puFaceLibSetS2.enOptType=2;//修改人脸库
           PU_FACE_LIB_S  stFacelib2=new PU_FACE_LIB_S();
@@ -396,17 +397,18 @@ public class FaceInfoManagerController {
           puFaceLibSetS2.ulChannelId=new NativeLong(101);
           boolean bukong;
           if(Platform.isWindows()){
-               bukong = HWPuSDKLibrary.INSTANCE.IVS_PU_SetFaceLib(ulIdentifyId, puFaceLibSetS2);
+            bukong = HWPuSDKLibrary.INSTANCE.IVS_PU_SetFaceLib(ulIdentifyId, puFaceLibSetS2);
           }else {
-               bukong = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(ulIdentifyId, puFaceLibSetS2);
+            bukong = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(ulIdentifyId, puFaceLibSetS2);
           }
           if (bukong){
             System.out.println("修改布控成功");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息成功",null);
           }
-      }else{
-        System.out.println("更新摄像头人脸信息失败");
-      return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息失败",null);
+        }else{
+          System.out.println("更新摄像头人脸信息失败");
+          return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息失败",null);
+        }
       }
     }
     return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息成功",null);
