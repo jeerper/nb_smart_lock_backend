@@ -414,6 +414,7 @@ public class FaceInfoAccCtrlController {
                                 HuaWeiSdkApi.printReturnMsg();
                                 if(del || exitdel){
                                     System.out.println("删除人脸信息成功");
+                                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁摄像头全部取消授权成功",null);
 
                                 }else {
                                     System.out.println("删除人脸信息失败");
@@ -588,11 +589,14 @@ public class FaceInfoAccCtrlController {
         boolean bukongexit;
         if(Platform.isWindows()){
             bukong = HWPuSDKLibrary.INSTANCE.IVS_PU_SetFaceLib(entryIdentifyId, puFaceLibSetS2);
+            HuaWeiSdkApi.printReturnMsg();
             bukongexit = HWPuSDKLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, puFaceLibSetS2);
             HuaWeiSdkApi.printReturnMsg();
         }else {
             bukong = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(entryIdentifyId, puFaceLibSetS2);
+            HuaWeiSdkApi.printReturnMsg();
             bukongexit = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, puFaceLibSetS2);
+            HuaWeiSdkApi.printReturnMsg();
         }
         if (bukong && bukongexit){
             System.out.println("修改布控成功");
