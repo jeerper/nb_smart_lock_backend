@@ -65,6 +65,19 @@ public class FaceInfoAccCtrlController {
             log.error("人脸信息id列表为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"人脸id列表为空",null);
         }
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
+        Date date = new Date();
+        String nowtime = df.format(date);
+        long nowDate = df.parse(nowtime).getTime();
+        for(String faceid:faceids){
+            FaceInfo faceInfo = faceInfoManagerService.selectFaceInfoByID(faceid);
+            Date faceEndTime = faceInfo.getFaceEndTime();
+            long faceEndDate = faceEndTime.getTime();
+            if (nowDate>faceEndDate){
+                log.error("当前人脸有效期过期授权失败");
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸有效期过期授权失败",null);
+            }
+        }
         if(accessControlId==null){
             log.error("门禁信息id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁信息id为空",null);

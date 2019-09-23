@@ -138,7 +138,6 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
             AccessControlInfo accessControlInfo = accessControlService.selectAccCtrlByIdBeyondAuthority(faceInfoAccCtrl.getAccessControlId());
             accessControlInfos.add(accessControlInfo);
         }
-        System.out.println("关联门禁"+accessControlInfos);
         return accessControlInfos;
     }
     /**
@@ -149,6 +148,18 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
     public int deleteFaceAccCtrlByAccCtlId(String accessControlId) {
         QueryWrapper<FaceInfoAccCtrl> wrapper=new QueryWrapper<>();
         int i = faceInfoAccCtrlDao.delete(wrapper.eq("access_control_id", accessControlId));
+        return i;
+    }
+
+    /**
+     * 根据人脸id 删除门禁授权记录
+     * @param faceid
+     * @return -1删除不成功
+     */
+    @Override
+    public int deleteFaceAccCtrlByFaceId(String faceid) {
+        QueryWrapper<FaceInfoAccCtrl> wrapper=new QueryWrapper<>();
+        int i = faceInfoAccCtrlDao.delete(wrapper.eq("face_id", faceid));
         return i;
     }
 

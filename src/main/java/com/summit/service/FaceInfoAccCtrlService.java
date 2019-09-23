@@ -41,9 +41,16 @@ public interface FaceInfoAccCtrlService {
     List<AccessControlInfo> seleAccCtrlInfoByFaceID(String faceid);
 
     /**
-     * 根据门禁id删除门禁授权记录
+     * 根据门禁id
      * @param accessControlId
      * @return -1删除不成功
      */
     int deleteFaceAccCtrlByAccCtlId(String accessControlId);
+
+    /**
+     * 根据人脸id 删除门禁授权记录
+     * @param faceid
+     * @return -1删除不成功
+     */
+    int deleteFaceAccCtrlByFaceId(String faceid);
 }
