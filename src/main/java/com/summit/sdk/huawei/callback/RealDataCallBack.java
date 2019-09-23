@@ -42,14 +42,6 @@ import java.util.List;
 @Slf4j
 @Component
 public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
-    @Autowired
-    private FaceInfoManagerDao faceInfoManagerDao;
-    @Autowired
-    private FaceInfoAccCtrlService faceInfoAccCtrlService;
-    @Autowired
-    private AccCtrlRealTimeService accCtrlRealTimeService;
-
-
     private ClientFaceInfoCallback clientFaceInfoCallback;
 
     public RealDataCallBack(ClientFaceInfoCallback clientFaceInfoCallback) {
