@@ -47,7 +47,7 @@ public class FaceInfoManagerSchedule {
      * 1、实时查询人脸信息有有效截至时间，一旦超过有效截至时间，内部人员和临时人员都从摄像头中删除，此时开不了锁
      * 2、然后对于超过有效时间半年的临时人员从数据库中删除，同时删除授权关系，是内部人员的话在数据库中不删除，授权关系也不删除
      */
-    @Scheduled(cron = "0/59 * * * * ?")
+    @Scheduled(cron = "0/20 * * * * ?")
     public void refreshFaceInfoManager() throws ParseException, IOException {
         QueryWrapper<FaceInfo> wrapper = new QueryWrapper<>();
         List<FaceInfo> faceInfoList = faceInfoManagerDao.selectList(wrapper);

@@ -2,24 +2,53 @@ package com.summit.sdk.huawei.callback;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.StrUtil;
-import com.summit.sdk.huawei.HWPuSDKLibrary;
-import com.summit.sdk.huawei.PU_META_DATA;
-import com.summit.sdk.huawei.PU_UserData;
-import com.summit.sdk.huawei.model.CardType;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import cn.hutool.system.SystemUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.summit.MainAction;
+import com.summit.dao.entity.*;
+import com.summit.dao.repository.FaceInfoManagerDao;
+import com.summit.sdk.huawei.*;
+import com.summit.sdk.huawei.api.HuaWeiSdkApi;
+import com.summit.sdk.huawei.model.*;
 import com.summit.sdk.huawei.model.FaceInfo;
-import com.summit.sdk.huawei.model.FaceLibType;
-import com.summit.sdk.huawei.model.Gender;
+import com.summit.service.AccCtrlRealTimeService;
+import com.summit.service.FaceInfoAccCtrlService;
+import com.summit.util.CommonUtil;
 import com.sun.jna.NativeLong;
+import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.ptr.PointerByReference;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 @Slf4j
+@Component
 public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
+    @Autowired
+    private FaceInfoManagerDao faceInfoManagerDao;
+    @Autowired
+    private FaceInfoAccCtrlService faceInfoAccCtrlService;
+    @Autowired
+    private AccCtrlRealTimeService accCtrlRealTimeService;
+
 
     private ClientFaceInfoCallback clientFaceInfoCallback;
 
@@ -29,7 +58,7 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
     }
 
     @Override
-    public void apply(Pointer szBuffer, NativeLong lSize, Pointer pUsrData) {
+    public void apply(Pointer szBuffer, NativeLong lSize, Pointer pUsrData) throws IOException, ParseException {
         FaceInfo faceInfo = null;
         faceInfo = procBuffer(szBuffer, lSize, HWPuSDKLibrary.LAYER_TWO_TYPE.COMMON, faceInfo);
         faceInfo = procBuffer(szBuffer, lSize, HWPuSDKLibrary.LAYER_TWO_TYPE.TARGET, faceInfo);
@@ -56,7 +85,7 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
         }
     }
 
-    private FaceInfo procBuffer(Pointer szBuffer, NativeLong lSize, int layerTwoType, FaceInfo faceInfo) {
+    private FaceInfo procBuffer(Pointer szBuffer, NativeLong lSize, int layerTwoType, FaceInfo faceInfo) throws IOException, ParseException {
         PointerByReference pu_meta_data_pointer_pointer = new PointerByReference(Pointer.NULL);
         HWPuSDKLibrary.INSTANCE.IVS_User_GetMetaData(szBuffer, lSize, layerTwoType, pu_meta_data_pointer_pointer);
         faceInfo = procMetaData(pu_meta_data_pointer_pointer, faceInfo);
@@ -64,7 +93,7 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
         return faceInfo;
     }
 
-    private FaceInfo procMetaData(PointerByReference pu_meta_data_pointer_pointer, FaceInfo faceInfo) {
+    private FaceInfo procMetaData(PointerByReference pu_meta_data_pointer_pointer, FaceInfo faceInfo) throws IOException, ParseException {
         PU_META_DATA data = Structure.newInstance(PU_META_DATA.class, pu_meta_data_pointer_pointer.getValue());
         data.read();
         PU_UserData[] userData = (PU_UserData[]) data.pstMetaUserData.toArray(data.usValidNumber);
@@ -82,6 +111,7 @@ public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
                     break;
                 //人脸信息,对应摄像头的人脸库信息
                 case HWPuSDKLibrary.LAYER_THREE_TYPE.FACE_INFO:
+                    System.out.println("处理人脸信息开始！！！！！");
                     if (faceInfo == null) {
                         break;
                     }

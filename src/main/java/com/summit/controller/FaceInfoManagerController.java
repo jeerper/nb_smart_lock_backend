@@ -282,7 +282,7 @@ public class FaceInfoManagerController {
              addface.szProvince=Arrays.copyOf(faceInfo.getProvince().getBytes("utf8"),32);
            }
            String absolutePath = new String(new File(".").getCanonicalPath() + faceInfo.getFaceImage());
-           addface.szPicPath=Arrays.copyOf("E:\\qianyy\\nb_smart_lock_backend\\snapshot\\1173425901602344962_Face.jpg".getBytes(),128);
+           addface.szPicPath=Arrays.copyOf(absolutePath.getBytes(),128);
            puFaceInfoAdd.stRecord=addface;
            String filename = faceInfo.getFaceImage().substring(faceInfo.getFaceImage().lastIndexOf("/")+1);
            System.out.println(filename);
