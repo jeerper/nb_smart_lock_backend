@@ -129,9 +129,12 @@ public class FaceInfoManagerSchedule {
                                 HuaWeiSdkApi.printReturnMsg();
                                 System.out.println("--------11111");
                                 exitgetFace = HWPuSDKLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitulIdentifyId, faceInfoFindS);
+                                log.error("定时任务查询人脸信息返回码：");
                                 HuaWeiSdkApi.printReturnMsg();
                             } else {
                                 getFace = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(entryulIdentifyId, faceInfoFindS);
+                                log.error("定时任务查询人脸信息返回码：");
+                                HuaWeiSdkApi.printReturnMsg();
                                 exitgetFace = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitulIdentifyId, faceInfoFindS);
                             }
                             if (getFace || exitgetFace) {
@@ -287,6 +290,8 @@ public class FaceInfoManagerSchedule {
                                 exitgetFace = HWPuSDKLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitulIdentifyId, faceInfoFindS);
                             } else {
                                 getFace = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(entryulIdentifyId, faceInfoFindS);
+                                HuaWeiSdkApi.printReturnMsg();
+                                log.error("定时任务查询人脸信息返回码：");
                                 exitgetFace = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitulIdentifyId, faceInfoFindS);
                             }
                             if (getFace || exitgetFace) {
