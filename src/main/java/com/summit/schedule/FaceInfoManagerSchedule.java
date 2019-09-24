@@ -100,7 +100,7 @@ public class FaceInfoManagerSchedule {
                             }
                             PU_FACE_INFO_FIND_S faceInfoFindS = new PU_FACE_INFO_FIND_S();
                             faceInfoFindS.ulChannelId=new NativeLong(101);
-                            String faceInfoPath=realfaceinfoPath+File.separator+"realFace.json";
+                            String faceInfoPath=realfaceinfoPath+"/realFace.json";
                             faceInfoFindS.szFindResultPath= Arrays.copyOf(faceInfoPath.getBytes(),129);
                             PU_FACE_LIB_S facelib2 = new PU_FACE_LIB_S();
                             facelib2.ulFaceLibID=new NativeLong(1);
@@ -143,9 +143,9 @@ public class FaceInfoManagerSchedule {
                             }
                             if (getFace || exitgetFace) {
                                 log.debug("临时人员定时任务查询人脸信息成功");
-                                String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator + "realface" + File.separator + "realface.json");
-                                log.debug("实时查询文件路径："+getfaceInfoPath);
-                                String facejson = readFile(getfaceInfoPath);
+                                String getfaceInfoPathss = new String(new File(".").getCanonicalPath() + File.separator + "realface" + File.separator + "realface.json");
+                                log.debug("实时查询文件路径："+getfaceInfoPathss);
+                                String facejson = readFile(getfaceInfoPathss);
                                 log.debug("facejson：---"+facejson);
                                 int j = facejson.indexOf("{");
                                 int g = facejson.lastIndexOf("}");

@@ -713,7 +713,7 @@ public class FaceInfoManagerController {
                 entryulIdentifyId = entrydeviceInfo.getUlIdentifyId();
               }
               if (exitdeviceInfo == null){
-                exitulIdentifyId = new NativeLong(1);
+                exitulIdentifyId = new NativeLong(22);
               }else {
                 exitulIdentifyId = exitdeviceInfo.getUlIdentifyId();
               }
@@ -772,7 +772,8 @@ public class FaceInfoManagerController {
               }
               if (getFace || exitgetFace) {
                 log.debug("临时人员定时任务查询人脸信息成功");
-                String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator + "realface" + File.separator + "realface.json");
+               // String getfaceInfoPath = new String(new File(".").getCanonicalPath() +"/realface"+"/realface.json");
+                String getfaceInfoPath = realfaceinfoPath+File.separator+"realFace.json";
                 log.debug("实时查询文件路径："+getfaceInfoPath);
                 String facejson = readFile(getfaceInfoPath);
                 log.debug("facejson：---"+facejson);
@@ -887,7 +888,7 @@ public class FaceInfoManagerController {
                 entryulIdentifyId = entrydeviceInfo.getUlIdentifyId();
               }
               if (exitdeviceInfo == null){
-                exitulIdentifyId = new NativeLong(1);
+                exitulIdentifyId = new NativeLong(122);
               }else {
                 exitulIdentifyId = exitdeviceInfo.getUlIdentifyId();
               }
