@@ -48,7 +48,7 @@ public class FaceInfoManagerSchedule {
      * 1、实时查询人脸信息有有效截至时间，一旦超过有效截至时间，内部人员和临时人员都从摄像头中删除，此时开不了锁
      * 2、然后对于超过有效时间半年的临时人员从数据库中删除，同时删除授权关系，是内部人员的话在数据库中不删除，授权关系也不删除
      */
-     //@Scheduled(cron = "0/30 * * * * ?")
+    @Scheduled(cron = "0/30 * * * * ?")
     public  void refreshFaceInfoManager() throws ParseException, IOException {
         QueryWrapper<FaceInfo> wrapper = new QueryWrapper<>();
         List<FaceInfo> faceInfoList = faceInfoManagerDao.selectList(wrapper);
@@ -143,7 +143,8 @@ public class FaceInfoManagerSchedule {
                             }
                             if (getFace || exitgetFace) {
                                 log.debug("临时人员定时任务查询人脸信息成功");
-                                String getfaceInfoPathss = new String(new File(".").getCanonicalPath() + File.separator + "realface" + File.separator + "realface.json");
+                                //String getfaceInfoPathss = new String(new File(".").getCanonicalPath() + File.separator + "realface" + File.separator + "realface.json");
+                                String getfaceInfoPathss = realfaceinfoPath+File.separator+"realFace.json";
                                 log.debug("实时查询文件路径："+getfaceInfoPathss);
                                 String facejson = readFile(getfaceInfoPathss);
                                 log.debug("facejson：---"+facejson);
@@ -288,7 +289,7 @@ public class FaceInfoManagerSchedule {
                             facelib2.uiThreshold = new NativeLong(90);
                             facelib2.isControl=true;
                             FACE_FIND_CONDITION faceFindCondition = new FACE_FIND_CONDITION();
-                            faceFindCondition.enFeatureStatus = 4;
+                            faceFindCondition.enFeatureStatus = 1;
                             faceFindCondition.szName = ByteBuffer.allocate(64).put("".getBytes()).array();
                             faceFindCondition.szProvince = ByteBuffer.allocate(32).put("".getBytes()).array();
                             faceFindCondition.szCity = ByteBuffer.allocate(48).put("".getBytes()).array();
@@ -314,7 +315,8 @@ public class FaceInfoManagerSchedule {
                             }
                             if (getFace || exitgetFace) {
                                 System.out.println("查询人脸信息成功");
-                                String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator + "realfaceInfo" + File.separator + "realfaceInfo.json");
+                               // String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator + "realfaceInfo" + File.separator + "realfaceInfo.json");
+                                String getfaceInfoPath = realfaceinfoPath+File.separator+"realFace.json";
                                 String facejson =readFile(getfaceInfoPath);
                                 JSONObject objectface = new JSONObject(facejson);
                                 JSONArray faceRecordArry = objectface.getJSONArray("FaceRecordArry");
