@@ -210,10 +210,10 @@ public class FaceInfoManagerSchedule {
                                             boolean exitdel;
                                             if (Platform.isWindows()) {
                                                 del = HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryulIdentifyId, puFaceInfoDeleteS);
-                                                log.debug("临时过期人脸入口删除返回码："+faceInfo.getUserName());
+                                                log.debug("临时过期人脸入口删除返回码：");
                                                 HuaWeiSdkApi.printReturnMsg();
                                                 exitdel = HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitulIdentifyId, puFaceInfoDeleteS);
-                                                log.debug("临时过期人脸出口删除返回码："+faceInfo.getUserName());
+                                                log.debug("临时过期人脸出口删除返回码：");
                                                 HuaWeiSdkApi.printReturnMsg();
                                             } else {
                                                 del = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryulIdentifyId, puFaceInfoDeleteS);
