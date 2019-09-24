@@ -146,7 +146,9 @@ public class FaceInfoManagerSchedule {
                                 String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator + "realfaceInfo" + File.separator + "realfaceInfo.json");
                                 log.debug("实时查询文件路径："+getfaceInfoPath);
                                 String facejson = readFile(getfaceInfoPath);
+                                log.debug("facejson：---"+facejson);
                                 int j = facejson.indexOf("{");
+                                log.debug("下标：---"+j);
                                 facejson = facejson.substring(j);
                                 JSONObject jsonObject = new JSONObject(facejson);
                                 if (jsonObject==null || jsonObject.isEmpty()){
