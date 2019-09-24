@@ -170,6 +170,7 @@ public class FaceInfoManagerController {
       log.error("人脸信息为空");
       return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"人脸信息为空",null);
     }
+      refreshFaceInfoManager();
     //更新之前找到原来的人脸信息
     String selectoldfaceid = faceInfo.getFaceid();
     FaceInfo oldFaceInfo = faceInfoManagerService.selectFaceInfoByID(selectoldfaceid);
