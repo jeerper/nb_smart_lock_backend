@@ -1,7 +1,7 @@
 package com.summit.sdk.huawei.model;
 
 public enum LockProcessResultType {
-
+    WaitSendCommand(0,"等待发送指令"),
     CommandSuccess(1,"下发指令成功"),
     Exception(2,"异常"),
     NotOnline(4,"不在线"),

@@ -3,7 +3,6 @@ package com.summit.utils;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.system.SystemUtil;
 import com.summit.MainAction;
-import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ApplicationContextUtil;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
@@ -12,8 +11,8 @@ import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.FileInfo;
-import com.summit.entity.BackLockInfo;
-import com.summit.entity.LockRequest;
+import com.summit.dao.entity.UnlockCommandQueue;
+import com.summit.dao.repository.UnlockCommandQueueDao;
 import com.summit.exception.ErrorMsgException;
 import com.summit.sdk.huawei.callback.ClientFaceInfoCallback;
 import com.summit.sdk.huawei.model.CameraUploadType;
@@ -37,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.util.Date;
-import java.util.List;
 
 @Slf4j
 @Component
@@ -59,6 +57,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
     private AccessControlService accessControlService;
     @Autowired
     private FaceInfoAccCtrlService faceInfoAccCtrlService;
+    @Autowired
+    private UnlockCommandQueueDao unlockCommandQueueDao;
 
     @Override
     public void invoke(Object object) {
@@ -142,8 +142,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                 FileInfo facePicFile = new FileInfo(snapshotTime + CommonConstants.FACE_PIC_SUFFIX, facePicUrl, "人脸识别抠图");
 
                 FaceLibType faceLibType = faceInfo.getFaceLibType();
-                //开锁处理UUID
-                String unlockProcessUuid = null;
+
                 //处理结果
                 LockProcessResultType processResult = null;
                 //失败原因
@@ -171,37 +170,38 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                             accessControlInfo.getAccessControlId());
                     //此人脸有对应门禁权限，则进行开锁，否则更新门禁为告警状态，并记录开锁结果和原因
                     if (count > 0) {
-                        LockRequest lockRequest = new LockRequest(null, lockCode, faceInfo.getName(), null, null);
-                        RestfulEntityBySummit result = null;
-                        //调用开锁接口
-                        result = unLockService.toUnLock(lockRequest);
-
-                        BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
-                        if (backLockInfo != null) {
-
-                            if (backLockInfo.getObjx() == null) {
-                                failReason = backLockInfo.getContent();
-                                processResult = LockProcessResultType.Failure;
-                            } else {
-                                //下发开锁指令后返回的状态码
-                                processResult = LockProcessResultType.codeOf(backLockInfo.getObjx());
-                                log.debug("开锁成功");
-                                log.debug("下发开锁指令后返回的状态码:"+processResult.getDescription());
-                                //用于查询开锁状态的命令UUID
-                                unlockProcessUuid = backLockInfo.getRmid();
-                            }
-                        } else {
-                            //开锁接口调用失败
-                            log.debug("开锁接口调用失败");
-                            failReason = "开锁接口调用失败";
-                            processResult = LockProcessResultType.Failure;
-                        }
+                        //设置开锁状态为待发送开锁指令
+                        processResult = LockProcessResultType.WaitSendCommand;
+//                        LockRequest lockRequest = new LockRequest(null, lockCode, faceInfo.getName(), null, null);
+//                        RestfulEntityBySummit result = null;
+//                        //调用开锁接口
+//                        result = unLockService.toUnLock(lockRequest);
+//
+//                        BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
+//                        if (backLockInfo != null) {
+//
+//                            if (backLockInfo.getObjx() == null) {
+//                                failReason = backLockInfo.getContent();
+//                                processResult = LockProcessResultType.Failure;
+//                            } else {
+//                                //下发开锁指令后返回的状态码
+//                                processResult = LockProcessResultType.codeOf(backLockInfo.getObjx());
+//                                log.debug("开锁成功");
+//                                log.debug("下发开锁指令后返回的状态码:"+processResult.getDescription());
+//                                //用于查询开锁状态的命令UUID
+//                                //开锁处理UUID
+//                                String unlockProcessUuid = backLockInfo.getRmid();
+//                            }
+//                        } else {
+//                            //开锁接口调用失败
+//                            log.debug("开锁接口调用失败");
+//                            failReason = "开锁接口调用失败";
+//                            processResult = LockProcessResultType.Failure;
+//                        }
                     } else {
                         log.debug("用户{}没有打开门禁{}的权限", faceInfo.getName(), accessControlInfo.getAccessControlId());
                         processResult = LockProcessResultType.Failure;
                         failReason = "用户" + faceInfo.getName() + "没有打开门禁" + accessControlInfo.getAccessControlName() + "的权限";
-                        //todo:考虑问题,是否要重复更新:门禁,实时,锁信息表
-//                        accCtrlProcessUtil.toUpdateAccCtrlAndLockStatus(AccCtrlStatus.ALARM.getCode(), lockCode);
                         type = CameraUploadType.Alarm;
                     }
                 }
@@ -209,8 +209,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                 FileUtil.writeBytes(faceInfo.getFacePanorama(), picturePathFacePanorama);
                 FileUtil.writeBytes(faceInfo.getFacePic(), picturePathFacePic);
 
-                AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(faceInfo, type, facePanoramaFile, facePicFile,
-                        unlockProcessUuid, processResult, failReason);
+                AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(faceInfo, type, facePanoramaFile, facePicFile, processResult,
+                        failReason);
 
                 //在事务控制下插入门禁操作记录、门禁实时信息、告警
                 ApplicationContextUtil.getBean(ClientFaceInfoCallbackImpl.class).insertData(type, accCtrlProcess);
@@ -221,21 +221,6 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
 
     }
 
-    /**
-     * 判断刷脸人有无开锁权限
-     *
-     * @param accessControlIds 人脸关联的所以门禁的id
-     * @param accessControlId  本次刷脸设备对应的门禁id
-     * @return 是否具有开锁权限
-     */
-    private boolean haveAccCtrlAuth(List<String> accessControlIds, String accessControlId) {
-        if (CommonUtil.isEmptyList(accessControlIds)) {
-            return false;
-        }
-        return accessControlIds.contains(accessControlId);
-    }
-
-    //加入事务控制
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
     public void insertData(CameraUploadType type, AccCtrlProcess accCtrlProcess) {
         try {
@@ -253,6 +238,15 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             }
             log.info("门禁实时信息入库");
             accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity);
+            //插入开锁指令队列
+            if(type==CameraUploadType.Unlock){
+                UnlockCommandQueue unlockCommandQueue=new UnlockCommandQueue();
+                unlockCommandQueue.setAccCtrlProId(accCtrlProcess.getAccCtrlProId());
+                unlockCommandQueue.setUnlockFaceName(accCtrlProcess.getUserName());
+                unlockCommandQueue.setLockCode(accCtrlProcess.getLockCode());
+                unlockCommandQueue.setCreateTime(new Date());
+                unlockCommandQueueDao.insert(unlockCommandQueue);
+            }
         } catch (Exception e) {
             log.error("门禁操作信息入库失败", e);
             throw new ErrorMsgException("门禁操作信息入库失败");

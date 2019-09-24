@@ -93,7 +93,7 @@ public class AccCtrlProcess {
     @TableField(value = "process_uuid")
     private String processUuid;
 
-    @ApiModelProperty(value="开锁结果：1：下发指令成功 2：异常 4：不在线 5：未回复 6：成功 7：失败 8：消息有误 9：不支持的消息",name="processResult")
+    @ApiModelProperty(value="开锁结果：0:等待发送指令 1：下发指令成功 2：异常 4：不在线 5：未回复 6：成功 7：失败 8：消息有误 9：不支持的消息",name="processResult")
     @TableField(value = "process_result")
     private Integer processResult;
     @ApiModelProperty(value="门禁操作失败原因，error：失败   success：成功",name="processResult")
