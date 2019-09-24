@@ -126,6 +126,7 @@ public class FaceInfoManagerSchedule {
                             boolean exitgetFace;
                             if (Platform.isWindows()) {
                                 getFace = HWPuSDKLibrary.INSTANCE.IVS_PU_FindFaceInfo(entryulIdentifyId, faceInfoFindS);
+                                log.debug("临时人员名字："+faceInfo.getUserName());
                                 log.error("临时人员定时任务查询人脸入口信息返回码：");
                                 HuaWeiSdkApi.printReturnMsg();
                                 exitgetFace = HWPuSDKLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitulIdentifyId, faceInfoFindS);
@@ -142,13 +143,15 @@ public class FaceInfoManagerSchedule {
                             if (getFace || exitgetFace) {
                                 log.debug("临时人员定时任务查询人脸信息成功");
                                 String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator + "realfaceInfo" + File.separator + "realfaceInfo.json");
+                                log.debug("实时查询文件路径："+getfaceInfoPath);
                                 String facejson = readFile(getfaceInfoPath);
                                 JSONObject jsonObject = new JSONObject(facejson);
                                 if (jsonObject==null || jsonObject.isEmpty()){
                                     log.debug("临时人员定时任务查询人脸信息为空");
                                 }
+                                log.debug("临时人员定时任务查询jsonObject:"+jsonObject);
                                 JSONArray faceRecordArry = jsonObject.getJSONArray("FaceRecordArry");
-                                log.debug("临时人员定时任务查询人脸信息json集合：" + faceRecordArry);
+                                log.debug("临时人员定时任务查询人脸信息faceRecordArry集合：" + faceRecordArry);
                                 ArrayList<FaceInfo> houtaifaceInfos = new ArrayList<>();
                                 for (int i = 0; i < faceRecordArry.size(); i++) {
                                     FaceInfo qiantaifaceInfo = new FaceInfo();
