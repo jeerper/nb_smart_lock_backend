@@ -708,12 +708,12 @@ public class FaceInfoManagerController {
               NativeLong entryulIdentifyId;
               NativeLong exitulIdentifyId;
               if (entrydeviceInfo == null ) {
-                entryulIdentifyId = new NativeLong(111);
+                entryulIdentifyId = new NativeLong(112221);
               }else {
                 entryulIdentifyId = entrydeviceInfo.getUlIdentifyId();
               }
               if (exitdeviceInfo == null){
-                exitulIdentifyId = new NativeLong(112);
+                exitulIdentifyId = new NativeLong(11222);
               }else {
                 exitulIdentifyId = exitdeviceInfo.getUlIdentifyId();
               }
@@ -882,13 +882,12 @@ public class FaceInfoManagerController {
               NativeLong entryulIdentifyId;
               NativeLong exitulIdentifyId;
               if (entrydeviceInfo == null ) {
-                entryulIdentifyId = new NativeLong(222);
+                entryulIdentifyId = new NativeLong(1);
               }else {
                 entryulIdentifyId = entrydeviceInfo.getUlIdentifyId();
-
               }
               if (exitdeviceInfo == null){
-                exitulIdentifyId = new NativeLong(223);
+                exitulIdentifyId = new NativeLong(1);
               }else {
                 exitulIdentifyId = exitdeviceInfo.getUlIdentifyId();
               }
