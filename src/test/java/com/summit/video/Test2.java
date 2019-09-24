@@ -1,6 +1,8 @@
 package com.summit.video;
 
 
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import com.summit.sdk.huawei.model.FaceInfo;
 import com.sun.jna.NativeLong;
 import lombok.extern.slf4j.Slf4j;
@@ -48,5 +50,12 @@ public class Test2 {
 
     public FaceInfo create(FaceInfo faceInfo) {
         return new FaceInfo();
+    }
+
+
+    @Test
+    public void haha4(){
+        long differMinute= DateUtil.between(new DateTime(2019, 9, 24, 16, 34, 50).toDate(), new Date(), DateUnit.MINUTE,false);
+        log.debug("{}",differMinute);
     }
 }
