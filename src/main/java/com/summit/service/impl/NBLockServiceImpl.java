@@ -88,26 +88,27 @@ public class NBLockServiceImpl {
                 if (status == null || LockProcessResultType.CommandSuccess.getCode() != status) {
                     resultCode[0] = ResponseCodeEnum.CODE_9999;
                     msg[0] = backLockInfo.getContent();
-                }
-                //todo:插入门禁开关锁记录统计表
-                String accessControlName = accessControlInfo.getAccessControlName();
-                String accessControlId = accessControlInfo.getAccessControlId();
-                AddAccCtrlprocess accCtrlprocess=addAccCtrlprocessService.selectAccCtrlByAccCtrlName(accessControlName);
-                if (accCtrlprocess==null){
-                    AddAccCtrlprocess addAccCtrlprocess=new AddAccCtrlprocess();
-                    Integer accessControlStatusCount=0;
-                    addAccCtrlprocess.setAccessControlId(accessControlId);
-                    addAccCtrlprocess.setAccessControlName(accessControlName);
-                    addAccCtrlprocess.setAccessControlStatusCount(accessControlStatusCount);
-                    int add=addAccCtrlprocessService.insert(addAccCtrlprocess);
-                }else {
-                    Integer accessControlStatusCount = accCtrlprocess.getAccessControlStatusCount();
-                    AddAccCtrlprocess addAccCtrlprocess=new AddAccCtrlprocess();
-                    accessControlStatusCount=accessControlStatusCount+1;
-                    addAccCtrlprocess.setAccessControlId(accessControlId);
-                    addAccCtrlprocess.setAccessControlName(accessControlName);
-                    addAccCtrlprocess.setAccessControlStatusCount(accessControlStatusCount);
-                    int updateAddAccCtrl=addAccCtrlprocessService.update(addAccCtrlprocess);
+                }else{
+                    //插入门禁开关锁记录统计表
+                    String accessControlName = accessControlInfo.getAccessControlName();
+                    String accessControlId = accessControlInfo.getAccessControlId();
+                    AddAccCtrlprocess accCtrlprocess=addAccCtrlprocessService.selectAccCtrlByAccCtrlName(accessControlName);
+                    if (accCtrlprocess==null){
+                        AddAccCtrlprocess addAccCtrlprocess=new AddAccCtrlprocess();
+                        Integer accessControlStatusCount=0;
+                        addAccCtrlprocess.setAccessControlId(accessControlId);
+                        addAccCtrlprocess.setAccessControlName(accessControlName);
+                        addAccCtrlprocess.setAccessControlStatusCount(accessControlStatusCount);
+                        int add=addAccCtrlprocessService.insert(addAccCtrlprocess);
+                    }else {
+                        Integer accessControlStatusCount = accCtrlprocess.getAccessControlStatusCount();
+                        AddAccCtrlprocess addAccCtrlprocess=new AddAccCtrlprocess();
+                        accessControlStatusCount=accessControlStatusCount+1;
+                        addAccCtrlprocess.setAccessControlId(accessControlId);
+                        addAccCtrlprocess.setAccessControlName(accessControlName);
+                        addAccCtrlprocess.setAccessControlStatusCount(accessControlStatusCount);
+                        int updateAddAccCtrl=addAccCtrlprocessService.update(addAccCtrlprocess);
+                    }
                 }
             } else {
                 resultCode[0] = ResponseCodeEnum.CODE_9999;
