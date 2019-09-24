@@ -148,7 +148,9 @@ public class FaceInfoManagerSchedule {
                                 String facejson = readFile(getfaceInfoPath);
                                 log.debug("facejson：---"+facejson);
                                 int j = facejson.indexOf("{");
-                                log.debug("下标：---"+j);
+                                int g = facejson.lastIndexOf("}");
+                                log.debug("开始下标：---"+j);
+                                log.debug("结束下标：---"+g);
                                 facejson = facejson.substring(j);
                                 JSONObject jsonObject = new JSONObject(facejson);
                                 if (jsonObject==null || jsonObject.isEmpty()){
