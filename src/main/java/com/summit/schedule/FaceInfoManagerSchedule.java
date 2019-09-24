@@ -47,7 +47,7 @@ public class FaceInfoManagerSchedule {
      * 1、实时查询人脸信息有有效截至时间，一旦超过有效截至时间，内部人员和临时人员都从摄像头中删除，此时开不了锁
      * 2、然后对于超过有效时间半年的临时人员从数据库中删除，同时删除授权关系，是内部人员的话在数据库中不删除，授权关系也不删除
      */
-    @Scheduled(cron = "0/59 * * * * ?")
+    @Scheduled(cron = "0/30 * * * * ?")
     public void refreshFaceInfoManager() throws ParseException, IOException {
         QueryWrapper<FaceInfo> wrapper = new QueryWrapper<>();
         List<FaceInfo> faceInfoList = faceInfoManagerDao.selectList(wrapper);
@@ -140,12 +140,15 @@ public class FaceInfoManagerSchedule {
                                 HuaWeiSdkApi.printReturnMsg();
                             }
                             if (getFace || exitgetFace) {
-                                System.out.println("查询人脸信息成功");
+                                log.debug("临时人员定时任务查询人脸信息成功");
                                 String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator + "realfaceInfo" + File.separator + "realfaceInfo.json");
-                                String facejson = CommonUtil.readFile(getfaceInfoPath);
-                                JSONObject objectface = new JSONObject(facejson);
-                                JSONArray faceRecordArry = objectface.getJSONArray("FaceRecordArry");
-                                log.error("临时人员定时任务查询人脸信息json集合：" + faceRecordArry);
+                                String facejson = readFile(getfaceInfoPath);
+                                JSONObject jsonObject = new JSONObject(facejson);
+                                if (jsonObject==null || jsonObject.isEmpty()){
+                                    log.debug("临时人员定时任务查询人脸信息为空");
+                                }
+                                JSONArray faceRecordArry = jsonObject.getJSONArray("FaceRecordArry");
+                                log.debug("临时人员定时任务查询人脸信息json集合：" + faceRecordArry);
                                 ArrayList<FaceInfo> houtaifaceInfos = new ArrayList<>();
                                 for (int i = 0; i < faceRecordArry.size(); i++) {
                                     FaceInfo qiantaifaceInfo = new FaceInfo();
@@ -220,7 +223,7 @@ public class FaceInfoManagerSchedule {
                     int i = faceInfoManagerDao.deleteById(faceInfo.getFaceid());
                     int j= faceInfoAccCtrlService.deleteFaceAccCtrlByFaceId(faceInfo.getFaceid());
                 }
-            }else{//内部人员，超过有限日期从摄像头中删除，人脸库中不删除
+            }else if(faceInfo.getFaceType() == 0){//内部人员，超过有限日期从摄像头中删除，人脸库中不删除
                 Date date = new Date();
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
                 String nowtime = df.format(date);
@@ -301,7 +304,7 @@ public class FaceInfoManagerSchedule {
                             if (getFace || exitgetFace) {
                                 System.out.println("查询人脸信息成功");
                                 String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator + "realfaceInfo" + File.separator + "realfaceInfo.json");
-                                String facejson = CommonUtil.readFile(getfaceInfoPath);
+                                String facejson =readFile(getfaceInfoPath);
                                 JSONObject objectface = new JSONObject(facejson);
                                 JSONArray faceRecordArry = objectface.getJSONArray("FaceRecordArry");
                                 System.out.println("内部人员定时任务查询人脸信息json集合：" + faceRecordArry);
@@ -377,5 +380,21 @@ public class FaceInfoManagerSchedule {
             }
         }
     }
-
+    public String readFile(String path){
+        BufferedReader reader=null;
+        String lastStr="";
+        try {
+            FileInputStream fileInputStream = new FileInputStream(path);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
+            reader=new BufferedReader(inputStreamReader);
+            String tempString=null;
+            while ((tempString = reader.readLine()) != null){
+                lastStr+=tempString;
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return lastStr;
+    }
 }
