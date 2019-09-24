@@ -126,16 +126,18 @@ public class FaceInfoManagerSchedule {
                             boolean exitgetFace;
                             if (Platform.isWindows()) {
                                 getFace = HWPuSDKLibrary.INSTANCE.IVS_PU_FindFaceInfo(entryulIdentifyId, faceInfoFindS);
+                                log.error("临时人员定时任务查询人脸入口信息返回码：");
                                 HuaWeiSdkApi.printReturnMsg();
-                                System.out.println("--------11111");
                                 exitgetFace = HWPuSDKLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitulIdentifyId, faceInfoFindS);
-                                log.error("定时任务查询人脸信息返回码：");
+                                log.error("临时人员定时任务查询人脸出口信息返回码：");
                                 HuaWeiSdkApi.printReturnMsg();
                             } else {
                                 getFace = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(entryulIdentifyId, faceInfoFindS);
-                                log.error("定时任务查询人脸信息返回码：");
+                                log.error("临时人员定时任务查询人脸入口信息返回码：");
                                 HuaWeiSdkApi.printReturnMsg();
                                 exitgetFace = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitulIdentifyId, faceInfoFindS);
+                                log.error("临时人员定时任务查询人脸出口信息返回码：");
+                                HuaWeiSdkApi.printReturnMsg();
                             }
                             if (getFace || exitgetFace) {
                                 System.out.println("查询人脸信息成功");
@@ -143,7 +145,7 @@ public class FaceInfoManagerSchedule {
                                 String facejson = CommonUtil.readFile(getfaceInfoPath);
                                 JSONObject objectface = new JSONObject(facejson);
                                 JSONArray faceRecordArry = objectface.getJSONArray("FaceRecordArry");
-                                System.out.println("人脸信息json集合：" + faceRecordArry);
+                                log.error("临时人员定时任务查询人脸信息json集合：" + faceRecordArry);
                                 ArrayList<FaceInfo> houtaifaceInfos = new ArrayList<>();
                                 for (int i = 0; i < faceRecordArry.size(); i++) {
                                     FaceInfo qiantaifaceInfo = new FaceInfo();
@@ -168,7 +170,7 @@ public class FaceInfoManagerSchedule {
                                     qiantaifaceInfo.setCardId(cardID);
                                     houtaifaceInfos.add(qiantaifaceInfo);
                                 }
-                                System.out.println("从摄像头查询到的人脸集合对象：" + houtaifaceInfos);
+                                System.out.println("临时人员定时任务查询从摄像头查询到的人脸集合对象：" + houtaifaceInfos);
                                 String faceID = null;
                                 if (!CommonUtil.isEmptyList(houtaifaceInfos)){
                                     for (FaceInfo houtaiFaceInfo : houtaifaceInfos) {
@@ -290,9 +292,11 @@ public class FaceInfoManagerSchedule {
                                 exitgetFace = HWPuSDKLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitulIdentifyId, faceInfoFindS);
                             } else {
                                 getFace = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(entryulIdentifyId, faceInfoFindS);
+                                log.error("内部人员定时任务查询人脸入口信息返回码：");
                                 HuaWeiSdkApi.printReturnMsg();
-                                log.error("定时任务查询人脸信息返回码：");
                                 exitgetFace = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitulIdentifyId, faceInfoFindS);
+                                log.error("内部人员定时任务查询人脸出口信息返回码：");
+                                HuaWeiSdkApi.printReturnMsg();
                             }
                             if (getFace || exitgetFace) {
                                 System.out.println("查询人脸信息成功");
@@ -300,7 +304,7 @@ public class FaceInfoManagerSchedule {
                                 String facejson = CommonUtil.readFile(getfaceInfoPath);
                                 JSONObject objectface = new JSONObject(facejson);
                                 JSONArray faceRecordArry = objectface.getJSONArray("FaceRecordArry");
-                                System.out.println("人脸信息json集合：" + faceRecordArry);
+                                System.out.println("内部人员定时任务查询人脸信息json集合：" + faceRecordArry);
                                 ArrayList<FaceInfo> houtaifaceInfos = new ArrayList<>();
                                 for (int i = 0; i < faceRecordArry.size(); i++) {
                                     FaceInfo qiantaifaceInfo = new FaceInfo();
@@ -325,7 +329,7 @@ public class FaceInfoManagerSchedule {
                                     qiantaifaceInfo.setCardId(cardID);
                                     houtaifaceInfos.add(qiantaifaceInfo);
                                 }
-                                System.out.println("从摄像头查询到的人脸集合对象：" + houtaifaceInfos);
+                                System.out.println("内部人员定时任务查询从摄像头查询到的人脸集合对象：" + houtaifaceInfos);
                                 String faceID=null;
                                 if (!CommonUtil.isEmptyList(houtaifaceInfos)){
                                     for (FaceInfo houtaiFaceInfo : houtaifaceInfos) {

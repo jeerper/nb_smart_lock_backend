@@ -281,14 +281,27 @@ public class FaceInfoManagerController {
              addface.szName=Arrays.copyOf(faceInfo.getUserName().getBytes("utf8"),64);
              addface.szProvince=Arrays.copyOf(faceInfo.getProvince().getBytes("utf8"),32);
            }
-           String absolutePath = new String(new File(".").getCanonicalPath() + faceInfo.getFaceImage());
+           String absolutePath=null;
+           if (!SummitTools.stringNotNull(base64Str) && base64Str!=null && base64Str !=""){
+              absolutePath = new String(new File(".").getCanonicalPath() + faceUrl);
+              log.error(absolutePath+"修改时上传了图片的路径");
+           }else {
+              absolutePath = new String(new File(".").getCanonicalPath() +oldFaceInfo.getFaceImage());
+             log.error(absolutePath+"修改时没有上传图片的路径");
+           }
            addface.szPicPath=Arrays.copyOf(absolutePath.getBytes(),128);
            puFaceInfoAdd.stRecord=addface;
-           String filename = faceInfo.getFaceImage().substring(faceInfo.getFaceImage().lastIndexOf("/")+1);
+           String filename=null;
+           if (!SummitTools.stringNotNull(base64Str) && base64Str!=null && base64Str !=""){
+             filename = faceInfo.getFaceImage().substring(faceInfo.getFaceImage().lastIndexOf("/")+1);
+           }else {
+             filename = oldFaceInfo.getFaceImage().substring(oldFaceInfo.getFaceImage().lastIndexOf("/")+1);
+           }
            System.out.println(filename);
            boolean addface2;
            if(Platform.isWindows()){
              addface2 = HWPuSDKLibrary.INSTANCE.IVS_PU_AddOneFaceV2(ulIdentifyId, puFaceInfoAdd, filename);
+             log.error("编辑修改过期人脸信息添加人脸的返回码：");
              HuaWeiSdkApi.printReturnMsg();
            }else {
              addface2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(ulIdentifyId, puFaceInfoAdd, filename);
@@ -339,7 +352,7 @@ public class FaceInfoManagerController {
            }
          }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息全部成功",null);
-      }else {//不是过期人脸的修改，则需要自己数据库和摄像头同时修改
+      }else if(nowDate<oldfaceEndDate){//不是过期人脸的修改，则需要自己数据库和摄像头同时修改
         for(String cameraIp:cameraIps){
           DeviceInfo deviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(cameraIp);
           NativeLong ulIdentifyId;
