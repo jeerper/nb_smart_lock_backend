@@ -17,6 +17,7 @@ import com.summit.dao.entity.*;
 import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.entity.SimpleFaceInfo;
 import com.summit.exception.ErrorMsgException;
+import com.summit.schedule.FaceInfoManagerSchedule;
 import com.summit.sdk.huawei.*;
 import com.summit.sdk.huawei.api.HuaWeiSdkApi;
 import com.summit.sdk.huawei.model.DeviceInfo;
@@ -352,6 +353,10 @@ public class FaceInfoManagerController {
          }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息全部成功",null);
       }else if(nowDate<oldfaceEndDate){//不是过期人脸的修改，则需要自己数据库和摄像头同时修改
+        /**
+         * 调用方法。。。。。
+         */
+        FaceInfoManagerSchedule.refreshFaceInfoManager();
         for(String cameraIp:cameraIps){
           DeviceInfo deviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(cameraIp);
           NativeLong ulIdentifyId;
