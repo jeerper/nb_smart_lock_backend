@@ -100,7 +100,7 @@ public class FaceInfoManagerSchedule {
                             }
                             PU_FACE_INFO_FIND_S faceInfoFindS = new PU_FACE_INFO_FIND_S();
                             faceInfoFindS.ulChannelId=new NativeLong(101);
-                            String faceInfoPath=realfaceinfoPath+"/realFace.json";
+                            String faceInfoPath=realfaceinfoPath+File.separator+"realFace.json";
                             faceInfoFindS.szFindResultPath= Arrays.copyOf(faceInfoPath.getBytes(),129);
                             PU_FACE_LIB_S facelib2 = new PU_FACE_LIB_S();
                             facelib2.ulFaceLibID=new NativeLong(1);
@@ -112,7 +112,7 @@ public class FaceInfoManagerSchedule {
                             facelib2.enLibType=2;
                             facelib2.uiThreshold=new NativeLong(90);
                             FACE_FIND_CONDITION faceFindCondition=new FACE_FIND_CONDITION();
-                            faceFindCondition.enFeatureStatus=4;
+                            faceFindCondition.enFeatureStatus=1;
                             faceFindCondition.szName= ByteBuffer.allocate(64).put("".getBytes()).array();
                             faceFindCondition.szProvince=ByteBuffer.allocate(32).put("".getBytes()).array();
                             faceFindCondition.szCity=ByteBuffer.allocate(48).put("".getBytes()).array();
