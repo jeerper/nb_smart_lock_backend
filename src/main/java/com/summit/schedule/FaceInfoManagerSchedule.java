@@ -1,5 +1,6 @@
 package com.summit.schedule;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.system.SystemUtil;
@@ -67,7 +68,7 @@ public class FaceInfoManagerSchedule {
                 long nowDate = df.parse(nowtime).getTime();
                 if (nowDate > faceEndDate) {//超过截至日期，从摄像头删除
                     List<AccessControlInfo> accessControlInfos = faceInfoAccCtrlService.seleAccCtrlInfoByFaceID(faceInfo.getFaceid());
-                    System.out.println("人脸关联的门禁："+accessControlInfos);
+                    System.out.println("临时人脸关联的门禁："+accessControlInfos);
                     if (!CommonUtil.isEmptyList(accessControlInfos)) {//而且确定他和摄像头挂钩
                         for (AccessControlInfo accessControlInfo : accessControlInfos) {
                             //找出所挂钩的入口摄像头
@@ -145,6 +146,8 @@ public class FaceInfoManagerSchedule {
                                 String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator + "realfaceInfo" + File.separator + "realfaceInfo.json");
                                 log.debug("实时查询文件路径："+getfaceInfoPath);
                                 String facejson = readFile(getfaceInfoPath);
+                                int j = facejson.indexOf("{");
+                                facejson = facejson.substring(j);
                                 JSONObject jsonObject = new JSONObject(facejson);
                                 if (jsonObject==null || jsonObject.isEmpty()){
                                     log.debug("临时人员定时任务查询人脸信息为空");
@@ -202,14 +205,15 @@ public class FaceInfoManagerSchedule {
                                             boolean exitdel;
                                             if (Platform.isWindows()) {
                                                 del = HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryulIdentifyId, puFaceInfoDeleteS);
+                                                log.debug("临时过期人脸入口删除返回码："+faceInfo.getUserName());
                                                 HuaWeiSdkApi.printReturnMsg();
                                                 exitdel = HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitulIdentifyId, puFaceInfoDeleteS);
+                                                log.debug("临时过期人脸出口删除返回码："+faceInfo.getUserName());
                                                 HuaWeiSdkApi.printReturnMsg();
                                             } else {
                                                 del = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryulIdentifyId, puFaceInfoDeleteS);
                                                 exitdel = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitulIdentifyId, puFaceInfoDeleteS);
                                             }
-                                            HuaWeiSdkApi.printReturnMsg();
                                             if (del || exitdel) {
                                                 System.out.println("删除人脸信息成功");
                                             } else {
