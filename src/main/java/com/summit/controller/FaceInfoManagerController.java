@@ -168,7 +168,6 @@ public class FaceInfoManagerController {
     //更新之前找到原来的人脸信息
     String selectoldfaceid = faceInfo.getFaceid();
     FaceInfo oldFaceInfo = faceInfoManagerService.selectFaceInfoByID(selectoldfaceid);
-    String ulFaceId=null;
     String msg="更新人脸信息失败";
     String  base64Str=faceInfo.getFaceImage();
     String faceUrl=null;
@@ -229,7 +228,7 @@ public class FaceInfoManagerController {
     Date newEndTime = faceInfo.getFaceEndTime();
     long newfaceEndDate = newEndTime.getTime();
     String faceid = faceInfo.getFaceid();
-    List<AccessControlInfo> accessControlInfos=faceInfoAccCtrlService.seleAccCtrlInfoByFaceID(faceid);
+    List<AccessControlInfo> accessControlInfos=faceInfoAccCtrlService.seleAccCtrlInfoByFaceID(faceid);//确定授权
     System.out.println("门禁信息"+accessControlInfos);
     if(!CommonUtil.isEmptyList(accessControlInfos)){//确定已经授权
       List<String> cameraIps=new ArrayList<>();
@@ -406,47 +405,54 @@ public class FaceInfoManagerController {
             getFace =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(ulIdentifyId, faceInfoFindS);
           }
           if (getFace){
-            System.out.println("查询人脸信息成功");
+            System.out.println("查询编辑人脸信息成功");
+          }
+          String ulFaceId=null;
+
             //查询到人脸信息json数据
-            String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator+"updatefaceInfo"+File.separator+"updatefaceInfo.json");
-            String facejson = readFile(getfaceInfoPath);
-            JSONObject objectface=new JSONObject(facejson);
-            JSONArray faceRecordArry = objectface.getJSONArray("FaceRecordArry");
-            log.error("编辑不过期时查询到的人脸信息集合："+faceRecordArry);
-            ArrayList<FaceInfo> faceInfos=new ArrayList<>();
-            for (int i=0; i<faceRecordArry.size();i++){
-              FaceInfo updatefaceInfo=new FaceInfo();
-              JSONObject faceInfojson=faceRecordArry.getJSONObject(i);
-              updatefaceInfo.setFaceid(faceInfojson.getStr("ID"));
-              String userName=faceInfojson.getStr("Name");
-              System.out.println("用户名："+userName);
-              updatefaceInfo.setUserName(userName);
-              String gender=faceInfojson.getStr("Gender");
-              updatefaceInfo.setGender(Integer.parseInt(gender));
-              String birthday=faceInfojson.getStr("Birthday");
-              SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-              Date birthday1 = sdf.parse(birthday);
-              updatefaceInfo.setBirthday(birthday1);
-              String province=faceInfojson.getStr("Province");
-              updatefaceInfo.setProvince(province);
-              String city = faceInfojson.getStr("City");
-              updatefaceInfo.setCity(city);
-              String cardType = faceInfojson.getStr("CardType");
-              updatefaceInfo.setCardType(Integer.parseInt(cardType));
-              String cardID = faceInfojson.getStr("CardID");
-              updatefaceInfo.setCardId(cardID);
-              faceInfos.add(updatefaceInfo);
-            }
-            System.out.println("原来的人脸信息"+oldFaceInfo);
-            log.error("编辑不过期时从摄像头查询到的人脸集合对象："+faceInfos);
-            for (FaceInfo houtaifaceInfo:faceInfos){
-              if (houtaifaceInfo.getUserName().equals(oldFaceInfo.getUserName())){
-                ulFaceId=houtaifaceInfo.getFaceid();
-                break;
-              }else {
-                ulFaceId="11111";
+          String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator+"updatefaceInfo"+File.separator+"updatefaceInfo.json");
+          String facejson = readFile(getfaceInfoPath);
+          JSONObject objectface=new JSONObject(facejson);
+          JSONArray faceRecordArry = objectface.getJSONArray("FaceRecordArry");
+          log.error("编辑不过期时查询到的人脸信息集合faceRecordArry："+faceRecordArry);
+          if(faceRecordArry.size()>0){
+              ArrayList<FaceInfo> faceInfos=new ArrayList<>();
+              for (int i=0; i<faceRecordArry.size();i++){
+                FaceInfo updatefaceInfo=new FaceInfo();
+                JSONObject faceInfojson=faceRecordArry.getJSONObject(i);
+                updatefaceInfo.setFaceid(faceInfojson.getStr("ID"));
+                String userName=faceInfojson.getStr("Name");
+                System.out.println("用户名："+userName);
+                updatefaceInfo.setUserName(userName);
+                String gender=faceInfojson.getStr("Gender");
+                updatefaceInfo.setGender(Integer.parseInt(gender));
+                String birthday=faceInfojson.getStr("Birthday");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date birthday1 = sdf.parse(birthday);
+                updatefaceInfo.setBirthday(birthday1);
+                String province=faceInfojson.getStr("Province");
+                updatefaceInfo.setProvince(province);
+                String city = faceInfojson.getStr("City");
+                updatefaceInfo.setCity(city);
+                String cardType = faceInfojson.getStr("CardType");
+                updatefaceInfo.setCardType(Integer.parseInt(cardType));
+                String cardID = faceInfojson.getStr("CardID");
+                updatefaceInfo.setCardId(cardID);
+                faceInfos.add(updatefaceInfo);
               }
-            }
+             System.out.println("原来的人脸信息"+oldFaceInfo);
+             log.error("编辑不过期时从摄像头查询到的人脸集合对象："+faceInfos);
+             for (FaceInfo houtaifaceInfo:faceInfos){
+               if (houtaifaceInfo.getUserName().equals(oldFaceInfo.getUserName())){
+                 ulFaceId=houtaifaceInfo.getFaceid();
+                 break;
+               }else {
+                 ulFaceId="11111";
+               }
+             }
+          }else {
+              ulFaceId="11111";
+              log.debug("更新人脸失败摄像头人脸为空");
           }
           PU_FACE_INFO_MODIFY_S  updateFaceInfo=new PU_FACE_INFO_MODIFY_S();
           updateFaceInfo.ulChannelId=new NativeLong(101);
@@ -487,6 +493,7 @@ public class FaceInfoManagerController {
           puFaceRecord.szBirthday=Arrays.copyOf(birthday.getBytes(),32);
           puFaceRecord.enGender=faceInfo.getGender();
           puFaceRecord.enCardType=faceInfo.getCardType();
+          System.out.println("id:"+ulFaceId);
           puFaceRecord.ulFaceId=new NativeLong(Integer.parseInt(ulFaceId));
           updateFaceInfo.stRecord=puFaceRecord;
           boolean update;
