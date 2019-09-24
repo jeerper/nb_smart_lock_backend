@@ -412,7 +412,7 @@ public class FaceInfoManagerController {
             String facejson = readFile(getfaceInfoPath);
             JSONObject objectface=new JSONObject(facejson);
             JSONArray faceRecordArry = objectface.getJSONArray("FaceRecordArry");
-            System.out.println("人脸信息集合："+faceRecordArry);
+            log.error("编辑不过期时查询到的人脸信息集合："+faceRecordArry);
             ArrayList<FaceInfo> faceInfos=new ArrayList<>();
             for (int i=0; i<faceRecordArry.size();i++){
               FaceInfo updatefaceInfo=new FaceInfo();
@@ -438,7 +438,7 @@ public class FaceInfoManagerController {
               faceInfos.add(updatefaceInfo);
             }
             System.out.println("原来的人脸信息"+oldFaceInfo);
-            System.out.println("从摄像头查询到的人脸集合对象："+faceInfos);
+            log.error("编辑不过期时从摄像头查询到的人脸集合对象："+faceInfos);
             for (FaceInfo houtaifaceInfo:faceInfos){
               if (houtaifaceInfo.getUserName().equals(oldFaceInfo.getUserName())){
                 ulFaceId=houtaifaceInfo.getFaceid();
