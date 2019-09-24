@@ -36,7 +36,7 @@ public class UnlockCommandHandleSchedule {
     public void refreshUnlockCommandQueue() {
         List<UnlockCommandQueue> unlockCommandList = unlockCommandQueueDao.selectList(null);
         for (UnlockCommandQueue entity : unlockCommandList) {
-            long differMinute = DateUtil.between(entity.getCreateTime(), new Date(), DateUnit.MINUTE, false);
+            long differMinute = DateUtil.between(entity.getCreateTime(), new Date(), DateUnit.MINUTE);
             if (differMinute > 5) {
                 //超时处理
                 accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
