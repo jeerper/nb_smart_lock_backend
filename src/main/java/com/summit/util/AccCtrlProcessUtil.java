@@ -251,7 +251,7 @@ public class AccCtrlProcessUtil {
      * @param failReason 人脸识别或门禁操作识别原因
      * @return 组装好的门禁操作记录信息对象
      */
-    public AccCtrlProcess getAccCtrlProcess(FaceInfo faceInfo, CameraUploadType type, FileInfo facePanoramaFile, FileInfo facePicFile, String processUuid , LockProcessResultType processResult, String failReason) {
+    public AccCtrlProcess getAccCtrlProcess(FaceInfo faceInfo, CameraUploadType type, FileInfo facePanoramaFile, FileInfo facePicFile,  LockProcessResultType processResult, String failReason) {
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         String deviceIp = faceInfo.getDeviceIp();
         accCtrlProcess.setDeviceIp(deviceIp);
@@ -327,9 +327,6 @@ public class AccCtrlProcessUtil {
             accCtrlProcess.setProcessType(LockProcessType.CLOSE_LOCK.getCode());
 
         }
-        //用于查询开锁状态的命令ID
-        accCtrlProcess.setProcessUuid(processUuid);
-        //指令下发返回的结果
         if(processResult!=null){
             accCtrlProcess.setProcessResult(processResult.getCode());
         }
