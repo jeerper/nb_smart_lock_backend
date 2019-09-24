@@ -48,7 +48,7 @@ public class FaceInfoManagerSchedule {
      * 1、实时查询人脸信息有有效截至时间，一旦超过有效截至时间，内部人员和临时人员都从摄像头中删除，此时开不了锁
      * 2、然后对于超过有效时间半年的临时人员从数据库中删除，同时删除授权关系，是内部人员的话在数据库中不删除，授权关系也不删除
      */
-    @Scheduled(cron = "0/30 * * * * ?")
+    @Scheduled(cron = "0/59 * * * * ?")
     public void refreshFaceInfoManager() throws ParseException, IOException {
         QueryWrapper<FaceInfo> wrapper = new QueryWrapper<>();
         List<FaceInfo> faceInfoList = faceInfoManagerDao.selectList(wrapper);
@@ -92,7 +92,7 @@ public class FaceInfoManagerSchedule {
                             String realfaceinfoPath = new StringBuilder()
                                     .append(SystemUtil.getUserInfo().getCurrentDir())
                                     .append(File.separator)
-                                    .append(MainAction.RealFaceInfo)
+                                    .append(MainAction.RealFace)
                                     .toString();
                             File face = new File(realfaceinfoPath);
                             if (!face.exists()) {
@@ -100,7 +100,7 @@ public class FaceInfoManagerSchedule {
                             }
                             PU_FACE_INFO_FIND_S faceInfoFindS = new PU_FACE_INFO_FIND_S();
                             faceInfoFindS.ulChannelId=new NativeLong(101);
-                            String faceInfoPath=realfaceinfoPath+"/realFaceInfo.json";
+                            String faceInfoPath=realfaceinfoPath+"/realFace.json";
                             faceInfoFindS.szFindResultPath= Arrays.copyOf(faceInfoPath.getBytes(),129);
                             PU_FACE_LIB_S facelib2 = new PU_FACE_LIB_S();
                             facelib2.ulFaceLibID=new NativeLong(1);
@@ -143,7 +143,7 @@ public class FaceInfoManagerSchedule {
                             }
                             if (getFace || exitgetFace) {
                                 log.debug("临时人员定时任务查询人脸信息成功");
-                                String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator + "realfaceInfo" + File.separator + "realfaceInfo.json");
+                                String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator + "realface" + File.separator + "realface.json");
                                 log.debug("实时查询文件路径："+getfaceInfoPath);
                                 String facejson = readFile(getfaceInfoPath);
                                 log.debug("facejson：---"+facejson);
