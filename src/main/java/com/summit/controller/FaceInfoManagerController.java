@@ -708,12 +708,12 @@ public class FaceInfoManagerController {
               NativeLong entryulIdentifyId;
               NativeLong exitulIdentifyId;
               if (entrydeviceInfo == null ) {
-                entryulIdentifyId = new NativeLong(112221);
+                entryulIdentifyId = new NativeLong(1);
               }else {
                 entryulIdentifyId = entrydeviceInfo.getUlIdentifyId();
               }
               if (exitdeviceInfo == null){
-                exitulIdentifyId = new NativeLong(11222);
+                exitulIdentifyId = new NativeLong(1);
               }else {
                 exitulIdentifyId = exitdeviceInfo.getUlIdentifyId();
               }
