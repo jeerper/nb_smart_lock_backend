@@ -172,32 +172,6 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                     if (count > 0) {
                         //设置开锁状态为待发送开锁指令
                         processResult = LockProcessResultType.WaitSendCommand;
-//                        LockRequest lockRequest = new LockRequest(null, lockCode, faceInfo.getName(), null, null);
-//                        RestfulEntityBySummit result = null;
-//                        //调用开锁接口
-//                        result = unLockService.toUnLock(lockRequest);
-//
-//                        BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
-//                        if (backLockInfo != null) {
-//
-//                            if (backLockInfo.getObjx() == null) {
-//                                failReason = backLockInfo.getContent();
-//                                processResult = LockProcessResultType.Failure;
-//                            } else {
-//                                //下发开锁指令后返回的状态码
-//                                processResult = LockProcessResultType.codeOf(backLockInfo.getObjx());
-//                                log.debug("开锁成功");
-//                                log.debug("下发开锁指令后返回的状态码:"+processResult.getDescription());
-//                                //用于查询开锁状态的命令UUID
-//                                //开锁处理UUID
-//                                String unlockProcessUuid = backLockInfo.getRmid();
-//                            }
-//                        } else {
-//                            //开锁接口调用失败
-//                            log.debug("开锁接口调用失败");
-//                            failReason = "开锁接口调用失败";
-//                            processResult = LockProcessResultType.Failure;
-//                        }
                     } else {
                         log.debug("用户{}没有打开门禁{}的权限", faceInfo.getName(), accessControlInfo.getAccessControlId());
                         processResult = LockProcessResultType.Failure;
