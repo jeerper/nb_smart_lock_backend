@@ -408,10 +408,10 @@ public class FaceInfoManagerController {
             System.out.println("查询编辑人脸信息成功");
           }
           String ulFaceId=null;
-
             //查询到人脸信息json数据
           String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator+"updatefaceInfo"+File.separator+"updatefaceInfo.json");
           String facejson = readFile(getfaceInfoPath);
+          log.debug("编辑人脸信息文件路径---："+getfaceInfoPath);
           JSONObject objectface=new JSONObject(facejson);
           JSONArray faceRecordArry = objectface.getJSONArray("FaceRecordArry");
           log.error("编辑不过期时查询到的人脸信息集合faceRecordArry："+faceRecordArry);
