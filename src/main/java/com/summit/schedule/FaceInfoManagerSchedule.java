@@ -316,11 +316,11 @@ public class FaceInfoManagerSchedule {
                             if (getFace || exitgetFace) {
                                 System.out.println("查询人脸信息成功");
                                // String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator + "realfaceInfo" + File.separator + "realfaceInfo.json");
-                                String getfaceInfoPath = realfaceinfoPath+File.separator+"realFace.json";
+                                String getfaceInfoPath = realfaceinfoPath+File.separator+"realFaceInfo.json";
                                 String facejson =readFile(getfaceInfoPath);
                                 JSONObject objectface = new JSONObject(facejson);
                                 JSONArray faceRecordArry = objectface.getJSONArray("FaceRecordArry");
-                                System.out.println("内部人员定时任务查询人脸信息json集合：" + faceRecordArry);
+                                log.debug("内部人员定时任务查询人脸信息json集合：" + faceRecordArry);
                                 ArrayList<FaceInfo> houtaifaceInfos = new ArrayList<>();
                                 for (int i = 0; i < faceRecordArry.size(); i++) {
                                     FaceInfo qiantaifaceInfo = new FaceInfo();
