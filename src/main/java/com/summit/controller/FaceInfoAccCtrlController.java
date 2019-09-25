@@ -74,8 +74,8 @@ public class FaceInfoAccCtrlController {
             Date faceEndTime = faceInfo.getFaceEndTime();
             long faceEndDate = faceEndTime.getTime();
             if (nowDate>faceEndDate){
-                log.error("当前人脸有效期过期授权失败");
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸有效期过期授权失败",null);
+                log.error("授权人脸中含有有效期过期人脸");
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"授权人脸中含有有效期过期人脸",null);
             }
         }
         if(accessControlId==null){
