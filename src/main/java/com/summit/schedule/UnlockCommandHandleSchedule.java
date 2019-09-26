@@ -42,7 +42,6 @@ public class UnlockCommandHandleSchedule {
                 accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
                         .set(AccCtrlProcess::getProcessResult, LockProcessResultType.NotOnline.getCode())
                         .set(AccCtrlProcess::getFailReason, LockProcessResultType.NotOnline.getDescription())
-                        .set(AccCtrlProcess::getProcessTime, new Date())
                         .eq(AccCtrlProcess::getAccCtrlProId, entity.getAccCtrlProId()));
                 unlockCommandQueueDao.deleteById(entity.getId());
                 continue;
@@ -70,7 +69,6 @@ public class UnlockCommandHandleSchedule {
             accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
                     .set(AccCtrlProcess::getProcessResult, processResult.getCode())
                     .set(AccCtrlProcess::getProcessUuid, unlockProcessUuid)
-                    .set(AccCtrlProcess::getProcessTime, new Date())
                     .eq(AccCtrlProcess::getAccCtrlProId, entity.getAccCtrlProId()));
             unlockCommandQueueDao.deleteById(entity.getId());
         }

@@ -155,7 +155,6 @@ public class AlarmController {
                 accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
                         .set(AccCtrlProcess::getProcessUuid, unlockProcessUuid)
                         .set(AccCtrlProcess::getProcessResult, processResult)
-                        .set(AccCtrlProcess::getProcessTime, new Date())
                         .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProId));
             } else {
                 //只处理告警任务，不开锁时的业务
