@@ -883,22 +883,22 @@ public class FaceInfoAccCtrlController {
                                     boolean exitgetTeZheng;
                                     if (Platform.isWindows()){
                                         exitgetTeZheng = HWPuSDKLibrary.INSTANCE.IVS_PU_FeatureExtract(entryIdentifyId,entrypuFaceFeatureExtractS);
-                                        System.out.println("提取出口人脸特征值返回码------");
+                                        System.out.println("提取入口口人脸特征值返回码------");
                                         HuaWeiSdkApi.printReturnMsg();
                                     }else {
                                         exitgetTeZheng = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FeatureExtract(entryIdentifyId,entrypuFaceFeatureExtractS);
-                                        System.out.println("提取出口人脸特征值返回码------");
+                                        System.out.println("提取入口人脸特征值返回码------");
                                         HuaWeiSdkApi.printReturnMsg();
                                     }
                                     if (exitgetTeZheng){
-                                        log.debug("提取出口人脸特征值成功------");
+                                        log.debug("提取入口人脸特征值成功------");
                                     }else {
-                                        log.debug("提取出口人脸特征值失败------");
+                                        log.debug("提取入口人脸特征值失败------");
                                         return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"提取出口人脸特征值失败,图片不规范",null);
                                     }
                                 }else {
                                     log.debug("有人脸库没有人脸信息时，添加出口人脸失败------");
-                                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"有人脸库没有人脸信息时，添加出口人脸失败",null);
+                                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"有人脸库有人脸信息时，添加入口人脸失败",null);
                                 }
 
                                 /**
@@ -981,7 +981,7 @@ public class FaceInfoAccCtrlController {
                                     }
                                 }else {
                                     log.debug("有人脸库没有人脸信息时，添加出口人脸失败------");
-                                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"有人脸库没有人脸信息时，添加出口人脸失败",null);
+                                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"有人脸库有人脸信息时，添加出口人脸失败",null);
                                 }
                             }
                         }

@@ -254,15 +254,15 @@ public class FaceInfoManagerController {
            }else {
              ulIdentifyId = deviceInfo.getUlIdentifyId();
            }
-           //设置人脸库对象
+           //设置facelib对象
            PU_FACE_LIB_S stFacelib1=new PU_FACE_LIB_S();
            stFacelib1.enLibType=2;
            stFacelib1.isControl=true;
            stFacelib1.ulFaceLibID=new NativeLong(1);
            if(Platform.isWindows()){
-             stFacelib1.szLibName=Arrays.copyOf("人脸库".getBytes("GBK"),65);
+             stFacelib1.szLibName=Arrays.copyOf("facelib".getBytes("GBK"),65);
            }else {
-             stFacelib1.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);
+             stFacelib1.szLibName=Arrays.copyOf("facelib".getBytes("utf8"),65);
            }
            stFacelib1.uiThreshold=new NativeLong(101);
            //设置添加人脸信息的对象
@@ -330,15 +330,15 @@ public class FaceInfoManagerController {
               */
              //接着布控
              PU_FACE_LIB_SET_S puFaceLibSetS2 =new PU_FACE_LIB_SET_S();
-             puFaceLibSetS2.enOptType=2;//修改人脸库
+             puFaceLibSetS2.enOptType=2;//修改facelib
              PU_FACE_LIB_S  stFacelib2=new PU_FACE_LIB_S();
              if(Platform.isWindows()){
-               stFacelib2.szLibName=Arrays.copyOf("人脸库".getBytes("gbk"),65);//windows名单库的名称
+               stFacelib2.szLibName=Arrays.copyOf("facelib".getBytes("gbk"),65);//windows名单库的名称
              }else {
-               stFacelib2.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);//名单库的名称
+               stFacelib2.szLibName=Arrays.copyOf("facelib".getBytes("utf8"),65);//名单库的名称
              }
              stFacelib2.uiThreshold=new NativeLong(90);//布控的阀值
-             stFacelib2.enLibType=2;//人脸库类型2为白名单
+             stFacelib2.enLibType=2;//facelib类型2为白名单
              stFacelib2.isControl=true;//修改为布控
              stFacelib2.ulFaceLibID=new NativeLong(1);
              puFaceLibSetS2.stFacelib=stFacelib2;
@@ -367,7 +367,7 @@ public class FaceInfoManagerController {
             ulIdentifyId = deviceInfo.getUlIdentifyId();
           }
           System.out.println(ulIdentifyId+"222222");
-          //查询人脸库的人脸信息
+          //查询facelib的人脸信息
           String faceinfoPath=new StringBuilder()
                   .append(SystemUtil.getUserInfo().getCurrentDir())
                   .append(File.separator)
@@ -384,9 +384,9 @@ public class FaceInfoManagerController {
           PU_FACE_LIB_S facelib2 = new PU_FACE_LIB_S();
           facelib2.ulFaceLibID=new NativeLong(1);
           if(Platform.isWindows()){
-            facelib2.szLibName=Arrays.copyOf("人脸库".getBytes("gbk"),65);
+            facelib2.szLibName=Arrays.copyOf("facelib".getBytes("gbk"),65);
           }else {
-            facelib2.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);
+            facelib2.szLibName=Arrays.copyOf("facelib".getBytes("utf8"),65);
           }
           facelib2.enLibType=2;
           facelib2.uiThreshold=new NativeLong(90);
@@ -467,9 +467,9 @@ public class FaceInfoManagerController {
           stFacelib.uiThreshold=new NativeLong(90);
           stFacelib.enLibType=2;
           if (Platform.isWindows()){
-            stFacelib.szLibName=Arrays.copyOf("人脸库".getBytes("gbk"),65);//名单库的名称
+            stFacelib.szLibName=Arrays.copyOf("facelib".getBytes("gbk"),65);//名单库的名称
           }else {
-            stFacelib.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);//名单库的名称
+            stFacelib.szLibName=Arrays.copyOf("facelib".getBytes("utf8"),65);//名单库的名称
           }
           stFacelib.isControl=true;
           updateFaceInfo.stFacelib=stFacelib;
@@ -524,15 +524,15 @@ public class FaceInfoManagerController {
             }
             //接着布控
             PU_FACE_LIB_SET_S puFaceLibSetS2 =new PU_FACE_LIB_SET_S();
-            puFaceLibSetS2.enOptType=2;//修改人脸库
+            puFaceLibSetS2.enOptType=2;//修改facelib
             PU_FACE_LIB_S  stFacelib2=new PU_FACE_LIB_S();
             if(Platform.isWindows()){
-              stFacelib2.szLibName=Arrays.copyOf("人脸库".getBytes("gbk"),65);//windows名单库的名称
+              stFacelib2.szLibName=Arrays.copyOf("facelib".getBytes("gbk"),65);//windows名单库的名称
             }else {
-              stFacelib2.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);//名单库的名称
+              stFacelib2.szLibName=Arrays.copyOf("facelib".getBytes("utf8"),65);//名单库的名称
             }
             stFacelib2.uiThreshold=new NativeLong(90);//布控的阀值
-            stFacelib2.enLibType=2;//人脸库类型2为白名单
+            stFacelib2.enLibType=2;//facelib类型2为白名单
             stFacelib2.isControl=true;//修改为布控
             stFacelib2.ulFaceLibID=new NativeLong(1);
             puFaceLibSetS2.stFacelib=stFacelib2;
@@ -603,7 +603,7 @@ public class FaceInfoManagerController {
             }else {
               exitulIdentifyId = exitdeviceInfo.getUlIdentifyId();
             }
-            //查询第一个人脸库的人脸信息
+            //查询第一个facelib的人脸信息
             String realfaceinfoPath = new StringBuilder()
                     .append(SystemUtil.getUserInfo().getCurrentDir())
                     .append(File.separator)
@@ -620,9 +620,9 @@ public class FaceInfoManagerController {
             PU_FACE_LIB_S facelib2 = new PU_FACE_LIB_S();
             facelib2.ulFaceLibID = new NativeLong(1);
             if (Platform.isWindows()) {
-              facelib2.szLibName = Arrays.copyOf("人脸库".getBytes("gbk"), 65);
+              facelib2.szLibName = Arrays.copyOf("facelib".getBytes("gbk"), 65);
             } else {
-              facelib2.szLibName = Arrays.copyOf("人脸库".getBytes("utf8"), 65);
+              facelib2.szLibName = Arrays.copyOf("facelib".getBytes("utf8"), 65);
             }
             facelib2.enLibType = 2;
             facelib2.uiThreshold = new NativeLong(90);
@@ -698,9 +698,9 @@ public class FaceInfoManagerController {
                     PU_FACE_LIB_S facelib = new PU_FACE_LIB_S();
                     facelib.ulFaceLibID = new NativeLong(1);
                     if (Platform.isWindows()) {
-                      facelib.szLibName = Arrays.copyOf("人脸库".getBytes("gbk"), 65);
+                      facelib.szLibName = Arrays.copyOf("facelib".getBytes("gbk"), 65);
                     } else {
-                      facelib.szLibName = Arrays.copyOf("人脸库".getBytes("utf8"), 65);
+                      facelib.szLibName = Arrays.copyOf("facelib".getBytes("utf8"), 65);
                     }
                     facelib.enLibType = 2;
                     facelib.uiThreshold = new NativeLong(101);
