@@ -722,9 +722,9 @@ public class FaceInfoAccCtrlController {
                                 entrypuFaceInfoDeleteS.stFacelib=entryfacelib;
                                 boolean entrydel;
                                 if(Platform.isWindows()){
-                                    entrydel =HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitIdentifyId, exitpuFaceInfoDeleteS);
+                                    entrydel =HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryIdentifyId, entrypuFaceInfoDeleteS);
                                 }else {
-                                    entrydel =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitIdentifyId, exitpuFaceInfoDeleteS);
+                                    entrydel =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryIdentifyId, entrypuFaceInfoDeleteS);
 
                                 }
                                 HuaWeiSdkApi.printReturnMsg();
