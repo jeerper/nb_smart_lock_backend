@@ -783,9 +783,9 @@ public class FaceInfoAccCtrlController {
                                  *  删除出口摄像头中的人脸信息，循环删除
                                  */
                                 PU_FACE_INFO_DELETE_S exitpuFaceInfoDeleteS=new PU_FACE_INFO_DELETE_S();
-                                int[] exituFaceID = new int[100];
-                                exituFaceID[0]=Integer.parseInt(houtaiFaceInfo.getFaceid());
-                                exitpuFaceInfoDeleteS.uFaceID= exituFaceID;
+                               // int[] exituFaceID = new int[100];
+                                //exituFaceID[0]=Integer.parseInt(houtaiFaceInfo.getFaceid());
+                                exitpuFaceInfoDeleteS.uFaceID= entryuFaceID;
                                 exitpuFaceInfoDeleteS.uFaceNum=1;
                                 exitpuFaceInfoDeleteS.ulChannelId=new NativeLong(101);
                                 PU_FACE_LIB_S exitfacelib = new PU_FACE_LIB_S();
