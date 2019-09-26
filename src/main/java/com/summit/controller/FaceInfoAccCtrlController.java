@@ -729,13 +729,13 @@ public class FaceInfoAccCtrlController {
                                 }
                                 HuaWeiSdkApi.printReturnMsg();
                                 if(exitdel && entrydel){
-                                    System.out.println("删除人脸信息成功");
-                                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁摄像头全部取消授权成功",null);
+                                   log.debug("人脸门禁摄像头全部取消授权成功");
                                 }else {
                                     System.out.println("删除人脸信息失败");
                                     return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁摄像头全部取消授权失败",null);
                                 }
                             }
+                            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁摄像头全部取消授权成功",null);
                         }
                         //先删除摄像头数据库在所传入列表不在的人脸信息
                         for(FaceInfo houtaiFaceInfo:faceInfos){
