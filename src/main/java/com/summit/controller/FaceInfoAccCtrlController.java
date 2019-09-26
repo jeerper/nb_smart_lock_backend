@@ -772,7 +772,13 @@ public class FaceInfoAccCtrlController {
                                 }else {
                                     entrydel = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryIdentifyId, entrypuFaceInfoDeleteS);
                                 }
+                                log.debug("删除入口摄像头中的人脸信息返回码:");
                                 HuaWeiSdkApi.printReturnMsg();
+                                if (entrydel){
+                                    log.debug("删除入口摄像头中的人脸信息成功:");
+                                }else {
+                                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"删除入口摄像头中的人脸信息失败",null);
+                                }
                                 /**
                                  *  删除出口摄像头中的人脸信息，循环删除
                                  */
@@ -798,12 +804,18 @@ public class FaceInfoAccCtrlController {
                                 }else {
                                     exitdell = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitIdentifyId, exitpuFaceInfoDeleteS);
                                 }
+                                log.debug("删除出口摄像头中的人脸信息返回码:");
                                 HuaWeiSdkApi.printReturnMsg();
+                                if (exitdell){
+                                    log.debug("删除出口摄像头中的人脸信息成功:");
+                                }else {
+                                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"删除入口摄像头中的人脸信息失败",null);
+                                }
                                 if(entrydel && exitdell){
                                     System.out.println("删除人脸信息成功");
                                 }else {
                                     System.out.println("删除人脸信息失败");
-                                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁摄像头授权失败",null);
+                                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸门禁摄像头授权失败",null);
                                 }
                             }
                         }
