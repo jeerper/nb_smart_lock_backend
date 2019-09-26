@@ -50,7 +50,7 @@ public class UnlockCommandHandleSchedule {
             LockRequest lockRequest = new LockRequest(null, entity.getLockCode(), entity.getUnlockFaceName(), null, null);
             //调用开锁接口
             RestfulEntityBySummit result = unLockService.toUnLock(lockRequest);
-
+            log.debug("下发开锁指令");
             BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
             if (backLockInfo == null || backLockInfo.getObjx() == null) {
                 continue;
@@ -63,6 +63,7 @@ public class UnlockCommandHandleSchedule {
             if (StrUtil.isBlank(backLockInfo.getRmid())) {
                 continue;
             }
+            log.debug("开锁成功");
             //用于查询开锁状态的命令UUID
             //开锁处理UUID
             String unlockProcessUuid = backLockInfo.getRmid();
