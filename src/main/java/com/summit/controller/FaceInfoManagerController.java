@@ -357,7 +357,7 @@ public class FaceInfoManagerController {
            }
          }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息全部成功",null);
-      }else if(nowDate<oldfaceEndDate){//不是过期人脸的修改，则需要自己数据库和摄像头同时修改
+      }else if(nowDate<=oldfaceEndDate){//不是过期人脸的修改，则需要自己数据库和摄像头同时修改
         for(String cameraIp:cameraIps){
           DeviceInfo deviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(cameraIp);
           NativeLong ulIdentifyId;
