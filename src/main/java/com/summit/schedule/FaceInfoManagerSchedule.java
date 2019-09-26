@@ -88,7 +88,7 @@ public class FaceInfoManagerSchedule {
                             }else {
                                 exitulIdentifyId = exitdeviceInfo.getUlIdentifyId();
                             }
-                            //查询第一个人脸库的人脸信息
+                            //查询第一个facelib的入口的人脸信息
                             String realfaceinfoPath = new StringBuilder()
                                     .append(SystemUtil.getUserInfo().getCurrentDir())
                                     .append(File.separator)
@@ -105,9 +105,9 @@ public class FaceInfoManagerSchedule {
                             PU_FACE_LIB_S facelib2 = new PU_FACE_LIB_S();
                             facelib2.ulFaceLibID=new NativeLong(1);
                             if(Platform.isWindows()){
-                                facelib2.szLibName=Arrays.copyOf("人脸库".getBytes("gbk"),65);
+                                facelib2.szLibName=Arrays.copyOf("facelib".getBytes("gbk"),65);
                             }else {
-                                facelib2.szLibName=Arrays.copyOf("人脸库".getBytes("utf8"),65);
+                                facelib2.szLibName=Arrays.copyOf("facelib".getBytes("utf8"),65);
                             }
                             facelib2.enLibType=2;
                             facelib2.uiThreshold=new NativeLong(90);
@@ -199,9 +199,9 @@ public class FaceInfoManagerSchedule {
                                             PU_FACE_LIB_S facelib = new PU_FACE_LIB_S();
                                             facelib.ulFaceLibID = new NativeLong(1);
                                             if (Platform.isWindows()) {
-                                                facelib.szLibName = Arrays.copyOf("人脸库".getBytes("gbk"), 65);
+                                                facelib.szLibName = Arrays.copyOf("facelib".getBytes("gbk"), 65);
                                             } else {
-                                                facelib.szLibName = Arrays.copyOf("人脸库".getBytes("utf8"), 65);
+                                                facelib.szLibName = Arrays.copyOf("facelib".getBytes("utf8"), 65);
                                             }
                                             facelib.enLibType = 2;
                                             facelib.uiThreshold = new NativeLong(101);
@@ -235,7 +235,7 @@ public class FaceInfoManagerSchedule {
                     int i = faceInfoManagerDao.deleteById(faceInfo.getFaceid());
                     int j= faceInfoAccCtrlService.deleteFaceAccCtrlByFaceId(faceInfo.getFaceid());
                 }
-            }else if(faceInfo.getFaceType() == 0){//内部人员，超过有限日期从摄像头中删除，人脸库中不删除
+            }else if(faceInfo.getFaceType() == 0){//内部人员，超过有限日期从摄像头中删除，facelib中不删除
                 Date date = new Date();
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
                 String nowtime = df.format(date);
@@ -264,7 +264,7 @@ public class FaceInfoManagerSchedule {
                             }else {
                                 exitulIdentifyId = exitdeviceInfo.getUlIdentifyId();
                             }
-                            //查询第一个人脸库的人脸信息
+                            //查询第一个facelib的人脸信息
                             String realfaceinfoPath = new StringBuilder()
                                     .append(SystemUtil.getUserInfo().getCurrentDir())
                                     .append(File.separator)
@@ -360,9 +360,9 @@ public class FaceInfoManagerSchedule {
                                             PU_FACE_LIB_S facelib = new PU_FACE_LIB_S();
                                             facelib.ulFaceLibID = new NativeLong(1);
                                             if (Platform.isWindows()) {
-                                                facelib.szLibName = Arrays.copyOf("人脸库".getBytes("gbk"), 65);
+                                                facelib.szLibName = Arrays.copyOf("facelib".getBytes("gbk"), 65);
                                             } else {
-                                                facelib.szLibName = Arrays.copyOf("人脸库".getBytes("utf8"), 65);
+                                                facelib.szLibName = Arrays.copyOf("facelib".getBytes("utf8"), 65);
                                             }
                                             facelib.enLibType = 2;
                                             facelib.uiThreshold = new NativeLong(101);

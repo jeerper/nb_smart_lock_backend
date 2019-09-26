@@ -19,7 +19,8 @@ public class MainAction {
 //    SimpMessagingTemplate messagingTemplate;
     public static final String SnapshotFileName="snapshot";
     public static final String FaceLib="facelib";
-    public static final String FaceInfo="faceInfo";
+    public static final String ExitFaceInfo="exitfaceInfo";
+    public static final String EntrytFaceInfo="entryfaceInfo";
     public static final String RealFaceInfo="realfaceInfo";
     public static final String RealFace="realface";
     public static final String UpdateFaceInfo="updatefaceInfo";
