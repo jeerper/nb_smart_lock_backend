@@ -852,8 +852,8 @@ public class FaceInfoAccCtrlController {
                                     entryaddfaceInfo.szName=Arrays.copyOf(qiantaiFaceInfo.getUserName().getBytes("utf8"),64);
                                     entryaddfaceInfo.szProvince=Arrays.copyOf(qiantaiFaceInfo.getProvince().getBytes("utf8"),32);
                                 }
-                                String absolutePath = new String(new File(".").getCanonicalPath() + qiantaiFaceInfo.getFaceImage());
-                                entryaddfaceInfo.szPicPath=Arrays.copyOf(absolutePath.getBytes(),128);
+                                String entryabsolutePath = new String(new File(".").getCanonicalPath() + qiantaiFaceInfo.getFaceImage());
+                                entryaddfaceInfo.szPicPath=Arrays.copyOf(entryabsolutePath.getBytes(),128);
                                 entrypuFaceInfoAdd.stRecord=entryaddfaceInfo;
                                 String entryfilename = qiantaiFaceInfo.getFaceImage().substring(qiantaiFaceInfo.getFaceImage().lastIndexOf("/")+1);
                                 boolean entryaddOneFaceV2;
@@ -886,7 +886,7 @@ public class FaceInfoAccCtrlController {
                                         System.out.println("提取出口人脸特征值返回码------");
                                         HuaWeiSdkApi.printReturnMsg();
                                     }else {
-                                        exitgetTeZheng = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FeatureExtract(exitIdentifyId,entrypuFaceFeatureExtractS);
+                                        exitgetTeZheng = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FeatureExtract(entryIdentifyId,entrypuFaceFeatureExtractS);
                                         System.out.println("提取出口人脸特征值返回码------");
                                         HuaWeiSdkApi.printReturnMsg();
                                     }
