@@ -281,9 +281,9 @@ public class FaceInfoManagerSchedule {
                             PU_FACE_LIB_S facelib2 = new PU_FACE_LIB_S();
                             facelib2.ulFaceLibID = new NativeLong(1);
                             if (Platform.isWindows()) {
-                                facelib2.szLibName = Arrays.copyOf("人脸库".getBytes("gbk"), 65);
+                                facelib2.szLibName = Arrays.copyOf("facelib".getBytes("gbk"), 65);
                             } else {
-                                facelib2.szLibName = Arrays.copyOf("人脸库".getBytes("utf8"), 65);
+                                facelib2.szLibName = Arrays.copyOf("facelib".getBytes("utf8"), 65);
                             }
                             facelib2.enLibType = 2;
                             facelib2.uiThreshold = new NativeLong(90);

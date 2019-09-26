@@ -559,18 +559,187 @@ public class FaceInfoManagerController {
 
   @ApiOperation(value = "删除人脸信息，参数为id数组",notes = "根据人脸id删除人脸信息")
   @DeleteMapping(value = "/delfaceInfoByIdBatch")
-  public RestfulEntityBySummit<String> delFaceInfo(@ApiParam(value = "人脸信息的id",required = true)@RequestParam(value = "faceInfoIds",required = false)List<String> faceInfoIds){
+  public RestfulEntityBySummit<String> delFaceInfo(@ApiParam(value = "人脸信息的id",required = true)@RequestParam(value = "faceInfoIds",required = false)List<String> faceInfoIds) throws ParseException, UnsupportedEncodingException {
     if(faceInfoIds==null || faceInfoIds.isEmpty()){
         log.error("人脸信息id为空");
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"人脸信息id为空",null);
     }
+    /**
+     *1  删除人脸时候，如果这个人脸已经授权，并且和摄像头挂钩，分两种情况，一种是这个人脸已经过期，这时候只是删除数据库的人脸，
+     * 如果没有过期，这时候数据库和摄像头同时删除
+     * 2 如果这个人脸没有授权，删除只是单纯的在自己数据库中删除
+     */
     String msg="删除人脸信息失败";
-    try {
-      faceInfoManagerService.delFaceInfoByIds(faceInfoIds);
-    } catch (Exception e) {
-      msg=getErrorMsg(msg,e);
-      log.error(msg);
-      return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,msg,null);
+    List<String> notAuthorityfaceids=new ArrayList<>();
+    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
+    Date date = new Date();
+    String nowtime = df.format(date);
+    long nowDate = df.parse(nowtime).getTime();
+    for(String faceInfoId:faceInfoIds){
+      List<AccessControlInfo> accessControlInfos = faceInfoAccCtrlService.seleAccCtrlInfoByFaceID(faceInfoId);
+      if(!CommonUtil.isEmptyList(accessControlInfos)){//确定已经授权
+        FaceInfo faceInfo = faceInfoManagerService.selectFaceInfoByID(faceInfoId);
+        Date faceEndTime = faceInfo.getFaceEndTime();
+        long faceEndDate = faceEndTime.getTime();
+        if (nowDate>faceEndDate){//说明已经过期
+          notAuthorityfaceids.add(faceInfoId);
+        }else {//说明没有过期和摄像头一起删除,同时删除授权关系
+          notAuthorityfaceids.add(faceInfoId);
+          int i1 = faceInfoAccCtrlService.deleteFaceAccCtrlByFaceId(faceInfoId);
+          for (AccessControlInfo accessControlInfo : accessControlInfos) {
+            String entryCameraIp = accessControlInfo.getEntryCameraIp();
+            String exitCameraIp = accessControlInfo.getExitCameraIp();
+            DeviceInfo entrydeviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(entryCameraIp);
+            DeviceInfo exitdeviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(exitCameraIp);
+            NativeLong entryulIdentifyId;
+            NativeLong exitulIdentifyId;
+            if (entrydeviceInfo == null ) {
+              entryulIdentifyId = new NativeLong(111);
+            }else {
+              entryulIdentifyId = entrydeviceInfo.getUlIdentifyId();
+            }
+            if (exitdeviceInfo == null){
+              exitulIdentifyId = new NativeLong(112);
+            }else {
+              exitulIdentifyId = exitdeviceInfo.getUlIdentifyId();
+            }
+            //查询第一个人脸库的人脸信息
+            String realfaceinfoPath = new StringBuilder()
+                    .append(SystemUtil.getUserInfo().getCurrentDir())
+                    .append(File.separator)
+                    .append(MainAction.DelFaceInfo)
+                    .toString();
+            File face = new File(realfaceinfoPath);
+            if (!face.exists()) {
+              face.mkdirs();
+            }
+            PU_FACE_INFO_FIND_S faceInfoFindS = new PU_FACE_INFO_FIND_S();
+            faceInfoFindS.ulChannelId = new NativeLong(101);
+            String faceInfoPath = realfaceinfoPath + "/delFaceInfo.json";
+            faceInfoFindS.szFindResultPath = Arrays.copyOf(faceInfoPath.getBytes(), 129);
+            PU_FACE_LIB_S facelib2 = new PU_FACE_LIB_S();
+            facelib2.ulFaceLibID = new NativeLong(1);
+            if (Platform.isWindows()) {
+              facelib2.szLibName = Arrays.copyOf("人脸库".getBytes("gbk"), 65);
+            } else {
+              facelib2.szLibName = Arrays.copyOf("人脸库".getBytes("utf8"), 65);
+            }
+            facelib2.enLibType = 2;
+            facelib2.uiThreshold = new NativeLong(90);
+            facelib2.isControl=true;
+            FACE_FIND_CONDITION faceFindCondition = new FACE_FIND_CONDITION();
+            faceFindCondition.enFeatureStatus = 1;
+            faceFindCondition.szName = ByteBuffer.allocate(64).put("".getBytes()).array();
+            faceFindCondition.szProvince = ByteBuffer.allocate(32).put("".getBytes()).array();
+            faceFindCondition.szCity = ByteBuffer.allocate(48).put("".getBytes()).array();
+            faceFindCondition.szCardID = ByteBuffer.allocate(32).put("".getBytes()).array();
+            faceFindCondition.szCity = ByteBuffer.allocate(48).put("".getBytes()).array();
+            faceFindCondition.enGender = -1;
+            faceFindCondition.enCardType = -1;
+            faceInfoFindS.stCondition = faceFindCondition;
+            faceInfoFindS.stFacelib = facelib2;
+            faceInfoFindS.uStartIndex = 0;
+            boolean getFace;
+            boolean exitgetFace;
+            if (Platform.isWindows()) {
+              getFace = HWPuSDKLibrary.INSTANCE.IVS_PU_FindFaceInfo(entryulIdentifyId, faceInfoFindS);
+              exitgetFace = HWPuSDKLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitulIdentifyId, faceInfoFindS);
+            } else {
+              getFace = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(entryulIdentifyId, faceInfoFindS);
+              log.error("删除人脸入口信息返回码：");
+              HuaWeiSdkApi.printReturnMsg();
+              exitgetFace = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitulIdentifyId, faceInfoFindS);
+              log.error("删除人脸出口信息返回码：");
+              HuaWeiSdkApi.printReturnMsg();
+            }
+            if (getFace || exitgetFace) {
+              log.debug("查询需要删除的人脸信息成功-------");
+              String getfaceInfoPath = realfaceinfoPath+File.separator+"delFaceInfo.json";
+              String facejson =readFile(getfaceInfoPath);
+              JSONObject objectface = new JSONObject(facejson);
+              JSONArray faceRecordArry = objectface.getJSONArray("FaceRecordArry");
+              log.debug("需要删除的人脸信息json集合：" + faceRecordArry);
+              ArrayList<FaceInfo> houtaifaceInfos = new ArrayList<>();
+              for (int i = 0; i < faceRecordArry.size(); i++) {
+                FaceInfo qiantaifaceInfo = new FaceInfo();
+                JSONObject faceInfojson = faceRecordArry.getJSONObject(i);
+                qiantaifaceInfo.setFaceid(faceInfojson.getStr("ID"));
+                String userName = faceInfojson.getStr("Name");
+                System.out.println("用户名：" + userName);
+                qiantaifaceInfo.setUserName(userName);
+                String gender = faceInfojson.getStr("Gender");
+                qiantaifaceInfo.setGender(Integer.parseInt(gender));
+                String birthday = faceInfojson.getStr("Birthday");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date birthday1 = sdf.parse(birthday);
+                qiantaifaceInfo.setBirthday(birthday1);
+                String province = faceInfojson.getStr("Province");
+                qiantaifaceInfo.setProvince(province);
+                String city = faceInfojson.getStr("City");
+                qiantaifaceInfo.setCity(city);
+                String cardType = faceInfojson.getStr("CardType");
+                qiantaifaceInfo.setCardType(Integer.parseInt(cardType));
+                String cardID = faceInfojson.getStr("CardID");
+                qiantaifaceInfo.setCardId(cardID);
+                houtaifaceInfos.add(qiantaifaceInfo);
+              }
+              System.out.println("需要删除的人脸信息合对象：" + houtaifaceInfos);
+              String faceID=null;
+              if (!CommonUtil.isEmptyList(houtaifaceInfos)){
+                for (FaceInfo houtaiFaceInfo : houtaifaceInfos) {
+                  if (faceInfo.getUserName().equals(houtaiFaceInfo.getUserName())) {
+                    faceID = houtaiFaceInfo.getFaceid();
+                    PU_FACE_INFO_DELETE_S puFaceInfoDeleteS = new PU_FACE_INFO_DELETE_S();
+                    int[] uFaceID = new int[100];
+                    uFaceID[0] = Integer.parseInt(faceID);
+                    puFaceInfoDeleteS.uFaceID = uFaceID;
+                    puFaceInfoDeleteS.uFaceNum = 1;
+                    puFaceInfoDeleteS.ulChannelId = new NativeLong(101);
+                    PU_FACE_LIB_S facelib = new PU_FACE_LIB_S();
+                    facelib.ulFaceLibID = new NativeLong(1);
+                    if (Platform.isWindows()) {
+                      facelib.szLibName = Arrays.copyOf("人脸库".getBytes("gbk"), 65);
+                    } else {
+                      facelib.szLibName = Arrays.copyOf("人脸库".getBytes("utf8"), 65);
+                    }
+                    facelib.enLibType = 2;
+                    facelib.uiThreshold = new NativeLong(101);
+                    puFaceInfoDeleteS.stFacelib = facelib;
+                    boolean del;
+                    boolean exitdel;
+                    if (Platform.isWindows()) {
+                      del = HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryulIdentifyId, puFaceInfoDeleteS);
+                      HuaWeiSdkApi.printReturnMsg();
+                      exitdel = HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitulIdentifyId, puFaceInfoDeleteS);
+                      HuaWeiSdkApi.printReturnMsg();
+                    } else {
+                      del = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryulIdentifyId, puFaceInfoDeleteS);
+                      exitdel = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitulIdentifyId, puFaceInfoDeleteS);
+                    }
+                    if (del || exitdel) {
+                      System.out.println("删除人脸信息成功");
+                    } else {
+                      System.out.println("删除人脸信息失败");
+                    }
+                  }
+                }
+              }
+            }
+
+          }
+        }
+      }else {//没有授权
+        notAuthorityfaceids.add(faceInfoId);
+      }
+    }
+    if (!CommonUtil.isEmptyList(notAuthorityfaceids)){
+      try {
+        faceInfoManagerService.delFaceInfoByIds(notAuthorityfaceids);
+      } catch (Exception e) {
+        msg=getErrorMsg(msg,e);
+        log.error(msg);
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,msg,null);
+      }
     }
     return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"删除人脸信息成功",null);
   }

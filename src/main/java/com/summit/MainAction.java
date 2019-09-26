@@ -23,6 +23,7 @@ public class MainAction {
     public static final String RealFaceInfo="realfaceInfo";
     public static final String RealFace="realface";
     public static final String UpdateFaceInfo="updatefaceInfo";
+    public static final String DelFaceInfo="delfaceInfo";
     public static void main(String[] args) {
         SpringApplication.run(MainAction.class, args);
     }
