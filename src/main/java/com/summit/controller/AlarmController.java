@@ -165,6 +165,9 @@ public class AlarmController {
                         .set(AccCtrlRealTimeEntity::getAccCtrlStatus, LockStatus.LOCK_CLOSED.getCode())
                         .set(AccCtrlRealTimeEntity::getUpdatetime, new Date())
                         .eq(AccCtrlRealTimeEntity::getAlarmId, alarmId));
+                accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
+                        .set(AccCtrlProcess::getProcessTime, new Date())
+                        .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProId));
             }
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, msg + "更新告警状态成功", null);
