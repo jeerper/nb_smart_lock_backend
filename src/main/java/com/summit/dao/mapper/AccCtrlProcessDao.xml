@@ -375,7 +375,7 @@
                 </if>
             </if>
         </where>
-        order by acp.process_time desc
+        order by acp.create_time desc
     </select>
 
     <insert id="insertRecord" parameterType="com.summit.dao.entity.AccCtrlProcess">

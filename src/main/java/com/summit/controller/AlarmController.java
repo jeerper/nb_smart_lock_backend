@@ -115,7 +115,7 @@ public class AlarmController {
 
             unlockProcessUuid = backLockInfo.getRmid();
 
-
+            //todo:通过LockID查找门禁信息，不使用操作记录ID查找
             AccCtrlProcess currentAccCtrlProcess = accCtrlProcessDao.selectOne(Wrappers.<AccCtrlProcess>lambdaQuery()
                     .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProId));
 
@@ -129,6 +129,7 @@ public class AlarmController {
             accCtrlProcess.setAccessControlName(currentAccCtrlProcess.getAccessControlName());
             accCtrlProcess.setProcessResult(processResult);
             accCtrlProcess.setProcessUuid(unlockProcessUuid);
+            accCtrlProcess.setCreateTime(new Date());
             accCtrlProcessDao.insert(accCtrlProcess);
         }
 
@@ -155,6 +156,7 @@ public class AlarmController {
                 accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
                         .set(AccCtrlProcess::getProcessUuid, unlockProcessUuid)
                         .set(AccCtrlProcess::getProcessResult, processResult)
+                        .set(AccCtrlProcess::getProcessTime, new Date())
                         .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProId));
             } else {
                 //只处理告警任务，不开锁时的业务

@@ -58,6 +58,7 @@ public class AccessControlProcessSchedule {
                 accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
                         .set(AccCtrlProcess::getProcessResult, LockProcessResultType.Failure.getCode())
                         .set(AccCtrlProcess::getFailReason, "通讯异常")
+                        .set(AccCtrlProcess::getProcessTime, new Date())
                         .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProcessEntity.getAccCtrlProId()));
                 continue;
             }
@@ -68,12 +69,14 @@ public class AccessControlProcessSchedule {
                 accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
                         .set(AccCtrlProcess::getProcessResult, LockProcessResultType.Failure.getCode())
                         .set(AccCtrlProcess::getFailReason, backLockInfo.getContent())
+                        .set(AccCtrlProcess::getProcessTime, new Date())
                         .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProcessEntity.getAccCtrlProId()));
             } else {
                 log.debug("开锁结果:"+LockProcessResultType.codeOf(lockStatus).getDescription());
                 //更新process_result状态
                 accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
                         .set(AccCtrlProcess::getProcessResult, lockStatus)
+                        .set(AccCtrlProcess::getProcessTime, new Date())
                         .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProcessEntity.getAccCtrlProId()));
             }
         }

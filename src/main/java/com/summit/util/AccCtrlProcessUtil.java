@@ -331,6 +331,7 @@ public class AccCtrlProcessUtil {
             accCtrlProcess.setProcessResult(processResult.getCode());
         }
         accCtrlProcess.setAccessControlInfo(accessControlInfo);
+        accCtrlProcess.setCreateTime(new Date());
         return accCtrlProcess;
     }
 
@@ -342,7 +343,7 @@ public class AccCtrlProcessUtil {
     public Alarm getAlarm(AccCtrlProcess accCtrlProcess) {
         Alarm alarm = new Alarm();
         alarm.setAccCtrlProId(accCtrlProcess.getAccCtrlProId());
-        alarm.setAlarmTime(accCtrlProcess.getProcessTime());
+        alarm.setAlarmTime(accCtrlProcess.getCreateTime());
         alarm.setAlarmStatus(AlarmStatus.UNPROCESSED.getCode());
         alarm.setDescription(accCtrlProcess.getFailReason());
         return alarm;
