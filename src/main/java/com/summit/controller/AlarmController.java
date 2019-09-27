@@ -122,7 +122,7 @@ public class AlarmController {
             //新增门禁操作记录
             AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
             accCtrlProcess.setProcessMethod(LockProcessMethod.INTERFACE_BY.getCode());
-            accCtrlProcess.setProcessTime(new Date());
+//            accCtrlProcess.setProcessTime(new Date());
             accCtrlProcess.setProcessType(LockProcessType.UNLOCK.getCode());
             accCtrlProcess.setUserName(operName);
             accCtrlProcess.setAccessControlId(currentAccCtrlProcess.getAccessControlId());

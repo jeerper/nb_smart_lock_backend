@@ -279,8 +279,8 @@ public class AccCtrlProcessUtil {
         accCtrlProcess.setFacePanorama(facePanoramaFile);
         accCtrlProcess.setFacePic(facePicFile);
         DateTime picSnapshotTime = faceInfo.getPicSnapshotTime();
-        accCtrlProcess.setProcessTime(picSnapshotTime);
-//        LockInfo lockInfo = new LockInfo();
+//        accCtrlProcess.setProcessTime(picSnapshotTime);
+        accCtrlProcess.setCreateTime(picSnapshotTime);
         AccessControlInfo accessControlInfo = new AccessControlInfo();
 
         CameraDevice device = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
@@ -331,7 +331,7 @@ public class AccCtrlProcessUtil {
             accCtrlProcess.setProcessResult(processResult.getCode());
         }
         accCtrlProcess.setAccessControlInfo(accessControlInfo);
-        accCtrlProcess.setCreateTime(new Date());
+
         return accCtrlProcess;
     }
 
@@ -381,8 +381,8 @@ public class AccCtrlProcessUtil {
         AccessControlInfo accessControlInfo = accessControlDao.selectById(accessControlId);
         AccCtrlRealTimeEntity accCtrlRealTimeEntity = new AccCtrlRealTimeEntity();
         //插入时需要
-        Date processTime = accCtrlProcess.getProcessTime();
-        accCtrlRealTimeEntity.setPicSnapshotTime(processTime);
+        Date createTime = accCtrlProcess.getCreateTime();
+        accCtrlRealTimeEntity.setPicSnapshotTime(createTime);
         AccCtrlRealTimeEntity realTimeEntity = accCtrlRealTimeDao.selectRealTimeInfoByAccCtrlId(accessControlId, null);
         if(realTimeEntity != null && realTimeEntity.getAccCrtlRealTimeId() != null){
             accCtrlRealTimeEntity.setAccCrtlRealTimeId(realTimeEntity.getAccCrtlRealTimeId());
