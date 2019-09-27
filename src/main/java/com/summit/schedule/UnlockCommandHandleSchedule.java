@@ -48,9 +48,10 @@ public class UnlockCommandHandleSchedule {
                 continue;
             }
             LockRequest lockRequest = new LockRequest(null, entity.getLockCode(), entity.getUnlockFaceName(), null, null);
+            log.debug("下发开锁指令");
             //调用开锁接口
             RestfulEntityBySummit result = unLockService.toUnLock(lockRequest);
-            log.debug("下发开锁指令");
+
             BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
             if (backLockInfo == null || backLockInfo.getObjx() == null) {
                 continue;
