@@ -88,6 +88,7 @@ public class AlarmController {
         //开锁处理UUID
         String unlockProcessUuid = null;
         String accCtrlProId = updateAlarmParam.getAccCtrlProId();
+        Date processTime=new Date();
         if (needUnLock) {
             LockRequest lockRequest = new LockRequest();
             lockRequest.setLockId(lockId);
@@ -129,7 +130,7 @@ public class AlarmController {
             accCtrlProcess.setAccessControlName(currentAccCtrlProcess.getAccessControlName());
             accCtrlProcess.setProcessResult(processResult);
             accCtrlProcess.setProcessUuid(unlockProcessUuid);
-            accCtrlProcess.setCreateTime(new Date());
+            accCtrlProcess.setCreateTime(processTime);
             accCtrlProcessDao.insert(accCtrlProcess);
         }
 
@@ -148,7 +149,7 @@ public class AlarmController {
                     .set(Alarm::getAlarmStatus, alarmStatus)
                     .set(Alarm::getProcessPerson, operName)
                     .set(Alarm::getProcessRemark, processRemark)
-                    .set(Alarm::getUpdatetime, new Date())
+                    .set(Alarm::getUpdatetime, processTime)
                     .eq(Alarm::getAlarmId, alarmId));
 
             if (needUnLock) {
@@ -156,17 +157,17 @@ public class AlarmController {
                 accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
                         .set(AccCtrlProcess::getProcessUuid, unlockProcessUuid)
                         .set(AccCtrlProcess::getProcessResult, processResult)
-                        .set(AccCtrlProcess::getProcessTime, new Date())
+                        .set(AccCtrlProcess::getProcessTime, processTime)
                         .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProId));
             } else {
                 //只处理告警任务，不开锁时的业务
                 //更新实时状态为锁定状态
                 accCtrlRealTimeDao.update(null, Wrappers.<AccCtrlRealTimeEntity>lambdaUpdate()
                         .set(AccCtrlRealTimeEntity::getAccCtrlStatus, LockStatus.LOCK_CLOSED.getCode())
-                        .set(AccCtrlRealTimeEntity::getUpdatetime, new Date())
+                        .set(AccCtrlRealTimeEntity::getUpdatetime, processTime)
                         .eq(AccCtrlRealTimeEntity::getAlarmId, alarmId));
                 accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
-                        .set(AccCtrlProcess::getProcessTime, new Date())
+                        .set(AccCtrlProcess::getProcessTime, processTime)
                         .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProId));
             }
         }
