@@ -133,6 +133,7 @@
                                         <include>*.properties</include>
                                         <include>*.yml</include>
                                         <include>cert*/**</include>
+                                        <include>db/**</include>
                                     </includes>
                                     <filtering>true</filtering>
                                 </resource>
@@ -216,6 +217,7 @@
                         <exclude>win32*/**</exclude>
                         <exclude>linux-x86-64*/**</exclude>
                         <exclude>cert*/**</exclude>
+                        <exclude>db/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>
