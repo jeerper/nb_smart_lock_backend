@@ -71,8 +71,11 @@
 	<logger name="com.baomidou" level="error"/>
 	<logger name="org.mybatis" level="error"/>
 	<logger name="com.summit.dao" level="error"/>
+	<logger name="com.summit.schedule.UnlockCommandHandleSchedule" level="error"/>
+	<logger name="com.summit.service.impl.NBLockServiceImpl" level="error"/>
 	<logger name="com.summit.common.redis.user.UserInfoCache" level="error"/>
 	<logger name="com.summit.sdk.huawei" level="debug"/>
+
 
 
 
