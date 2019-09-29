@@ -184,7 +184,7 @@ public class FaceInfoAccCtrlController {
         HuaWeiSdkApi.printReturnMsg();
         if(getFaceLib || exitgetFaceLib){
             System.out.println("查询人脸库成功");
-            String getfacelibpath1 = new String(new File(".").getCanonicalPath() + File.separator +"facelib"+File.separator+"faceLib.json");
+            String getfacelibpath1 = new String(new File(".").getCanonicalPath() + File.separator +"exitfacelib"+File.separator+"exitfacelib.json");
             String json = readFile(getfacelibpath1);
             JSONObject object=new JSONObject(json);
             JSONArray faceListsArry = object.getJSONArray("FaceListsArry");
