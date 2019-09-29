@@ -316,6 +316,8 @@ public class FaceInfoAccCtrlController {
                         exitnewfacelibName=exitnewfacelibinfo.getStr("FaceListName");
                         exitnewfacelibType = Integer.parseInt(exitnewfacelibinfo.getStr("FaceListType"));
                         exitnewfacelibID = Integer.parseInt(exitnewfacelibinfo.getStr("ID"));
+
+                        exitulFaceLibID = Integer.parseInt(exitnewfacelibinfo.getStr("ID"));
                         exitnewfacelibThreshold=Integer.parseInt(exitnewfacelibinfo.getStr("Threshold"));
 
                         System.out.println("查询新建入口的人脸库成功---------------");
@@ -329,6 +331,8 @@ public class FaceInfoAccCtrlController {
                         entrynewfacelibName=entrynewfacelibinfo.getStr("FaceListName");
                         entrytnewfacelibType = Integer.parseInt(entrynewfacelibinfo.getStr("FaceListType"));
                         entrynewfacelibID = Integer.parseInt(entrynewfacelibinfo.getStr("ID"));
+
+                        entryulFaceLibID = Integer.parseInt(entrynewfacelibinfo.getStr("ID"));
                         entrynewfacelibThreshold=Integer.parseInt(entrynewfacelibinfo.getStr("Threshold"));
                     }
                     //添加人脸信息，循环添加
@@ -391,7 +395,7 @@ public class FaceInfoAccCtrlController {
                         //添加完人脸信息之后需要提取特征值
                         if (entryaddface2){//添加入口人脸成功
                             PU_FACE_LIB_S entrystFacelib1=new PU_FACE_LIB_S();
-                            entrystFacelib1.enLibType=entryenLibType;
+                            entrystFacelib1.enLibType=2;
                             entrystFacelib1.isControl=true;
                             entrystFacelib1.ulFaceLibID=new NativeLong(entrynewfacelibID);
                             if (Platform.isWindows()){
@@ -472,7 +476,7 @@ public class FaceInfoAccCtrlController {
                                 exitPrintReturnMsg=12108;
                             }
                         }
-                        if (exitaddface2){//添加入口人脸成功
+                        if (exitaddface2){//添加出口人脸成功
                             PU_FACE_LIB_S exitstFacelib1=new PU_FACE_LIB_S();
                             exitstFacelib1.enLibType=exitnewfacelibType;
                             exitstFacelib1.isControl=true;
@@ -1230,12 +1234,12 @@ public class FaceInfoAccCtrlController {
         entrypuFaceLibSetS2.enOptType=2;//修改人脸库
         PU_FACE_LIB_S  entrystFacelib2=new PU_FACE_LIB_S();
         if(Platform.isWindows()){
-            entrystFacelib2.szLibName=Arrays.copyOf(entryszLibName.getBytes("GBK"),65);//windows名单库的名称
+            entrystFacelib2.szLibName=Arrays.copyOf("facelib".getBytes("GBK"),65);//windows名单库的名称
         }else {
-            entrystFacelib2.szLibName=Arrays.copyOf(entryszLibName.getBytes("utf8"),65);//名单库的名称
+            entrystFacelib2.szLibName=Arrays.copyOf("facelib".getBytes("utf8"),65);//名单库的名称
         }
-        entrystFacelib2.uiThreshold=new NativeLong(entrytuiThreshold);//布控的阀值
-        entrystFacelib2.enLibType=entryenLibType;//人脸库类型2为白名单
+        entrystFacelib2.uiThreshold=new NativeLong(90);//布控的阀值
+        entrystFacelib2.enLibType=2;//人脸库类型2为白名单
         entrystFacelib2.isControl=true;//修改为布控
         entrystFacelib2.ulFaceLibID=new NativeLong(entryulFaceLibID);
         entrypuFaceLibSetS2.stFacelib=entrystFacelib2;
@@ -1256,12 +1260,12 @@ public class FaceInfoAccCtrlController {
         exitpuFaceLibSetS2.enOptType=2;//修改人脸库
         PU_FACE_LIB_S  exitstFacelib2=new PU_FACE_LIB_S();
         if(Platform.isWindows()){
-            exitstFacelib2.szLibName=Arrays.copyOf(exitszLibName.getBytes("GBK"),65);//windows名单库的名称
+            exitstFacelib2.szLibName=Arrays.copyOf("facelib".getBytes("GBK"),65);//windows名单库的名称
         }else {
-            exitstFacelib2.szLibName=Arrays.copyOf(exitszLibName.getBytes("utf8"),65);//名单库的名称
+            exitstFacelib2.szLibName=Arrays.copyOf("facelib".getBytes("utf8"),65);//名单库的名称
         }
-        exitstFacelib2.uiThreshold=new NativeLong(exituiThreshold);//布控的阀值
-        exitstFacelib2.enLibType=exitenLibType;//人脸库类型2为白名单
+        exitstFacelib2.uiThreshold=new NativeLong(90);//布控的阀值
+        exitstFacelib2.enLibType=2;//人脸库类型2为白名单
         exitstFacelib2.isControl=true;//修改为布控
         exitstFacelib2.ulFaceLibID=new NativeLong(exitulFaceLibID);
         exitpuFaceLibSetS2.stFacelib=exitstFacelib2;
