@@ -172,10 +172,35 @@ public class FaceInfoManagerController {
       log.error("人脸信息为空");
       return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"人脸信息为空",null);
     }
-     // refreshFaceInfoManager();
+
     //更新之前找到原来的人脸信息
     String selectoldfaceid = faceInfo.getFaceid();
     FaceInfo oldFaceInfo = faceInfoManagerService.selectFaceInfoByID(selectoldfaceid);
+    /**
+     * 判断人脸修改时图片是否重复，修改人脸判断用户名是否存在
+     */
+    /*List<FaceInfo> allFaceInfo = faceInfoManagerService.selectAllFaceInfo(null);
+    List<String> faceInfoImages=new ArrayList<>();//得到所有的图片路径
+    for(FaceInfo bianlioldFaceInfo:allFaceInfo){
+      if (faceInfo.getUserName().equals(bianlioldFaceInfo.getUserName())){
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸更新失败,该用户名已存在",null);
+      }else if (bianlioldFaceInfo.getFaceImage()!=null){
+        faceInfoImages.add(bianlioldFaceInfo.getFaceImage());
+      }
+    }
+    List<String> faceFiles=new ArrayList<>();
+    if (!CommonUtil.isEmptyList(faceInfoImages)){
+      for (String faceInfoImage:faceInfoImages){
+        String faceImagePath = new String(new File(".").getCanonicalPath() + faceInfoImage);
+        String faceImageFile = readFile(faceImagePath);
+        faceFiles.add(faceImageFile);
+      }
+    }
+    for (String faceFile:faceFiles ){
+      if (faceInfo.getFaceImage()!=null && faceInfo.getFaceImage().equals(faceFile)){
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸更新失败,头像重复",null);
+      }
+    }*/
     String msg="更新人脸信息失败";
     String  base64Str=faceInfo.getFaceImage();
     String faceUrl=null;
@@ -246,7 +271,7 @@ public class FaceInfoManagerController {
         cameraIps.add(entryCameraIp);
         cameraIps.add(exitCameraIp);
       }
-      System.out.println("当前人脸所关联的入口和出口摄像头ip"+cameraIps);
+     // System.out.println("当前人脸所关联的入口和出口摄像头ip"+cameraIps);
       if(nowDate>oldfaceEndDate && newfaceEndDate>=nowDate){//过期人脸的修改，并且如果修改的是有效期，则需要重新吧这个人脸加入到摄像头里面，如果不是有效期，则需要修改自己的数据库就可以
          for(String cameraIp:cameraIps){
            DeviceInfo deviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(cameraIp);
@@ -955,5 +980,23 @@ public class FaceInfoManagerController {
     }
     return lastStr;
   }
+  public String getImgStr(String imgFile){
+    InputStream in=null;
+    byte[] data=null;
+    try {
+      in =new FileInputStream(imgFile);
+      data=new byte[in.available()];
+      in.read(data);
+      in.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    String baseStr= Base64.getEncoder().encodeToString(data);
+    return baseStr;
+  }
+
+
+
+
 
 }

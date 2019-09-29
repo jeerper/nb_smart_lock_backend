@@ -70,7 +70,7 @@ public class FaceInfoManagerSchedule {
                 long nowDate = df.parse(nowtime).getTime();
                 if (nowDate > faceEndDate && nowDate<=banNianDateTime) {//超过截至日期，从摄像头删除
                     List<AccessControlInfo> accessControlInfos = faceInfoAccCtrlService.seleAccCtrlInfoByFaceID(faceInfo.getFaceid());
-                    System.out.println("临时人脸关联的门禁："+accessControlInfos);
+                   // System.out.println("临时人脸关联的门禁："+accessControlInfos);
                     if (!CommonUtil.isEmptyList(accessControlInfos)) {//而且确定他和摄像头挂钩
                         for (AccessControlInfo accessControlInfo : accessControlInfos) {
                             //找出所挂钩的入口摄像头
