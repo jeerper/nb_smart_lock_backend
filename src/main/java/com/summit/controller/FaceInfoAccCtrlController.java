@@ -183,12 +183,19 @@ public class FaceInfoAccCtrlController {
         Integer entrytuiThreshold=null;//布控的阀值
         HuaWeiSdkApi.printReturnMsg();
         if(getFaceLib || exitgetFaceLib){
-            System.out.println("查询人脸库成功");
+            System.out.println("查询入口人脸库成功---------");
             String getfacelibpath1 = new String(new File(".").getCanonicalPath() + File.separator +"exitfacelib"+File.separator+"exitfacelib.json");
             String json = readFile(getfacelibpath1);
             JSONObject object=new JSONObject(json);
             JSONArray faceListsArry = object.getJSONArray("FaceListsArry");
             System.out.println("人脸库集合："+faceListsArry);
+
+            System.out.println("查询出口库人脸库成功");
+            String entrygetfacelibpath1 = new String(new File(".").getCanonicalPath() + File.separator +"entryFaceLib"+File.separator+"entryFaceLib.json");
+            String entryjson = readFile(entrygetfacelibpath1);
+            JSONObject entryobject=new JSONObject(entryjson);
+            JSONArray entryfaceListsArry = entryobject.getJSONArray("FaceListsArry");
+            System.out.println("人脸库集合："+entryfaceListsArry);
             //2 判断有没有人脸库，没有人脸库则直接添加人脸库，接着添加人脸信息
             if(faceListsArry==null || faceListsArry.size()==0){ //说明没有人脸库则需要添加人脸库,接着添加人脸信息
                 PU_FACE_LIB_SET_S enteypuFaceLibSetS =new PU_FACE_LIB_SET_S();
