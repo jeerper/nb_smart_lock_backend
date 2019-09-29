@@ -13,6 +13,7 @@
        <result column="birthday" jdbcType="TIMESTAMP" property="birthday" />
        <result column="face_image" jdbcType="VARCHAR" property="faceImage"/>
        <result column="face_type" jdbcType="VARCHAR" property="faceType"/>
+       <result column="face_startTime" jdbcType="TIMESTAMP" property="faceStartTime"/>
        <result column="face_endTime" jdbcType="TIMESTAMP" property="faceEndTime"/>
    </resultMap>
     <insert id="insertFaceInfo" parameterType="com.summit.dao.entity.FaceInfo">
@@ -25,7 +26,7 @@
         )
     </insert>
     <sql id="faceInfoCloum">
-      face_id,user_name,gender,birthday,province,city,card_type,card_id,face_image,face_type,face_endTime
+      face_id,user_name,gender,birthday,province,city,card_type,card_id,face_image,face_type,face_startTime,face_endTime
     </sql>
     <select id="selectFaceInfoByPage" parameterType="com.summit.entity.FaceInfoManagerEntity" resultMap="facemanager">
         SELECT
@@ -60,6 +61,9 @@
         <if test="page !=null and page.current !=null and page.pageSize !=null">
             limit #{page.current},#{page.pageSize}
         </if>
+        ORDER BY
+        face_startTime
+        DESC
     </select>
     <select id="selectFaceInfoByID" parameterType="java.lang.String" resultMap="facemanager">
         SELECT
@@ -76,5 +80,10 @@
         <where>
            user_name=#{userName}
         </where>
+    </select>
+    <select id="selectAllFaceInfo" resultMap="facemanager" >
+        SELECT
+        <include refid="faceInfoCloum"/>
+        FROM  face_info
     </select>
 </mapper>

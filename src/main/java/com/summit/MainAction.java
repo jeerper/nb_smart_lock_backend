@@ -21,10 +21,13 @@ public class MainAction {
     public static final String FaceLib="facelib";
     public static final String ExitFaceInfo="exitfaceInfo";
     public static final String EntrytFaceInfo="entryfaceInfo";
-    public static final String RealFaceInfo="realfaceInfo";
-    public static final String RealFace="realface";
     public static final String UpdateFaceInfo="updatefaceInfo";
-    public static final String DelFaceInfo="delfaceInfo";
+    public static final String DelExitFaceInfo="delExitfaceInfo";
+    public static final String DelEntryFaceInfo="delEntryfaceInfo";
+    public static final String EntryRealFace="entryRealface";
+    public static final String ExitRealFace="exitRealface";
+    public static final String NeiBuEntryRealFaceInfo="neiBuEntryRealFaceInfo";
+    public static final String NeiBuExitRealFaceInfo="neiBuExitRealFaceInfo";
     public static void main(String[] args) {
         SpringApplication.run(MainAction.class, args);
     }

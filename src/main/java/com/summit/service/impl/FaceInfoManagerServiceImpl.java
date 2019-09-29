@@ -117,8 +117,8 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
      */
     @Override
     public List<FaceInfo> selectAllFaceInfo(SimplePage page) {
-        QueryWrapper<FaceInfo> wrapper=new QueryWrapper<>();
-        return faceInfoManagerDao.selectList(wrapper);
+        List<FaceInfo> faceInfos= faceInfoManagerDao.selectAllFaceInfo();
+        return faceInfos;
     }
 
     /**

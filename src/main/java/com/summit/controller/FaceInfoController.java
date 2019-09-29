@@ -26,6 +26,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -58,7 +59,6 @@ public class FaceInfoController {
         }
         String name = faceInfoEntity.getUserName();
         String time = CommonUtil.snapshotTimeFormat.get().format(new Date());
-
         String picturePathFacePanorama = new StringBuilder()
                 .append(SystemUtil.getUserInfo().getCurrentDir())
                 .append(File.separator)

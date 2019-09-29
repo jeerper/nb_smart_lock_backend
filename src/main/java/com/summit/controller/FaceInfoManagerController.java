@@ -42,6 +42,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -114,10 +115,10 @@ public class FaceInfoManagerController {
           faceInfo.setCardType(faceInfoManagerEntity.getCardType());
           faceInfo.setCardId(faceInfoManagerEntity.getCardId());
           faceInfo.setFaceType(faceInfoManagerEntity.getFaceType());
-          SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
+          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");//设置日期格式
           Date date = new Date();
-          String startTime = df.format(date);
-          Date faceStartTime = CommonUtil.dateFormat.get().parse(startTime);
+          String startTime = sdf.format(date);
+          Date faceStartTime = sdf.parse(startTime);
           faceInfo.setFaceStartTime(faceStartTime);
           Date faceEndTime = CommonUtil.dateFormat.get().parse(faceInfoManagerEntity.getFaceEndTime());
           faceInfo.setFaceEndTime(faceEndTime);
@@ -585,7 +586,7 @@ public class FaceInfoManagerController {
           notAuthorityfaceids.add(faceInfoId);
         }else {//说明没有过期和摄像头一起删除,同时删除授权关系
           notAuthorityfaceids.add(faceInfoId);
-          int i1 = faceInfoAccCtrlService.deleteFaceAccCtrlByFaceId(faceInfoId);
+          int i1 = faceInfoAccCtrlService.deleteFaceAccCtrlByFaceId(faceInfoId);//删除授权关系
           for (AccessControlInfo accessControlInfo : accessControlInfos) {
             String entryCameraIp = accessControlInfo.getEntryCameraIp();
             String exitCameraIp = accessControlInfo.getExitCameraIp();
@@ -604,128 +605,238 @@ public class FaceInfoManagerController {
               exitulIdentifyId = exitdeviceInfo.getUlIdentifyId();
             }
             //查询第一个facelib的人脸信息
-            String realfaceinfoPath = new StringBuilder()
+            System.out.println("查询出口的人脸信息-------------------------------------------");
+            String delexitfaceInfoPath = new StringBuilder()
                     .append(SystemUtil.getUserInfo().getCurrentDir())
                     .append(File.separator)
-                    .append(MainAction.DelFaceInfo)
+                    .append(MainAction.DelExitFaceInfo)
                     .toString();
-            File face = new File(realfaceinfoPath);
-            if (!face.exists()) {
-              face.mkdirs();
+            File delexitfaceInfo = new File(delexitfaceInfoPath);
+            if (!delexitfaceInfo.exists()) {
+              delexitfaceInfo.mkdirs();
             }
-            PU_FACE_INFO_FIND_S faceInfoFindS = new PU_FACE_INFO_FIND_S();
-            faceInfoFindS.ulChannelId = new NativeLong(101);
-            String faceInfoPath = realfaceinfoPath + "/delFaceInfo.json";
-            faceInfoFindS.szFindResultPath = Arrays.copyOf(faceInfoPath.getBytes(), 129);
-            PU_FACE_LIB_S facelib2 = new PU_FACE_LIB_S();
-            facelib2.ulFaceLibID = new NativeLong(1);
+            PU_FACE_INFO_FIND_S delExitfaceInfoFindS = new PU_FACE_INFO_FIND_S();
+            delExitfaceInfoFindS.ulChannelId = new NativeLong(101);
+            String delExitfaceInfoPath = delexitfaceInfoPath + "/delExitfaceInfo.json";
+            delExitfaceInfoFindS.szFindResultPath = Arrays.copyOf(delExitfaceInfoPath.getBytes(), 129);
+            PU_FACE_LIB_S delExitfacelib = new PU_FACE_LIB_S();
+            delExitfacelib.ulFaceLibID = new NativeLong(1);
             if (Platform.isWindows()) {
-              facelib2.szLibName = Arrays.copyOf("facelib".getBytes("gbk"), 65);
+              delExitfacelib.szLibName = Arrays.copyOf("facelib".getBytes("gbk"), 65);
             } else {
-              facelib2.szLibName = Arrays.copyOf("facelib".getBytes("utf8"), 65);
+              delExitfacelib.szLibName = Arrays.copyOf("facelib".getBytes("utf8"), 65);
             }
-            facelib2.enLibType = 2;
-            facelib2.uiThreshold = new NativeLong(90);
-            facelib2.isControl=true;
-            FACE_FIND_CONDITION faceFindCondition = new FACE_FIND_CONDITION();
-            faceFindCondition.enFeatureStatus = 1;
-            faceFindCondition.szName = ByteBuffer.allocate(64).put("".getBytes()).array();
-            faceFindCondition.szProvince = ByteBuffer.allocate(32).put("".getBytes()).array();
-            faceFindCondition.szCity = ByteBuffer.allocate(48).put("".getBytes()).array();
-            faceFindCondition.szCardID = ByteBuffer.allocate(32).put("".getBytes()).array();
-            faceFindCondition.szCity = ByteBuffer.allocate(48).put("".getBytes()).array();
-            faceFindCondition.enGender = -1;
-            faceFindCondition.enCardType = -1;
-            faceInfoFindS.stCondition = faceFindCondition;
-            faceInfoFindS.stFacelib = facelib2;
-            faceInfoFindS.uStartIndex = 0;
-            boolean getFace;
-            boolean exitgetFace;
+            delExitfacelib.enLibType = 2;
+            delExitfacelib.uiThreshold = new NativeLong(90);
+            delExitfacelib.isControl=true;
+            FACE_FIND_CONDITION delExitfaceFindCondition = new FACE_FIND_CONDITION();
+            delExitfaceFindCondition.enFeatureStatus = 1;
+            delExitfaceFindCondition.szName = ByteBuffer.allocate(64).put("".getBytes()).array();
+            delExitfaceFindCondition.szProvince = ByteBuffer.allocate(32).put("".getBytes()).array();
+            delExitfaceFindCondition.szCity = ByteBuffer.allocate(48).put("".getBytes()).array();
+            delExitfaceFindCondition.szCardID = ByteBuffer.allocate(32).put("".getBytes()).array();
+            delExitfaceFindCondition.szCity = ByteBuffer.allocate(48).put("".getBytes()).array();
+            delExitfaceFindCondition.enGender = -1;
+            delExitfaceFindCondition.enCardType = -1;
+            delExitfaceInfoFindS.stCondition = delExitfaceFindCondition;
+            delExitfaceInfoFindS.stFacelib = delExitfacelib;
+            delExitfaceInfoFindS.uStartIndex = 0;
+            boolean exitdelFace;
             if (Platform.isWindows()) {
-              getFace = HWPuSDKLibrary.INSTANCE.IVS_PU_FindFaceInfo(entryulIdentifyId, faceInfoFindS);
-              exitgetFace = HWPuSDKLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitulIdentifyId, faceInfoFindS);
+              exitdelFace = HWPuSDKLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitulIdentifyId, delExitfaceInfoFindS);
             } else {
-              getFace = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(entryulIdentifyId, faceInfoFindS);
+              exitdelFace = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitulIdentifyId, delExitfaceInfoFindS);
               log.error("删除人脸入口信息返回码：");
               HuaWeiSdkApi.printReturnMsg();
-              exitgetFace = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(exitulIdentifyId, faceInfoFindS);
-              log.error("删除人脸出口信息返回码：");
+            }
+            /**
+             *  -------查询到查询入口的人脸信息json数据
+             */
+            System.out.println("查询入口的人脸信息-------------------------------------------");
+            String delentryfaceInfoPath = new StringBuilder()
+                    .append(SystemUtil.getUserInfo().getCurrentDir())
+                    .append(File.separator)
+                    .append(MainAction.DelEntryFaceInfo)
+                    .toString();
+            File delentryfaceInfo = new File(delentryfaceInfoPath);
+            if (!delentryfaceInfo.exists()) {
+              delentryfaceInfo.mkdirs();
+            }
+            PU_FACE_INFO_FIND_S delEntryfaceInfoFindS = new PU_FACE_INFO_FIND_S();
+            delEntryfaceInfoFindS.ulChannelId = new NativeLong(101);
+            String delEntryfaceInfoPath = delentryfaceInfoPath + "/delEntryfaceInfo.json";
+            delEntryfaceInfoFindS.szFindResultPath = Arrays.copyOf(delEntryfaceInfoPath.getBytes(), 129);
+            PU_FACE_LIB_S delEntryfacelib = new PU_FACE_LIB_S();
+            delEntryfacelib.ulFaceLibID = new NativeLong(1);
+            if (Platform.isWindows()) {
+              delEntryfacelib.szLibName = Arrays.copyOf("facelib".getBytes("gbk"), 65);
+            } else {
+              delEntryfacelib.szLibName = Arrays.copyOf("facelib".getBytes("utf8"), 65);
+            }
+            delEntryfacelib.enLibType = 2;
+            delEntryfacelib.uiThreshold = new NativeLong(90);
+            delEntryfacelib.isControl=true;
+            FACE_FIND_CONDITION delEntryfaceFindCondition = new FACE_FIND_CONDITION();
+            delEntryfaceFindCondition.enFeatureStatus = 1;
+            delEntryfaceFindCondition.szName = ByteBuffer.allocate(64).put("".getBytes()).array();
+            delEntryfaceFindCondition.szProvince = ByteBuffer.allocate(32).put("".getBytes()).array();
+            delEntryfaceFindCondition.szCity = ByteBuffer.allocate(48).put("".getBytes()).array();
+            delEntryfaceFindCondition.szCardID = ByteBuffer.allocate(32).put("".getBytes()).array();
+            delEntryfaceFindCondition.szCity = ByteBuffer.allocate(48).put("".getBytes()).array();
+            delEntryfaceFindCondition.enGender = -1;
+            delEntryfaceFindCondition.enCardType = -1;
+            delEntryfaceInfoFindS.stCondition = delEntryfaceFindCondition;
+            delEntryfaceInfoFindS.stFacelib = delEntryfacelib;
+            delEntryfaceInfoFindS.uStartIndex = 0;
+            boolean entrytdelFace;
+            if (Platform.isWindows()) {
+              entrytdelFace = HWPuSDKLibrary.INSTANCE.IVS_PU_FindFaceInfo(entryulIdentifyId, delEntryfaceInfoFindS);
+            } else {
+              entrytdelFace = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FindFaceInfo(entryulIdentifyId, delEntryfaceInfoFindS);
+              log.error("删除人脸入口信息返回码：");
               HuaWeiSdkApi.printReturnMsg();
             }
-            if (getFace || exitgetFace) {
-              log.debug("查询需要删除的人脸信息成功-------");
-              String getfaceInfoPath = realfaceinfoPath+File.separator+"delFaceInfo.json";
-              String facejson =readFile(getfaceInfoPath);
-              JSONObject objectface = new JSONObject(facejson);
-              JSONArray faceRecordArry = objectface.getJSONArray("FaceRecordArry");
-              log.debug("需要删除的人脸信息json集合：" + faceRecordArry);
-              ArrayList<FaceInfo> houtaifaceInfos = new ArrayList<>();
-              for (int i = 0; i < faceRecordArry.size(); i++) {
-                FaceInfo qiantaifaceInfo = new FaceInfo();
-                JSONObject faceInfojson = faceRecordArry.getJSONObject(i);
-                qiantaifaceInfo.setFaceid(faceInfojson.getStr("ID"));
-                String userName = faceInfojson.getStr("Name");
-                System.out.println("用户名：" + userName);
-                qiantaifaceInfo.setUserName(userName);
-                String gender = faceInfojson.getStr("Gender");
-                qiantaifaceInfo.setGender(Integer.parseInt(gender));
-                String birthday = faceInfojson.getStr("Birthday");
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                Date birthday1 = sdf.parse(birthday);
-                qiantaifaceInfo.setBirthday(birthday1);
-                String province = faceInfojson.getStr("Province");
-                qiantaifaceInfo.setProvince(province);
-                String city = faceInfojson.getStr("City");
-                qiantaifaceInfo.setCity(city);
-                String cardType = faceInfojson.getStr("CardType");
-                qiantaifaceInfo.setCardType(Integer.parseInt(cardType));
-                String cardID = faceInfojson.getStr("CardID");
-                qiantaifaceInfo.setCardId(cardID);
-                houtaifaceInfos.add(qiantaifaceInfo);
+            if (entrytdelFace && exitdelFace) {
+              log.debug("需要删除的人脸信息查询人脸信息成功");
+              /**
+               *  -------查询到出口人脸信息json数据
+               */
+              String delExitfaceInfo = delexitfaceInfoPath+File.separator+"delExitfaceInfo.json";
+              String delExitfacejson =readFile(delExitfaceInfo);
+              JSONObject delExitobjectface = new JSONObject(delExitfacejson);
+              JSONArray delExitfaceRecordArry = delExitobjectface.getJSONArray("FaceRecordArry");
+              log.debug("需要删除的人脸信息delExitfaceRecordArry集合：" + delExitfaceRecordArry);
+              ArrayList<FaceInfo> delExitHouTaiFaceInfos = new ArrayList<>();
+              for (int i = 0; i < delExitfaceRecordArry.size(); i++) {
+                FaceInfo delExitFaceInfo = new FaceInfo();
+                JSONObject exitfaceInfojson = delExitfaceRecordArry.getJSONObject(i);
+                delExitFaceInfo.setFaceid(exitfaceInfojson.getStr("ID"));
+                String userName = exitfaceInfojson.getStr("Name");
+                delExitFaceInfo.setUserName(userName);
+                String gender = exitfaceInfojson.getStr("Gender");
+                delExitFaceInfo.setGender(Integer.parseInt(gender));
+                String exitbirthday = exitfaceInfojson.getStr("Birthday");
+                SimpleDateFormat exitsdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date exitbirthdayDate = exitsdf.parse(exitbirthday);
+                delExitFaceInfo.setBirthday(exitbirthdayDate);
+                String province = exitfaceInfojson.getStr("Province");
+                delExitFaceInfo.setProvince(province);
+                String city = exitfaceInfojson.getStr("City");
+                delExitFaceInfo.setCity(city);
+                String cardType = exitfaceInfojson.getStr("CardType");
+                delExitFaceInfo.setCardType(Integer.parseInt(cardType));
+                String cardID = exitfaceInfojson.getStr("CardID");
+                delExitFaceInfo.setCardId(cardID);
+                delExitHouTaiFaceInfos.add(delExitFaceInfo);
               }
-              System.out.println("需要删除的人脸信息合对象：" + houtaifaceInfos);
-              String faceID=null;
-              if (!CommonUtil.isEmptyList(houtaifaceInfos)){
-                for (FaceInfo houtaiFaceInfo : houtaifaceInfos) {
-                  if (faceInfo.getUserName().equals(houtaiFaceInfo.getUserName())) {
-                    faceID = houtaiFaceInfo.getFaceid();
-                    PU_FACE_INFO_DELETE_S puFaceInfoDeleteS = new PU_FACE_INFO_DELETE_S();
-                    int[] uFaceID = new int[100];
-                    uFaceID[0] = Integer.parseInt(faceID);
-                    puFaceInfoDeleteS.uFaceID = uFaceID;
-                    puFaceInfoDeleteS.uFaceNum = 1;
-                    puFaceInfoDeleteS.ulChannelId = new NativeLong(101);
-                    PU_FACE_LIB_S facelib = new PU_FACE_LIB_S();
-                    facelib.ulFaceLibID = new NativeLong(1);
+              System.out.println("需要删除的出口---------人脸信息合对象：" + delExitHouTaiFaceInfos);
+              String exitfaceID=null;
+              if (!CommonUtil.isEmptyList(delExitHouTaiFaceInfos)){
+                for (FaceInfo delExitHouTaiFaceInfo : delExitHouTaiFaceInfos) {
+                  if (faceInfo.getUserName().equals(delExitHouTaiFaceInfo.getUserName())) {
+                    exitfaceID = delExitHouTaiFaceInfo.getFaceid();
+                    PU_FACE_INFO_DELETE_S exitpuFaceInfoDeleteS = new PU_FACE_INFO_DELETE_S();
+                    int[] exituFaceID = new int[100];
+                    exituFaceID[0] = Integer.parseInt(exitfaceID);
+                    exitpuFaceInfoDeleteS.uFaceID = exituFaceID;
+                    exitpuFaceInfoDeleteS.uFaceNum = 1;
+                    exitpuFaceInfoDeleteS.ulChannelId = new NativeLong(101);
+                    PU_FACE_LIB_S exitfacelib = new PU_FACE_LIB_S();
+                    exitfacelib.ulFaceLibID = new NativeLong(1);
                     if (Platform.isWindows()) {
-                      facelib.szLibName = Arrays.copyOf("facelib".getBytes("gbk"), 65);
+                      exitfacelib.szLibName = Arrays.copyOf("facelib".getBytes("gbk"), 65);
                     } else {
-                      facelib.szLibName = Arrays.copyOf("facelib".getBytes("utf8"), 65);
+                      exitfacelib.szLibName = Arrays.copyOf("facelib".getBytes("utf8"), 65);
                     }
-                    facelib.enLibType = 2;
-                    facelib.uiThreshold = new NativeLong(101);
-                    puFaceInfoDeleteS.stFacelib = facelib;
-                    boolean del;
+                    exitfacelib.enLibType = 2;
+                    exitfacelib.uiThreshold = new NativeLong(101);
+                    exitpuFaceInfoDeleteS.stFacelib = exitfacelib;
                     boolean exitdel;
                     if (Platform.isWindows()) {
-                      del = HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryulIdentifyId, puFaceInfoDeleteS);
-                      HuaWeiSdkApi.printReturnMsg();
-                      exitdel = HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitulIdentifyId, puFaceInfoDeleteS);
+                      exitdel = HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitulIdentifyId, exitpuFaceInfoDeleteS);
                       HuaWeiSdkApi.printReturnMsg();
                     } else {
-                      del = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryulIdentifyId, puFaceInfoDeleteS);
-                      exitdel = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitulIdentifyId, puFaceInfoDeleteS);
+                      exitdel = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitulIdentifyId, exitpuFaceInfoDeleteS);
                     }
-                    if (del || exitdel) {
-                      System.out.println("删除人脸信息成功");
+                    if (exitdel) {
+                      log.debug("需要删除的出口人脸信息删除成功");
                     } else {
-                      System.out.println("删除人脸信息失败");
+                      return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"需要删除的出口人脸信息删除失败",null);
                     }
                   }
                 }
               }
+              /**
+               *  -------查询到入口人脸信息json数据
+               */
+              String delEntryfaceInfo = delentryfaceInfoPath+File.separator+"delEntryfaceInfo.json";
+              String delEntryfacejson =readFile(delEntryfaceInfo);
+              JSONObject delEntryobjectface = new JSONObject(delEntryfacejson);
+              JSONArray delEntryfaceRecordArry = delEntryobjectface.getJSONArray("FaceRecordArry");
+              log.debug("需要删除的人脸信息delEntryfaceRecordArry集合：" + delEntryfaceRecordArry);
+              ArrayList<FaceInfo> delEntryHouTaiFaceInfos = new ArrayList<>();
+              for (int i = 0; i < delEntryfaceRecordArry.size(); i++) {
+                FaceInfo delEntryFaceInfo = new FaceInfo();
+                JSONObject entryfaceInfojson = delEntryfaceRecordArry.getJSONObject(i);
+                delEntryFaceInfo.setFaceid(entryfaceInfojson.getStr("ID"));
+                String userName = entryfaceInfojson.getStr("Name");
+                delEntryFaceInfo.setUserName(userName);
+                String gender = entryfaceInfojson.getStr("Gender");
+                delEntryFaceInfo.setGender(Integer.parseInt(gender));
+                String entrybirthday = entryfaceInfojson.getStr("Birthday");
+                SimpleDateFormat entrysdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date entrybirthdayDate = entrysdf.parse(entrybirthday);
+                delEntryFaceInfo.setBirthday(entrybirthdayDate);
+                String province = entryfaceInfojson.getStr("Province");
+                delEntryFaceInfo.setProvince(province);
+                String city = entryfaceInfojson.getStr("City");
+                delEntryFaceInfo.setCity(city);
+                String cardType = entryfaceInfojson.getStr("CardType");
+                delEntryFaceInfo.setCardType(Integer.parseInt(cardType));
+                String cardID = entryfaceInfojson.getStr("CardID");
+                delEntryFaceInfo.setCardId(cardID);
+                delEntryHouTaiFaceInfos.add(delEntryFaceInfo);
+              }
+              System.out.println("需要删除的入口---------人脸信息合对象：" + delEntryHouTaiFaceInfos);
+              String entryfaceID=null;
+              if (!CommonUtil.isEmptyList(delEntryHouTaiFaceInfos)){
+                for (FaceInfo delEntryHouTaiFaceInfo : delEntryHouTaiFaceInfos) {
+                  if (faceInfo.getUserName().equals(delEntryHouTaiFaceInfo.getUserName())) {
+                    entryfaceID = delEntryHouTaiFaceInfo.getFaceid();
+                    PU_FACE_INFO_DELETE_S entrypuFaceInfoDeleteS = new PU_FACE_INFO_DELETE_S();
+                    int[] entryuFaceID = new int[100];
+                    entryuFaceID[0] = Integer.parseInt(entryfaceID);
+                    entrypuFaceInfoDeleteS.uFaceID = entryuFaceID;
+                    entrypuFaceInfoDeleteS.uFaceNum = 1;
+                    entrypuFaceInfoDeleteS.ulChannelId = new NativeLong(101);
+                    PU_FACE_LIB_S entryfacelib = new PU_FACE_LIB_S();
+                    entryfacelib.ulFaceLibID = new NativeLong(1);
+                    if (Platform.isWindows()) {
+                      entryfacelib.szLibName = Arrays.copyOf("facelib".getBytes("gbk"), 65);
+                    } else {
+                      entryfacelib.szLibName = Arrays.copyOf("facelib".getBytes("utf8"), 65);
+                    }
+                    entryfacelib.enLibType = 2;
+                    entryfacelib.uiThreshold = new NativeLong(101);
+                    entrypuFaceInfoDeleteS.stFacelib = entryfacelib;
+                    boolean entrytdel;
+                    if (Platform.isWindows()) {
+                      entrytdel = HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryulIdentifyId, entrypuFaceInfoDeleteS);
+                      HuaWeiSdkApi.printReturnMsg();
+                    } else {
+                      entrytdel = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryulIdentifyId, entrypuFaceInfoDeleteS);
+                    }
+                    if (entrytdel) {
+                      log.debug("需要删除的入口人脸信息删除成功");
+                    } else {
+                      return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"需要删除的入口人脸信息删除失败",null);
+                    }
+                  }
+                }
+              }
+            }else {
+              return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询全部人脸信息失败",null);
             }
-
           }
         }
       }else {//没有授权
