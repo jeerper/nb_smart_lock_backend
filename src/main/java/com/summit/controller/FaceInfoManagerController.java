@@ -156,6 +156,7 @@ public class FaceInfoManagerController {
       faceInfoManagerEntity.setFaceType(faceType);
       System.out.println(faceInfoManagerEntity+"ggg");
       faceInfoPage=faceInfoManagerService.selectFaceInfoByPage(faceInfoManagerEntity,new SimplePage(current,pageSize));
+
     } catch (Exception e) {
       e.printStackTrace();
       log.error("分页全部查询人脸信息失败");
