@@ -8,17 +8,11 @@ import com.summit.sdk.huawei.callback.ClientFaceInfoCallback;
 import com.summit.sdk.huawei.callback.EventInfoCallBack;
 import com.summit.sdk.huawei.callback.linux.EventInfoLinuxCallBack;
 import com.summit.sdk.huawei.model.DeviceInfo;
-import com.summit.sdk.huawei.PU_CERT_FILE_PATH_PARA_S;
-import com.summit.sdk.huawei.model.JNAGlobalVariant;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Platform;
-import com.sun.jna.Pointer;
 import com.sun.jna.ptr.NativeLongByReference;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.jdbc.Null;
 
-
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -49,15 +43,17 @@ public class HuaWeiSdkApi {
         this.clientFaceInfoCallback = clientFaceInfoCallback;
     }
 
-    public static void printReturnMsg() {
+    public static long printReturnMsg() {
         if (Platform.isWindows()) {
             NativeLong errorCode = HWPuSDKLibrary.INSTANCE.IVS_PU_GetLastError();
             String errorMsg = HWPuSDKLibrary.INSTANCE.IVS_PU_GetErrorMsg(errorCode);
             log.debug("返回码:{},返回信息:{}", errorCode.longValue(), errorMsg);
+            return errorCode.longValue();
         } else {
             NativeLong errorCode = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_GetLastError();
             String errorMsg = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_GetErrorMsg(errorCode);
             log.debug("返回码:{},返回信息:{}", errorCode.longValue(), errorMsg);
+            return errorCode.longValue();
         }
     }
 
