@@ -10,9 +10,11 @@ import com.summit.common.web.filter.UserContextHolder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccCtrlRealTimeEntity;
+import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.repository.AccCtrlProcessDao;
 import com.summit.dao.repository.AccCtrlRealTimeDao;
+import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.AlarmDao;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
@@ -58,6 +60,9 @@ public class AlarmController {
     @Autowired
     private AccCtrlRealTimeDao accCtrlRealTimeDao;
 
+    @Autowired
+    private AccessControlDao accessControlDao;
+
 
     @Autowired
     private AccCtrlProcessDao accCtrlProcessDao;
@@ -88,7 +93,7 @@ public class AlarmController {
         //开锁处理UUID
         String unlockProcessUuid = null;
         String accCtrlProId = updateAlarmParam.getAccCtrlProId();
-        Date processTime=new Date();
+        Date processTime = new Date();
         if (needUnLock) {
             LockRequest lockRequest = new LockRequest();
             lockRequest.setLockId(lockId);
@@ -116,9 +121,9 @@ public class AlarmController {
 
             unlockProcessUuid = backLockInfo.getRmid();
 
-            //todo:通过LockID查找门禁信息，不使用操作记录ID查找
-            AccCtrlProcess currentAccCtrlProcess = accCtrlProcessDao.selectOne(Wrappers.<AccCtrlProcess>lambdaQuery()
-                    .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProId));
+            //通过LockID查找门禁信息
+            AccessControlInfo accessControlInfo = accessControlDao.selectOne(Wrappers.<AccessControlInfo>lambdaQuery()
+                    .eq(AccessControlInfo::getLockId, lockId));
 
             //新增门禁操作记录
             AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
@@ -126,8 +131,8 @@ public class AlarmController {
 //            accCtrlProcess.setProcessTime(new Date());
             accCtrlProcess.setProcessType(LockProcessType.UNLOCK.getCode());
             accCtrlProcess.setUserName(operName);
-            accCtrlProcess.setAccessControlId(currentAccCtrlProcess.getAccessControlId());
-            accCtrlProcess.setAccessControlName(currentAccCtrlProcess.getAccessControlName());
+            accCtrlProcess.setAccessControlId(accessControlInfo.getAccessControlId());
+            accCtrlProcess.setAccessControlName(accessControlInfo.getAccessControlName());
             accCtrlProcess.setProcessResult(processResult);
             accCtrlProcess.setProcessUuid(unlockProcessUuid);
             accCtrlProcess.setCreateTime(processTime);
@@ -217,7 +222,7 @@ public class AlarmController {
             Alarm alarm = alarmService.selectAlarmById(alarmId);
             return ResultBuilder.buildSuccess(alarm);
         } catch (Exception e) {
-            log.error("根据告警id查询告警信息失败",e);
+            log.error("根据告警id查询告警信息失败", e);
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999);
         }
     }
@@ -244,7 +249,7 @@ public class AlarmController {
             alarm.setAccessControlName(accessControlName);
             alarm.setAlarmStatus(alarmStatus);
 
-            Page<Alarm> alarms= alarmService.selectAlarmConditionByPage(alarm, start, end, current, pageSize);
+            Page<Alarm> alarms = alarmService.selectAlarmConditionByPage(alarm, start, end, current, pageSize);
 
             return ResultBuilder.buildSuccess(alarms);
         } catch (Exception e) {
