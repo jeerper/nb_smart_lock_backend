@@ -611,7 +611,7 @@ public class FaceInfoAccCtrlController {
                 entryfaceFindCondition.enGender=-1;
                 entryfaceFindCondition.enCardType=-1;
                 entryfaceInfoFindS.stCondition=entryfaceFindCondition;
-                entryfaceInfoFindS.stFacelib=exitfacelib2;
+                entryfaceInfoFindS.stFacelib=entryfacelib2;
                 entryfaceInfoFindS.uStartIndex=0;
                 boolean entrygetFace;
                 if(Platform.isWindows()){
@@ -870,7 +870,6 @@ public class FaceInfoAccCtrlController {
                             /**
                              * 删除出口摄像头人脸
                              */
-
                             for(FaceInfo houtaiFaceInfo:exitfaceInfos){
                                 PU_FACE_INFO_DELETE_S exitpuFaceInfoDeleteS=new PU_FACE_INFO_DELETE_S();
                                 int[] exituFaceID = new int[100];
@@ -928,7 +927,6 @@ public class FaceInfoAccCtrlController {
                                     entrydel =HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryIdentifyId, entrypuFaceInfoDeleteS);
                                 }else {
                                     entrydel =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryIdentifyId, entrypuFaceInfoDeleteS);
-
                                 }
                                 HuaWeiSdkApi.printReturnMsg();
                                 if(entrydel){
@@ -1016,7 +1014,7 @@ public class FaceInfoAccCtrlController {
                                     exitfacelib.szLibName=Arrays.copyOf(exitszLibName.getBytes("utf8"),65);
                                 }
                                 exitfacelib.enLibType=exitenLibType;
-                                exitfacelib.uiThreshold=new NativeLong(exituiThreshold);
+                                exitfacelib.uiThreshold=new NativeLong();
                                 exitpuFaceInfoDeleteS.stFacelib=exitfacelib;
                                 boolean exitdell;
                                 if(Platform.isWindows()){
