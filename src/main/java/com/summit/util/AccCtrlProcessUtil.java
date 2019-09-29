@@ -279,8 +279,8 @@ public class AccCtrlProcessUtil {
         accCtrlProcess.setFacePanorama(facePanoramaFile);
         accCtrlProcess.setFacePic(facePicFile);
         DateTime picSnapshotTime = faceInfo.getPicSnapshotTime();
-        accCtrlProcess.setProcessTime(picSnapshotTime);
-//        LockInfo lockInfo = new LockInfo();
+//        accCtrlProcess.setProcessTime(picSnapshotTime);
+        accCtrlProcess.setCreateTime(picSnapshotTime);
         AccessControlInfo accessControlInfo = new AccessControlInfo();
 
         CameraDevice device = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
@@ -331,6 +331,7 @@ public class AccCtrlProcessUtil {
             accCtrlProcess.setProcessResult(processResult.getCode());
         }
         accCtrlProcess.setAccessControlInfo(accessControlInfo);
+
         return accCtrlProcess;
     }
 
@@ -342,7 +343,7 @@ public class AccCtrlProcessUtil {
     public Alarm getAlarm(AccCtrlProcess accCtrlProcess) {
         Alarm alarm = new Alarm();
         alarm.setAccCtrlProId(accCtrlProcess.getAccCtrlProId());
-        alarm.setAlarmTime(accCtrlProcess.getProcessTime());
+        alarm.setAlarmTime(accCtrlProcess.getCreateTime());
         alarm.setAlarmStatus(AlarmStatus.UNPROCESSED.getCode());
         alarm.setDescription(accCtrlProcess.getFailReason());
         return alarm;
@@ -380,8 +381,8 @@ public class AccCtrlProcessUtil {
         AccessControlInfo accessControlInfo = accessControlDao.selectById(accessControlId);
         AccCtrlRealTimeEntity accCtrlRealTimeEntity = new AccCtrlRealTimeEntity();
         //插入时需要
-        Date processTime = accCtrlProcess.getProcessTime();
-        accCtrlRealTimeEntity.setPicSnapshotTime(processTime);
+        Date createTime = accCtrlProcess.getCreateTime();
+        accCtrlRealTimeEntity.setPicSnapshotTime(createTime);
         AccCtrlRealTimeEntity realTimeEntity = accCtrlRealTimeDao.selectRealTimeInfoByAccCtrlId(accessControlId, null);
         if(realTimeEntity != null && realTimeEntity.getAccCrtlRealTimeId() != null){
             accCtrlRealTimeEntity.setAccCrtlRealTimeId(realTimeEntity.getAccCrtlRealTimeId());

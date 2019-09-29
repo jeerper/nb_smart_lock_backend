@@ -140,7 +140,7 @@ public class AccCtrlProcess {
     @TableField(exist = false)
     private FileInfo faceMatch = new FileInfo();
 
-    @ApiModelProperty(value="操作时间",name="facePicId")
+    @ApiModelProperty(value="操作时间",name="processTime")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     @TableField(value = "process_time")
@@ -149,6 +149,11 @@ public class AccCtrlProcess {
     @ApiModelProperty(value="操作方式，1：刷脸操作，2：接口操作",name="processMethod")
     @TableField(value = "process_method")
     private Integer processMethod;
+    @ApiModelProperty(value="操作创建时间",name="createTime")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    @TableField(value = "create_time")
+    private Date createTime;
 
     public AccCtrlProcess(){}
 }
