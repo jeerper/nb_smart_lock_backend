@@ -1133,7 +1133,7 @@ public class FaceInfoAccCtrlController {
                                 exitstFacelib1.uiThreshold=new NativeLong(exituiThreshold);
                                 //设置添加人脸信息的对象
                                 PU_FACE_INFO_ADD_S  exitpuFaceInfoAdd = new PU_FACE_INFO_ADD_S();
-                                exitpuFaceInfoAdd.stFacelib=enrtystFacelib1;
+                                exitpuFaceInfoAdd.stFacelib=exitstFacelib1;
                                 exitpuFaceInfoAdd.ulChannelId=new NativeLong(101);
                                 //设置人脸信息
                                 PU_FACE_RECORD exitaddfaceInfo=new PU_FACE_RECORD();
