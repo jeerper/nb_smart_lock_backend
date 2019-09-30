@@ -6,6 +6,7 @@ import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AlarmDao;
 import com.summit.sdk.huawei.model.AlarmStatus;
 import com.summit.service.AlarmService;
+import com.summit.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 @Slf4j
@@ -84,7 +92,12 @@ public class AlarmServiceImplTest {
     }
 
     @Test
-    public void selectAlarmByName() {
+    public void selectAlarmByName() throws ParseException {
+        SimpleDateFormat facestartDf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");//设置日期格式
+        Date date = new Date();
+        String startTime = facestartDf.format(date);
+        Date faceStartTime = CommonUtil.dateFormat.get().parse(startTime);
+        System.out.println(faceStartTime);
     }
 
     @Test
@@ -135,4 +148,55 @@ public class AlarmServiceImplTest {
     public void selectAlarmCondition1() {
 
     }
+    @Test
+    public void selectAlarmCondition2() throws IOException {
+        String path1="D:\\qianyy\\nb_smart_lock_backend\\snapshot\\1177104482461077505_Face.jpg";
+        String path2="D:\\qianyy\\nb_smart_lock_backend\\snapshot\\1177104482461077506_Face.jpg";
+        String image1 = imageToBase64Str(path1);
+        String image2 = imageToBase64Str(path1);
+       if (image1.equals(image2)){
+           System.out.println("相同");
+       }else {
+           System.out.println("不相同");
+       }
+    }
+
+
+
+    public String  imageToBase64Str(String path) throws IOException {
+        FileInputStream fis = new FileInputStream(new File(path));
+        byte[] read = new byte[1024];
+        int len = 0;
+        List<byte[]> blist=new ArrayList<byte[]>();
+        int ttllen=0;
+        while((len = fis.read(read))!= -1){
+            byte[] dst=new byte[len];
+            System.arraycopy(read, 0, dst, 0, len);
+            ttllen+=len;
+            blist.add(dst);
+        }
+        fis.close();
+        byte[] dstByte=new byte[ttllen];
+        int pos=0;
+        for (int i=0;i<blist.size();i++){
+            if (i==0){
+                pos=0;
+            }
+            else{
+                pos+=blist.get(i-1).length;
+            }
+            System.arraycopy(blist.get(i), 0, dstByte, pos, blist.get(i).length);
+        }
+        String baseStr= Base64.getEncoder().encodeToString(dstByte);
+        System.out.println("baseStr: "+baseStr);
+       /* byte[] op= Base64.getDecoder().decode(baseStr);
+        FileOutputStream fos = new FileOutputStream(new File("D:\\mybiji\\copy.jpg"));
+        fos.write(op,0,op.length );
+        fos.flush();
+        fos.close();*/
+       return  baseStr;
+
+    }
+
+
 }
