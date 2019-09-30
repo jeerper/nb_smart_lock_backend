@@ -148,7 +148,7 @@ public class FaceInfoAccCtrlController {
         if(!exitf.exists()){
             exitf.mkdirs();
         }
-        String exitfaceLib=exitfacelibPath+File.separator+"exitfacelib.json";
+        String exitfaceLib=exitfacelibPath+File.separator+"exitfaceLib.json";
         exitfaceLibGetS.szFindResultPath= Arrays.copyOf(exitfaceLib.getBytes(),128);
         /**
          * 再查询入口人脸库
