@@ -91,16 +91,22 @@ public class FaceInfoAccCtrlController {
         AccessControlInfo accessControlInfo = accessControlService.selectAccCtrlByIdBeyondAuthority(accessControlId);
         String entryCameraIp = accessControlInfo.getEntryCameraIp();
         String exitCameraIp = accessControlInfo.getExitCameraIp();
-       // System.out.println(entryCameraIp+"入口摄像头ip");
-      //  System.out.println(exitCameraIp+"出口摄像头ip");
+
         List<FaceInfo> faceInfoList=new ArrayList<>();
         for(String faceid: faceids){
             FaceInfo faceInfo = faceInfoManagerService.selectFaceInfoByID(faceid);
             faceInfoList.add(faceInfo);
         }
-        //System.out.println(faceInfoList+"授权的人脸对象");
-        //把人脸信息集合加入到对应摄像头的ip中
-
+        //出口
+        Integer exitenLibType=null;//人脸库类型
+        Integer exitulFaceLibID=null;//人脸库id
+        String exitszLibName=null;//人脸库名称
+        Integer exituiThreshold=null;//布控的阀值
+        //入口
+        Integer entryenLibType=null;//人脸库类型
+        Integer entryulFaceLibID=null;//人脸库id
+        String entryszLibName=null;//人脸库名称
+        Integer entrytuiThreshold=null;//布控的阀值
         //把人脸信息集合先加入到入口摄像头中
         DeviceInfo entrydeviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(entryCameraIp);
         NativeLong entryIdentifyId;
@@ -118,18 +124,17 @@ public class FaceInfoAccCtrlController {
         }else {
              exitIdentifyId = exitdeviceInfo.getUlIdentifyId();
         }
-       // System.out.println(exitIdentifyId+"：exitIdentifyId");
         /**1 先查询人脸库，如果有人脸库，再查询人脸信息，如果没有则新建人脸库，直接添加人脸信息，如果有人脸库，没有人脸信息，直接添加人脸信息
          * 2 如果有人脸库再查询人脸信息，
          * 3 若传入集合列表为空，则直接删除人脸
          * 4、先删除数据库在所传入列表找不到的人脸
          * 5  再添加传入列表在数据库中找不到的人脸
          */
-        //1 先查询人脸库
-        Integer  exitPrintReturnMsg=null;
-        Integer entryPrintReturnMsg=null;
+        Integer  exitPrintReturnMsg=null; //出口人脸添加返回码
+        Integer entryPrintReturnMsg=null; //入口人脸添加返回码
+
         /**
-         * 查询出口人脸库，再查询入口人脸库
+         * 先查询出口人脸库
          */
         PU_FACE_LIB_GET_S exitfaceLibGetS =new PU_FACE_LIB_GET_S();
         exitfaceLibGetS.ulChannelId=new NativeLong(101);
@@ -146,7 +151,7 @@ public class FaceInfoAccCtrlController {
         String exitfaceLib=exitfacelibPath+File.separator+"exitfacelib.json";
         exitfaceLibGetS.szFindResultPath= Arrays.copyOf(exitfaceLib.getBytes(),128);
         /**
-         * 查询出口人脸库，再查询入口人脸库
+         * 再查询入口人脸库
          */
         PU_FACE_LIB_GET_S entryfaceLibGetS =new PU_FACE_LIB_GET_S();
         entryfaceLibGetS.ulChannelId=new NativeLong(101);
@@ -171,24 +176,14 @@ public class FaceInfoAccCtrlController {
              getFaceLib =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_GetFaceLib(entryIdentifyId, entryfaceLibGetS);
              exitgetFaceLib =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_GetFaceLib(exitIdentifyId, exitfaceLibGetS);
         }
-        //出口
-        Integer exitenLibType=null;//人脸库类型
-        Integer exitulFaceLibID=null;//人脸库id
-        String exitszLibName=null;//人脸库名称
-        Integer exituiThreshold=null;//布控的阀值
-        //入口
-        Integer entryenLibType=null;//人脸库类型
-        Integer entryulFaceLibID=null;//人脸库id
-        String entryszLibName=null;//人脸库名称
-        Integer entrytuiThreshold=null;//布控的阀值
         HuaWeiSdkApi.printReturnMsg();
         if(getFaceLib || exitgetFaceLib){
             System.out.println("查询入口人脸库成功---------");
-            String getfacelibpath1 = new String(new File(".").getCanonicalPath() + File.separator +"exitfacelib"+File.separator+"exitfacelib.json");
-            String json = readFile(getfacelibpath1);
-            JSONObject object=new JSONObject(json);
-            JSONArray faceListsArry = object.getJSONArray("FaceListsArry");
-            System.out.println("人脸库集合："+faceListsArry);
+            String exitgetfacelibpath1 = new String(new File(".").getCanonicalPath() + File.separator +"exitfaceLib"+File.separator+"exitfaceLib.json");
+            String exitjson = readFile(exitgetfacelibpath1);
+            JSONObject exitobject=new JSONObject(exitjson);
+            JSONArray exitfaceListsArry = exitobject.getJSONArray("FaceListsArry");
+            System.out.println("人脸库集合："+exitfaceListsArry);
 
             System.out.println("查询出口库人脸库成功");
             String entrygetfacelibpath1 = new String(new File(".").getCanonicalPath() + File.separator +"entryFaceLib"+File.separator+"entryFaceLib.json");
@@ -197,7 +192,8 @@ public class FaceInfoAccCtrlController {
             JSONArray entryfaceListsArry = entryobject.getJSONArray("FaceListsArry");
             System.out.println("人脸库集合："+entryfaceListsArry);
             //2 判断有没有人脸库，没有人脸库则直接添加人脸库，接着添加人脸信息
-            if(faceListsArry==null || faceListsArry.size()==0){ //说明没有人脸库则需要添加人脸库,接着添加人脸信息
+            if(exitfaceListsArry==null || exitfaceListsArry.size()==0 || entryfaceListsArry==null || entryfaceListsArry.size()==0){ //说明没有人脸库则需要添加人脸库,接着添加人脸信息
+                System.out.println("添加入口库--------------------------------------------");
                 PU_FACE_LIB_SET_S enteypuFaceLibSetS =new PU_FACE_LIB_SET_S();
                 enteypuFaceLibSetS.enOptType=1;//新增人脸库
                 PU_FACE_LIB_S  enteystFacelib=new PU_FACE_LIB_S();
@@ -313,27 +309,37 @@ public class FaceInfoAccCtrlController {
                         JSONArray exitnewFaceLiobjectArry = exitnewFaceLiobject.getJSONArray("FaceListsArry");
                         System.out.println("人脸库集合："+exitnewFaceLiobjectArry);
                         JSONObject exitnewfacelibinfo=exitnewFaceLiobjectArry.getJSONObject(0);
-                        exitnewfacelibName=exitnewfacelibinfo.getStr("FaceListName");
-                        exitnewfacelibType = Integer.parseInt(exitnewfacelibinfo.getStr("FaceListType"));
-                        exitnewfacelibID = Integer.parseInt(exitnewfacelibinfo.getStr("ID"));
-
-                        exitulFaceLibID = Integer.parseInt(exitnewfacelibinfo.getStr("ID"));
-                        exitnewfacelibThreshold=Integer.parseInt(exitnewfacelibinfo.getStr("Threshold"));
-
+                        if (entrydeviceInfo==null){
+                            exitnewfacelibName="facelib";
+                            exitnewfacelibType=2;
+                            exitnewfacelibThreshold=90;
+                            exitnewfacelibID=1111;
+                        }else {
+                            exitnewfacelibName=exitnewfacelibinfo.getStr("FaceListName");
+                            exitnewfacelibType = Integer.parseInt(exitnewfacelibinfo.getStr("FaceListType"));
+                            exitnewfacelibID = Integer.parseInt(exitnewfacelibinfo.getStr("ID"));
+                            exitulFaceLibID = Integer.parseInt(exitnewfacelibinfo.getStr("ID"));//防止新建的出口人脸库布控不了
+                            exitnewfacelibThreshold=Integer.parseInt(exitnewfacelibinfo.getStr("Threshold"));
+                        }
                         System.out.println("查询新建入口的人脸库成功---------------");
-
                         String extrygetfacelibpath = new String(new File(".").getCanonicalPath() + File.separator +"entryNewFaceLib"+File.separator+"entryNewFaceLib.json");
                         String extrynewFaceLibjson = readFile(extrygetfacelibpath);
                         JSONObject entrynewFaceLiobject=new JSONObject(extrynewFaceLibjson);
                         JSONArray entrynewFaceLiobjectArry = entrynewFaceLiobject.getJSONArray("FaceListsArry");
                         System.out.println("人脸库集合："+entrynewFaceLiobjectArry);
                         JSONObject entrynewfacelibinfo=entrynewFaceLiobjectArry.getJSONObject(0);
-                        entrynewfacelibName=entrynewfacelibinfo.getStr("FaceListName");
-                        entrytnewfacelibType = Integer.parseInt(entrynewfacelibinfo.getStr("FaceListType"));
-                        entrynewfacelibID = Integer.parseInt(entrynewfacelibinfo.getStr("ID"));
-
-                        entryulFaceLibID = Integer.parseInt(entrynewfacelibinfo.getStr("ID"));
-                        entrynewfacelibThreshold=Integer.parseInt(entrynewfacelibinfo.getStr("Threshold"));
+                        if (entrydeviceInfo==null){
+                            entrynewfacelibName="facelib";
+                            entrytnewfacelibType=2;
+                            entrynewfacelibThreshold=90;
+                            entrynewfacelibID=1111;
+                        }else {
+                            entrynewfacelibName=entrynewfacelibinfo.getStr("FaceListName");
+                            entrytnewfacelibType = Integer.parseInt(entrynewfacelibinfo.getStr("FaceListType"));
+                            entrynewfacelibID = Integer.parseInt(entrynewfacelibinfo.getStr("ID"));
+                            entryulFaceLibID = Integer.parseInt(entrynewfacelibinfo.getStr("ID"));//防止新建的入口人脸库布控不了
+                            entrynewfacelibThreshold=Integer.parseInt(entrynewfacelibinfo.getStr("Threshold"));
+                        }
                     }
                     //添加人脸信息，循环添加
                     for(FaceInfo faceInfo:faceInfoList){
@@ -395,7 +401,7 @@ public class FaceInfoAccCtrlController {
                         //添加完人脸信息之后需要提取特征值
                         if (entryaddface2){//添加入口人脸成功
                             PU_FACE_LIB_S entrystFacelib1=new PU_FACE_LIB_S();
-                            entrystFacelib1.enLibType=2;
+                            entrystFacelib1.enLibType=entrytnewfacelibType;
                             entrystFacelib1.isControl=true;
                             entrystFacelib1.ulFaceLibID=new NativeLong(entrynewfacelibID);
                             if (Platform.isWindows()){
@@ -523,13 +529,19 @@ public class FaceInfoAccCtrlController {
                 JSONArray exitfaceListsArry1 = exitobject1.getJSONArray("FaceListsArry");
                 System.out.println("人脸库集合："+exitfaceListsArry1);
                 JSONObject exitfacelibinfo=exitfaceListsArry1.getJSONObject(0);
-                exitszLibName=exitfacelibinfo.getStr("FaceListName");
-                exitenLibType = Integer.parseInt(exitfacelibinfo.getStr("FaceListType"));
-                exitulFaceLibID = Integer.parseInt(exitfacelibinfo.getStr("ID"));
-                exituiThreshold=Integer.parseInt(exitfacelibinfo.getStr("Threshold"));
-
+                if (exitdeviceInfo==null) {
+                    exitszLibName = "facelib";
+                    exitenLibType = 2;
+                    exituiThreshold = 90;
+                    exitulFaceLibID = 1111;
+                }else {
+                    exitszLibName=exitfacelibinfo.getStr("FaceListName");
+                    exitenLibType = Integer.parseInt(exitfacelibinfo.getStr("FaceListType"));
+                    exitulFaceLibID = Integer.parseInt(exitfacelibinfo.getStr("ID"));
+                    exituiThreshold=Integer.parseInt(exitfacelibinfo.getStr("Threshold"));
+                }
                 /**
-                 * 出口人脸库
+                 * 入口人脸库
                  */
                 String entrygetfacelibpath2 = new String(new File(".").getCanonicalPath() +File.separator +"entryFaceLib"+File.separator+"entryFaceLib.json");
                 String entrytjason2 = readFile(entrygetfacelibpath2);
@@ -537,10 +549,17 @@ public class FaceInfoAccCtrlController {
                 JSONArray entryfaceListsArry1 = entrytobject1.getJSONArray("FaceListsArry");
                 System.out.println("人脸库集合："+entryfaceListsArry1);
                 JSONObject entryfacelibinfo=entryfaceListsArry1.getJSONObject(0);
-                entryszLibName=entryfacelibinfo.getStr("FaceListName");
-                entryenLibType = Integer.parseInt(entryfacelibinfo.getStr("FaceListType"));
-                entryulFaceLibID = Integer.parseInt(entryfacelibinfo.getStr("ID"));
-                entrytuiThreshold=Integer.parseInt(entryfacelibinfo.getStr("Threshold"));
+                if (entrydeviceInfo==null) {
+                    entryszLibName = "facelib";
+                    entryenLibType = 2;
+                    entrytuiThreshold = 90;
+                    entryulFaceLibID = 1111;
+                }else {
+                    entryszLibName=entryfacelibinfo.getStr("FaceListName");
+                    entryenLibType = Integer.parseInt(entryfacelibinfo.getStr("FaceListType"));
+                    entryulFaceLibID = Integer.parseInt(entryfacelibinfo.getStr("ID"));
+                    entrytuiThreshold=Integer.parseInt(entryfacelibinfo.getStr("Threshold"));
+                }
                 System.out.println("查询第一个人脸库的出口人脸信息-------------------------------------");
                 String exitfaceinfoPath=new StringBuilder()
                         .append(SystemUtil.getUserInfo().getCurrentDir())
@@ -641,7 +660,7 @@ public class FaceInfoAccCtrlController {
                     JSONObject entryobjectface=new JSONObject(entryfacejson);
                     JSONArray entryfaceRecordArry = entryobjectface.getJSONArray("FaceRecordArry");
                     log.debug("入口人脸信息集合："+entryobjectface);
-                    if(exitfaceRecordArry==null || exitfaceRecordArry.size()==0){//有人脸库没有人脸信息,这时候直接添加所传的人脸信息
+                    if(exitfaceRecordArry==null || exitfaceRecordArry.size()==0 || entryfaceRecordArry==null || entryfaceRecordArry.size()==0){//有人脸库没有人脸信息,这时候直接添加所传的人脸信息
                         for(FaceInfo faceInfo:faceInfoList){
                             //设置出口人脸库对象
                             System.out.println("出口人脸库对象------------------------------");
@@ -686,13 +705,13 @@ public class FaceInfoAccCtrlController {
                                  exitaddfaceinfo = HWPuSDKLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, exitpuFaceInfoAdd, exitfilename);
                                  long  exitfaceRepeat = HuaWeiSdkApi.printReturnMsg();
                                  if (exitfaceRepeat==12108){
-                                    exitPrintReturnMsg=12108;
+                                     exitPrintReturnMsg=12108;
                                  }
                             }else {
                                  exitaddfaceinfo = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, exitpuFaceInfoAdd, exitfilename);
                                   long  exitfaceRepeat = HuaWeiSdkApi.printReturnMsg();
                                    if (exitfaceRepeat==12108){
-                                    exitPrintReturnMsg=12108;
+                                       exitPrintReturnMsg=12108;
                                   }
                             }
                             /**
@@ -1087,10 +1106,17 @@ public class FaceInfoAccCtrlController {
                                 boolean entryaddOneFaceV2;
                                 if(Platform.isWindows()){
                                     entryaddOneFaceV2 = HWPuSDKLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, entrypuFaceInfoAdd, entryfilename);
+                                    long  entryfaceRepeat = HuaWeiSdkApi.printReturnMsg();
+                                    if (entryfaceRepeat==12108){
+                                        entryPrintReturnMsg=12108;
+                                    }
                                 }else {
                                     entryaddOneFaceV2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(entryIdentifyId, entrypuFaceInfoAdd, entryfilename);
+                                    long  entryfaceRepeat = HuaWeiSdkApi.printReturnMsg();
+                                    if (entryfaceRepeat==12108){
+                                        entryPrintReturnMsg=12108;
+                                    }
                                 }
-                                HuaWeiSdkApi.printReturnMsg();
                                 /**
                                  * 添加完提取入口人脸特征值
                                  */
@@ -1168,10 +1194,17 @@ public class FaceInfoAccCtrlController {
                                 boolean exitaddOneFaceV2;
                                 if(Platform.isWindows()){
                                     exitaddOneFaceV2 = HWPuSDKLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, exitpuFaceInfoAdd, exitfilename);
+                                    long  exitfaceRepeat = HuaWeiSdkApi.printReturnMsg();
+                                    if (exitfaceRepeat==12108){
+                                        exitPrintReturnMsg=12108;
+                                    }
                                 }else {
                                     exitaddOneFaceV2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(exitIdentifyId, exitpuFaceInfoAdd, exitfilename);
+                                    long  exitfaceRepeat = HuaWeiSdkApi.printReturnMsg();
+                                    if (exitfaceRepeat==12108){
+                                        exitPrintReturnMsg=12108;
+                                    }
                                 }
-                                HuaWeiSdkApi.printReturnMsg();
                                 /**
                                  * 添加完提取出口人脸特征值
                                  */
@@ -1279,7 +1312,13 @@ public class FaceInfoAccCtrlController {
             exitbukong = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, exitpuFaceLibSetS2);
             HuaWeiSdkApi.printReturnMsg();
         }
-        if (exitbukong && entrybukong){
+        if (exitPrintReturnMsg!= null &&exitPrintReturnMsg==12108){
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"出口人脸授权失败，人脸图片重复",null);
+        }else if (entryPrintReturnMsg !=null && entryPrintReturnMsg==12108){
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"入口人脸授权失败，人脸图片重复",null);
+        }else if (exitPrintReturnMsg !=null && exitPrintReturnMsg==12108 && entryPrintReturnMsg !=null && entryPrintReturnMsg==12108) {
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸授权失败，人脸图片重复", null);
+        }else if(exitbukong && entrybukong){
             System.out.println("修改出口口人脸库布控成功");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"出入口摄像头人脸授权成功",null);
         }else if (exitbukong){

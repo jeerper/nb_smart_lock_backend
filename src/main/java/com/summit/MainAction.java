@@ -18,12 +18,14 @@ public class MainAction {
 //    @Autowired
 //    SimpMessagingTemplate messagingTemplate;
     public static final String SnapshotFileName="snapshot";
-    public static final String ExitFaceLib="exitfacelib";
+    public static final String ExitFaceLib="exitfaceLib";
     public static final String EntryFaceLib="entryFaceLib";
     public static final String ExitNewFaceLib="exitNewFaceLib";
     public static final String EntryNewFaceLib="entryNewFaceLib";
     public static final String ExitFaceInfo="exitfaceInfo";
     public static final String EntrytFaceInfo="entryfaceInfo";
+    public static final String UpdateAddFaceLib="updateAddFaceLib";
+    public static final String UpdateFaceLib="updateFaceLib";
     public static final String UpdateFaceInfo="updatefaceInfo";
     public static final String DelExitFaceInfo="delExitfaceInfo";
     public static final String DelEntryFaceInfo="delEntryfaceInfo";
