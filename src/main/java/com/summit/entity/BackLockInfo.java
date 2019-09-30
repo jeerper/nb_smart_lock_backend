@@ -3,8 +3,6 @@ package com.summit.entity;
 
 import lombok.Data;
 
-import java.util.Date;
-
 /**
  * 封装开锁和查询锁状态返回结果
  */
@@ -30,6 +28,10 @@ public class BackLockInfo {
      * 锁状态
      */
     private Integer objx;
+    /**
+     * 电量
+     */
+    private Integer vol;
 
     /**
      * 操作时间
