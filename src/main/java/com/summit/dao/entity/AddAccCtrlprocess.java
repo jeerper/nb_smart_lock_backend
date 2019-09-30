@@ -39,6 +39,10 @@ public class AddAccCtrlprocess {
     @TableField(value = "battery_leve")
     private Integer batteryLeve;
 
+    @ApiModelProperty(value = "锁编码",name = "lockCode")
+    @TableField(exist = false)
+    private String lockCode;
+
     public AddAccCtrlprocess() {
     }
 }

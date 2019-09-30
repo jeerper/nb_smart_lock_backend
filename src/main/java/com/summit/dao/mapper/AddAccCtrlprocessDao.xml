@@ -7,10 +7,11 @@
         <result column="access_control_name"  jdbcType="VARCHAR" property="accessControlName"/>
         <result column="access_control_status_count"  jdbcType="VARCHAR" property="accessControlStatusCount"/>
         <result column="battery_leve"  jdbcType="VARCHAR" property="batteryLeve"/>
+        <result column="lock_code"  jdbcType="VARCHAR" property="lockCode"/>
     </resultMap>
     <sql id="accCtrlprocessCloum">
-        id,access_control_id,access_control_name,access_control_status_count,battery_leve
-    </sql>
+        aacp.id,aacp.access_control_id,aacp.access_control_name,aacp.access_control_status_count,aacp.battery_leve,ac.lock_code
+    </sql>selectAddAccCtrlprocessDesc
     <select id="selectAccCtrlByAccCtrlName" parameterType="java.lang.String" resultMap="accCtrlprocess">
         SELECT
         <include refid="accCtrlprocessCloum"/>
@@ -22,7 +23,7 @@
     <select id="selectAddAccCtrlprocessDesc" resultMap="accCtrlprocess">
         SELECT
         <include refid="accCtrlprocessCloum"/>
-        FROM addup_acc_ctrl_process
+        FROM addup_acc_ctrl_process  aacp inner join access_control  ac on aacp.access_control_id=ac.access_control_id
         ORDER BY
         access_control_status_count
         ASC
