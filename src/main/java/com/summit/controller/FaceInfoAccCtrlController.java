@@ -542,7 +542,7 @@ public class FaceInfoAccCtrlController {
                     exituiThreshold = 90;
                     exitulFaceLibID = 1111;
                 }else {
-                    String exitgetfacelibpath2 = new String(new File(".").getCanonicalPath() +File.separator +"exitfaceLib"+File.separator+"exitfaceLib.json");
+                    String exitgetfacelibpath2 = new String(new File(".").getCanonicalPath() + File.separator +"exitfaceLib"+File.separator+"exitfaceLib.json");
                     String exitjason2 = readFile(exitgetfacelibpath2);
                     JSONObject exitobject1=new JSONObject(exitjason2);
                     JSONArray exitfaceListsArry1 = exitobject1.getJSONArray("FaceListsArry");
