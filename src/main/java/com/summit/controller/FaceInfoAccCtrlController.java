@@ -1371,10 +1371,10 @@ public class FaceInfoAccCtrlController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"出入口摄像头人脸授权成功",null);
         }else if (exitbukong){
             log.debug("出口摄像头人脸授权成功");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"出口摄像头人脸授权成功",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"出口摄像头人脸授权成功,入口授权失败",null);
         }else if (entrybukong){
             log.debug("入口摄像头人脸授权成功");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"入口摄像头人脸授权成功",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"入口摄像头人脸授权成功,出口授权失败",null);
         }else {
             int i=faceInfoAccCtrlService.deleteFaceAccCtrlByAccCtlId(accessControlId);
             log.error("两个摄像头均未授权成功");
