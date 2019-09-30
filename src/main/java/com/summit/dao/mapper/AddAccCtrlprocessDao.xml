@@ -11,7 +11,7 @@
     </resultMap>
     <sql id="accCtrlprocessCloum">
         aacp.id,aacp.access_control_id,aacp.access_control_name,aacp.access_control_status_count,aacp.battery_leve,ac.lock_code
-    </sql>selectAddAccCtrlprocessDesc
+    </sql>
     <select id="selectAccCtrlByAccCtrlName" parameterType="java.lang.String" resultMap="accCtrlprocess">
         SELECT
         <include refid="accCtrlprocessCloum"/>
