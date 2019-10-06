@@ -82,9 +82,11 @@ public class AccessControlProcessSchedule {
                         .set(AccCtrlProcess::getProcessResult, lockStatus)
                         .set(AccCtrlProcess::getProcessTime, new Date())
                         .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProcessEntity.getAccCtrlProId()));
-                addAccCtrlprocessDao.update(null, Wrappers.<AddAccCtrlprocess>lambdaUpdate()
-                        .set(AddAccCtrlprocess::getBatteryLeve, backLockInfo.getVol())
-                        .eq(AddAccCtrlprocess::getAccessControlId, accCtrlProcessEntity.getAccessControlId()));
+                if (backLockInfo.getVol() != null) {
+                    addAccCtrlprocessDao.update(null, Wrappers.<AddAccCtrlprocess>lambdaUpdate()
+                            .set(AddAccCtrlprocess::getBatteryLeve, backLockInfo.getVol())
+                            .eq(AddAccCtrlprocess::getAccessControlId, accCtrlProcessEntity.getAccessControlId()));
+                }
             }
         }
     }
