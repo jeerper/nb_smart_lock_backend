@@ -3,7 +3,9 @@ package com.summit.schedule;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.dao.entity.AccCtrlProcess;
+import com.summit.dao.entity.AddAccCtrlprocess;
 import com.summit.dao.repository.AccCtrlProcessDao;
+import com.summit.dao.repository.AddAccCtrlprocessDao;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.sdk.huawei.model.LockProcessResultType;
@@ -26,6 +28,8 @@ public class AccessControlProcessSchedule {
 
     @Autowired
     private AccCtrlProcessDao accCtrlProcessDao;
+    @Autowired
+    private AddAccCtrlprocessDao addAccCtrlprocessDao;
 
 
     /**
@@ -36,7 +40,7 @@ public class AccessControlProcessSchedule {
     public void refreshAccessControlProcessLockStatus() {
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setProcessResult(LockProcessResultType.CommandSuccess.getCode());
-        List<AccCtrlProcess> accCtrlProcessList = accCtrlProcessDao.selectCondition(null,accCtrlProcess,null, null, null);
+        List<AccCtrlProcess> accCtrlProcessList = accCtrlProcessDao.selectCondition(null, accCtrlProcess, null, null, null);
         LockRequest lockRequest = new LockRequest();
         for (AccCtrlProcess accCtrlProcessEntity : accCtrlProcessList) {
 
@@ -72,12 +76,15 @@ public class AccessControlProcessSchedule {
                         .set(AccCtrlProcess::getProcessTime, new Date())
                         .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProcessEntity.getAccCtrlProId()));
             } else {
-                log.debug("开锁结果:"+LockProcessResultType.codeOf(lockStatus).getDescription());
+                log.debug("开锁结果:" + LockProcessResultType.codeOf(lockStatus).getDescription());
                 //更新process_result状态
                 accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
                         .set(AccCtrlProcess::getProcessResult, lockStatus)
                         .set(AccCtrlProcess::getProcessTime, new Date())
                         .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProcessEntity.getAccCtrlProId()));
+                addAccCtrlprocessDao.update(null, Wrappers.<AddAccCtrlprocess>lambdaUpdate()
+                        .set(AddAccCtrlprocess::getBatteryLeve, backLockInfo.getVol())
+                        .eq(AddAccCtrlprocess::getAccessControlId, accCtrlProcessEntity.getAccessControlId()));
             }
         }
     }
