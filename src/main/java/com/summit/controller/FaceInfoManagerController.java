@@ -1034,7 +1034,6 @@ public class FaceInfoManagerController {
               delEntrygetFaceLib =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_GetFaceLib(entryulIdentifyId, delEntryfaceLibGetS);
               delExitgetFaceLib =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_GetFaceLib(exitulIdentifyId, delExitfaceLibGetS);
             }
-            if (delEntrygetFaceLib || delExitgetFaceLib){
               if (entrydeviceInfo==null){
                 entryszLibName="facelib";
                 entryenLibType=2;
@@ -1071,7 +1070,7 @@ public class FaceInfoManagerController {
                 exitulFaceLibID = Integer.parseInt(exitnewfacelibinfo.getStr("ID"));
                 exituiThreshold=Integer.parseInt(exitnewfacelibinfo.getStr("Threshold"));
               }
-            }
+
             //查询第一个facelib的人脸信息
             System.out.println("查询出口的人脸信息-------------------------------------------");
             String delexitfaceInfoPath = new StringBuilder()
