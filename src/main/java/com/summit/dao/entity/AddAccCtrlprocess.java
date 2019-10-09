@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -19,7 +18,7 @@ import lombok.Data;
 @TableName(value = "addup_acc_ctrl_process")
 public class AddAccCtrlprocess {
 
-    @ApiModelProperty(value = "人脸id",name = "id")
+    @ApiModelProperty(value = "记录id",name = "id")
     @TableId(value = "id", type = IdType.ID_WORKER_STR)
     private String id;
 
