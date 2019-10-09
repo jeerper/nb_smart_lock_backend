@@ -205,9 +205,10 @@ public class FaceInfoManagerController {
     //更新之前找到原来的人脸信息
     String selectoldfaceid = faceInfo.getFaceid();
     FaceInfo oldFaceInfo = faceInfoManagerService.selectFaceInfoByID(selectoldfaceid);
+
     /**
      * 修改人脸判断用户名是否存在
-     */
+     *//*
     String faceInfoUserName = faceInfo.getUserName();
     if (SummitTools.stringNotNull(faceInfoUserName)){
       List<FaceInfo> allFaceInfo = faceInfoManagerService.selectAllFaceInfo(null);
@@ -218,7 +219,8 @@ public class FaceInfoManagerController {
           }
         }
       }
-    }
+    }*/
+
     /**
      * 判断人脸修改时图片是否重复，
      */
@@ -768,6 +770,11 @@ public class FaceInfoManagerController {
                   log.debug("编辑提取人脸特征值成功------");
                 }else {
                   log.error("编辑提取人脸特征值失败,图片不规范");
+                }
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                      e.printStackTrace();
                 }
                 /**
                  * 添加完不管提取是否成功，都接着布控
