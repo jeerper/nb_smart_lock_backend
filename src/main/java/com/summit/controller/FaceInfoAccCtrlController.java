@@ -103,9 +103,9 @@ public class FaceInfoAccCtrlController {
                 faceInfoList.add(faceInfo);
             }
         }
-        if (CommonUtil.isEmptyList(faceInfoList)){
+       /* if (CommonUtil.isEmptyList(faceInfoList)){
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸授权失败，人脸已过期",null);
-        }
+        }*/
         //出口
         Integer exitenLibType=null;//人脸库类型
         Integer exitulFaceLibID=null;//人脸库id
