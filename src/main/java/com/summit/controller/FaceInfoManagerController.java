@@ -669,6 +669,7 @@ public class FaceInfoManagerController {
             if(Platform.isWindows()){
               delFace = HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(ulIdentifyId, faceInfoDelete);
               log.debug("上传头像编辑删除人脸信息返回码:");
+              HuaWeiSdkApi.printReturnMsg();
               long returnMsg = HuaWeiSdkApi.printReturnMsg();
               if (returnMsg==106){
                 printReturnMsg2=106;
@@ -676,6 +677,7 @@ public class FaceInfoManagerController {
             }else {
               delFace = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(ulIdentifyId, faceInfoDelete);
               log.debug("上传头像编辑删除人脸信息返回码:");
+              HuaWeiSdkApi.printReturnMsg();
               long returnMsg = HuaWeiSdkApi.printReturnMsg();
               if (returnMsg==106){
                 printReturnMsg2=106;
@@ -720,19 +722,23 @@ public class FaceInfoManagerController {
               boolean addOneFaceV2;
               if(Platform.isWindows()){
                 addOneFaceV2 = HWPuSDKLibrary.INSTANCE.IVS_PU_AddOneFaceV2(ulIdentifyId, puFaceInfoAdd, filename);
+                log.debug("上传头像编辑添加人脸信息返回码:");
+                HuaWeiSdkApi.printReturnMsg();
                 long  entryfaceRepeat = HuaWeiSdkApi.printReturnMsg();
                 if (entryfaceRepeat==12108){
                   printReturnMsg2=12108;
                 }
               }else {
                 addOneFaceV2 = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_AddOneFaceV2(ulIdentifyId, puFaceInfoAdd, filename);
+                log.debug("上传头像编辑添加人脸信息返回码:");
+                HuaWeiSdkApi.printReturnMsg();
                 long  entryfaceRepeat = HuaWeiSdkApi.printReturnMsg();
                 if (entryfaceRepeat==12108){
                   printReturnMsg2=12108;
                 }
               }
               /**
-               * 添加完提取入口人脸特征值
+               * 添加完提取人脸特征值
                */
               if (addOneFaceV2){
                 PU_FACE_LIB_S faceLib=new PU_FACE_LIB_S();
@@ -751,17 +757,17 @@ public class FaceInfoManagerController {
                 boolean exitgetTeZheng;
                 if (Platform.isWindows()){
                   exitgetTeZheng = HWPuSDKLibrary.INSTANCE.IVS_PU_FeatureExtract(ulIdentifyId,faceFeatureExtractS);
-                  System.out.println("提取入口口人脸特征值返回码------");
+                  log.debug("编辑提取人脸特征值返回码------");
                   HuaWeiSdkApi.printReturnMsg();
                 }else {
                   exitgetTeZheng = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_FeatureExtract(ulIdentifyId,faceFeatureExtractS);
-                  System.out.println("提取入口人脸特征值返回码------");
+                  log.debug("编辑提取人脸特征值返回码------");
                   HuaWeiSdkApi.printReturnMsg();
                 }
                 if (exitgetTeZheng){
-                  log.debug("提取入口人脸特征值成功------");
+                  log.debug("编辑提取人脸特征值成功------");
                 }else {
-                  log.error("提取出口人脸特征值失败,图片不规范");
+                  log.error("编辑提取人脸特征值失败,图片不规范");
                 }
                 /**
                  * 添加完不管提取是否成功，都接着布控
@@ -783,10 +789,11 @@ public class FaceInfoManagerController {
                 boolean entrybukong;
                 if(Platform.isWindows()){
                   entrybukong = HWPuSDKLibrary.INSTANCE.IVS_PU_SetFaceLib(ulIdentifyId, puFaceLibSetS2);
-                  System.out.println("布控入口的返回码");
+                  log.debug("编辑添加之后布控的返回码");
                   HuaWeiSdkApi.printReturnMsg();
                 }else {
                   entrybukong = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(ulIdentifyId, puFaceLibSetS2);
+                  log.debug("编辑添加之后布控的返回码");
                   HuaWeiSdkApi.printReturnMsg();
                 }
               }else {
