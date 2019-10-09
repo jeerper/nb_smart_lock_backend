@@ -524,7 +524,6 @@ public class FaceInfoManagerSchedule {
                             Integer entryInnerulFaceLibID=null;//人脸库id
                             String entryInnerszLibName=null;//人脸库名称
                             Integer entryInneruiThreshold=null;//布控的阀值
-                            if (delInnerEntrygetFaceLib || delInnerExitgetFaceLib){
                                 if (entrydeviceInfo==null){
                                     entryInnerszLibName="facelib";
                                     entryInnerenLibType=2;
@@ -548,7 +547,7 @@ public class FaceInfoManagerSchedule {
                                     exitInnerLibType=2;
                                     exitInneruiThreshold=90;
                                     exitInnerulFaceLibID=1111;
-                                }else if (delInnerEntrygetFaceLib){
+                                }else if (delInnerExitgetFaceLib){
                                     System.out.println("查询出口库人脸库成功------------------------");
                                     String innerExitFaceLibPath2 = new String(new File(".").getCanonicalPath() + File.separator +"innerExitFaceLib"+File.separator+"innerExitFaceLib.json");
                                     String innerExitFaceLibPathJson = readFile(innerExitFaceLibPath2);
@@ -561,7 +560,6 @@ public class FaceInfoManagerSchedule {
                                     exitInnerulFaceLibID = Integer.parseInt(innerExitFaceLibInfo.getStr("ID"));
                                     exitInneruiThreshold=Integer.parseInt(innerExitFaceLibInfo.getStr("Threshold"));
                                 }
-                            }
                             /**
                              * 查询第一个facelib的入口---人脸信息
                              */

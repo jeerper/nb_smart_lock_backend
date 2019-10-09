@@ -653,7 +653,7 @@ public class FaceInfoManagerController {
             log.debug("当前设备未上线,没有查到人脸信息");
           }
           /**
-           * 修改时没有上传人脸头像，直接修改信息就行
+           * 修改时没有上传人脸头像，直接修改信息就行,上传了人脸头像,需要删掉摄像头中的人脸信息，重新添加到摄像头
            */
           if (SummitTools.stringNotNull(base64Str)){//上传了人脸头像,需要删掉摄像头中的人脸信息，重新添加到摄像头
             PU_FACE_INFO_DELETE_S faceInfoDelete=new PU_FACE_INFO_DELETE_S();
