@@ -793,7 +793,7 @@ public class FaceInfoManagerController {
                 log.error("编辑人脸上传头像时，添加人脸失败");
               }
             }else {
-              if (printReturnMsg2==106){
+              if (printReturnMsg2 !=null && printReturnMsg2==106){
                 log.error("上传头像编辑删除人脸失败，错误的用户ID号");
               }else {
                 log.error("上传头像编辑删除人脸失败，参数错误");
@@ -892,7 +892,7 @@ public class FaceInfoManagerController {
                 bukong = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(ulIdentifyId, puFaceLibSetS2);
               }
             }else{
-              if (printReturnMsg2==106){
+              if (printReturnMsg2 !=null && printReturnMsg2==106){
                 log.error("更新摄像头人脸信息失败,设备未上线");
               }else {
                 log.error("更新摄像头人脸信息失败,参数错误");
@@ -900,9 +900,9 @@ public class FaceInfoManagerController {
             }
           }
         }
-        if (printReturnMsg2==106){
+        if (printReturnMsg2 !=null && printReturnMsg2==106){
           return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"更新人脸信息一部分成功,部分设备未上线",null);
-        }else if (printReturnMsg2==12108){
+        }else if (printReturnMsg2 !=null && printReturnMsg2==12108){
           return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"更新人脸信息一部分成功,人脸头像重复",null);
         }else {
           return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息,同时更新摄像头全部成功",null);
@@ -1319,7 +1319,7 @@ public class FaceInfoManagerController {
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,msg,null);
       }
     }
-    if (printReturnMsg==106){
+    if (printReturnMsg !=null && printReturnMsg==106){
       return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"部分摄像头删除人脸信息成功",null);
     }else {
       return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"删除人脸信息成功",null);
