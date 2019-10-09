@@ -3,18 +3,13 @@ package com.summit.util;
 import com.summit.constants.CommonConstants;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 public class CommonUtil {
@@ -153,4 +148,37 @@ public class CommonUtil {
         return lastStr;
     }
 
+    /**
+     *  把图片转换成base64
+     * @param path  图片路径
+     * @return  图片的base64
+     * @throws IOException
+     */
+    public  static String  imageToBase64Str(String path) throws IOException {
+        FileInputStream fis = new FileInputStream(new File(path));
+        byte[] read = new byte[1024];
+        int len = 0;
+        List<byte[]> blist=new ArrayList<byte[]>();
+        int ttllen=0;
+        while((len = fis.read(read))!= -1){
+            byte[] dst=new byte[len];
+            System.arraycopy(read, 0, dst, 0, len);
+            ttllen+=len;
+            blist.add(dst);
+        }
+        fis.close();
+        byte[] dstByte=new byte[ttllen];
+        int pos=0;
+        for (int i=0;i<blist.size();i++){
+            if (i==0){
+                pos=0;
+            }
+            else{
+                pos+=blist.get(i-1).length;
+            }
+            System.arraycopy(blist.get(i), 0, dstByte, pos, blist.get(i).length);
+        }
+        String baseStr= Base64.getEncoder().encodeToString(dstByte);
+        return  baseStr;
+    }
 }
