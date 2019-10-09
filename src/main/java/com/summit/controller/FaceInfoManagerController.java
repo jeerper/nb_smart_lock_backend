@@ -461,6 +461,11 @@ public class FaceInfoManagerController {
              /**
               * 需要睡眠几秒钟
               */
+               try {
+                   Thread.sleep(2000);
+               } catch (InterruptedException e) {
+                   e.printStackTrace();
+               }
              //接着布控
              PU_FACE_LIB_SET_S puFaceLibSetS2 =new PU_FACE_LIB_SET_S();
              puFaceLibSetS2.enOptType=2;//修改facelib
@@ -488,7 +493,7 @@ public class FaceInfoManagerController {
              log.error("添加人脸信息失败--------");
            }
          }
-         if (printReturnMsg==106){
+         if (printReturnMsg !=null && printReturnMsg==106){
            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"更新人脸信息一部分成功,部分设备未上线",null);
          }else {
            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"更新人脸信息全部成功",null);
