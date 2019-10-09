@@ -70,20 +70,21 @@ public class FaceInfoAccCtrlController {
         Date date = new Date();
         String nowtime = df.format(date);
         long nowDate = df.parse(nowtime).getTime();
+        List<String> unexpiredFaceIds=new ArrayList<>();//需要进一步筛选，把过期的人脸信息过滤掉
         for(String faceid:faceids){
             FaceInfo faceInfo = faceInfoManagerService.selectFaceInfoByID(faceid);
             Date faceEndTime = faceInfo.getFaceEndTime();
             long faceEndDate = faceEndTime.getTime();
-            if (nowDate>faceEndDate){
-                log.error("授权人脸中含有有效期过期人脸");
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"授权人脸中含有有效期过期人脸",null);
+            if (nowDate<=faceEndDate){
+                log.error("没有过期的人脸id");
+                unexpiredFaceIds.add(faceid);
             }
         }
         if(accessControlId==null){
             log.error("门禁信息id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁信息id为空",null);
         }
-        int result=faceInfoAccCtrlService.authorityFaceInfoAccCtrl(accessControlId,faceids);
+        int result=faceInfoAccCtrlService.authorityFaceInfoAccCtrl(accessControlId,unexpiredFaceIds);
         if(result== CommonConstants.UPDATE_ERROR){
             log.error("人脸门禁授权失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸门禁授权失败",null);
@@ -95,7 +96,15 @@ public class FaceInfoAccCtrlController {
         List<FaceInfo> faceInfoList=new ArrayList<>();
         for(String faceid: faceids){
             FaceInfo faceInfo = faceInfoManagerService.selectFaceInfoByID(faceid);
-            faceInfoList.add(faceInfo);
+            Date faceEndTime = faceInfo.getFaceEndTime();
+            long faceEndDate = faceEndTime.getTime();
+            if (nowDate<=faceEndDate){
+                log.error("没有过期的人脸id");
+                faceInfoList.add(faceInfo);
+            }
+        }
+        if (CommonUtil.isEmptyList(faceInfoList)){
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸授权失败，人脸已过期",null);
         }
         //出口
         Integer exitenLibType=null;//人脸库类型
