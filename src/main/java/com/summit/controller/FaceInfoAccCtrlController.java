@@ -92,7 +92,6 @@ public class FaceInfoAccCtrlController {
         AccessControlInfo accessControlInfo = accessControlService.selectAccCtrlByIdBeyondAuthority(accessControlId);
         String entryCameraIp = accessControlInfo.getEntryCameraIp();
         String exitCameraIp = accessControlInfo.getExitCameraIp();
-
         List<FaceInfo> faceInfoList=new ArrayList<>();
         for(String faceid: faceids){
             FaceInfo faceInfo = faceInfoManagerService.selectFaceInfoByID(faceid);
@@ -205,7 +204,6 @@ public class FaceInfoAccCtrlController {
             }
             //2 判断有没有人脸库，没有人脸库则直接添加人脸库，接着添加人脸信息
             if( entryfaceListsArrySize==0 || exitfaceListsArrySize==0){ //说明没有人脸库则需要添加人脸库,接着添加人脸信息
-
                 System.out.println("添加入口库--------------------------------------------");
                 PU_FACE_LIB_SET_S enteypuFaceLibSetS =new PU_FACE_LIB_SET_S();
                 enteypuFaceLibSetS.enOptType=1;//新增人脸库
@@ -315,12 +313,12 @@ public class FaceInfoAccCtrlController {
                     String  entrynewfacelibName=null;//人脸库名称
                     Integer entrynewfacelibThreshold=null;//布控的阀值
                     if (getexitnewFaceLib || entrytnewgetFaceLib){
-                        if (entrydeviceInfo==null){
+                        if (exitdeviceInfo==null){
                             exitnewfacelibName="facelib";
                             exitnewfacelibType=2;
                             exitnewfacelibThreshold=90;
                             exitnewfacelibID=1111;
-                        }else {
+                        }else if (getexitnewFaceLib){
                             System.out.println("查询新建出口的人脸库成功---------------");
                             String exitgetfacelibpath = new String(new File(".").getCanonicalPath() + File.separator +"exitNewFaceLib"+File.separator+"exitNewFaceLib.json");
                             String exitnewFaceLibjson = readFile(exitgetfacelibpath);
@@ -339,7 +337,7 @@ public class FaceInfoAccCtrlController {
                             entrytnewfacelibType=2;
                             entrynewfacelibThreshold=90;
                             entrynewfacelibID=1111;
-                        }else {
+                        }else if (entrytnewgetFaceLib){
                             System.out.println("查询新建入口的人脸库成功---------------");
                             String extrygetfacelibpath = new String(new File(".").getCanonicalPath() + File.separator +"entryNewFaceLib"+File.separator+"entryNewFaceLib.json");
                             String extrynewFaceLibjson = readFile(extrygetfacelibpath);
@@ -1018,7 +1016,6 @@ public class FaceInfoAccCtrlController {
                                     /**
                                      *  删除入口摄像头中的人脸信息，循环删除
                                      */
-
                                     PU_FACE_INFO_DELETE_S entrypuFaceInfoDeleteS=new PU_FACE_INFO_DELETE_S();
                                     int[] entryuFaceID = new int[100];
                                     entryuFaceID[0]=Integer.parseInt(houtaiFaceInfo.getFaceid());
