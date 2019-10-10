@@ -87,7 +87,7 @@ public class FaceInfoAccCtrlController {
         int result=faceInfoAccCtrlService.authorityFaceInfoAccCtrl(accessControlId,unexpiredFaceIds);
         if(result== CommonConstants.UPDATE_ERROR){
             log.error("人脸门禁授权失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸门禁授权失败,人脸全部过期",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸门禁授权失败,人脸过期",null);
         }
         log.error("人脸门禁授权成功");
         AccessControlInfo accessControlInfo = accessControlService.selectAccCtrlByIdBeyondAuthority(accessControlId);
