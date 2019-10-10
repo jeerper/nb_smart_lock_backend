@@ -1007,6 +1007,13 @@ public class FaceInfoAccCtrlController {
                                     }
                                 }
                             }
+                            if (exitdeviceInfo==null && entrydeviceInfo == null){
+                                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸授权取消失败，设备未上线",null);
+                            }else if (exitdeviceInfo==null){
+                                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸授权出口摄像头取消失败，设备未上线",null);
+                            }else if (entrydeviceInfo==null){
+                                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸授权入口摄像头取消失败，设备未上线",null);
+                            }
                             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁摄像头全部取消授权成功",null);
                         }
                         /**
