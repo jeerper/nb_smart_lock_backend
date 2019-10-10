@@ -297,6 +297,13 @@ public class FaceInfoManagerController {
     long oldfaceEndDate = oldfaceEndTime.getTime();
     Date newEndTime = faceInfo.getFaceEndTime();
     long newfaceEndDate = newEndTime.getTime();
+      /**
+       * 修改的是有效期则需要把过期从1变为0,修改的是自己的数据库
+       */
+    if (nowDate>oldfaceEndDate && newfaceEndDate>=nowDate){
+        faceInfo.setIsValidTime(0);
+        faceInfoManagerService.updateFaceInfo(faceInfo);
+    }
     String faceid = faceInfo.getFaceid();
     List<AccessControlInfo> accessControlInfos=faceInfoAccCtrlService.seleAccCtrlInfoByFaceID(faceid);//确定授权
     System.out.println("门禁信息"+accessControlInfos);
