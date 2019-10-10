@@ -1358,7 +1358,7 @@ public class FaceInfoManagerController {
 
 
 
-   @ApiOperation(value = "查询全部人脸信息，包括人脸信息的id和name以及人脸图片",notes = "无论有无门禁权限都全部查询")
+   @ApiOperation(value = "查询全部人脸信息，包括人脸信息的id和name以及人脸图片,人脸是否过期",notes = "无论有无门禁权限都全部查询")
    @GetMapping(value = "/selectAllFaceInfo")
    public RestfulEntityBySummit<List<SimpleFaceInfo>> selectAllFaceInfo(){
      List<SimpleFaceInfo> simpleFaceInfos=new ArrayList<>();
