@@ -15,18 +15,19 @@
        <result column="face_type" jdbcType="VARCHAR" property="faceType"/>
        <result column="face_startTime" jdbcType="TIMESTAMP" property="faceStartTime"/>
        <result column="face_endTime" jdbcType="TIMESTAMP" property="faceEndTime"/>
+       <result column="is_valid_time" jdbcType="INTEGER" property="isValidTime"/>
    </resultMap>
     <insert id="insertFaceInfo" parameterType="com.summit.dao.entity.FaceInfo">
         INSERT INTO face_info
         (face_id,face_name,user_name,user_id,gender,birthday,province,city,card_type,
-        card_id,face_match_rate,face_lib_name,face_lib_type,device_ip,pic_snapshot_time,face_lib_id,face_image,face_type,face_startTime,face_endTime)
+        card_id,face_match_rate,face_lib_name,face_lib_type,device_ip,pic_snapshot_time,face_lib_id,face_image,face_type,face_startTime,face_endTime,is_valid_time)
         VALUES (#{faceid},#{faceName},#{userName},#{userID},#{gender},#{birthday},#{province},#{city},#{cardType},
                 #{cardId},#{faceMatchrate},#{facelibname},#{facelibtype},
-                #{deviceip},#{picsnapshottime},#{facelibid},#{faceImage},#{faceType},#{faceStartTime},#{faceEndTime}
+                #{deviceip},#{picsnapshottime},#{facelibid},#{faceImage},#{faceType},#{faceStartTime},#{faceEndTime},#{isValidTime}
         )
     </insert>
     <sql id="faceInfoCloum">
-      face_id,user_name,gender,birthday,province,city,card_type,card_id,face_image,face_type,face_startTime,face_endTime
+      face_id,user_name,gender,birthday,province,city,card_type,card_id,face_image,face_type,face_startTime,face_endTime,is_valid_time
     </sql>
     <select id="selectFaceInfoByPage" parameterType="com.summit.entity.FaceInfoManagerEntity" resultMap="facemanager">
         SELECT
@@ -56,6 +57,9 @@
             </if>
             <if test="faceInfoManagerEntity.faceEndTime !=null">
                 AND face_endTime=#{faceInfoManagerEntity.faceEndTime}
+            </if>
+            <if test="faceInfoManagerEntity.isValidTime !=null">
+                AND is_valid_time=#{faceInfoManagerEntity.isValidTime}
             </if>
         </where>
         ORDER BY

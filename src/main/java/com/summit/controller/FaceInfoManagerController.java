@@ -152,6 +152,7 @@ public class FaceInfoManagerController {
         faceInfo.setFaceStartTime(faceStartTime);
         Date faceEndTime = CommonUtil.dateFormat.get().parse(faceInfoManagerEntity.getFaceEndTime());
         faceInfo.setFaceEndTime(faceEndTime);
+        faceInfo.setIsValidTime(0);//人脸录入时候这时候人脸肯定未过期
         try {
           int i = faceInfoManagerService.insertFaceInfo(faceInfo);
         } catch (Exception e) {
@@ -170,6 +171,7 @@ public class FaceInfoManagerController {
                                                                     @ApiParam(value = "性别，0：男，1：女，2：未知")@RequestParam(value = "gender",required = false)Integer gender,
                                                                     @ApiParam(value = "证件类型，0：身份证，1：护照，2：军官证，3：驾驶证，4：未知")@RequestParam(value = "cardType",required = false)Integer cardType,
                                                                     @ApiParam(value = "人脸类型，0:内部人员，1:临时人员")@RequestParam(value = "faceType",required = false)Integer faceType,
+                                                                    @ApiParam(value = "人脸过期，0:没有过期，1:已经过期")@RequestParam(value = "isValidTime",required = false)Integer isValidTime,
                                                                     @ApiParam(value = "当前页，大于等于1")@RequestParam(value = "current",required = false)Integer current,
                                                                     @ApiParam(value = "每页条数，大于等于0")@RequestParam(value = "pageSize",required = false)Integer pageSize){
     Page<FaceInfo> faceInfoPage=null;
@@ -183,6 +185,7 @@ public class FaceInfoManagerController {
       faceInfoManagerEntity.setGender(gender);
       faceInfoManagerEntity.setCardType(cardType);
       faceInfoManagerEntity.setFaceType(faceType);
+      faceInfoManagerEntity.setIsValidTime(isValidTime);
       System.out.println(faceInfoManagerEntity+"ggg");
       faceInfoPage=faceInfoManagerService.selectFaceInfoByPage(faceInfoManagerEntity,new SimplePage(current,pageSize));
 
@@ -205,22 +208,6 @@ public class FaceInfoManagerController {
     //更新之前找到原来的人脸信息
     String selectoldfaceid = faceInfo.getFaceid();
     FaceInfo oldFaceInfo = faceInfoManagerService.selectFaceInfoByID(selectoldfaceid);
-
-    /**
-     * 修改人脸判断用户名是否存在
-     *//*
-    String faceInfoUserName = faceInfo.getUserName();
-    if (SummitTools.stringNotNull(faceInfoUserName)){
-      List<FaceInfo> allFaceInfo = faceInfoManagerService.selectAllFaceInfo(null);
-      if (!CommonUtil.isEmptyList(allFaceInfo)){
-        for(FaceInfo bianlioldFaceInfo:allFaceInfo){
-          if (faceInfo.getUserName().equals(bianlioldFaceInfo.getUserName())) {
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸更新失败,该用户名已存在", null);
-          }
-        }
-      }
-    }*/
-
     /**
      * 判断人脸修改时图片是否重复，
      */
@@ -324,7 +311,15 @@ public class FaceInfoManagerController {
      // System.out.println("当前人脸所关联的入口和出口摄像头ip"+cameraIps);
       if(nowDate>oldfaceEndDate && newfaceEndDate>=nowDate){//过期人脸的修改，并且如果修改的是有效期，则需要重新吧这个人脸加入到摄像头里面，如果不是有效期，则需要修改自己的数据库就可以
          Integer printReturnMsg=null;//定义返回码
-         for(String cameraIp:cameraIps){
+        /**
+         * 修改的是有效期则需要把过期从1变为0,修改的是自己的数据库
+         */
+         faceInfo.setIsValidTime(0);
+         faceInfoManagerService.updateFaceInfo(faceInfo);
+        /**
+         * 再修改摄像头中的人脸信息
+         */
+        for(String cameraIp:cameraIps){
            DeviceInfo deviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(cameraIp);
            NativeLong ulIdentifyId;
            if (deviceInfo==null){
@@ -1372,7 +1367,7 @@ public class FaceInfoManagerController {
        //System.out.println(faceInfos+"TestPath");
        if(faceInfos !=null){
          for(FaceInfo faceInfo:faceInfos){
-           simpleFaceInfos.add(new SimpleFaceInfo(faceInfo.getFaceid(),faceInfo.getUserName(),faceInfo.getFaceImage()));
+           simpleFaceInfos.add(new SimpleFaceInfo(faceInfo.getFaceid(),faceInfo.getUserName(),faceInfo.getFaceImage(),faceInfo.getIsValidTime()));
          }
        }
      } catch (Exception e) {

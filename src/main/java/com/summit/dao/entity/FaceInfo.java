@@ -121,6 +121,9 @@ public class FaceInfo {
     @TableField(value = "face_endTime")
     private Date faceEndTime;
 
+    @ApiModelProperty(value = "人脸是否过期",name = "isValidTime")
+    @TableField(value = "is_valid_time")
+    private Integer isValidTime;
 
     public FaceInfo() {
     }

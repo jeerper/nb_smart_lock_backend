@@ -18,4 +18,5 @@ public class FaceInfoManagerEntity {
     private String faceImage;
     private Integer faceType;
     private String faceEndTime;
+    private Integer isValidTime;
 }

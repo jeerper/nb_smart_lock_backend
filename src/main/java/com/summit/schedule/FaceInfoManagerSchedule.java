@@ -18,6 +18,7 @@ import com.summit.sdk.huawei.api.HuaWeiSdkApi;
 import com.summit.sdk.huawei.model.DeviceInfo;
 import com.summit.service.AccCtrlRealTimeService;
 import com.summit.service.FaceInfoAccCtrlService;
+import com.summit.service.FaceInfoManagerService;
 import com.summit.util.CommonUtil;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Platform;
@@ -45,7 +46,8 @@ public class FaceInfoManagerSchedule {
     private  FaceInfoAccCtrlService faceInfoAccCtrlService;
     @Autowired
     private AccCtrlRealTimeService accCtrlRealTimeService;
-
+    @Autowired
+    private FaceInfoManagerService faceInfoManagerService;
     /**
      * 1、实时查询人脸信息有有效截至时间，一旦超过有效截至时间，内部人员和临时人员都从摄像头中删除，此时开不了锁
      * 2、然后对于超过有效时间半年的临时人员从数据库中删除，同时删除授权关系，是内部人员的话在数据库中不删除，授权关系也不删除
@@ -55,6 +57,16 @@ public class FaceInfoManagerSchedule {
         QueryWrapper<FaceInfo> wrapper = new QueryWrapper<>();
         List<FaceInfo> faceInfoList = faceInfoManagerDao.selectList(wrapper);
         for (FaceInfo faceInfo : faceInfoList) {
+            Date isValidDate = new Date();
+            SimpleDateFormat isValidSdf = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
+            String isValidNowtime = isValidSdf.format(isValidDate);
+            long isValidNowDate = isValidSdf.parse(isValidNowtime).getTime();
+            Date isValidEndTime = faceInfo.getFaceEndTime();
+            long isValidEndDate = isValidEndTime.getTime();
+            if (isValidNowDate>isValidEndDate){//说明这个人脸已经过期，需要把人脸过期从0变为1
+                faceInfo.setIsValidTime(1);
+                faceInfoManagerService.updateFaceInfo(faceInfo);
+            }
             if (faceInfo.getFaceType() == 1) {//临时人员
                 Date faceEndTime = faceInfo.getFaceEndTime();
                 long faceEndDate = faceEndTime.getTime();
