@@ -1116,16 +1116,16 @@ public class FaceInfoAccCtrlController {
                         //再添加传入列表在数据库中找不到的人脸信息
                        // System.out.println("前台所传的人脸信息集合："+faceInfoList);
                         for(FaceInfo qiantaiFaceInfo:faceInfoList){
-                            boolean needAdd=true;
+                            boolean needAddEntry=true;
                             if (!CommonUtil.isEmptyList(entryfaceInfos)){
                                 for(FaceInfo houtaiFaceInfo:entryfaceInfos){
                                     if(qiantaiFaceInfo.getUserName() !=null && qiantaiFaceInfo.getUserName().equals(houtaiFaceInfo.getUserName())){
-                                        needAdd=false;
+                                        needAddEntry=false;
                                         break;
                                     }
                                 }
                             }
-                            if(needAdd){//添加人脸信息
+                            if(needAddEntry){//添加人脸信息
                                 /**
                                  * 添加入口人脸对象
                                  */
@@ -1213,6 +1213,18 @@ public class FaceInfoAccCtrlController {
                                 }else {
                                     log.error("有人脸库有人脸信息时，添加入口人脸失败");
                                 }
+                            }
+                            boolean needAddExit=true;
+                            if (!CommonUtil.isEmptyList(exitfaceInfos)){
+                                for(FaceInfo houtaiFaceInfo:exitfaceInfos){
+                                    if(qiantaiFaceInfo.getUserName() !=null && qiantaiFaceInfo.getUserName().equals(houtaiFaceInfo.getUserName())){
+                                        needAddExit=false;
+                                        break;
+                                    }
+                                }
+                            }
+                            if(needAddExit) {//添加人脸信息
+
 
                                 /**
                                  * 添加出口人脸对象
@@ -1373,15 +1385,15 @@ public class FaceInfoAccCtrlController {
             exitbukong = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, exitpuFaceLibSetS2);
             HuaWeiSdkApi.printReturnMsg();
         }
-        if (exitPrintReturnMsg!= null &&exitPrintReturnMsg==12108){
+        if (exitPrintReturnMsg!= null && exitPrintReturnMsg==12108){
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"出口人脸授权失败，人脸图片重复",null);
         }else if (entryPrintReturnMsg !=null && entryPrintReturnMsg==12108){
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"入口人脸授权失败，人脸图片重复",null);
         }else if (exitPrintReturnMsg !=null && exitPrintReturnMsg==12108 && entryPrintReturnMsg !=null && entryPrintReturnMsg==12108) {
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸授权失败，人脸图片重复", null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸授权出口、入口摄像头失败，人脸图片重复", null);
         }else if(exitbukong && entrybukong){
             System.out.println("修改出口口人脸库布控成功");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"出入口摄像头人脸授权成功",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"出口、入口摄像头人脸授权成功",null);
         }else if (exitbukong){
             log.debug("出口摄像头人脸授权成功");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"出口摄像头人脸授权成功,入口授权失败",null);
@@ -1391,7 +1403,7 @@ public class FaceInfoAccCtrlController {
         }else {
             int i=faceInfoAccCtrlService.deleteFaceAccCtrlByAccCtlId(accessControlId);
             log.error("两个摄像头均未授权成功");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸授权失败",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸授权出口、入口摄像头均失败失败",null);
         }
     }
 
