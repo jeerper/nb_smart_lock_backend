@@ -443,9 +443,9 @@ public class AccCtrlProcessUtil {
         //通过人脸名称查找人脸库图片
         com.summit.dao.entity.FaceInfo faceInfo=faceInfoManagerDao.selectOne(Wrappers.<com.summit.dao.entity.FaceInfo>lambdaQuery()
                 .eq(com.summit.dao.entity.FaceInfo::getUserName, accCtrlRealTimeEntity.getName()));
-
-        accCtrlRealTimeEntity.setFaceMatchUrl(faceInfo.getFaceImage());
-
+        if(faceInfo!=null){
+            accCtrlRealTimeEntity.setFaceMatchUrl(faceInfo.getFaceImage());
+        }
         accCtrlRealTimeEntity.setUpdatetime(new Date());
 
         return accCtrlRealTimeEntity;
