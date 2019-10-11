@@ -1349,6 +1349,8 @@ public class FaceInfoAccCtrlController {
         entrystFacelib2.isControl=true;//修改为布控
         if (entryfaceListsArrySize==0){
             entrystFacelib2.ulFaceLibID=new NativeLong(11111);
+        }else if (entryfaceListsArrySize==-1){
+            entrystFacelib2.ulFaceLibID=new NativeLong(111112);
         }else {
             entrystFacelib2.ulFaceLibID=new NativeLong(entryulFaceLibID);
         }
@@ -1379,6 +1381,8 @@ public class FaceInfoAccCtrlController {
         exitstFacelib2.isControl=true;//修改为布控
         if (exitfaceListsArrySize==0){
             exitstFacelib2.ulFaceLibID=new NativeLong(2222);
+        }else if (exitfaceListsArrySize==-1){
+            exitstFacelib2.ulFaceLibID=new NativeLong(2223);
         }else {
             exitstFacelib2.ulFaceLibID=new NativeLong(exitulFaceLibID);
         }
