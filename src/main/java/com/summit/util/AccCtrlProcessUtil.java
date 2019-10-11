@@ -445,6 +445,8 @@ public class AccCtrlProcessUtil {
                 .eq(com.summit.dao.entity.FaceInfo::getUserName, accCtrlRealTimeEntity.getName()));
         if(faceInfo!=null){
             accCtrlRealTimeEntity.setFaceMatchUrl(faceInfo.getFaceImage());
+        }else{
+            accCtrlRealTimeEntity.setFaceMatchUrl(null);
         }
         accCtrlRealTimeEntity.setUpdatetime(new Date());
 
