@@ -1010,9 +1010,9 @@ public class FaceInfoAccCtrlController {
                             if (exitdeviceInfo==null && entrydeviceInfo == null){
                                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸授权取消失败，设备未上线",null);
                             }else if (exitdeviceInfo==null){
-                                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸授权出口摄像头取消失败，设备未上线",null);
+                                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"人脸授权出口摄像头取消失败，设备未上线",null);
                             }else if (entrydeviceInfo==null){
-                                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸授权入口摄像头取消失败，设备未上线",null);
+                                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"人脸授权入口摄像头取消失败，设备未上线",null);
                             }
                             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁摄像头全部取消授权成功",null);
                         }
@@ -1374,9 +1374,9 @@ public class FaceInfoAccCtrlController {
             HuaWeiSdkApi.printReturnMsg();
         }
         if (exitPrintReturnMsg!= null &&exitPrintReturnMsg==12108){
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"出口人脸授权失败，人脸图片重复",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"出口人脸授权失败，人脸图片重复",null);
         }else if (entryPrintReturnMsg !=null && entryPrintReturnMsg==12108){
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"入口人脸授权失败，人脸图片重复",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"入口人脸授权失败，人脸图片重复",null);
         }else if (exitPrintReturnMsg !=null && exitPrintReturnMsg==12108 && entryPrintReturnMsg !=null && entryPrintReturnMsg==12108) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸授权失败，人脸图片重复", null);
         }else if(exitbukong && entrybukong){
@@ -1384,10 +1384,10 @@ public class FaceInfoAccCtrlController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"出入口摄像头人脸授权成功",null);
         }else if (exitbukong){
             log.debug("出口摄像头人脸授权成功");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"出口摄像头人脸授权成功,入口授权失败",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"出口摄像头人脸授权成功,入口授权失败",null);
         }else if (entrybukong){
             log.debug("入口摄像头人脸授权成功");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"入口摄像头人脸授权成功,出口授权失败",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"入口摄像头人脸授权成功,出口授权失败",null);
         }else {
             int i=faceInfoAccCtrlService.deleteFaceAccCtrlByAccCtlId(accessControlId);
             log.error("两个摄像头均未授权成功");
