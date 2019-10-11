@@ -12,6 +12,7 @@ import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
+import com.summit.exception.ErrorMsgException;
 import com.summit.sdk.huawei.*;
 import com.summit.sdk.huawei.api.HuaWeiSdkApi;
 import com.summit.sdk.huawei.model.DeviceInfo;
@@ -30,6 +31,8 @@ import io.swagger.annotations.ApiParam;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
@@ -60,6 +63,7 @@ public class FaceInfoAccCtrlController {
 
     @ApiOperation(value = "批量刷新指定人脸关联的门禁",notes = "为指定的人脸信息更新门禁权限，所传的人脸信息之前没有关联某门禁且所传列表中有添加，之前已关联过门禁而所传列表中有则不添加，之前已关联过门禁而所传列表中没有则删除与摄像头同步")
     @PostMapping("/authorityFaceInfoAccCtrl")
+  //  @Transactional(propagation= Propagation.REQUIRED,rollbackFor = {Exception.class} )
     public RestfulEntityBySummit<String> authorityFaceInfoAccCtrl(@ApiParam(value = "门禁id",required = true) @RequestParam(value = "accessControlId")String accessControlId,
                                                                   @ApiParam(value = "人脸id列表",required = true) @RequestParam(value = "faceids") List<String> faceids) throws IOException, ParseException {
         if(faceids==null){
@@ -103,9 +107,6 @@ public class FaceInfoAccCtrlController {
                 faceInfoList.add(faceInfo);
             }
         }
-       /* if (CommonUtil.isEmptyList(faceInfoList)){
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸授权失败，人脸已过期",null);
-        }*/
         //出口
         Integer exitenLibType=null;//人脸库类型
         Integer exitulFaceLibID=null;//人脸库id
@@ -124,7 +125,6 @@ public class FaceInfoAccCtrlController {
         }else {
             entryIdentifyId= entrydeviceInfo.getUlIdentifyId();
         }
-       // System.out.println(entryIdentifyId+"：entryIdentifyId");
         //把人脸信息再加入到出口摄像头中
         DeviceInfo exitdeviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(exitCameraIp);
         NativeLong exitIdentifyId;
@@ -133,6 +133,9 @@ public class FaceInfoAccCtrlController {
         }else {
              exitIdentifyId = exitdeviceInfo.getUlIdentifyId();
         }
+       /*if (exitdeviceInfo==null && entrydeviceInfo==null){
+           throw new ErrorMsgException("两个摄像头均未在线");
+       }*/
         /**1 先查询人脸库，如果有人脸库，再查询人脸信息，如果没有则新建人脸库，直接添加人脸信息，如果有人脸库，没有人脸信息，直接添加人脸信息
          * 2 如果有人脸库再查询人脸信息，
          * 3 若传入集合列表为空，则直接删除人脸
@@ -1008,11 +1011,11 @@ public class FaceInfoAccCtrlController {
                                 }
                             }
                             if (exitdeviceInfo==null && entrydeviceInfo == null){
-                                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸授权取消失败，设备未上线",null);
+                                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"取消人脸授权出口、入口摄像头失败，设备未上线",null);
                             }else if (exitdeviceInfo==null){
-                                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"人脸授权出口摄像头取消失败，设备未上线",null);
+                                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"取消人脸授权出口摄像头失败，设备未上线",null);
                             }else if (entrydeviceInfo==null){
-                                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"人脸授权入口摄像头取消失败，设备未上线",null);
+                                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"取消人脸授权入口摄像头失败，设备未上线",null);
                             }
                             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸门禁摄像头全部取消授权成功",null);
                         }
