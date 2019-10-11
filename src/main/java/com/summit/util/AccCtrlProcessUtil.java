@@ -2,6 +2,7 @@ package com.summit.util;
 
 import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.entity.UserInfo;
 import com.summit.common.web.filter.UserContextHolder;
@@ -16,6 +17,7 @@ import com.summit.dao.repository.AccCtrlProcessDao;
 import com.summit.dao.repository.AccCtrlRealTimeDao;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.AlarmDao;
+import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
@@ -27,7 +29,6 @@ import com.summit.sdk.huawei.model.LockProcessMethod;
 import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessType;
 import com.summit.service.AccCtrlProcessService;
-import com.summit.service.AccCtrlRealTimeService;
 import com.summit.service.AccessControlService;
 import com.summit.service.CameraDeviceService;
 import com.summit.service.impl.NBLockServiceImpl;
@@ -61,7 +62,7 @@ public class AccCtrlProcessUtil {
     @Autowired
     private AccCtrlRealTimeDao accCtrlRealTimeDao;
     @Autowired
-    private AccCtrlRealTimeService accCtrlRealTimeService;
+    private FaceInfoManagerDao faceInfoManagerDao;
 
 
 
@@ -419,7 +420,7 @@ public class AccCtrlProcessUtil {
         accCtrlRealTimeEntity.setFaceMatchRate(accCtrlProcess.getFaceMatchRate());
         accCtrlRealTimeEntity.setFaceLibName(accCtrlProcess.getFaceLibName());
         accCtrlRealTimeEntity.setFaceLibType(accCtrlProcess.getFaceLibType());
-
+        //人脸识别全景图Url
         String facePanoramaUrl = accCtrlProcess.getFacePanoramaUrl();
         if(!CommonUtil.isEmptyStr(facePanoramaUrl)){
             accCtrlRealTimeEntity.setFacePanoramaUrl(facePanoramaUrl);
@@ -429,6 +430,7 @@ public class AccCtrlProcessUtil {
                 accCtrlRealTimeEntity.setFacePanoramaUrl(facePanorama.getFilePath());
             }
         }
+        //人脸识别抠图Url
         String facePicUrl = accCtrlProcess.getFacePicUrl();
         if(!CommonUtil.isEmptyStr(facePicUrl)){
             accCtrlRealTimeEntity.setFacePicUrl(facePicUrl);
@@ -438,7 +440,14 @@ public class AccCtrlProcessUtil {
                 accCtrlRealTimeEntity.setFacePicUrl(facePic.getFilePath());
             }
         }
-
+        //通过人脸名称查找人脸库图片
+        com.summit.dao.entity.FaceInfo faceInfo=faceInfoManagerDao.selectOne(Wrappers.<com.summit.dao.entity.FaceInfo>lambdaQuery()
+                .eq(com.summit.dao.entity.FaceInfo::getUserName, accCtrlRealTimeEntity.getName()));
+        if(faceInfo!=null){
+            accCtrlRealTimeEntity.setFaceMatchUrl(faceInfo.getFaceImage());
+        }else{
+            accCtrlRealTimeEntity.setFaceMatchUrl(null);
+        }
         accCtrlRealTimeEntity.setUpdatetime(new Date());
 
         return accCtrlRealTimeEntity;

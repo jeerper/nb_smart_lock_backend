@@ -105,8 +105,8 @@ public class AccCtrlRealTimeEntity {
     @ApiModelProperty(value="人脸识别抠图url",name="facePicUrl")
     @TableField(value = "face_pic_url")
     private String facePicUrl;
-    @ApiModelProperty(value="锁编号",name="faceMatchUrl")
-    @TableField(value = "face_match_url")
+    @ApiModelProperty(value="人脸库匹配图url",name="faceMatchUrl")
+    @TableField(value = "face_match_url",updateStrategy= FieldStrategy.IGNORED)
     private String faceMatchUrl;
 
     @ApiModelProperty(value="快照时间",name="picSnapshotTime")
