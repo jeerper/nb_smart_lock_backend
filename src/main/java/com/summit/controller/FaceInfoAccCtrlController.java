@@ -186,9 +186,9 @@ public class FaceInfoAccCtrlController {
              exitgetFaceLib =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_GetFaceLib(exitIdentifyId, exitfaceLibGetS);
         }
         HuaWeiSdkApi.printReturnMsg();
+        Integer exitfaceListsArrySize=null;
+        Integer entryfaceListsArrySize=null;
         if(entrygetFaceLib || exitgetFaceLib){
-            Integer exitfaceListsArrySize=null;
-            Integer entryfaceListsArrySize=null;
             if (entrygetFaceLib){
                 System.out.println("查询入口库人脸库成功");
                 String entrygetfacelibpath1 = new String(new File(".").getCanonicalPath() + File.separator +"entryFaceLib"+File.separator+"entryFaceLib.json");
@@ -1347,7 +1347,11 @@ public class FaceInfoAccCtrlController {
         entrystFacelib2.uiThreshold=new NativeLong(90);//布控的阀值
         entrystFacelib2.enLibType=2;//人脸库类型2为白名单
         entrystFacelib2.isControl=true;//修改为布控
-        entrystFacelib2.ulFaceLibID=new NativeLong(entryulFaceLibID);
+        if (entryfaceListsArrySize==0){
+            entrystFacelib2.ulFaceLibID=new NativeLong(11111);
+        }else {
+            entrystFacelib2.ulFaceLibID=new NativeLong(entryulFaceLibID);
+        }
         entrypuFaceLibSetS2.stFacelib=entrystFacelib2;
         entrypuFaceLibSetS2.ulChannelId=new NativeLong(101);
         boolean entrybukong;
@@ -1373,7 +1377,11 @@ public class FaceInfoAccCtrlController {
         exitstFacelib2.uiThreshold=new NativeLong(90);//布控的阀值
         exitstFacelib2.enLibType=2;//人脸库类型2为白名单
         exitstFacelib2.isControl=true;//修改为布控
-        exitstFacelib2.ulFaceLibID=new NativeLong(exitulFaceLibID);
+        if (exitfaceListsArrySize==0){
+            exitstFacelib2.ulFaceLibID=new NativeLong(2222);
+        }else {
+            exitstFacelib2.ulFaceLibID=new NativeLong(exitulFaceLibID);
+        }
         exitpuFaceLibSetS2.stFacelib=exitstFacelib2;
         exitpuFaceLibSetS2.ulChannelId=new NativeLong(101);
         boolean exitbukong;
