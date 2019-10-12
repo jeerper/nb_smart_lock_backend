@@ -54,7 +54,7 @@ public class AccessControlProcessSchedule {
             //锁的真实状态
             try {
                 Thread.sleep(3000);
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 Thread.currentThread().interrupt();
             }
             BackLockInfo backLockInfo = accCtrlProcessUtil.getLockStatus(lockRequest);

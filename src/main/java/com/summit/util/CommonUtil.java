@@ -169,44 +169,45 @@ public class CommonUtil {
      * @return  图片的base64
      * @throws IOException
      */
-    public  static String imageToBase64Str(String path){
-        String baseStr=null;
+    public  static String imageToBase64Str(String path) {
+        String baseStr =null;
         FileInputStream fis=null;
-       try{
-           fis = new FileInputStream(new File(path));
-           byte[] read = new byte[1024];
-           int len = 0;
-           List<byte[]> blist=new ArrayList<byte[]>();
-           int ttllen=0;
-           while((len = fis.read(read))!= -1){
-               byte[] dst=new byte[len];
-               System.arraycopy(read, 0, dst, 0, len);
-               ttllen+=len;
-               blist.add(dst);
-           }
-           byte[] dstByte=new byte[ttllen];
-           int pos=0;
-           for (int i=0;i<blist.size();i++){
-               if (i==0){
-                   pos=0;
-               }
-               else{
-                   pos+=blist.get(i-1).length;
-               }
-               System.arraycopy(blist.get(i), 0, dstByte, pos, blist.get(i).length);
-           }
-            baseStr = Base64.getEncoder().encodeToString(dstByte);
-       }catch (IOException e){
-           e.printStackTrace();
-       }finally {
-           try {
-               if (fis !=null){
-                   fis.close();
-               }
-           } catch (IOException e) {
-               e.printStackTrace();
-           }
-       }
-       return  baseStr;
+        try {
+             fis = new FileInputStream(new File(path));
+            byte[] read = new byte[1024];
+            int len = 0;
+            List<byte[]> blist=new ArrayList<byte[]>();
+            int ttllen=0;
+            while((len = fis.read(read))!= -1){
+                byte[] dst=new byte[len];
+                System.arraycopy(read, 0, dst, 0, len);
+                ttllen+=len;
+                blist.add(dst);
+            }
+            fis.close();
+            byte[] dstByte=new byte[ttllen];
+            int pos=0;
+            for (int i=0;i<blist.size();i++){
+                if (i==0){
+                    pos=0;
+                }
+                else{
+                    pos+=blist.get(i-1).length;
+                }
+                System.arraycopy(blist.get(i), 0, dstByte, pos, blist.get(i).length);
+            }
+            baseStr= Base64.getEncoder().encodeToString(dstByte);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                if (fis !=null){
+                    fis.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return  baseStr;
     }
 }
