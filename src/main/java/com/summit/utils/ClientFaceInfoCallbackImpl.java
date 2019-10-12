@@ -13,7 +13,6 @@ import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.UnlockCommandQueue;
 import com.summit.dao.repository.UnlockCommandQueueDao;
-import com.summit.exception.ErrorMsgException;
 import com.summit.sdk.huawei.callback.ClientFaceInfoCallback;
 import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.sdk.huawei.model.FaceInfo;
@@ -31,7 +30,6 @@ import com.summit.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -195,8 +193,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
 
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
-    public void insertData(CameraUploadType type, AccCtrlProcess accCtrlProcess) {
+    @Transactional(rollbackFor = {Exception.class})
+    public void insertData(CameraUploadType type, AccCtrlProcess accCtrlProcess) throws Exception {
         try {
             log.info("门禁操作记录信息入库");
             //插入门禁操作记录并更新门禁信息表和锁信息表(门禁信息表和锁信息表中都含有门禁状态)
@@ -223,7 +221,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             }
         } catch (Exception e) {
             log.error("门禁操作信息入库失败", e);
-            throw new ErrorMsgException("门禁操作信息入库失败");
+            throw new Exception("门禁操作信息入库失败");
         }
     }
 
