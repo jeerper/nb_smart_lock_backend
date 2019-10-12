@@ -305,7 +305,6 @@ public class FaceInfoManagerController {
     }
     String faceid = faceInfo.getFaceid();
     List<AccessControlInfo> accessControlInfos=faceInfoAccCtrlService.seleAccCtrlInfoByFaceID(faceid);//确定授权
-    System.out.println("门禁信息"+accessControlInfos);
     if(!CommonUtil.isEmptyList(accessControlInfos)){//确定已经授权
       List<String> cameraIps=new ArrayList<>();
       for(AccessControlInfo accessControlInfo:accessControlInfos){
@@ -1420,12 +1419,12 @@ public class FaceInfoManagerController {
      return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询城市信息列表成功",cityNames);
    }
 
-  private String getErrorMsg(String msg,Exception e){
-    if(e instanceof ErrorMsgException){
+   private String getErrorMsg(String msg,Exception e){
+     if(e instanceof ErrorMsgException){
       return  msg=((ErrorMsgException)e).getErrorMsg();
-    }
-    return  msg;
-  }
+     }
+     return  msg;
+   }
 
   public String readFile(String path){
         BufferedReader  breader=null;

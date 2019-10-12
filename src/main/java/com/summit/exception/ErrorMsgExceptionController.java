@@ -18,6 +18,4 @@ public class ErrorMsgExceptionController {
         map.put("msg",exception.getErrorMsg());
         return map;
     }
-
-
 }

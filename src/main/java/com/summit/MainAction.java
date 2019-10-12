@@ -31,17 +31,14 @@ public class MainAction {
     public static final String DelEntryFaceInfo="delEntryfaceInfo";
     public static final String DelExitFaceLib="delExitFaceLib";
     public static final String DelEntryFaceLib="delEntryFaceLib";
-
     public static final String TemporaryEntryFaceLib="temporaryEntryFaceLib";//临时入口人脸库
     public static final String TemporaryExitFaceLib="temporaryExitFaceLib";//临时出口人脸库
     public static final String InnerEntryFaceLib="innerEntryFaceLib";//内部的入口人脸库
     public static final String InnerExitFaceLib="innerExitFaceLib";//内部的出口人脸库
-
     public static final String TemporaryEntryRealFace="temporaryEntryRealFace";//临时入口人脸信息
     public static final String TemporaryExitRealFace="temporaryExitRealFace";//临时出口人脸信息
     public static final String InnerEntryRealFaceInfo="innerEntryRealFaceInfo";//内部入口人脸信息
     public static final String InnerExitRealFaceInfo="innerExitRealFaceInfo";//内部出口人脸信息
-
     public static void main(String[] args) {
         SpringApplication.run(MainAction.class, args);
     }

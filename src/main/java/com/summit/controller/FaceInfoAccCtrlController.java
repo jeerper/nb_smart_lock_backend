@@ -62,7 +62,7 @@ public class FaceInfoAccCtrlController {
 
     @ApiOperation(value = "批量刷新指定人脸关联的门禁",notes = "为指定的人脸信息更新门禁权限，所传的人脸信息之前没有关联某门禁且所传列表中有添加，之前已关联过门禁而所传列表中有则不添加，之前已关联过门禁而所传列表中没有则删除与摄像头同步")
     @PostMapping("/authorityFaceInfoAccCtrl")
-    //@Transactional(propagation= Propagation.REQUIRED,rollbackFor = {Exception.class} )
+   // @Transactional(propagation= Propagation.REQUIRED,rollbackFor = {Exception.class} )
     public RestfulEntityBySummit<String> authorityFaceInfoAccCtrl(@ApiParam(value = "门禁id",required = true) @RequestParam(value = "accessControlId")String accessControlId,
                                                                   @ApiParam(value = "人脸id列表",required = true) @RequestParam(value = "faceids") List<String> faceids) throws IOException, ParseException {
         if(faceids==null){
@@ -107,15 +107,15 @@ public class FaceInfoAccCtrlController {
             }
         }
         //出口
-        Integer exitenLibType=null;//人脸库类型
+        Integer exitenLibType;//人脸库类型
         Integer exitulFaceLibID=null;//人脸库id
-        String exitszLibName=null;//人脸库名称
-        Integer exituiThreshold=null;//布控的阀值
+        String exitszLibName;//人脸库名称
+        Integer exituiThreshold;//布控的阀值
         //入口
-        Integer entryenLibType=null;//人脸库类型
+        Integer entryenLibType;//人脸库类型
         Integer entryulFaceLibID=null;//人脸库id
-        String entryszLibName=null;//人脸库名称
-        Integer entrytuiThreshold=null;//布控的阀值
+        String entryszLibName;//人脸库名称
+        Integer entrytuiThreshold;//布控的阀值
         //把人脸信息集合先加入到入口摄像头中
         DeviceInfo entrydeviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(entryCameraIp);
         NativeLong entryIdentifyId;
@@ -193,6 +193,18 @@ public class FaceInfoAccCtrlController {
         HuaWeiSdkApi.printReturnMsg();
         Integer exitfaceListsArrySize=null;
         Integer entryfaceListsArrySize=null;
+
+        //出口人脸库
+        Integer exitnewfacelibType=null;//人脸库类型
+        Integer exitnewfacelibID=null;//人脸库id
+        String  exitnewfacelibName=null;//人脸库名称
+        Integer exitnewfacelibThreshold=null;//布控的阀值
+
+        //入口人脸库
+        Integer entrytnewfacelibType=null;//人脸库类型
+        Integer entrynewfacelibID=null;//人脸库id
+        String  entrynewfacelibName=null;//人脸库名称
+        Integer entrynewfacelibThreshold=null;//布控的阀值
         if(entrygetFaceLib || exitgetFaceLib){
             if (entrygetFaceLib){
                 System.out.println("查询入口库人脸库成功");
@@ -315,17 +327,6 @@ public class FaceInfoAccCtrlController {
                     }else {
                         entrytnewgetFaceLib =HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_GetFaceLib(entryIdentifyId, entrynewfaceLibGetS);
                     }
-                    //出口人脸库
-                    Integer exitnewfacelibType=null;//人脸库类型
-                    Integer exitnewfacelibID=null;//人脸库id
-                    String  exitnewfacelibName=null;//人脸库名称
-                    Integer exitnewfacelibThreshold=null;//布控的阀值
-
-                    //入口人脸库
-                    Integer entrytnewfacelibType=null;//人脸库类型
-                    Integer entrynewfacelibID=null;//人脸库id
-                    String  entrynewfacelibName=null;//人脸库名称
-                    Integer entrynewfacelibThreshold=null;//布控的阀值
                     if (getexitnewFaceLib || entrytnewgetFaceLib){
                         if (exitdeviceInfo==null){
                             exitnewfacelibName="facelib";
@@ -1353,7 +1354,7 @@ public class FaceInfoAccCtrlController {
         entrystFacelib2.enLibType=2;//人脸库类型2为白名单
         entrystFacelib2.isControl=true;//修改为布控
         if (entryfaceListsArrySize==0){
-            entrystFacelib2.ulFaceLibID=new NativeLong(11111);
+            entrystFacelib2.ulFaceLibID=new NativeLong(entrynewfacelibID);
         }else if (entryfaceListsArrySize==-1){
             entrystFacelib2.ulFaceLibID=new NativeLong(111112);
         }else {
@@ -1385,7 +1386,7 @@ public class FaceInfoAccCtrlController {
         exitstFacelib2.enLibType=2;//人脸库类型2为白名单
         exitstFacelib2.isControl=true;//修改为布控
         if (exitfaceListsArrySize==0){
-            exitstFacelib2.ulFaceLibID=new NativeLong(2222);
+            exitstFacelib2.ulFaceLibID=new NativeLong(exitnewfacelibID);
         }else if (exitfaceListsArrySize==-1){
             exitstFacelib2.ulFaceLibID=new NativeLong(2223);
         }else {
@@ -1420,7 +1421,7 @@ public class FaceInfoAccCtrlController {
         }else {
             int i=faceInfoAccCtrlService.deleteFaceAccCtrlByAccCtlId(accessControlId);
             log.error("两个摄像头均未授权成功");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸授权出口、入口摄像头均失败失败",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸授权出口、入口摄像头均失败",null);
         }
     }
 
