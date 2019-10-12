@@ -29,7 +29,6 @@ import com.summit.util.CommonUtil;
 import com.summit.util.SummitTools;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Platform;
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
