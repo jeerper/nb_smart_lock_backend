@@ -21,7 +21,7 @@ public class TestPath {
 
     public static void main(String[] args) throws IOException {
         ArrayList<FaceLib> students=new ArrayList<>();
-        String s1 = new String(new File(".").getCanonicalPath() + "\\facelib\\a.json");
+        String s1 = new String(new File(".").getCanonicalPath() + "\\entryFaceLib\\entryFaceLib.json");
         String s = readFile(s1);
         JSONObject object=new JSONObject(s);
         JSONArray faceListsArry = object.getJSONArray("FaceListsArry");
@@ -36,20 +36,35 @@ public class TestPath {
 
     }
     public static String readFile(String path){
-        BufferedReader reader=null;
-        String lastStr="";
+        BufferedReader  breader=null;
+        StringBuffer sbf = new StringBuffer();
+        FileInputStream fileInputStream=null;
+        InputStreamReader inputStreamReader =null;
         try {
-            FileInputStream fileInputStream = new FileInputStream(path);
-            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
-            reader=new BufferedReader(inputStreamReader);
-            String tempString=null;
-            while ((tempString = reader.readLine()) != null){
-                lastStr+=tempString;
+            fileInputStream = new FileInputStream(path);
+            inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
+            breader=new BufferedReader(inputStreamReader);
+            String tempString;
+            while ((tempString = breader.readLine()) != null){
+                sbf.append(tempString);
             }
-            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            try {
+                if (breader !=null){
+                    breader.close();
+                }
+                if (inputStreamReader !=null){
+                    inputStreamReader.close();
+                }
+                if (fileInputStream !=null){
+                    fileInputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        return lastStr;
+        return sbf.toString();
     }
 }
