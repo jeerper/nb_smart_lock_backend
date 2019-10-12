@@ -44,8 +44,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-
 /**
  * Created by Administrator on 2019/8/29.
  */
@@ -134,6 +132,9 @@ public class FaceInfoAccCtrlController {
         }else {
              exitIdentifyId = exitdeviceInfo.getUlIdentifyId();
         }
+        /**
+         * 开启事务。。。
+         */
       /* if (exitdeviceInfo==null && entrydeviceInfo==null){
            throw new ErrorMsgException("两个摄像头设备均未上线");
        }*/

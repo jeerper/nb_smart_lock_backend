@@ -780,7 +780,7 @@ public class FaceInfoManagerController {
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
-                      e.printStackTrace();
+                    Thread.currentThread().interrupt();
                 }
                 /**
                  * 添加完不管提取是否成功，都接着布控
