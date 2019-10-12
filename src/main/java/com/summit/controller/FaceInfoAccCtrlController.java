@@ -45,6 +45,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
+
 /**
  * Created by Administrator on 2019/8/29.
  */
@@ -63,7 +65,7 @@ public class FaceInfoAccCtrlController {
 
     @ApiOperation(value = "批量刷新指定人脸关联的门禁",notes = "为指定的人脸信息更新门禁权限，所传的人脸信息之前没有关联某门禁且所传列表中有添加，之前已关联过门禁而所传列表中有则不添加，之前已关联过门禁而所传列表中没有则删除与摄像头同步")
     @PostMapping("/authorityFaceInfoAccCtrl")
-  //  @Transactional(propagation= Propagation.REQUIRED,rollbackFor = {Exception.class} )
+    //@Transactional(propagation= Propagation.REQUIRED,rollbackFor = {Exception.class} )
     public RestfulEntityBySummit<String> authorityFaceInfoAccCtrl(@ApiParam(value = "门禁id",required = true) @RequestParam(value = "accessControlId")String accessControlId,
                                                                   @ApiParam(value = "人脸id列表",required = true) @RequestParam(value = "faceids") List<String> faceids) throws IOException, ParseException {
         if(faceids==null){
@@ -133,8 +135,8 @@ public class FaceInfoAccCtrlController {
         }else {
              exitIdentifyId = exitdeviceInfo.getUlIdentifyId();
         }
-       /*if (exitdeviceInfo==null && entrydeviceInfo==null){
-           throw new ErrorMsgException("两个摄像头均未在线");
+      /* if (exitdeviceInfo==null && entrydeviceInfo==null){
+           throw new ErrorMsgException("两个摄像头设备均未上线");
        }*/
         /**1 先查询人脸库，如果有人脸库，再查询人脸信息，如果没有则新建人脸库，直接添加人脸信息，如果有人脸库，没有人脸信息，直接添加人脸信息
          * 2 如果有人脸库再查询人脸信息，
@@ -1331,7 +1333,7 @@ public class FaceInfoAccCtrlController {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
         //提取特征值之后接着修改人脸库，使其成为布控状态
         //接着布控
@@ -1446,21 +1448,36 @@ public class FaceInfoAccCtrlController {
 
 
     public String readFile(String path){
-        BufferedReader  reader=null;
-        String lastStr="";
+        BufferedReader  breader=null;
+        StringBuffer sbf = new StringBuffer();
+        FileInputStream fileInputStream=null;
+        InputStreamReader inputStreamReader =null;
         try {
-            FileInputStream fileInputStream = new FileInputStream(path);
-            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
-            reader=new BufferedReader(inputStreamReader);
-            String tempString=null;
-            while ((tempString = reader.readLine()) != null){
-                lastStr+=tempString;
+            fileInputStream = new FileInputStream(path);
+            inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
+            breader=new BufferedReader(inputStreamReader);
+            String tempString;
+            while ((tempString = breader.readLine()) != null){
+                sbf.append(tempString);
             }
-            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            try {
+                if (breader !=null){
+                    breader.close();
+                }
+                if (inputStreamReader !=null){
+                    inputStreamReader.close();
+                }
+                if (fileInputStream !=null){
+                    fileInputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        return lastStr;
+        return sbf.toString();
     }
 }
 
