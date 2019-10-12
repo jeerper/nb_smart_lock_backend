@@ -239,7 +239,7 @@ public class FaceInfoAccCtrlController {
                 }else {
                     enteystFacelib.szLibName=Arrays.copyOf("facelib".getBytes("utf8"),65);//名单库的名称
                 }
-                enteystFacelib.uiThreshold=new NativeLong(90);//布控的阀值
+                enteystFacelib.uiThreshold=new NativeLong(80);//布控的阀值
                 enteystFacelib.enLibType=2;//人脸库类型
                 enteystFacelib.isControl=true;
                 enteypuFaceLibSetS.stFacelib=enteystFacelib;
@@ -264,7 +264,7 @@ public class FaceInfoAccCtrlController {
                 }else {
                     exitstFacelib.szLibName=Arrays.copyOf("facelib".getBytes("utf8"),65);//名单库的名称
                 }
-                exitstFacelib.uiThreshold=new NativeLong(90);//布控的阀值
+                exitstFacelib.uiThreshold=new NativeLong(80);//布控的阀值
                 exitstFacelib.enLibType=2;//人脸库类型
                 exitstFacelib.isControl=true;
                 exitpuFaceLibSetS.stFacelib=exitstFacelib;
@@ -331,7 +331,7 @@ public class FaceInfoAccCtrlController {
                         if (exitdeviceInfo==null){
                             exitnewfacelibName="facelib";
                             exitnewfacelibType=2;
-                            exitnewfacelibThreshold=90;
+                            exitnewfacelibThreshold=80;
                             exitnewfacelibID=1111;
                         }else if (getexitnewFaceLib){
                             System.out.println("查询新建出口的人脸库成功---------------");
@@ -350,7 +350,7 @@ public class FaceInfoAccCtrlController {
                         if (entrydeviceInfo==null){
                             entrynewfacelibName="facelib";
                             entrytnewfacelibType=2;
-                            entrynewfacelibThreshold=90;
+                            entrynewfacelibThreshold=80;
                             entrynewfacelibID=1111;
                         }else if (entrytnewgetFaceLib){
                             System.out.println("查询新建入口的人脸库成功---------------");
@@ -552,7 +552,7 @@ public class FaceInfoAccCtrlController {
                 if (exitdeviceInfo==null) {
                     exitszLibName = "facelib";
                     exitenLibType = 2;
-                    exituiThreshold = 90;
+                    exituiThreshold = 80;
                     exitulFaceLibID = 1111;
                 }else {
                     String exitgetfacelibpath2 = new String(new File(".").getCanonicalPath() + File.separator +"exitfaceLib"+File.separator+"exitfaceLib.json");
@@ -572,7 +572,7 @@ public class FaceInfoAccCtrlController {
                 if (entrydeviceInfo==null) {
                     entryszLibName = "facelib";
                     entryenLibType = 2;
-                    entrytuiThreshold = 90;
+                    entrytuiThreshold = 80;
                     entryulFaceLibID = 1111;
                 }else {
                     String entrygetfacelibpath2 = new String(new File(".").getCanonicalPath() +File.separator +"entryFaceLib"+File.separator+"entryFaceLib.json");
@@ -1350,7 +1350,7 @@ public class FaceInfoAccCtrlController {
         }else {
             entrystFacelib2.szLibName=Arrays.copyOf("facelib".getBytes("utf8"),65);//名单库的名称
         }
-        entrystFacelib2.uiThreshold=new NativeLong(90);//布控的阀值
+        entrystFacelib2.uiThreshold=new NativeLong(80);//布控的阀值
         entrystFacelib2.enLibType=2;//人脸库类型2为白名单
         entrystFacelib2.isControl=true;//修改为布控
         if (entryfaceListsArrySize==0){
@@ -1382,7 +1382,7 @@ public class FaceInfoAccCtrlController {
         }else {
             exitstFacelib2.szLibName=Arrays.copyOf("facelib".getBytes("utf8"),65);//名单库的名称
         }
-        exitstFacelib2.uiThreshold=new NativeLong(90);//布控的阀值
+        exitstFacelib2.uiThreshold=new NativeLong(80);//布控的阀值
         exitstFacelib2.enLibType=2;//人脸库类型2为白名单
         exitstFacelib2.isControl=true;//修改为布控
         if (exitfaceListsArrySize==0){

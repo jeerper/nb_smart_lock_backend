@@ -160,7 +160,7 @@ public class FaceInfoManagerSchedule {
                                 if (entrydeviceInfo==null){
                                     entryRealszLibName="facelib";
                                     entryRealenLibType=2;
-                                    entryRealuiThreshold=90;
+                                    entryRealuiThreshold=80;
                                     entryRealulFaceLibID=1111;
                                 }else if (realEntrygetFaceLib){
                                     System.out.println("实时查询入口临时人脸库成功------------------------");
@@ -178,7 +178,7 @@ public class FaceInfoManagerSchedule {
                                 if (exitdeviceInfo==null){
                                     exitRealszLibName="facelib";
                                     exitRealLibType=2;
-                                    exitRealuiThreshold=90;
+                                    exitRealuiThreshold=80;
                                     exitRealulFaceLibID=1111;
                                 }else if (realExitgetFaceLib){
                                     System.out.println("实时查询出口临时人脸库成功------------------------");
@@ -539,7 +539,7 @@ public class FaceInfoManagerSchedule {
                                 if (entrydeviceInfo==null){
                                     entryInnerszLibName="facelib";
                                     entryInnerenLibType=2;
-                                    entryInneruiThreshold=90;
+                                    entryInneruiThreshold=80;
                                     entryInnerulFaceLibID=1111;
                                 }else if (delInnerEntrygetFaceLib){
                                     System.out.println("查询入口库人脸库成功------------------------");
@@ -557,7 +557,7 @@ public class FaceInfoManagerSchedule {
                                 if (exitdeviceInfo==null){
                                     exitInnerszLibName="facelib";
                                     exitInnerLibType=2;
-                                    exitInneruiThreshold=90;
+                                    exitInneruiThreshold=80;
                                     exitInnerulFaceLibID=1111;
                                 }else if (delInnerExitgetFaceLib){
                                     System.out.println("查询出口库人脸库成功------------------------");
