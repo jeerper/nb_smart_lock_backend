@@ -1432,13 +1432,13 @@ public class FaceInfoAccCtrlController {
         }else if (entrybukong){
             log.debug("入口摄像头人脸授权成功");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"入口摄像头人脸授权成功,出口授权失败",null);
-        }else if (exitbuKongPrintReturnMsg==12116){
+        }else if (exitbuKongPrintReturnMsg !=null && exitbuKongPrintReturnMsg==12116){
             log.debug("出口摄像头没有人脸特征值---");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"出口摄像头取消人脸授权成功，入口取消失败",null);
-        }else if (entrybuKongPrintReturnMsg==12116){
+        }else if (entrybuKongPrintReturnMsg !=null && entrybuKongPrintReturnMsg==12116){
             log.debug("入口摄像头没有人脸特征值---");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"入口摄像头取消人脸授权成功，出口取消失败",null);
-        }else if (entrybuKongPrintReturnMsg==12116 && exitbuKongPrintReturnMsg==12116){
+        }else if (entrybuKongPrintReturnMsg !=null && entrybuKongPrintReturnMsg==12116 && exitbuKongPrintReturnMsg !=null && exitbuKongPrintReturnMsg==12116){
             log.debug("出口、入口摄像头没有人脸特征值---");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"出口、入口取消授权成功",null);
         }else{
