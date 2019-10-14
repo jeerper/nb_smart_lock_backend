@@ -62,7 +62,7 @@ public class FaceInfoAccCtrlController {
 
     @ApiOperation(value = "批量刷新指定人脸关联的门禁",notes = "为指定的人脸信息更新门禁权限，所传的人脸信息之前没有关联某门禁且所传列表中有添加，之前已关联过门禁而所传列表中有则不添加，之前已关联过门禁而所传列表中没有则删除与摄像头同步")
     @PostMapping("/authorityFaceInfoAccCtrl")
-   // @Transactional(propagation= Propagation.REQUIRED,rollbackFor = {Exception.class} )
+    //@Transactional(propagation= Propagation.REQUIRED,rollbackFor = {Exception.class} )
     public RestfulEntityBySummit<String> authorityFaceInfoAccCtrl(@ApiParam(value = "门禁id",required = true) @RequestParam(value = "accessControlId")String accessControlId,
                                                                   @ApiParam(value = "人脸id列表",required = true) @RequestParam(value = "faceids") List<String> faceids) throws IOException, ParseException {
         if(faceids==null){
@@ -1342,6 +1342,8 @@ public class FaceInfoAccCtrlController {
          * 先布控入口人脸库
          */
 
+        Integer entrybuKongPrintReturnMsg=null;
+        Integer exitbuKongPrintReturnMsg=null;
         PU_FACE_LIB_SET_S entrypuFaceLibSetS2 =new PU_FACE_LIB_SET_S();
         entrypuFaceLibSetS2.enOptType=2;//修改人脸库
         PU_FACE_LIB_S  entrystFacelib2=new PU_FACE_LIB_S();
@@ -1366,10 +1368,16 @@ public class FaceInfoAccCtrlController {
         if(Platform.isWindows()){
             entrybukong = HWPuSDKLibrary.INSTANCE.IVS_PU_SetFaceLib(entryIdentifyId, entrypuFaceLibSetS2);
             System.out.println("布控入口的返回码");
-            HuaWeiSdkApi.printReturnMsg();
+            long returnMsg = HuaWeiSdkApi.printReturnMsg();
+            if (returnMsg==12116){
+                entrybuKongPrintReturnMsg=12116;
+            }
         }else {
             entrybukong = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(entryIdentifyId, entrypuFaceLibSetS2);
-            HuaWeiSdkApi.printReturnMsg();
+            long returnMsg = HuaWeiSdkApi.printReturnMsg();
+            if (returnMsg==12116){
+                entrybuKongPrintReturnMsg=12116;
+            }
         }
         /**
          * 再布控出口人脸库
@@ -1398,10 +1406,16 @@ public class FaceInfoAccCtrlController {
         if(Platform.isWindows()){
             exitbukong = HWPuSDKLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, exitpuFaceLibSetS2);
             System.out.println("布控出口的返回码");
-            HuaWeiSdkApi.printReturnMsg();
+            long returnMsg = HuaWeiSdkApi.printReturnMsg();
+            if (returnMsg==12116){
+                exitbuKongPrintReturnMsg=12116;
+            }
         }else {
             exitbukong = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, exitpuFaceLibSetS2);
-            HuaWeiSdkApi.printReturnMsg();
+            long returnMsg = HuaWeiSdkApi.printReturnMsg();
+            if (returnMsg==12116){
+                exitbuKongPrintReturnMsg=12116;
+            }
         }
         if (exitPrintReturnMsg!= null && exitPrintReturnMsg==12108){
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"出口人脸授权失败，人脸图片重复",null);
@@ -1418,7 +1432,16 @@ public class FaceInfoAccCtrlController {
         }else if (entrybukong){
             log.debug("入口摄像头人脸授权成功");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"入口摄像头人脸授权成功,出口授权失败",null);
-        }else {
+        }else if (exitbuKongPrintReturnMsg==12116){
+            log.debug("出口摄像头没有人脸特征值---");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"出口摄像头取消人脸授权成功，入口取消失败",null);
+        }else if (entrybuKongPrintReturnMsg==12116){
+            log.debug("入口摄像头没有人脸特征值---");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"入口摄像头取消人脸授权成功，出口取消失败",null);
+        }else if (entrybuKongPrintReturnMsg==12116 && exitbuKongPrintReturnMsg==12116){
+            log.debug("出口、入口摄像头没有人脸特征值---");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"出口、入口取消授权成功",null);
+        }else{
             int i=faceInfoAccCtrlService.deleteFaceAccCtrlByAccCtlId(accessControlId);
             log.error("两个摄像头均未授权成功");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸授权出口、入口摄像头均失败",null);
