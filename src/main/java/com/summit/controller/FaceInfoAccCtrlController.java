@@ -62,7 +62,7 @@ public class FaceInfoAccCtrlController {
 
     @ApiOperation(value = "批量刷新指定人脸关联的门禁",notes = "为指定的人脸信息更新门禁权限，所传的人脸信息之前没有关联某门禁且所传列表中有添加，之前已关联过门禁而所传列表中有则不添加，之前已关联过门禁而所传列表中没有则删除与摄像头同步")
     @PostMapping("/authorityFaceInfoAccCtrl")
-    //@Transactional(propagation= Propagation.REQUIRED,rollbackFor = {Exception.class} )
+    @Transactional(propagation= Propagation.REQUIRED,rollbackFor = {Exception.class} )
     public RestfulEntityBySummit<String> authorityFaceInfoAccCtrl(@ApiParam(value = "门禁id",required = true) @RequestParam(value = "accessControlId")String accessControlId,
                                                                   @ApiParam(value = "人脸id列表",required = true) @RequestParam(value = "faceids") List<String> faceids) throws IOException, ParseException {
         if(faceids==null){
@@ -135,9 +135,9 @@ public class FaceInfoAccCtrlController {
         /**
          * 开启事务。。。
          */
-      /* if (exitdeviceInfo==null && entrydeviceInfo==null){
-           throw new ErrorMsgException("两个摄像头设备均未上线");
-       }*/
+       if (exitdeviceInfo==null && entrydeviceInfo==null){
+           throw new ErrorMsgException("出口、入口摄像头设备均未上线");
+       }
         /**1 先查询人脸库，如果有人脸库，再查询人脸信息，如果没有则新建人脸库，直接添加人脸信息，如果有人脸库，没有人脸信息，直接添加人脸信息
          * 2 如果有人脸库再查询人脸信息，
          * 3 若传入集合列表为空，则直接删除人脸
@@ -1442,7 +1442,7 @@ public class FaceInfoAccCtrlController {
             log.debug("出口、入口摄像头没有人脸特征值---");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"出口、入口取消授权成功",null);
         }else{
-            int i=faceInfoAccCtrlService.deleteFaceAccCtrlByAccCtlId(accessControlId);
+           // int i=faceInfoAccCtrlService.deleteFaceAccCtrlByAccCtlId(accessControlId);
             log.error("两个摄像头均未授权成功");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸授权出口、入口摄像头均失败",null);
         }
