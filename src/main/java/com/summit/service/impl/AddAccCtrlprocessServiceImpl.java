@@ -8,6 +8,7 @@ import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AddAccCtrlprocessDao;
 import com.summit.service.AddAccCtrlprocessService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +41,10 @@ public class AddAccCtrlprocessServiceImpl implements AddAccCtrlprocessService {
      */
     @Override
     public AddAccCtrlprocess selectAccCtrlByAccCtrlName(String accessControlName) {
-        AddAccCtrlprocess  addAccCtrlprocess= addAccCtrlprocessDao.selectAccCtrlByAccCtrlName(accessControlName);
+        QueryWrapper<AddAccCtrlprocess> wrapper=new QueryWrapper<>();
+        List<AddAccCtrlprocess> addAccCtrlprocesses = addAccCtrlprocessDao.selectList(wrapper.eq("access_control_name", accessControlName));
+        AddAccCtrlprocess addAccCtrlprocess = addAccCtrlprocesses.get(0);
+       // AddAccCtrlprocess  addAccCtrlprocess= addAccCtrlprocessDao.selectAccCtrlByAccCtrlName(accessControlName);
         return addAccCtrlprocess;
     }
 
@@ -76,5 +80,11 @@ public class AddAccCtrlprocessServiceImpl implements AddAccCtrlprocessService {
     public List<AddAccCtrlprocess> selectAddAccCtrlprocess(SimplePage page) {
         List<AddAccCtrlprocess> addAccCtrlprocesses=addAccCtrlprocessDao.selectAddAccCtrlprocessDesc();
         return addAccCtrlprocesses;
+    }
+
+    @Override
+    public int updateAddAccCtrlprocess(String accessControlId,String accessControlName) {
+       int i= addAccCtrlprocessDao.updateAddAccCtrlprocess(accessControlId,accessControlName);
+        return i;
     }
 }

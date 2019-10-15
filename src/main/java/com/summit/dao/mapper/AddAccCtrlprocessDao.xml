@@ -32,4 +32,8 @@
         ASC
     </select>
 
+    <update id="updateAddAccCtrlprocess" parameterType="java.lang.String">
+        update addup_acc_ctrl_process  set access_control_status_count=access_control_status_count+1
+        where  access_control_id=#{accessControlId} and access_control_name=#{accessControlName}
+    </update>
 </mapper>

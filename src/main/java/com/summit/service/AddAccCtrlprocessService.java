@@ -46,4 +46,6 @@ public interface AddAccCtrlprocessService {
      * @return 所有的统计分析记录
      */
     List<AddAccCtrlprocess> selectAddAccCtrlprocess(SimplePage page);
+
+    int updateAddAccCtrlprocess(String accessControlId,String accessControlName);
 }

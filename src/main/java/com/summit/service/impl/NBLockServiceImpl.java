@@ -101,13 +101,7 @@ public class NBLockServiceImpl {
                         addAccCtrlprocess.setAccessControlStatusCount(accessControlStatusCount);
                         int add=addAccCtrlprocessService.insert(addAccCtrlprocess);
                     }else {
-                        Integer accessControlStatusCount = accCtrlprocess.getAccessControlStatusCount();
-                        AddAccCtrlprocess addAccCtrlprocess=new AddAccCtrlprocess();
-                        Integer nextAccessControlStatusCount=accessControlStatusCount+1;
-                        addAccCtrlprocess.setAccessControlId(accessControlId);
-                        addAccCtrlprocess.setAccessControlName(accessControlName);
-                        addAccCtrlprocess.setAccessControlStatusCount(nextAccessControlStatusCount);
-                        int updateAddAccCtrl=addAccCtrlprocessService.update(addAccCtrlprocess);
+                        int updateAddAccCtrl=addAccCtrlprocessService.updateAddAccCtrlprocess(accessControlId,accessControlName);
                     }
                 }
             } else {
