@@ -29,7 +29,6 @@ public class AccessControlInfo {
     @ApiModelProperty(value="门禁名称",name="accessControlName",required = true)
     @TableField(value = "access_control_name")
     private String accessControlName;
-
     @ApiModelProperty(hidden = true)
     @TableField(value = "lock_id")
     private String lockId;
@@ -57,7 +56,6 @@ public class AccessControlInfo {
     @ApiModelProperty(value="出口摄像头信息",name="exitCamera")
     @TableField(exist = false)
     private CameraDevice exitCamera;
-
     //1开启，2锁定，3告警
     @ApiModelProperty(value="门禁状态,1开启，2锁定，3告警，录入时默认为2锁定",name="status",notes = "1开启，2锁定，3告警",required = true)
     @TableField(value = "status")

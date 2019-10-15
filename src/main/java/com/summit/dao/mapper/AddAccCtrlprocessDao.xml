@@ -12,9 +12,12 @@
     <sql id="accCtrlprocessCloum">
         aacp.id,aacp.access_control_id,aacp.access_control_name,aacp.access_control_status_count,aacp.battery_leve,ac.lock_code
     </sql>
+    <sql id="addCtrlProcess">
+        id,access_control_id,access_control_name,access_control_status_count,battery_leve
+    </sql>
     <select id="selectAccCtrlByAccCtrlName" parameterType="java.lang.String" resultMap="accCtrlprocess">
         SELECT
-        <include refid="accCtrlprocessCloum"/>
+        <include refid="addCtrlProcess"/>
         FROM addup_acc_ctrl_process
         <where>
             access_control_name=#{accessControlName}
