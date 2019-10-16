@@ -12,8 +12,6 @@ import java.util.List;
 
 public interface AddAccCtrlprocessDao  extends BaseMapper<AddAccCtrlprocess>{
 
-    AddAccCtrlprocess selectAccCtrlByAccCtrlName(@Param("accessControlName") String accessControlName);
-
     List<AddAccCtrlprocess> selectAddAccCtrlprocessDesc();
 
     int updateAddAccCtrlprocess(@Param("accessControlId") String accessControlId);

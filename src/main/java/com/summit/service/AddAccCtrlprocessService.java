@@ -21,13 +21,6 @@ public interface AddAccCtrlprocessService {
     int insert(AddAccCtrlprocess addAccCtrlprocess);
 
     /**
-     * 根据门警名称查询统计分析记录
-     * @param accessControlName
-     * @return 一条统计分析记录
-     */
-    AddAccCtrlprocess selectAccCtrlByAccCtrlName(String accessControlName);
-
-    /**
      * 修改统计分析记录
      * @param addAccCtrlprocess
      * @return -1则为不成功

@@ -4,26 +4,14 @@
     <resultMap id="accCtrlprocess" type="com.summit.dao.entity.AddAccCtrlprocess">
         <result column="id"  jdbcType="VARCHAR" property="id"/>
         <result column="access_control_id"  jdbcType="VARCHAR" property="accessControlId"/>
-        <result column="access_control_name"  jdbcType="VARCHAR" property="addAccessControlName"/>
         <result column="access_control_status_count"  jdbcType="VARCHAR" property="accessControlStatusCount"/>
         <result column="battery_leve"  jdbcType="VARCHAR" property="batteryLeve"/>
         <result column="lock_code"  jdbcType="VARCHAR" property="lockCode"/>
         <result column="access_control_name"  jdbcType="VARCHAR" property="accessControlName"/>
     </resultMap>
     <sql id="accCtrlprocessCloum">
-        aacp.id,aacp.access_control_id,aacp.access_control_name,aacp.access_control_status_count,aacp.battery_leve,ac.access_control_name,ac.lock_code
+        aacp.id,aacp.access_control_id,aacp.access_control_status_count,aacp.battery_leve,ac.access_control_name,ac.lock_code
     </sql>
-    <sql id="addCtrlProcess">
-        id,access_control_id,access_control_name,access_control_status_count,battery_leve
-    </sql>
-    <select id="selectAccCtrlByAccCtrlName" parameterType="java.lang.String" resultMap="accCtrlprocess">
-        SELECT
-        <include refid="addCtrlProcess"/>
-        FROM addup_acc_ctrl_process
-        <where>
-            access_control_name=#{accessControlName}
-        </where>
-    </select>
     <select id="selectAddAccCtrlprocessDesc" resultMap="accCtrlprocess">
         SELECT
         <include refid="accCtrlprocessCloum"/>

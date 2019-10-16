@@ -26,10 +26,6 @@ public class AddAccCtrlprocess {
     @TableField(value = "access_control_id")
     private String accessControlId;
 
-    @ApiModelProperty(value = "门禁名称",name = "addAccessControlName")
-    @TableField(value = "access_control_name")
-    private String addAccessControlName;
-
     @ApiModelProperty(value = "门禁状态",name = "accessControlStatusCount")
     @TableField(value = "access_control_status_count")
     private Integer accessControlStatusCount;

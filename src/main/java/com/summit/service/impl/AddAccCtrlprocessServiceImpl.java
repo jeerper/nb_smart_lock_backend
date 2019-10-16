@@ -34,19 +34,6 @@ public class AddAccCtrlprocessServiceImpl implements AddAccCtrlprocessService {
         return add;
     }
 
-    /**
-     * 查询分析统计记录
-     * @param accessControlName
-     * @return 单个分析统计记录
-     */
-    @Override
-    public AddAccCtrlprocess selectAccCtrlByAccCtrlName(String accessControlName) {
-        QueryWrapper<AddAccCtrlprocess> wrapper=new QueryWrapper<>();
-        List<AddAccCtrlprocess> addAccCtrlprocesses = addAccCtrlprocessDao.selectList(wrapper.eq("access_control_name", accessControlName));
-        AddAccCtrlprocess addAccCtrlprocess = addAccCtrlprocesses.get(0);
-       // AddAccCtrlprocess  addAccCtrlprocess= addAccCtrlprocessDao.selectAccCtrlByAccCtrlName(accessControlName);
-        return addAccCtrlprocess;
-    }
 
     /**
      * 修改统计分析记录

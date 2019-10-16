@@ -90,14 +90,12 @@ public class NBLockServiceImpl {
                     msg[0] = backLockInfo.getContent();
                 }else{
                     //插入门禁开关锁记录统计表
-                    String accessControlName = accessControlInfo.getAccessControlName();
                     String accessControlId = accessControlInfo.getAccessControlId();
                     AddAccCtrlprocess accCtrlprocess=addAccCtrlprocessService.selectAddAccCtrlByAccCtrlID(accessControlId);
                     if (accCtrlprocess==null){
                         AddAccCtrlprocess addAccCtrlprocess=new AddAccCtrlprocess();
                         Integer accessControlStatusCount=0;
                         addAccCtrlprocess.setAccessControlId(accessControlId);
-                        addAccCtrlprocess.setAddAccessControlName(accessControlName);
                         addAccCtrlprocess.setAccessControlStatusCount(accessControlStatusCount);
                         int add=addAccCtrlprocessService.insert(addAccCtrlprocess);
                     }else {
