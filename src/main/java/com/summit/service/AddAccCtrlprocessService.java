@@ -49,4 +49,9 @@ public interface AddAccCtrlprocessService {
      * @return 所有的统计分析记录
      */
     AddAccCtrlprocess selectAddAccCtrlByAccCtrlID(String accessControlId);
+    /**
+     * 根据统计分析记录表id删除统计分析字段
+     * @return -1则没有删除成功
+     */
+    int  deladdAccCtrlprocessByAccCtrlId(List<String> needDeladdAccCtrlprocessIds);
 }

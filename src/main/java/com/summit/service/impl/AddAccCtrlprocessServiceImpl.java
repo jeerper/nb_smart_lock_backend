@@ -6,7 +6,9 @@ import com.summit.dao.entity.AddAccCtrlprocess;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AddAccCtrlprocessDao;
+import com.summit.exception.ErrorMsgException;
 import com.summit.service.AddAccCtrlprocessService;
+import com.summit.util.LockAuthCtrl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +67,8 @@ public class AddAccCtrlprocessServiceImpl implements AddAccCtrlprocessService {
      */
     @Override
     public List<AddAccCtrlprocess> selectAddAccCtrlprocess(SimplePage page) {
-        List<AddAccCtrlprocess> addAccCtrlprocesses=addAccCtrlprocessDao.selectAddAccCtrlprocessDesc();
+        List<String> roles = LockAuthCtrl.getRoles();
+        List<AddAccCtrlprocess> addAccCtrlprocesses=addAccCtrlprocessDao.selectAddAccCtrlprocessDesc(roles);
         return addAccCtrlprocesses;
     }
     /**
@@ -84,5 +87,21 @@ public class AddAccCtrlprocessServiceImpl implements AddAccCtrlprocessService {
         List<AddAccCtrlprocess> addAccCtrlprocesses = addAccCtrlprocessDao.selectList(wrapper.eq("access_control_id", accessControlId));
         AddAccCtrlprocess addAccCtrlprocess = addAccCtrlprocesses.get(0);
         return addAccCtrlprocess;
+    }
+
+    /**
+     * 根据统计分析记录表id删除统计分析字段
+     * @return -1则没有删除成功
+     */
+    @Override
+    public int deladdAccCtrlprocessByAccCtrlId(List<String> needDeladdAccCtrlprocessIds) {
+        int result = -1;
+        try {
+            result = addAccCtrlprocessDao.deleteBatchIds(needDeladdAccCtrlprocessIds);
+        } catch (Exception e) {
+            log.error("删除统计信息失败");
+            throw new ErrorMsgException("删除统计信息失败");
+        }
+        return result;
     }
 }

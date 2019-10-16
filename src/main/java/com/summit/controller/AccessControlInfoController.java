@@ -8,10 +8,12 @@ import com.summit.common.util.ResultBuilder;
 import com.summit.common.web.filter.UserContextHolder;
 import com.summit.dao.entity.AccCtrlRole;
 import com.summit.dao.entity.AccessControlInfo;
+import com.summit.dao.entity.AddAccCtrlprocess;
 import com.summit.dao.entity.SimpleAccCtrlInfo;
 import com.summit.exception.ErrorMsgException;
 import com.summit.service.AccCtrlRoleService;
 import com.summit.service.AccessControlService;
+import com.summit.service.AddAccCtrlprocessService;
 import com.summit.util.CommonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,6 +42,8 @@ public class AccessControlInfoController {
     private AccessControlService accessControlService;
     @Autowired
     private AccCtrlRoleService accCtrlRoleService;
+    @Autowired
+    private AddAccCtrlprocessService addAccCtrlprocessService;
 
 
 
@@ -115,6 +119,27 @@ public class AccessControlInfoController {
             log.error("门禁id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁id为空",null);
         }
+        /**
+         * 删除门禁的时候,统计分析也要删除相应的门禁
+         */
+        List<String> needDeladdAccCtrlprocessIds=new ArrayList<>();
+        for (String accessControlId:accessControlIds){
+            AddAccCtrlprocess addAccCtrlprocess = addAccCtrlprocessService.selectAddAccCtrlByAccCtrlID(accessControlId);
+            if (addAccCtrlprocess !=null){
+                needDeladdAccCtrlprocessIds.add(addAccCtrlprocess.getId());
+            }
+        }
+        String msg1 = "删除统计信息表中对应的门禁信息失败";
+        if (!CommonUtil.isEmptyList(needDeladdAccCtrlprocessIds)){
+            try {
+                addAccCtrlprocessService.deladdAccCtrlprocessByAccCtrlId(needDeladdAccCtrlprocessIds);
+            } catch (Exception e) {
+                msg1 = getErrorMsg(msg1, e);
+                log.error(msg1);
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg1, null);
+            }
+        }
+
         String msg = "删除门禁信息失败";
         try {
             accessControlService.delBatchAccCtrlByAccCtrlId(accessControlIds);
