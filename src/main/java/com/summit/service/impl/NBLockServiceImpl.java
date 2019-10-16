@@ -94,7 +94,7 @@ public class NBLockServiceImpl {
                     AddAccCtrlprocess accCtrlprocess=addAccCtrlprocessService.selectAddAccCtrlByAccCtrlID(accessControlId);
                     if (accCtrlprocess==null){
                         AddAccCtrlprocess addAccCtrlprocess=new AddAccCtrlprocess();
-                        Integer accessControlStatusCount=0;
+                        Integer accessControlStatusCount=1;
                         addAccCtrlprocess.setAccessControlId(accessControlId);
                         addAccCtrlprocess.setAccessControlStatusCount(accessControlStatusCount);
                         int add=addAccCtrlprocessService.insert(addAccCtrlprocess);
