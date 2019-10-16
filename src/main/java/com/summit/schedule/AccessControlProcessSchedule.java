@@ -77,6 +77,7 @@ public class AccessControlProcessSchedule {
                         .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProcessEntity.getAccCtrlProId()));
             } else {
                 log.debug("锁编号:"+accCtrlProcessEntity.getLockCode()+";开锁结果:" + LockProcessResultType.codeOf(lockStatus).getDescription());
+                log.debug("操作编号:"+accCtrlProcessEntity.getAccCtrlProId());
                 //更新process_result状态
                 accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
                         .set(AccCtrlProcess::getProcessResult, lockStatus)
