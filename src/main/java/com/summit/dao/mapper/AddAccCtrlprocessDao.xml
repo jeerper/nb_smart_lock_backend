@@ -8,9 +8,10 @@
         <result column="access_control_status_count"  jdbcType="VARCHAR" property="accessControlStatusCount"/>
         <result column="battery_leve"  jdbcType="VARCHAR" property="batteryLeve"/>
         <result column="lock_code"  jdbcType="VARCHAR" property="lockCode"/>
+        <result column="access_control_name"  jdbcType="VARCHAR" property="oldaccessControlName"/>
     </resultMap>
     <sql id="accCtrlprocessCloum">
-        aacp.id,aacp.access_control_id,aacp.access_control_name,aacp.access_control_status_count,aacp.battery_leve,ac.lock_code
+        aacp.id,aacp.access_control_id,aacp.access_control_name,aacp.access_control_status_count,aacp.battery_leve,ac.access_control_name,ac.lock_code
     </sql>
     <sql id="addCtrlProcess">
         id,access_control_id,access_control_name,access_control_status_count,battery_leve
@@ -34,6 +35,6 @@
 
     <update id="updateAddAccCtrlprocess" parameterType="java.lang.String">
         update addup_acc_ctrl_process  set access_control_status_count=access_control_status_count+1
-        where  access_control_id=#{accessControlId} and access_control_name=#{accessControlName}
+        where  access_control_id=#{accessControlId}
     </update>
 </mapper>

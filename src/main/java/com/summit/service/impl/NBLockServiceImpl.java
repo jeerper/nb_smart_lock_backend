@@ -92,7 +92,7 @@ public class NBLockServiceImpl {
                     //插入门禁开关锁记录统计表
                     String accessControlName = accessControlInfo.getAccessControlName();
                     String accessControlId = accessControlInfo.getAccessControlId();
-                    AddAccCtrlprocess accCtrlprocess=addAccCtrlprocessService.selectAccCtrlByAccCtrlName(accessControlName);
+                    AddAccCtrlprocess accCtrlprocess=addAccCtrlprocessService.selectAddAccCtrlByAccCtrlID(accessControlId);
                     if (accCtrlprocess==null){
                         AddAccCtrlprocess addAccCtrlprocess=new AddAccCtrlprocess();
                         Integer accessControlStatusCount=0;
@@ -101,7 +101,7 @@ public class NBLockServiceImpl {
                         addAccCtrlprocess.setAccessControlStatusCount(accessControlStatusCount);
                         int add=addAccCtrlprocessService.insert(addAccCtrlprocess);
                     }else {
-                        int updateAddAccCtrl=addAccCtrlprocessService.updateAddAccCtrlprocess(accessControlId,accessControlName);
+                        int updateAddAccCtrl=addAccCtrlprocessService.updateAddAccCtrlprocess(accessControlId);
                     }
                 }
             } else {

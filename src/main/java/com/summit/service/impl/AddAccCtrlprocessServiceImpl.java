@@ -81,10 +81,21 @@ public class AddAccCtrlprocessServiceImpl implements AddAccCtrlprocessService {
         List<AddAccCtrlprocess> addAccCtrlprocesses=addAccCtrlprocessDao.selectAddAccCtrlprocessDesc();
         return addAccCtrlprocesses;
     }
+    /**
+     * 根据门禁id修改统计记录表
+     * @return 所有的统计分析记录
+     */
+    @Override
+    public int updateAddAccCtrlprocess(String accessControlId ) {
+       int i= addAccCtrlprocessDao.updateAddAccCtrlprocess(accessControlId);
+        return i;
+    }
 
     @Override
-    public int updateAddAccCtrlprocess(String accessControlId,String accessControlName) {
-       int i= addAccCtrlprocessDao.updateAddAccCtrlprocess(accessControlId,accessControlName);
-        return i;
+    public AddAccCtrlprocess selectAddAccCtrlByAccCtrlID(String accessControlId) {
+        QueryWrapper<AddAccCtrlprocess> wrapper=new QueryWrapper<>();
+        List<AddAccCtrlprocess> addAccCtrlprocesses = addAccCtrlprocessDao.selectList(wrapper.eq("access_control_id", accessControlId));
+        AddAccCtrlprocess addAccCtrlprocess = addAccCtrlprocesses.get(0);
+        return addAccCtrlprocess;
     }
 }

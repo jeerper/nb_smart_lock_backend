@@ -46,6 +46,14 @@ public interface AddAccCtrlprocessService {
      * @return 所有的统计分析记录
      */
     List<AddAccCtrlprocess> selectAddAccCtrlprocess(SimplePage page);
-
-    int updateAddAccCtrlprocess(String accessControlId,String accessControlName);
+    /**
+     * 根据门禁id修改统计记录表
+     * @return 所有的统计分析记录
+     */
+    int updateAddAccCtrlprocess(String accessControlId);
+    /**
+     * 根据门禁id查询
+     * @return 所有的统计分析记录
+     */
+    AddAccCtrlprocess selectAddAccCtrlByAccCtrlID(String accessControlId);
 }

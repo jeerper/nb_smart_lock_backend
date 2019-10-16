@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @ApiModel(value="开锁和查询锁状态接口请求信息类", description="封装所需要的请求信息")
-public class LockRequest {
+public class   LockRequest {
 
     /**
      * 锁终端id

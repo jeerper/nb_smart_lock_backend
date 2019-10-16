@@ -559,7 +559,6 @@ public class FaceInfoAccCtrlController {
                     String exitjason2 = readFile(exitgetfacelibpath2);
                     JSONObject exitobject1=new JSONObject(exitjason2);
                     JSONArray exitfaceListsArry1 = exitobject1.getJSONArray("FaceListsArry");
-                    System.out.println("人脸库集合："+exitfaceListsArry1);
                     JSONObject exitfacelibinfo=exitfaceListsArry1.getJSONObject(0);
                     exitszLibName=exitfacelibinfo.getStr("FaceListName");
                     exitenLibType = Integer.parseInt(exitfacelibinfo.getStr("FaceListType"));
@@ -579,7 +578,6 @@ public class FaceInfoAccCtrlController {
                     String entrytjason2 = readFile(entrygetfacelibpath2);
                     JSONObject entrytobject1=new JSONObject(entrytjason2);
                     JSONArray entryfaceListsArry1 = entrytobject1.getJSONArray("FaceListsArry");
-                    System.out.println("人脸库集合："+entryfaceListsArry1);
                     JSONObject entryfacelibinfo=entryfaceListsArry1.getJSONObject(0);
                     entryszLibName=entryfacelibinfo.getStr("FaceListName");
                     entryenLibType = Integer.parseInt(entryfacelibinfo.getStr("FaceListType"));
@@ -1432,15 +1430,15 @@ public class FaceInfoAccCtrlController {
         }else if (entrybukong){
             log.debug("入口摄像头人脸授权成功");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"入口摄像头人脸授权成功,出口授权失败",null);
+        }else if (entrybuKongPrintReturnMsg !=null && entrybuKongPrintReturnMsg==12116 && exitbuKongPrintReturnMsg !=null && exitbuKongPrintReturnMsg==12116) {
+            log.debug("出口、入口摄像头没有人脸特征值---");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "出口、入口取消授权成功", null);
         }else if (exitbuKongPrintReturnMsg !=null && exitbuKongPrintReturnMsg==12116){
             log.debug("出口摄像头没有人脸特征值---");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"出口摄像头取消人脸授权成功，入口取消失败",null);
         }else if (entrybuKongPrintReturnMsg !=null && entrybuKongPrintReturnMsg==12116){
             log.debug("入口摄像头没有人脸特征值---");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"入口摄像头取消人脸授权成功，出口取消失败",null);
-        }else if (entrybuKongPrintReturnMsg !=null && entrybuKongPrintReturnMsg==12116 && exitbuKongPrintReturnMsg !=null && exitbuKongPrintReturnMsg==12116){
-            log.debug("出口、入口摄像头没有人脸特征值---");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"出口、入口取消授权成功",null);
         }else{
            // int i=faceInfoAccCtrlService.deleteFaceAccCtrlByAccCtlId(accessControlId);
             log.error("两个摄像头均未授权成功");

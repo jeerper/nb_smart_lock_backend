@@ -42,6 +42,10 @@ public class AddAccCtrlprocess {
     @TableField(exist = false)
     private String lockCode;
 
+    @ApiModelProperty(value = "门禁表的门禁名称",name = "oldaccessControlName")
+    @TableField(exist = false)
+    private String oldaccessControlName;
+
     public AddAccCtrlprocess() {
     }
 }
