@@ -1,5 +1,6 @@
 package com.summit.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.cbb.utils.page.Page;
 import com.summit.common.entity.ResponseCodeEnum;
@@ -148,7 +149,7 @@ public class AlarmController {
             alarmId = alarm.getAlarmId();
         }
         //处理告警业务
-        if (alarmId != null && !"".equals(alarmId) && !"".equals(processRemark)) {
+        if (StrUtil.isNotEmpty(alarmId) && StrUtil.isNotEmpty(processRemark)) {
             //更新告警表
             alarmDao.update(null, Wrappers.<Alarm>lambdaUpdate()
                     .set(Alarm::getAlarmStatus, alarmStatus)
