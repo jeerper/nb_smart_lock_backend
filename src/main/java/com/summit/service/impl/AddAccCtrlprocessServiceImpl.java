@@ -8,6 +8,7 @@ import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AddAccCtrlprocessDao;
 import com.summit.exception.ErrorMsgException;
 import com.summit.service.AddAccCtrlprocessService;
+import com.summit.util.CommonUtil;
 import com.summit.util.LockAuthCtrl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
@@ -81,11 +82,20 @@ public class AddAccCtrlprocessServiceImpl implements AddAccCtrlprocessService {
         return i;
     }
 
+    /**
+     * 根据门禁id查询
+     * @return 所有的统计分析记录
+     */
     @Override
     public AddAccCtrlprocess selectAddAccCtrlByAccCtrlID(String accessControlId) {
         QueryWrapper<AddAccCtrlprocess> wrapper=new QueryWrapper<>();
+        AddAccCtrlprocess addAccCtrlprocess;
         List<AddAccCtrlprocess> addAccCtrlprocesses = addAccCtrlprocessDao.selectList(wrapper.eq("access_control_id", accessControlId));
-        AddAccCtrlprocess addAccCtrlprocess = addAccCtrlprocesses.get(0);
+        if(!CommonUtil.isEmptyList(addAccCtrlprocesses)){
+             addAccCtrlprocess = addAccCtrlprocesses.get(0);
+        }else {
+            addAccCtrlprocess=null;
+        }
         return addAccCtrlprocess;
     }
 
