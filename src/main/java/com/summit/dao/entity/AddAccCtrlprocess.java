@@ -26,9 +26,9 @@ public class AddAccCtrlprocess {
     @TableField(value = "access_control_id")
     private String accessControlId;
 
-    @ApiModelProperty(value = "门禁名称",name = "accessControlName")
+    @ApiModelProperty(value = "门禁名称",name = "addAccessControlName")
     @TableField(value = "access_control_name")
-    private String accessControlName;
+    private String addAccessControlName;
 
     @ApiModelProperty(value = "门禁状态",name = "accessControlStatusCount")
     @TableField(value = "access_control_status_count")
@@ -42,9 +42,9 @@ public class AddAccCtrlprocess {
     @TableField(exist = false)
     private String lockCode;
 
-    @ApiModelProperty(value = "门禁表的门禁名称",name = "oldaccessControlName")
+    @ApiModelProperty(value = "门禁表的门禁名称",name = "accessControlName")
     @TableField(exist = false)
-    private String oldaccessControlName;
+    private String accessControlName;
 
     public AddAccCtrlprocess() {
     }

@@ -103,7 +103,6 @@ public class AccCtrlProcessController {
                     updateAddAccCtrlprocess.setId(addAccCtrlprocess.getId());
                     updateAddAccCtrlprocess.setAccessControlId(addAccCtrlprocess.getAccessControlId());
                     updateAddAccCtrlprocess.setAccessControlStatusCount(accessControlStatusCount);
-                    updateAddAccCtrlprocess.setAccessControlName(addAccCtrlprocess.getAccessControlName());
                     addAccCtrlprocessService.update(updateAddAccCtrlprocess);
                 }
             }
