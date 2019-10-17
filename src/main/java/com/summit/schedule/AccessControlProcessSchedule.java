@@ -96,12 +96,6 @@ public class AccessControlProcessSchedule {
                     }
                     //下发开锁指令后返回的状态码
                     LockProcessResultType processResult = LockProcessResultType.codeOf(backLockInfo.getObjx());
-                    if (processResult != LockProcessResultType.CommandSuccess) {
-                        continue;
-                    }
-                    if (StrUtil.isBlank(backLockInfo.getRmid())) {
-                        continue;
-                    }
                     //开锁处理UUID
                     String unlockProcessUuid = backLockInfo.getRmid();
                     accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
