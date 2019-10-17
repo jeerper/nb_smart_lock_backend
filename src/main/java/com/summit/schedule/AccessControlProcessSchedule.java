@@ -1,7 +1,9 @@
 package com.summit.schedule;
 
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AddAccCtrlprocess;
 import com.summit.dao.repository.AccCtrlProcessDao;
@@ -9,6 +11,7 @@ import com.summit.dao.repository.AddAccCtrlprocessDao;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.sdk.huawei.model.LockProcessResultType;
+import com.summit.service.impl.NBLockServiceImpl;
 import com.summit.util.AccCtrlProcessUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,8 @@ public class AccessControlProcessSchedule {
     private AccCtrlProcessDao accCtrlProcessDao;
     @Autowired
     private AddAccCtrlprocessDao addAccCtrlprocessDao;
+    @Autowired
+    private NBLockServiceImpl unLockService;
 
 
     /**
@@ -45,7 +50,8 @@ public class AccessControlProcessSchedule {
         for (AccCtrlProcess accCtrlProcessEntity : accCtrlProcessList) {
 
             String processUuid = accCtrlProcessEntity.getProcessUuid();
-            if (processUuid == null || "".equals(processUuid)) {
+
+            if (StrUtil.isEmpty(processUuid)) {
                 continue;
             }
 
@@ -76,8 +82,35 @@ public class AccessControlProcessSchedule {
                         .set(AccCtrlProcess::getProcessTime, new Date())
                         .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProcessEntity.getAccCtrlProId()));
             } else {
-                log.debug("锁编号:"+accCtrlProcessEntity.getLockCode()+";开锁结果:" + LockProcessResultType.codeOf(lockStatus).getDescription());
+                LockProcessResultType lockProcessResultType=LockProcessResultType.codeOf(lockStatus);
+                log.debug("锁编号:"+accCtrlProcessEntity.getLockCode()+";开锁结果:" + lockProcessResultType.getDescription());
                 log.debug("操作编号:"+accCtrlProcessEntity.getAccCtrlProId());
+                //如果结果是未回复，则继续发送开锁指令
+                if(lockProcessResultType==LockProcessResultType.NotResponse){
+                    lockRequest.setUuid(null);
+                    RestfulEntityBySummit result = unLockService.toUnLock(lockRequest);
+
+                    backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
+                    if (backLockInfo == null || backLockInfo.getObjx() == null) {
+                        continue;
+                    }
+                    //下发开锁指令后返回的状态码
+                    LockProcessResultType processResult = LockProcessResultType.codeOf(backLockInfo.getObjx());
+                    if (processResult != LockProcessResultType.CommandSuccess) {
+                        continue;
+                    }
+                    if (StrUtil.isBlank(backLockInfo.getRmid())) {
+                        continue;
+                    }
+                    //开锁处理UUID
+                    String unlockProcessUuid = backLockInfo.getRmid();
+                    accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
+                            .set(AccCtrlProcess::getProcessResult, processResult.getCode())
+                            .set(AccCtrlProcess::getProcessUuid, unlockProcessUuid)
+                            .set(AccCtrlProcess::getProcessTime, new Date())
+                            .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProcessEntity.getAccCtrlProId()));
+                    continue;
+                }
                 //更新process_result状态
                 accCtrlProcessDao.update(null, Wrappers.<AccCtrlProcess>lambdaUpdate()
                         .set(AccCtrlProcess::getProcessResult, lockStatus)
