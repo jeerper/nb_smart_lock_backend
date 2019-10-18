@@ -1,6 +1,8 @@
 -- ----------------------------
 -- Records of cities
 -- ----------------------------
+USE cbb_nb_smart_lock;
+
 INSERT IGNORE INTO `cities` VALUES ('1', '110100', '北京市', '110000');
 INSERT IGNORE INTO `cities` VALUES ('3', '120100', '天津市', '120000');
 INSERT IGNORE INTO `cities` VALUES ('5', '130100', '石家庄市', '130000');

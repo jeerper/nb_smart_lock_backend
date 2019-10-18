@@ -1,5 +1,4 @@
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
+USE cbb_nb_smart_lock;
 
 CREATE TABLE IF NOT EXISTS  `acc_crtl_realtime`  (
   `acc_crtl_realtime_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '门禁实时信息id',
