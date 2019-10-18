@@ -375,4 +375,3 @@ INSERT INTO `provinces` VALUES ('31', '650000', '新疆维吾尔自治区');
 INSERT INTO `provinces` VALUES ('32', '710000', '台湾省');
 INSERT INTO `provinces` VALUES ('33', '810000', '香港特别行政区');
 INSERT INTO `provinces` VALUES ('34', '820000', '澳门特别行政区');
-SERT INTO `provinces` VALUES ('34', '820000', '澳门特别行政区');
