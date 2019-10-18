@@ -135,7 +135,7 @@ CREATE TABLE `cities`  (
   `city` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `provinceid` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `city`(`city`) USING BTREE
+  UNIQUE INDEX `city`(`city`) USING BTREE
 ) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '行政区域地州市信息表' ROW_FORMAT = Dynamic;
 
 CREATE TABLE `face_info`  (
