@@ -15,7 +15,7 @@ spring:
     name: "cbb-nb-smart-lock"
   flyway:
     # 如果启动的时候需要flyway管理sql脚本的话，将enabled设置为true
-    enabled: false
+    enabled: true
     baseline-on-migrate: true
     locations: classpath:db
     encoding: UTF-8
