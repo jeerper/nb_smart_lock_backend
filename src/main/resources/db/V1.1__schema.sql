@@ -1,7 +1,7 @@
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
-CREATE TABLE `acc_crtl_realtime`  (
+CREATE TABLE IF NOT EXISTS  `acc_crtl_realtime`  (
   `acc_crtl_realtime_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '门禁实时信息id',
   `access_control_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '门禁id',
   `access_control_name` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '门禁名',
@@ -39,7 +39,7 @@ CREATE TABLE `acc_crtl_realtime`  (
   UNIQUE INDEX `AK_Key_3`(`access_control_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
 
-CREATE TABLE `acc_ctrl_process`  (
+CREATE TABLE IF NOT EXISTS `acc_ctrl_process`  (
   `acc_ctrl_pro_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '门禁操作记录id',
   `access_control_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '门禁id',
   `access_control_name` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '门禁名',
@@ -73,7 +73,7 @@ CREATE TABLE `acc_ctrl_process`  (
   PRIMARY KEY (`acc_ctrl_pro_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '门禁操作记录表' ROW_FORMAT = Dynamic;
 
-CREATE TABLE `access_control`  (
+CREATE TABLE IF NOT EXISTS `access_control`  (
   `access_control_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '门禁id',
   `access_control_name` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '门禁名称',
   `lock_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '锁id',
@@ -93,7 +93,7 @@ CREATE TABLE `access_control`  (
   UNIQUE INDEX `lock_id`(`lock_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '门禁信息表' ROW_FORMAT = Dynamic;
 
-CREATE TABLE `addup_acc_ctrl_process`  (
+CREATE TABLE IF NOT EXISTS `addup_acc_ctrl_process`  (
   `id` varchar(48) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '统计分析开关锁的id',
   `access_control_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '门禁id',
   `access_control_status_count` int(11) NULL DEFAULT NULL COMMENT '门禁状态。1：打开，2：锁定',
@@ -101,7 +101,7 @@ CREATE TABLE `addup_acc_ctrl_process`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
-CREATE TABLE `alarm`  (
+CREATE TABLE IF NOT EXISTS `alarm`  (
   `alarm_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '告警id',
   `alarm_name` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '告警名称',
   `acc_ctrl_pro_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '门禁操作id，对应acc_ctrl_process表中的acc_ctrl_pro_id',
@@ -115,7 +115,7 @@ CREATE TABLE `alarm`  (
   UNIQUE INDEX `AK_Key_2`(`acc_ctrl_pro_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '告警表' ROW_FORMAT = Dynamic;
 
-CREATE TABLE `camera_device`  (
+CREATE TABLE IF NOT EXISTS `camera_device`  (
   `dev_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '摄像头id',
   `device_ip` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '摄像头ip地址',
   `lock_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '对应锁id',
@@ -129,7 +129,7 @@ CREATE TABLE `camera_device`  (
   UNIQUE INDEX `AK_Key_2`(`device_ip`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '摄像头表' ROW_FORMAT = Dynamic;
 
-CREATE TABLE `cities`  (
+CREATE TABLE IF NOT EXISTS `cities`  (
   `id` varchar(11) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `cityid` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `city` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
@@ -138,7 +138,7 @@ CREATE TABLE `cities`  (
   UNIQUE INDEX `city`(`city`) USING BTREE
 ) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '行政区域地州市信息表' ROW_FORMAT = Dynamic;
 
-CREATE TABLE `face_info`  (
+CREATE TABLE IF NOT EXISTS `face_info`  (
   `face_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '人脸信息id',
   `user_name` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '人脸名称',
   `user_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '锁操作人id',
@@ -167,14 +167,14 @@ CREATE TABLE `face_info`  (
   UNIQUE INDEX `AK_Key_3`(`user_name`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '人脸信息表' ROW_FORMAT = Dynamic;
 
-CREATE TABLE `face_info_access_control`  (
+CREATE TABLE IF NOT EXISTS `face_info_access_control`  (
   `id` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '主键id',
   `access_control_id` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '门禁信息id',
   `face_id` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '人脸信息id',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
-CREATE TABLE `file_info`  (
+CREATE TABLE IF NOT EXISTS `file_info`  (
   `file_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '文件id',
   `file_name` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '文件名',
   `file_path` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '文件路径',
@@ -182,7 +182,7 @@ CREATE TABLE `file_info`  (
   PRIMARY KEY (`file_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '文件表' ROW_FORMAT = Dynamic;
 
-CREATE TABLE `lock_info`  (
+CREATE TABLE IF NOT EXISTS `lock_info`  (
   `lock_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '锁id',
   `lock_code` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '锁编号',
   `status` int(11) NULL DEFAULT NULL COMMENT '锁状态。1开锁，2锁定，3告警',
@@ -193,7 +193,7 @@ CREATE TABLE `lock_info`  (
   UNIQUE INDEX `AK_Key_2`(`lock_code`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '锁信息表' ROW_FORMAT = Dynamic;
 
-CREATE TABLE `lock_process`  (
+CREATE TABLE IF NOT EXISTS `lock_process`  (
   `process_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '锁操作记录id',
   `device_ip` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '摄像头设备ip',
   `lock_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '锁id',
@@ -219,7 +219,7 @@ CREATE TABLE `lock_process`  (
   PRIMARY KEY (`process_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '开关锁操作记录表' ROW_FORMAT = Dynamic;
 
-CREATE TABLE `provinces`  (
+CREATE TABLE IF NOT EXISTS `provinces`  (
   `id` varchar(11) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `provinceid` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `province` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
@@ -227,7 +227,7 @@ CREATE TABLE `provinces`  (
   UNIQUE INDEX `province`(`province`) USING BTREE
 ) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '省份信息表' ROW_FORMAT = Dynamic;
 
-CREATE TABLE `role_accesscontrol_auth`  (
+CREATE TABLE IF NOT EXISTS `role_accesscontrol_auth`  (
   `id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '角色开锁权限id',
   `role_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '角色id',
   `access_control_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '门禁id',
@@ -235,7 +235,7 @@ CREATE TABLE `role_accesscontrol_auth`  (
   UNIQUE INDEX `role_id`(`role_id`, `access_control_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '角色与门禁权限表' ROW_FORMAT = Dynamic;
 
-CREATE TABLE `role_lock_auth`  (
+CREATE TABLE IF NOT EXISTS `role_lock_auth`  (
   `id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '角色开锁权限id',
   `role_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '角色id',
   `lock_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '锁id',
@@ -243,7 +243,7 @@ CREATE TABLE `role_lock_auth`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '角色与锁权限表' ROW_FORMAT = Dynamic;
 
-CREATE TABLE `safe_report`  (
+CREATE TABLE IF NOT EXISTS `safe_report`  (
   `safe_rep_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '平安报记录id',
   `lock_code` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '锁编号',
   `type` varchar(16) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '返回类型。error：失败   success：成功',
@@ -252,7 +252,7 @@ CREATE TABLE `safe_report`  (
   PRIMARY KEY (`safe_rep_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '工况(平安报)信息记录表' ROW_FORMAT = Dynamic;
 
-CREATE TABLE `safe_report_data`  (
+CREATE TABLE IF NOT EXISTS `safe_report_data`  (
   `id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'id',
   `safe_rep_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '对应平安报数据id',
   `version` varchar(16) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '版本',
@@ -268,7 +268,7 @@ CREATE TABLE `safe_report_data`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '平安报数据表' ROW_FORMAT = Dynamic;
 
-CREATE TABLE `unlock_command_queue`  (
+CREATE TABLE IF NOT EXISTS `unlock_command_queue`  (
   `id` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `acc_ctrl_pro_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `lock_code` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
