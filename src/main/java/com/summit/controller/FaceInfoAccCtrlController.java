@@ -1374,6 +1374,8 @@ public class FaceInfoAccCtrlController {
             }
         } else {
             entrybukong = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(entryIdentifyId, entrypuFaceLibSetS2);
+            log.debug("布控入口摄像头是否布控成功："+entrybukong);
+            log.debug("布控入口摄像头的返回码");
             long returnMsg = HuaWeiSdkApi.printReturnMsg();
             if (returnMsg == 12116) {
                 entrybuKongPrintReturnMsg = 12116;
@@ -1413,6 +1415,8 @@ public class FaceInfoAccCtrlController {
             }
         } else {
             exitbukong = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_SetFaceLib(exitIdentifyId, exitpuFaceLibSetS2);
+            log.debug("布控出口摄像头是否布控成功："+exitbukong);
+            log.debug("布控出口摄像头的返回码");
             long returnMsg = HuaWeiSdkApi.printReturnMsg();
             if (returnMsg == 12116) {
                 exitbuKongPrintReturnMsg = 12116;
@@ -1425,7 +1429,7 @@ public class FaceInfoAccCtrlController {
         } else if (exitPrintReturnMsg != null && exitPrintReturnMsg == 12108 && entryPrintReturnMsg != null && entryPrintReturnMsg == 12108) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸授权出口、入口摄像头失败，人脸图片重复", null);
         } else if (exitbukong && entrybukong) {
-            log.debug("修改出口口人脸库布控成功");
+            log.debug("修改出口、入口人脸库布控成功");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "出口、入口摄像头人脸授权成功", null);
         } else if (exitbukong) {
             log.debug("出口摄像头人脸授权成功");
