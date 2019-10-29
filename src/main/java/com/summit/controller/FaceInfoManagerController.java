@@ -12,7 +12,6 @@ import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.*;
-import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.entity.SimpleFaceInfo;
 import com.summit.exception.ErrorMsgException;
@@ -48,8 +47,6 @@ import java.util.*;
 public class FaceInfoManagerController {
     @Autowired
     private FaceInfoManagerService faceInfoManagerService;
-    @Autowired
-    private FaceInfoManagerDao faceInfoManagerDao;
     @Autowired
     private FaceInfoAccCtrlService faceInfoAccCtrlService;
 
@@ -391,7 +388,7 @@ public class FaceInfoManagerController {
                     addface.enCardType = faceInfo.getCardType();
                     addface.enGender = faceInfo.getGender();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    String birthday = sdf.format(faceInfo.getBirthday());
+                    String birthday = faceInfo.getBirthday();
                     addface.szBirthday = Arrays.copyOf(birthday.getBytes(), 32);
                     addface.szCardID = Arrays.copyOf(faceInfo.getCardId().getBytes(), 32);
                     if (Platform.isWindows()) {
@@ -702,7 +699,7 @@ public class FaceInfoManagerController {
                             addfaceInfo.enCardType = faceInfo.getCardType();
                             addfaceInfo.enGender = faceInfo.getGender();
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                            String birthday = sdf.format(faceInfo.getBirthday());
+                            String birthday = faceInfo.getBirthday();
                             addfaceInfo.szBirthday = Arrays.copyOf(birthday.getBytes(), 32);
                             addfaceInfo.szCardID = Arrays.copyOf(faceInfo.getCardId().getBytes(), 32);
                             if (Platform.isWindows()) {
@@ -845,7 +842,7 @@ public class FaceInfoManagerController {
                         }
                         puFaceRecord.szCardID = Arrays.copyOf(faceInfo.getCardId().getBytes(), 32);
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                        String birthday = sdf.format(faceInfo.getBirthday());
+                        String birthday = faceInfo.getBirthday();
                         System.out.println(birthday);
                         puFaceRecord.szBirthday = Arrays.copyOf(birthday.getBytes(), 32);
                         puFaceRecord.enGender = faceInfo.getGender();
