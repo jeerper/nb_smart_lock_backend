@@ -48,7 +48,7 @@ public class FaceInfo {
 
     @ApiModelProperty(value = "生日", name = "birthday")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+9")
     @TableField(value = "birthday")
     private Date birthday;
 
