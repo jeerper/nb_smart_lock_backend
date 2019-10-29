@@ -1,13 +1,10 @@
 package com.summit.controller;
 
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.system.SystemUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.summit.MainAction;
 import com.summit.cbb.utils.page.Page;
 import com.summit.common.entity.ResponseCodeEnum;
@@ -19,7 +16,6 @@ import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.entity.SimpleFaceInfo;
 import com.summit.exception.ErrorMsgException;
-import com.summit.schedule.FaceInfoManagerSchedule;
 import com.summit.sdk.huawei.*;
 import com.summit.sdk.huawei.api.HuaWeiSdkApi;
 import com.summit.sdk.huawei.model.DeviceInfo;
@@ -33,16 +29,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-
-import org.mockito.internal.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -140,8 +131,7 @@ public class FaceInfoManagerController {
         faceInfo.setGender(faceInfoManagerEntity.getGender());
         faceInfo.setProvince(faceInfoManagerEntity.getProvince());
         faceInfo.setCity(faceInfoManagerEntity.getCity());
-        Date birth = CommonUtil.dateFormat.get().parse(faceInfoManagerEntity.getBirthday());
-        faceInfo.setBirthday(birth);
+        faceInfo.setBirthday(faceInfoManagerEntity.getBirthday());
         faceInfo.setCardType(faceInfoManagerEntity.getCardType());
         faceInfo.setCardId(faceInfoManagerEntity.getCardId());
         faceInfo.setFaceType(faceInfoManagerEntity.getFaceType());
@@ -624,7 +614,7 @@ public class FaceInfoManagerController {
                                 String birthday = faceInfojson.getStr("Birthday");
                                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                                 Date birthday1 = sdf.parse(birthday);
-                                updatefaceInfo.setBirthday(birthday1);
+                                updatefaceInfo.setBirthday(sdf.format(birthday1));
                                 String province = faceInfojson.getStr("Province");
                                 updatefaceInfo.setProvince(province);
                                 String city = faceInfojson.getStr("City");
@@ -1187,7 +1177,7 @@ public class FaceInfoManagerController {
                                     String exitbirthday = exitfaceInfojson.getStr("Birthday");
                                     SimpleDateFormat exitsdf = new SimpleDateFormat("yyyy-MM-dd");
                                     Date exitbirthdayDate = exitsdf.parse(exitbirthday);
-                                    delExitFaceInfo.setBirthday(exitbirthdayDate);
+                                    delExitFaceInfo.setBirthday(exitsdf.format(exitbirthdayDate));
                                     String province = exitfaceInfojson.getStr("Province");
                                     delExitFaceInfo.setProvince(province);
                                     String city = exitfaceInfojson.getStr("City");
@@ -1264,7 +1254,7 @@ public class FaceInfoManagerController {
                                     String entrybirthday = entryfaceInfojson.getStr("Birthday");
                                     SimpleDateFormat entrysdf = new SimpleDateFormat("yyyy-MM-dd");
                                     Date entrybirthdayDate = entrysdf.parse(entrybirthday);
-                                    delEntryFaceInfo.setBirthday(entrybirthdayDate);
+                                    delEntryFaceInfo.setBirthday(entrysdf.format(entrybirthdayDate));
                                     String province = entryfaceInfojson.getStr("Province");
                                     delEntryFaceInfo.setProvince(province);
                                     String city = entryfaceInfojson.getStr("City");

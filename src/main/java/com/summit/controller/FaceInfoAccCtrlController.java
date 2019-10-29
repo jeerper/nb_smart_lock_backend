@@ -1,6 +1,5 @@
 package com.summit.controller;
 
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.system.SystemUtil;
@@ -20,15 +19,11 @@ import com.summit.service.AccessControlService;
 import com.summit.service.FaceInfoAccCtrlService;
 import com.summit.service.FaceInfoManagerService;
 import com.summit.util.CommonUtil;
-import com.sun.jna.IntegerType;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Platform;
-import com.sun.jna.Pointer;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
@@ -40,7 +35,6 @@ import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -70,6 +64,9 @@ public class FaceInfoAccCtrlController {
             log.error("人脸信息id列表为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "人脸id列表为空", null);
         }
+        //TODO:人脸授权数据正确性校验完成后，进度数据插入redis
+        //TODO:切换子线程
+        //TODO:返回前端请求
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
         Date date = new Date();
         String nowtime = df.format(date);
@@ -893,7 +890,7 @@ public class FaceInfoAccCtrlController {
                                 String birthday = exitfaceInfojson.getStr("Birthday");
                                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                                 Date birthday1 = sdf.parse(birthday);
-                                exitfaceInfo.setBirthday(birthday1);
+                                exitfaceInfo.setBirthday(sdf.format(birthday1));
                                 String province = exitfaceInfojson.getStr("Province");
                                 exitfaceInfo.setProvince(province);
                                 String city = exitfaceInfojson.getStr("City");
@@ -925,7 +922,7 @@ public class FaceInfoAccCtrlController {
                                 String birthday = entryfaceInfojson.getStr("Birthday");
                                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                                 Date birthday1 = sdf.parse(birthday);
-                                entryfaceInfo.setBirthday(birthday1);
+                                entryfaceInfo.setBirthday(sdf.format(birthday1));
                                 String province = entryfaceInfojson.getStr("Province");
                                 entryfaceInfo.setProvince(province);
                                 String city = entryfaceInfojson.getStr("City");

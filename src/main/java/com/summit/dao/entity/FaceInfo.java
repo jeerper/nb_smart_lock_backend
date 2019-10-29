@@ -6,10 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -47,10 +45,8 @@ public class FaceInfo {
     private Integer gender;
 
     @ApiModelProperty(value = "生日", name = "birthday")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+9")
     @TableField(value = "birthday")
-    private Date birthday;
+    private String birthday;
 
     @ApiModelProperty(value = "省份", name = "province")
     @TableField(value = "province")
