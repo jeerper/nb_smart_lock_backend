@@ -388,7 +388,7 @@ public class FaceInfoAccCtrlController {
                         addface.enCardType = faceInfo.getCardType();
                         addface.enGender = faceInfo.getGender();
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                        String birthday = sdf.format(faceInfo.getBirthday());
+                        String birthday = faceInfo.getBirthday();
                         addface.szBirthday = Arrays.copyOf(birthday.getBytes(), 32);
                         addface.szCardID = Arrays.copyOf(faceInfo.getCardId().getBytes(), 32);
                         if (Platform.isWindows()) {
@@ -476,7 +476,7 @@ public class FaceInfoAccCtrlController {
                         exitaddface.enCardType = faceInfo.getCardType();
                         exitaddface.enGender = faceInfo.getGender();
                         SimpleDateFormat exitsdf = new SimpleDateFormat("yyyy-MM-dd");
-                        String exitbirthday = exitsdf.format(faceInfo.getBirthday());
+                        String exitbirthday = faceInfo.getBirthday();
                         exitaddface.szBirthday = Arrays.copyOf(exitbirthday.getBytes(), 32);
                         exitaddface.szCardID = Arrays.copyOf(faceInfo.getCardId().getBytes(), 32);
                         if (Platform.isWindows()) {
@@ -716,8 +716,8 @@ public class FaceInfoAccCtrlController {
                             PU_FACE_RECORD exitaddface = new PU_FACE_RECORD();
                             exitaddface.enCardType = faceInfo.getCardType();
                             exitaddface.enGender = faceInfo.getGender();
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                            String birthday = sdf.format(faceInfo.getBirthday());
+                            //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                            String birthday = faceInfo.getBirthday();
                             exitaddface.szBirthday = Arrays.copyOf(birthday.getBytes(), 32);
                             exitaddface.szCardID = Arrays.copyOf(faceInfo.getCardId().getBytes(), 32);
                             if (Platform.isWindows()) {
@@ -804,7 +804,7 @@ public class FaceInfoAccCtrlController {
                             entrytaddface.enCardType = faceInfo.getCardType();
                             entrytaddface.enGender = faceInfo.getGender();
                             SimpleDateFormat enrtysdf = new SimpleDateFormat("yyyy-MM-dd");
-                            String entrybirthday = enrtysdf.format(faceInfo.getBirthday());
+                            String entrybirthday = faceInfo.getBirthday();
                             entrytaddface.szBirthday = Arrays.copyOf(entrybirthday.getBytes(), 32);
                             entrytaddface.szCardID = Arrays.copyOf(faceInfo.getCardId().getBytes(), 32);
                             if (Platform.isWindows()) {
@@ -1150,7 +1150,7 @@ public class FaceInfoAccCtrlController {
                                 entryaddfaceInfo.enCardType = qiantaiFaceInfo.getCardType();
                                 entryaddfaceInfo.enGender = qiantaiFaceInfo.getGender();
                                 SimpleDateFormat enrtysdf = new SimpleDateFormat("yyyy-MM-dd");
-                                String entrybirthday = enrtysdf.format(qiantaiFaceInfo.getBirthday());
+                                String entrybirthday = qiantaiFaceInfo.getBirthday();
                                 entryaddfaceInfo.szBirthday = Arrays.copyOf(entrybirthday.getBytes(), 32);
                                 entryaddfaceInfo.szCardID = Arrays.copyOf(qiantaiFaceInfo.getCardId().getBytes(), 32);
                                 if (Platform.isWindows()) {
@@ -1250,7 +1250,7 @@ public class FaceInfoAccCtrlController {
                                 exitaddfaceInfo.enCardType = qiantaiFaceInfo.getCardType();
                                 exitaddfaceInfo.enGender = qiantaiFaceInfo.getGender();
                                 SimpleDateFormat exitysdf = new SimpleDateFormat("yyyy-MM-dd");
-                                String exitbirthday = exitysdf.format(qiantaiFaceInfo.getBirthday());
+                                String exitbirthday = qiantaiFaceInfo.getBirthday();
                                 exitaddfaceInfo.szBirthday = Arrays.copyOf(exitbirthday.getBytes(), 32);
                                 exitaddfaceInfo.szCardID = Arrays.copyOf(qiantaiFaceInfo.getCardId().getBytes(), 32);
                                 if (Platform.isWindows()) {
