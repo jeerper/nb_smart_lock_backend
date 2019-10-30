@@ -1,6 +1,7 @@
 package com.summit.controller;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.system.SystemUtil;
@@ -11,11 +12,26 @@ import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
 import com.summit.constants.CommonConstants;
-import com.summit.dao.entity.*;
+import com.summit.dao.entity.AccessControlInfo;
+import com.summit.dao.entity.City;
+import com.summit.dao.entity.FaceInfo;
+import com.summit.dao.entity.Province;
+import com.summit.dao.entity.SimplePage;
 import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.entity.SimpleFaceInfo;
 import com.summit.exception.ErrorMsgException;
-import com.summit.sdk.huawei.*;
+import com.summit.sdk.huawei.FACE_FIND_CONDITION;
+import com.summit.sdk.huawei.HWPuSDKLibrary;
+import com.summit.sdk.huawei.HWPuSDKLinuxLibrary;
+import com.summit.sdk.huawei.PU_FACE_FEATURE_EXTRACT_S;
+import com.summit.sdk.huawei.PU_FACE_INFO_ADD_S;
+import com.summit.sdk.huawei.PU_FACE_INFO_DELETE_S;
+import com.summit.sdk.huawei.PU_FACE_INFO_FIND_S;
+import com.summit.sdk.huawei.PU_FACE_INFO_MODIFY_S;
+import com.summit.sdk.huawei.PU_FACE_LIB_GET_S;
+import com.summit.sdk.huawei.PU_FACE_LIB_S;
+import com.summit.sdk.huawei.PU_FACE_LIB_SET_S;
+import com.summit.sdk.huawei.PU_FACE_RECORD;
 import com.summit.sdk.huawei.api.HuaWeiSdkApi;
 import com.summit.sdk.huawei.model.DeviceInfo;
 import com.summit.service.FaceInfoAccCtrlService;
@@ -29,13 +45,29 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Administrator on 2019/8/21.
@@ -1319,6 +1351,15 @@ public class FaceInfoManagerController {
         if (!CommonUtil.isEmptyList(notAuthorityfaceids)) {
             try {
                 faceInfoManagerService.delFaceInfoByIds(notAuthorityfaceids);
+                for(String faceId:notAuthorityfaceids){
+                    FaceInfo faceInfo= faceInfoManagerService.selectFaceInfoByID(faceId);
+                    String faceImageFilePath=StrUtil.replace(faceInfo.getFaceImage(), "/", File.separator);
+                    try{
+                        FileUtil.del(SystemUtil.getUserInfo().getCurrentDir()+faceImageFilePath);
+                    }catch(Exception ioException){
+                        log.error("路径文件:"+faceImageFilePath+"删除失败!",ioException);
+                    }
+                }
             } catch (Exception e) {
                 msg = getErrorMsg(msg, e);
                 log.error(msg);
