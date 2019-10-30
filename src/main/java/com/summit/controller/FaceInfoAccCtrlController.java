@@ -12,6 +12,7 @@ import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
 import com.summit.entity.SimFaceInfoAccCtl;
+import com.summit.exception.ErrorMsgException;
 import com.summit.redis.face.FaceAccCtrlCache;
 import com.summit.sdk.huawei.*;
 import com.summit.sdk.huawei.api.HuaWeiSdkApi;
@@ -151,9 +152,9 @@ public class FaceInfoAccCtrlController {
                          * 开启事务。。。
                          */
                         if (exitdeviceInfo == null && entrydeviceInfo == null) {
-                           // throw new ErrorMsgException("出口、入口摄像头设备均未上线");
+                            throw new ErrorMsgException("出口、入口摄像头设备均未上线");
                             simFaceInfoAccCtl.setIsSuccessed("出口、入口摄像头设备均未上线");
-                            faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);//开启缓存
+                            //faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);//开启缓存
                         }
                         /**1 先查询人脸库，如果有人脸库，再查询人脸信息，如果没有则新建人脸库，直接添加人脸信息，如果有人脸库，没有人脸信息，直接添加人脸信息
                          * 2 如果有人脸库再查询人脸信息，
@@ -1224,8 +1225,8 @@ public class FaceInfoAccCtrlController {
                                             simFaceInfoAccCtl.setFaceAccCtrlProgress(exitFaceAccCtrlProgress);
                                             faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);//开启缓存
                                             if (!CommonUtil.isEmptyList(entryfaceInfos)) {
+                                                progress=100/entryfaceInfos.size();
                                                 for (FaceInfo houtaiFaceInfo : entryfaceInfos) {
-                                                    progress=100/entryfaceInfos.size();
                                                     PU_FACE_INFO_DELETE_S entrypuFaceInfoDeleteS = new PU_FACE_INFO_DELETE_S();
                                                     int[] entryuFaceID = new int[100];
                                                     entryuFaceID[0] = Integer.parseInt(houtaiFaceInfo.getFaceid());
@@ -1282,15 +1283,16 @@ public class FaceInfoAccCtrlController {
                                         /**
                                          * 先入口删除摄像头数据库在所传入列表不在的人脸信息
                                          */
+
                                         if (!CommonUtil.isEmptyList(entryfaceInfos)) {
                                             for (FaceInfo houtaiFaceInfo : entryfaceInfos) {
+                                               Integer  progress=100/entryfaceInfos.size();
                                                 boolean needDel = true;
                                                 for (FaceInfo qiantaiFaceInfo : faceInfoList) {
                                                     if (qiantaiFaceInfo.getUserName() != null && qiantaiFaceInfo.getUserName().equals(houtaiFaceInfo.getUserName())) {
                                                         needDel = false;
                                                         break;
                                                     }
-
                                                 }
                                                 if (needDel) {
                                                     /**
@@ -1326,6 +1328,11 @@ public class FaceInfoAccCtrlController {
                                                     HuaWeiSdkApi.printReturnMsg();
                                                     if (entrydel) {
                                                         log.debug("删除入口摄像头中的人脸信息成功:");
+                                                        simFaceInfoAccCtl.setIsSuccessed("取消出口人脸授权");
+                                                        faceAccCtrlprogress=faceAccCtrlprogress+progress;
+                                                        simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
+                                                        simFaceInfoAccCtl.setUserName(houtaiFaceInfo.getUserName());
+                                                        faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
                                                     } else {
                                                         log.error("删除入口摄像头中的人脸信息失败");
                                                     }
@@ -1336,7 +1343,11 @@ public class FaceInfoAccCtrlController {
                                         /**
                                          * 出口删除摄像头数据库在所传入列表不在的人脸信息
                                          */
+                                        Integer exitFaceAccCtrlProgress=0;
+                                        simFaceInfoAccCtl.setFaceAccCtrlProgress(exitFaceAccCtrlProgress);
+                                        faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);//开启缓存
                                         if (!CommonUtil.isEmptyList(exitfaceInfos)) {
+                                            Integer progress=100/entryfaceInfos.size();
                                             for (FaceInfo houtaiFaceInfo : exitfaceInfos) {
                                                 boolean needDel = true;
                                                 for (FaceInfo qiantaiFaceInfo : faceInfoList) {
@@ -1345,6 +1356,7 @@ public class FaceInfoAccCtrlController {
                                                         break;
                                                     }
                                                 }
+                                                boolean exitdell=false;
                                                 if (needDel) {
                                                     /**
                                                      *  删除出口摄像头中的人脸信息，循环删除
@@ -1369,7 +1381,6 @@ public class FaceInfoAccCtrlController {
                                                     exitfacelib.enLibType = exitenLibType;
                                                     exitfacelib.uiThreshold = new NativeLong();
                                                     exitpuFaceInfoDeleteS.stFacelib = exitfacelib;
-                                                    boolean exitdell;
                                                     if (Platform.isWindows()) {
                                                         exitdell = HWPuSDKLibrary.INSTANCE.IVS_PU_DelFaceInfo(exitIdentifyId, exitpuFaceInfoDeleteS);
                                                     } else {
@@ -1379,6 +1390,11 @@ public class FaceInfoAccCtrlController {
                                                     HuaWeiSdkApi.printReturnMsg();
                                                     if (exitdell) {
                                                         log.debug("删除出口摄像头中的人脸信息成功:");
+                                                        simFaceInfoAccCtl.setIsSuccessed("取消出口人脸授权");
+                                                        exitFaceAccCtrlProgress=exitFaceAccCtrlProgress+progress;
+                                                        simFaceInfoAccCtl.setFaceAccCtrlProgress(exitFaceAccCtrlProgress);
+                                                        simFaceInfoAccCtl.setUserName(houtaiFaceInfo.getUserName());
+                                                        faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
                                                     } else {
                                                         log.error("删除入口摄像头中的人脸信息失败");
                                                     }
@@ -1646,13 +1662,13 @@ public class FaceInfoAccCtrlController {
                                                 simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                                 simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
                                                 faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
-                                            }else {
+                                            }/*else {
                                                 simFaceInfoAccCtl.setIsSuccessed("入口、出口人脸授权失败");
                                                 faceAccCtrlprogress=faceAccCtrlprogress+progress;
                                                 simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                                 simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
                                                 faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
-                                            }
+                                            }*/
                                         }
                                     }
                                 } else {
