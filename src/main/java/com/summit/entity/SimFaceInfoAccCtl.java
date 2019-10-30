@@ -6,7 +6,7 @@ public class SimFaceInfoAccCtl {
     /**
      * 授权进度
      */
-    private  Integer faceAccCtrlProgress;
+    private Float faceAccCtrlProgress;
     /**
      * 人脸姓名
      */
@@ -16,11 +16,11 @@ public class SimFaceInfoAccCtl {
      */
     private String isSuccessed;
 
-    public SimFaceInfoAccCtl(Integer faceAccCtrlProgress) {
+    public SimFaceInfoAccCtl(Float faceAccCtrlProgress) {
         this.faceAccCtrlProgress = faceAccCtrlProgress;
     }
 
-    public SimFaceInfoAccCtl(Integer faceAccCtrlProgress, String userName, String isSuccessed) {
+    public SimFaceInfoAccCtl(Float faceAccCtrlProgress, String userName, String isSuccessed) {
         this.faceAccCtrlProgress = faceAccCtrlProgress;
         this.userName = userName;
         this.isSuccessed = isSuccessed;

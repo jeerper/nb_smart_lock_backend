@@ -74,7 +74,7 @@ public class FaceInfoAccCtrlController {
         //TODO:切换子线程
         //TODO:返回前端请求
         SimFaceInfoAccCtl simFaceInfoAccCtl=new SimFaceInfoAccCtl();
-        Integer faceAccCtrlprogress=0;
+        Float faceAccCtrlprogress=0.00f;
         simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
         faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);//开启缓存
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
@@ -142,9 +142,9 @@ public class FaceInfoAccCtrlController {
          */
         Observable.just(faceAccCtrlprogress)
                 .observeOn(Schedulers.io())
-                .subscribe(new Action1<Integer>() {
+                .subscribe(new Action1<Float>() {
                     @Override
-                    public void call(Integer faceAccCtrlprogress) {
+                    public void call(Float faceAccCtrlprogress) {
                         //出口
                         Integer exitenLibType;//人脸库类型
                         Integer exitulFaceLibID = null;//人脸库id
@@ -414,7 +414,7 @@ public class FaceInfoAccCtrlController {
                                     }
                                     //添加人脸信息，循环添加
                                     for (FaceInfo faceInfo : faceInfoList) {
-                                        Integer progress=100/faceInfoList.size();//份数
+                                        float progress =100/faceInfoList.size();//份数
                                         //入口设置人脸库对象
                                         System.out.println("添加入口人脸信息-------------------------------------------------------------");
                                         PU_FACE_LIB_S stFacelib1 = new PU_FACE_LIB_S();
@@ -1170,13 +1170,13 @@ public class FaceInfoAccCtrlController {
                                         }
                                         //若传入集合列表为空，则需要删除所有人脸
                                         if (faceInfoList.isEmpty()) {
-                                            Integer progress=null;
+                                            float progress=0;
                                             /**
                                              * 删除出口摄像头人脸
                                              */
                                             if (!CommonUtil.isEmptyList(exitfaceInfos)) {
                                                 for (FaceInfo houtaiFaceInfo : exitfaceInfos) {
-                                                    progress=100/exitfaceInfos.size();
+                                                    progress= 100/exitfaceInfos.size();
                                                     PU_FACE_INFO_DELETE_S exitpuFaceInfoDeleteS = new PU_FACE_INFO_DELETE_S();
                                                     int[] exituFaceID = new int[100];
                                                     exituFaceID[0] = Integer.parseInt(houtaiFaceInfo.getFaceid());
@@ -1220,7 +1220,7 @@ public class FaceInfoAccCtrlController {
                                             /**
                                              * 删除入口口摄像头人脸
                                              */
-                                            Integer exitFaceAccCtrlProgress=0;
+                                            float exitFaceAccCtrlProgress=0;
                                             simFaceInfoAccCtl.setFaceAccCtrlProgress(exitFaceAccCtrlProgress);
                                             faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);//开启缓存
                                             if (!CommonUtil.isEmptyList(entryfaceInfos)) {
@@ -1341,7 +1341,7 @@ public class FaceInfoAccCtrlController {
                                         /**
                                          * 出口删除摄像头数据库在所传入列表不在的人脸信息
                                          */
-                                        Integer exitFaceAccCtrlProgress=0;
+                                        Float exitFaceAccCtrlProgress=0.00f;
                                         simFaceInfoAccCtl.setFaceAccCtrlProgress(exitFaceAccCtrlProgress);
                                         faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);//开启缓存
                                         if (!CommonUtil.isEmptyList(exitfaceInfos)) {
