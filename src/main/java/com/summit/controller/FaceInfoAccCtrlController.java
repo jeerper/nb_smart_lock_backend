@@ -101,6 +101,43 @@ public class FaceInfoAccCtrlController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸门禁授权失败,人脸过期", null);
         }
         log.debug("人脸门禁授权成功");
+
+        AccessControlInfo accessControlInfo = accessControlService.selectAccCtrlByIdBeyondAuthority(accessControlId);
+        String entryCameraIp = accessControlInfo.getEntryCameraIp();
+        String exitCameraIp = accessControlInfo.getExitCameraIp();
+        List<FaceInfo> faceInfoList = new ArrayList<>();
+        for (String faceid : faceids) {
+            FaceInfo faceInfo = faceInfoManagerService.selectFaceInfoByID(faceid);
+            Date faceEndTime = faceInfo.getFaceEndTime();
+            long faceEndDate = faceEndTime.getTime();
+            if (nowDate <= faceEndDate) {
+                log.error("没有过期的人脸id");
+                faceInfoList.add(faceInfo);
+            }
+        }
+        //把人脸信息集合先加入到入口摄像头中
+        DeviceInfo entrydeviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(entryCameraIp);
+        NativeLong entryIdentifyId;
+        if (entrydeviceInfo == null) {
+            entryIdentifyId = new NativeLong(1111);
+        } else {
+            entryIdentifyId = entrydeviceInfo.getUlIdentifyId();
+        }
+        //把人脸信息再加入到出口摄像头中
+        DeviceInfo exitdeviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(exitCameraIp);
+        NativeLong exitIdentifyId;
+        if (exitdeviceInfo == null) {
+            exitIdentifyId = new NativeLong(2222);
+        } else {
+            exitIdentifyId = exitdeviceInfo.getUlIdentifyId();
+        }
+        /**
+         * 开启事务。。。
+         */
+        if (exitdeviceInfo == null && entrydeviceInfo == null) {
+            //throw new ErrorMsgException("出口、入口摄像头设备均未上线");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"出口、入口摄像头设备均未上线",null);
+        }
         /**
          * 开始向摄像头授权
          */
@@ -109,19 +146,6 @@ public class FaceInfoAccCtrlController {
                 .subscribe(new Action1<Integer>() {
                     @Override
                     public void call(Integer faceAccCtrlprogress) {
-                        AccessControlInfo accessControlInfo = accessControlService.selectAccCtrlByIdBeyondAuthority(accessControlId);
-                        String entryCameraIp = accessControlInfo.getEntryCameraIp();
-                        String exitCameraIp = accessControlInfo.getExitCameraIp();
-                        List<FaceInfo> faceInfoList = new ArrayList<>();
-                        for (String faceid : faceids) {
-                            FaceInfo faceInfo = faceInfoManagerService.selectFaceInfoByID(faceid);
-                            Date faceEndTime = faceInfo.getFaceEndTime();
-                            long faceEndDate = faceEndTime.getTime();
-                            if (nowDate <= faceEndDate) {
-                                log.error("没有过期的人脸id");
-                                faceInfoList.add(faceInfo);
-                            }
-                        }
                         //出口
                         Integer exitenLibType;//人脸库类型
                         Integer exitulFaceLibID = null;//人脸库id
@@ -132,30 +156,6 @@ public class FaceInfoAccCtrlController {
                         Integer entryulFaceLibID = null;//人脸库id
                         String entryszLibName;//人脸库名称
                         Integer entrytuiThreshold;//布控的阀值
-                        //把人脸信息集合先加入到入口摄像头中
-                        DeviceInfo entrydeviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(entryCameraIp);
-                        NativeLong entryIdentifyId;
-                        if (entrydeviceInfo == null) {
-                            entryIdentifyId = new NativeLong(1111);
-                        } else {
-                            entryIdentifyId = entrydeviceInfo.getUlIdentifyId();
-                        }
-                        //把人脸信息再加入到出口摄像头中
-                        DeviceInfo exitdeviceInfo = HuaWeiSdkApi.DEVICE_MAP.get(exitCameraIp);
-                        NativeLong exitIdentifyId;
-                        if (exitdeviceInfo == null) {
-                            exitIdentifyId = new NativeLong(2222);
-                        } else {
-                            exitIdentifyId = exitdeviceInfo.getUlIdentifyId();
-                        }
-                        /**
-                         * 开启事务。。。
-                         */
-                        if (exitdeviceInfo == null && entrydeviceInfo == null) {
-                            throw new ErrorMsgException("出口、入口摄像头设备均未上线");
-                            //simFaceInfoAccCtl.setIsSuccessed("出口、入口摄像头设备均未上线");
-                            //faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);//开启缓存
-                        }
                         /**1 先查询人脸库，如果有人脸库，再查询人脸信息，如果没有则新建人脸库，直接添加人脸信息，如果有人脸库，没有人脸信息，直接添加人脸信息
                          * 2 如果有人脸库再查询人脸信息，
                          * 3 若传入集合列表为空，则直接删除人脸
