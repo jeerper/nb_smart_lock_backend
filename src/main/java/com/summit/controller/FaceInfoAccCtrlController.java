@@ -12,7 +12,6 @@ import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
 import com.summit.entity.SimFaceInfoAccCtl;
-import com.summit.exception.ErrorMsgException;
 import com.summit.redis.face.FaceAccCtrlCache;
 import com.summit.sdk.huawei.*;
 import com.summit.sdk.huawei.api.HuaWeiSdkApi;
@@ -156,6 +155,7 @@ public class FaceInfoAccCtrlController {
                         Integer entryulFaceLibID = null;//人脸库id
                         String entryszLibName;//人脸库名称
                         Integer entrytuiThreshold;//布控的阀值
+
                         /**1 先查询人脸库，如果有人脸库，再查询人脸信息，如果没有则新建人脸库，直接添加人脸信息，如果有人脸库，没有人脸信息，直接添加人脸信息
                          * 2 如果有人脸库再查询人脸信息，
                          * 3 若传入集合列表为空，则直接删除人脸
@@ -164,7 +164,6 @@ public class FaceInfoAccCtrlController {
                          */
                         Integer exitPrintReturnMsg = null; //出口人脸添加返回码
                         Integer entryPrintReturnMsg = null; //入口人脸添加返回码
-
                         /**
                          * 先查询出口人脸库
                          */
@@ -1266,6 +1265,7 @@ public class FaceInfoAccCtrlController {
                                                         log.error("人脸门禁摄像头入口全部取消授权失败");
                                                     }
                                                 }
+
                                             }
                                             if (exitdeviceInfo == null && entrydeviceInfo == null) {
                                                 //return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "取消人脸授权出口、入口摄像头失败，设备未上线", null);
@@ -1675,7 +1675,7 @@ public class FaceInfoAccCtrlController {
                                     System.out.println("查询第一个人脸库人脸信息失败");
                                    //return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "查询两个摄像头人脸信息失败,两个摄像头设备未上线", null);
                                     log.debug("查询两个摄像头人脸信息失败,两个摄像头设备未上线");
-                                    faceAccCtrlCache.delSimFaceInfoAccCtl(accessControlId);
+                                    faceAccCtrlCache.delSimFaceInfoAccCtl(CommonConstants.FaceAccCtrl+accessControlId);
                                     return;
                                 }
                             }
@@ -1683,7 +1683,7 @@ public class FaceInfoAccCtrlController {
                             System.out.println("查询摄像头人脸库失败");
                             //return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "查询摄像头人脸库失败,两个摄像头同时未在线", null);
                             log.debug("查询摄像头人脸库失败,两个摄像头同时未在线");
-                            faceAccCtrlCache.delSimFaceInfoAccCtl(accessControlId);
+                            faceAccCtrlCache.delSimFaceInfoAccCtl(CommonConstants.FaceAccCtrl+accessControlId);
                             return;
                         }
                         try {
@@ -1788,25 +1788,25 @@ public class FaceInfoAccCtrlController {
                         }
                         if (exitbukong && entrybukong){
                             log.debug("修改出口、入口人脸库布控成功");
-                           // faceAccCtrlCache.delSimFaceInfoAccCtl(accessControlId);
+                           faceAccCtrlCache.delSimFaceInfoAccCtl(CommonConstants.FaceAccCtrl+accessControlId);
                         }else if (exitbukong) {
                             log.debug("出口摄像头人脸授权成功");
-                            faceAccCtrlCache.delSimFaceInfoAccCtl(accessControlId);
+                            faceAccCtrlCache.delSimFaceInfoAccCtl(CommonConstants.FaceAccCtrl+accessControlId);
                         }else if (entrybukong){
                             log.debug("入口摄像头人脸授权成功");
-                            faceAccCtrlCache.delSimFaceInfoAccCtl(accessControlId);
+                            faceAccCtrlCache.delSimFaceInfoAccCtl(CommonConstants.FaceAccCtrl+accessControlId);
                         }else if (entrybuKongPrintReturnMsg != null && entrybuKongPrintReturnMsg == 12116 && exitbuKongPrintReturnMsg != null && exitbuKongPrintReturnMsg == 12116) {
                             log.debug("出口、入口摄像头没有人脸特征值---");
-                            faceAccCtrlCache.delSimFaceInfoAccCtl(accessControlId);
+                            faceAccCtrlCache.delSimFaceInfoAccCtl(CommonConstants.FaceAccCtrl+accessControlId);
                         } else if (exitbuKongPrintReturnMsg != null && exitbuKongPrintReturnMsg == 12116) {
                             log.debug("出口摄像头没有人脸特征值---");
-                            faceAccCtrlCache.delSimFaceInfoAccCtl(accessControlId);
+                            faceAccCtrlCache.delSimFaceInfoAccCtl(CommonConstants.FaceAccCtrl+accessControlId);
                         } else if (entrybuKongPrintReturnMsg != null && entrybuKongPrintReturnMsg == 12116) {
                             log.debug("入口摄像头没有人脸特征值---");
-                            faceAccCtrlCache.delSimFaceInfoAccCtl(accessControlId);
+                            faceAccCtrlCache.delSimFaceInfoAccCtl(CommonConstants.FaceAccCtrl+accessControlId);
                         } else {
                             log.error("两个摄像头均未授权成功");
-                            faceAccCtrlCache.delSimFaceInfoAccCtl(accessControlId);
+                            faceAccCtrlCache.delSimFaceInfoAccCtl(CommonConstants.FaceAccCtrl+accessControlId);
                         }
                     }
                 }, new Action1<Throwable>() {
