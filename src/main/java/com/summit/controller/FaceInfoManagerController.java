@@ -1,7 +1,6 @@
 package com.summit.controller;
 
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.system.SystemUtil;
@@ -1351,15 +1350,6 @@ public class FaceInfoManagerController {
         if (!CommonUtil.isEmptyList(notAuthorityfaceids)) {
             try {
                 faceInfoManagerService.delFaceInfoByIds(notAuthorityfaceids);
-                for(String faceId:notAuthorityfaceids){
-                    FaceInfo faceInfo= faceInfoManagerService.selectFaceInfoByID(faceId);
-                    String faceImageFilePath=StrUtil.replace(faceInfo.getFaceImage(), "/", File.separator);
-                    try{
-                        FileUtil.del(SystemUtil.getUserInfo().getCurrentDir()+faceImageFilePath);
-                    }catch(Exception ioException){
-                        log.error("路径文件:"+faceImageFilePath+"删除失败!",ioException);
-                    }
-                }
             } catch (Exception e) {
                 log.error(msg,e);
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg, null);
