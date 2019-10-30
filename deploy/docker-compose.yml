@@ -11,5 +11,5 @@ services:
     network_mode: "host"
     volumes:
       - ./logs:/opt/App/logs
-      - ./snapshot:/opt/App/snapshot
+      - /home/nb_smart_lock_backend/snapshot:/opt/App/snapshot
     user: root
