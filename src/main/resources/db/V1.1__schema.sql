@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS `face_info`  (
   `user_name` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '人脸名称',
   `user_id` varchar(48) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '锁操作人id',
   `gender` int(11) NULL DEFAULT NULL COMMENT '性别。0男，1女，2未知',
-  `birthday` date NULL DEFAULT NULL COMMENT '生日',
+  `birthday` varchar(225) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '生日',
   `province` varchar(16) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '省份',
   `city` varchar(16) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '城市',
   `card_type` int(11) NULL DEFAULT NULL COMMENT '证件类型。证件类型。0：身份证，1：护照，2：军官证，3：驾驶证，4：未知',
