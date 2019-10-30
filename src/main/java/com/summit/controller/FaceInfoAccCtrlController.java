@@ -1176,7 +1176,7 @@ public class FaceInfoAccCtrlController {
                                              */
                                             if (!CommonUtil.isEmptyList(exitfaceInfos)) {
                                                 for (FaceInfo houtaiFaceInfo : exitfaceInfos) {
-                                                    progress=100/faceInfoList.size();
+                                                    progress=100/exitfaceInfos.size();
                                                     PU_FACE_INFO_DELETE_S exitpuFaceInfoDeleteS = new PU_FACE_INFO_DELETE_S();
                                                     int[] exituFaceID = new int[100];
                                                     exituFaceID[0] = Integer.parseInt(houtaiFaceInfo.getFaceid());
@@ -1222,7 +1222,7 @@ public class FaceInfoAccCtrlController {
                                              */
                                             if (!CommonUtil.isEmptyList(entryfaceInfos)) {
                                                 for (FaceInfo houtaiFaceInfo : entryfaceInfos) {
-                                                    progress=100/faceInfoList.size();
+                                                    progress=100/entryfaceInfos.size();
                                                     PU_FACE_INFO_DELETE_S entrypuFaceInfoDeleteS = new PU_FACE_INFO_DELETE_S();
                                                     int[] entryuFaceID = new int[100];
                                                     entryuFaceID[0] = Integer.parseInt(houtaiFaceInfo.getFaceid());
