@@ -1,5 +1,6 @@
 package com.summit.controller;
 
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.system.SystemUtil;
@@ -414,7 +415,8 @@ public class FaceInfoAccCtrlController {
                                     //添加人脸信息，循环添加
                                     for (FaceInfo faceInfo : faceInfoList) {
                                         //float progress = new BigDecimal((float) 100/faceInfoList.size()).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
-                                        Double progress = CommonUtil.toFloat(100, faceInfoList.size());
+                                        //Double progress = CommonUtil.toFloat(100, faceInfoList.size());
+                                        double progress = NumberUtil.div(100, faceInfoList.size(), 2);
                                         //入口设置人脸库对象
                                         System.out.println("添加入口人脸信息-------------------------------------------------------------");
                                         PU_FACE_LIB_S stFacelib1 = new PU_FACE_LIB_S();
@@ -842,7 +844,8 @@ public class FaceInfoAccCtrlController {
                                     if (exitfaceRecordArrySize == 0 || entrytfaceRecordArrySize == 0) {//有人脸库没有人脸信息,这时候直接添加所传的人脸信息
                                         for (FaceInfo faceInfo : faceInfoList) {
                                             //float progress = new BigDecimal((float) 100/faceInfoList.size()).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
-                                            Double progress = CommonUtil.toFloat(100, faceInfoList.size());
+                                            // Double progress = CommonUtil.toFloat(100, faceInfoList.size());
+                                            double progress = NumberUtil.div(100, faceInfoList.size(), 2);
                                             //设置出口人脸库对象
                                             System.out.println("出口人脸库对象------------------------------");
                                             PU_FACE_LIB_S exitstFacelib1 = new PU_FACE_LIB_S();
@@ -1178,7 +1181,8 @@ public class FaceInfoAccCtrlController {
                                             if (!CommonUtil.isEmptyList(exitfaceInfos)) {
                                                 for (FaceInfo houtaiFaceInfo : exitfaceInfos) {
                                                    // progress = new BigDecimal((float) 100/exitfaceInfos.size()).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
-                                                     progress = CommonUtil.toFloat(100, exitfaceInfos.size());
+                                                   // progress = CommonUtil.toFloat(100, exitfaceInfos.size());
+                                                    progress = NumberUtil.div(100, exitfaceInfos.size(), 2);
                                                     PU_FACE_INFO_DELETE_S exitpuFaceInfoDeleteS = new PU_FACE_INFO_DELETE_S();
                                                     int[] exituFaceID = new int[100];
                                                     exituFaceID[0] = Integer.parseInt(houtaiFaceInfo.getFaceid());
@@ -1227,8 +1231,9 @@ public class FaceInfoAccCtrlController {
                                             faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);//开启缓存
                                             if (!CommonUtil.isEmptyList(entryfaceInfos)) {
                                                 //progress = new BigDecimal((float) 100/entryfaceInfos.size()).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
-                                                 progress = CommonUtil.toFloat(100, entryfaceInfos.size());
-                                                for (FaceInfo houtaiFaceInfo : entryfaceInfos) {
+                                                // progress = CommonUtil.toFloat(100, entryfaceInfos.size());
+                                                progress = NumberUtil.div(100, entryfaceInfos.size(), 2);
+                                                 for (FaceInfo houtaiFaceInfo : entryfaceInfos) {
                                                     PU_FACE_INFO_DELETE_S entrypuFaceInfoDeleteS = new PU_FACE_INFO_DELETE_S();
                                                     int[] entryuFaceID = new int[100];
                                                     entryuFaceID[0] = Integer.parseInt(houtaiFaceInfo.getFaceid());
@@ -1288,7 +1293,8 @@ public class FaceInfoAccCtrlController {
                                         if (!CommonUtil.isEmptyList(entryfaceInfos)) {
                                             for (FaceInfo houtaiFaceInfo : entryfaceInfos) {
                                                 //float progress = new BigDecimal((float) 100/entryfaceInfos.size()).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
-                                                Double progress = CommonUtil.toFloat(100, entryfaceInfos.size());
+                                                //Double progress = CommonUtil.toFloat(100, entryfaceInfos.size());
+                                                Double progress = NumberUtil.div(100, entryfaceInfos.size(), 2);
                                                 boolean needDel = true;
                                                 for (FaceInfo qiantaiFaceInfo : faceInfoList) {
                                                     if (qiantaiFaceInfo.getUserName() != null && qiantaiFaceInfo.getUserName().equals(houtaiFaceInfo.getUserName())) {
@@ -1350,7 +1356,8 @@ public class FaceInfoAccCtrlController {
                                         faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);//开启缓存
                                         if (!CommonUtil.isEmptyList(exitfaceInfos)) {
                                             //float progress = new BigDecimal((float) 100/exitfaceInfos.size()).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
-                                            Double progress = CommonUtil.toFloat(100, exitfaceInfos.size());
+                                            //Double progress = CommonUtil.toFloat(100, exitfaceInfos.size());
+                                            Double progress = NumberUtil.div(100, exitfaceInfos.size(), 2);
                                             for (FaceInfo houtaiFaceInfo : exitfaceInfos) {
                                                 boolean needDel = true;
                                                 for (FaceInfo qiantaiFaceInfo : faceInfoList) {
@@ -1408,7 +1415,8 @@ public class FaceInfoAccCtrlController {
                                         // System.out.println("前台所传的人脸信息集合："+faceInfoList);
                                         for (FaceInfo qiantaiFaceInfo : faceInfoList) {
                                             //float progress = new BigDecimal((float) 100/faceInfoList.size()).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
-                                            Double progress = CommonUtil.toFloat(100, faceInfoList.size());
+                                            //Double progress = CommonUtil.toFloat(100, faceInfoList.size());
+                                            Double progress = NumberUtil.div(100, faceInfoList.size(), 2);
                                             boolean needAddEntry = true;
                                             if (!CommonUtil.isEmptyList(entryfaceInfos)) {
                                                 for (FaceInfo houtaiFaceInfo : entryfaceInfos) {
