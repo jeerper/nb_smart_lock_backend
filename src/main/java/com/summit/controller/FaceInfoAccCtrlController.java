@@ -1206,7 +1206,7 @@ public class FaceInfoAccCtrlController {
                                                     HuaWeiSdkApi.printReturnMsg();
                                                     if (exitdel) {
                                                         log.debug("人脸门禁摄像头出口全部取消授权成功");
-                                                        simFaceInfoAccCtl.setIsSuccessed("人脸门禁摄像头出口全部取消授权成功");
+                                                        simFaceInfoAccCtl.setIsSuccessed("取消出口人脸授权");
                                                         faceAccCtrlprogress=faceAccCtrlprogress+progress;
                                                         simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                                         simFaceInfoAccCtl.setUserName(houtaiFaceInfo.getUserName());
@@ -1252,7 +1252,7 @@ public class FaceInfoAccCtrlController {
                                                     HuaWeiSdkApi.printReturnMsg();
                                                     if (entrydel) {
                                                         log.debug("人脸门禁摄像头入口全部取消授权成功");
-                                                        simFaceInfoAccCtl.setIsSuccessed("人脸门禁摄像头出口全部取消授权成功");
+                                                        simFaceInfoAccCtl.setIsSuccessed("取消入口人脸授权");
                                                         faceAccCtrlprogress=faceAccCtrlprogress+progress;
                                                         simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                                         simFaceInfoAccCtl.setUserName(houtaiFaceInfo.getUserName());
