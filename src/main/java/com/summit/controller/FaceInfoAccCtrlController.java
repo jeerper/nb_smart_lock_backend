@@ -12,6 +12,7 @@ import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
 import com.summit.entity.SimFaceInfoAccCtl;
+import com.summit.exception.ErrorMsgException;
 import com.summit.redis.face.FaceAccCtrlCache;
 import com.summit.sdk.huawei.*;
 import com.summit.sdk.huawei.api.HuaWeiSdkApi;
@@ -94,13 +95,6 @@ public class FaceInfoAccCtrlController {
             log.error("门禁信息id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "门禁信息id为空", null);
         }
-        int result = faceInfoAccCtrlService.authorityFaceInfoAccCtrl(accessControlId, unexpiredFaceIds);
-        if (result == CommonConstants.UPDATE_ERROR) {
-            log.error("人脸门禁授权失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸门禁授权失败,人脸过期", null);
-        }
-        log.debug("人脸门禁授权成功");
-
         AccessControlInfo accessControlInfo = accessControlService.selectAccCtrlByIdBeyondAuthority(accessControlId);
         String entryCameraIp = accessControlInfo.getEntryCameraIp();
         String exitCameraIp = accessControlInfo.getExitCameraIp();
@@ -137,6 +131,12 @@ public class FaceInfoAccCtrlController {
             //throw new ErrorMsgException("出口、入口摄像头设备均未上线");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"出口、入口摄像头设备均未上线",null);
         }
+        int result = faceInfoAccCtrlService.authorityFaceInfoAccCtrl(accessControlId, unexpiredFaceIds);
+        if (result == CommonConstants.UPDATE_ERROR) {
+            log.error("人脸门禁授权失败");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸门禁授权失败,人脸过期", null);
+        }
+        log.debug("人脸门禁授权成功");
         /**
          * 开始向摄像头授权
          */
@@ -1265,7 +1265,6 @@ public class FaceInfoAccCtrlController {
                                                         log.error("人脸门禁摄像头入口全部取消授权失败");
                                                     }
                                                 }
-
                                             }
                                             if (exitdeviceInfo == null && entrydeviceInfo == null) {
                                                 //return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "取消人脸授权出口、入口摄像头失败，设备未上线", null);
@@ -1283,7 +1282,6 @@ public class FaceInfoAccCtrlController {
                                         /**
                                          * 先入口删除摄像头数据库在所传入列表不在的人脸信息
                                          */
-
                                         if (!CommonUtil.isEmptyList(entryfaceInfos)) {
                                             for (FaceInfo houtaiFaceInfo : entryfaceInfos) {
                                                Integer  progress=100/entryfaceInfos.size();
