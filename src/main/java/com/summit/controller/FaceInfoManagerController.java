@@ -1361,8 +1361,7 @@ public class FaceInfoManagerController {
                     }
                 }
             } catch (Exception e) {
-                msg = getErrorMsg(msg, e);
-                log.error(msg);
+                log.error(msg,e);
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg, null);
             }
         }
