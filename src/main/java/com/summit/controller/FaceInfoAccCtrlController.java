@@ -841,7 +841,7 @@ public class FaceInfoAccCtrlController {
                                     }
                                     if (exitfaceRecordArrySize == 0 || entrytfaceRecordArrySize == 0) {//有人脸库没有人脸信息,这时候直接添加所传的人脸信息
                                         for (FaceInfo faceInfo : faceInfoList) {
-                                            Integer progress=100/faceInfoList.size();
+                                            float progress=100/faceInfoList.size();
                                             //设置出口人脸库对象
                                             System.out.println("出口人脸库对象------------------------------");
                                             PU_FACE_LIB_S exitstFacelib1 = new PU_FACE_LIB_S();
@@ -1284,7 +1284,7 @@ public class FaceInfoAccCtrlController {
                                          */
                                         if (!CommonUtil.isEmptyList(entryfaceInfos)) {
                                             for (FaceInfo houtaiFaceInfo : entryfaceInfos) {
-                                               Integer  progress=100/entryfaceInfos.size();
+                                               float  progress=100/entryfaceInfos.size();
                                                 boolean needDel = true;
                                                 for (FaceInfo qiantaiFaceInfo : faceInfoList) {
                                                     if (qiantaiFaceInfo.getUserName() != null && qiantaiFaceInfo.getUserName().equals(houtaiFaceInfo.getUserName())) {
@@ -1345,7 +1345,7 @@ public class FaceInfoAccCtrlController {
                                         simFaceInfoAccCtl.setFaceAccCtrlProgress(exitFaceAccCtrlProgress);
                                         faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);//开启缓存
                                         if (!CommonUtil.isEmptyList(exitfaceInfos)) {
-                                            Integer progress=100/entryfaceInfos.size();
+                                            float progress=100/entryfaceInfos.size();
                                             for (FaceInfo houtaiFaceInfo : exitfaceInfos) {
                                                 boolean needDel = true;
                                                 for (FaceInfo qiantaiFaceInfo : faceInfoList) {
@@ -1402,7 +1402,7 @@ public class FaceInfoAccCtrlController {
                                         //再添加传入列表在数据库中找不到的人脸信息
                                         // System.out.println("前台所传的人脸信息集合："+faceInfoList);
                                         for (FaceInfo qiantaiFaceInfo : faceInfoList) {
-                                            Integer progress=100/faceInfoList.size();
+                                            float progress=100/faceInfoList.size();
                                             boolean needAddEntry = true;
                                             if (!CommonUtil.isEmptyList(entryfaceInfos)) {
                                                 for (FaceInfo houtaiFaceInfo : entryfaceInfos) {
