@@ -1,7 +1,5 @@
 package com.summit.constants;
 
-import java.text.SimpleDateFormat;
-
 public class CommonConstants {
 
     /**
@@ -73,4 +71,9 @@ public class CommonConstants {
      * 查询锁状态超时时间，单位秒
      */
     public static final int QUERY_LOCK_STATUS_OUTTIME = 2;
+
+    /**
+     * 人脸门禁授权前缀
+     */
+    public static final String FaceAccCtrl = "faceAccCtrl.";
 }
