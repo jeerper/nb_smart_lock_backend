@@ -5,10 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Slf4j
@@ -210,4 +209,16 @@ public class CommonUtil {
         }
         return  baseStr;
     }
+    /**
+     * TODO 除法运算，保留小数
+     * @param denominator 被除数 分母
+     * @param numerator 除数 分子
+     * @return 商
+     */
+    public static Double toFloat(int denominator,int numerator) {
+        // TODO 自动生成的方法存根
+        DecimalFormat df=new DecimalFormat("0.00");//设置保留位数
+        return Double.valueOf(df.format((float)denominator/numerator));
+    }
+
 }
