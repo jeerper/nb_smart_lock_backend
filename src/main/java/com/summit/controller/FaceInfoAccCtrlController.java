@@ -153,7 +153,7 @@ public class FaceInfoAccCtrlController {
                          */
                         if (exitdeviceInfo == null && entrydeviceInfo == null) {
                             throw new ErrorMsgException("出口、入口摄像头设备均未上线");
-                            simFaceInfoAccCtl.setIsSuccessed("出口、入口摄像头设备均未上线");
+                            //simFaceInfoAccCtl.setIsSuccessed("出口、入口摄像头设备均未上线");
                             //faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);//开启缓存
                         }
                         /**1 先查询人脸库，如果有人脸库，再查询人脸信息，如果没有则新建人脸库，直接添加人脸信息，如果有人脸库，没有人脸信息，直接添加人脸信息
