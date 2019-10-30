@@ -1,11 +1,17 @@
 package com.summit.service.impl;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.system.SystemUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
 import com.summit.constants.CommonConstants;
-import com.summit.dao.entity.*;
+import com.summit.dao.entity.City;
+import com.summit.dao.entity.FaceInfo;
+import com.summit.dao.entity.Province;
+import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.CityDao;
 import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.dao.repository.ProvinceDao;
@@ -16,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -52,6 +59,18 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         if (faceInfoIds==null || faceInfoIds.isEmpty()){
             log.error("人脸信息id列表为空");
             return CommonConstants.UPDATE_ERROR;
+        }
+        for(String faceId:faceInfoIds){
+            FaceInfo faceInfo= faceInfoManagerDao.selectFaceInfoByID(faceId);
+            if(faceInfo==null|| StrUtil.isBlank(faceInfo.getFaceImage())){
+                continue;
+            }
+            String faceImageFilePath=StrUtil.replace(faceInfo.getFaceImage(), "/", File.separator);
+            try{
+                FileUtil.del(SystemUtil.getUserInfo().getCurrentDir()+faceImageFilePath);
+            }catch(Exception ioException){
+                log.error("路径文件:"+faceImageFilePath+"删除失败!",ioException);
+            }
         }
         return faceInfoManagerDao.deleteBatchIds(faceInfoIds);
     }
