@@ -1587,6 +1587,8 @@ public class FaceInfoAccCtrlController {
                                                 simFaceInfoAccCtl.setIsSuccessed("入口人脸授权失败，人脸图片重复");
                                             }else if (exitPrintReturnMsg != null && exitPrintReturnMsg == 12108 && entryPrintReturnMsg != null && entryPrintReturnMsg == 12108){
                                                 simFaceInfoAccCtl.setIsSuccessed("入口、出口人脸授权失败，人脸图片重复");
+                                            }else{
+                                                simFaceInfoAccCtl.setIsSuccessed("哈哈");
                                             }
                                             faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
                                             simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
