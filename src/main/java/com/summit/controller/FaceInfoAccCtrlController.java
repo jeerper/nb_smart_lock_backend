@@ -1170,12 +1170,13 @@ public class FaceInfoAccCtrlController {
                                         }
                                         //若传入集合列表为空，则需要删除所有人脸
                                         if (faceInfoList.isEmpty()) {
-                                            Integer progress=100/faceInfoList.size();
+                                            Integer progress=null;
                                             /**
                                              * 删除出口摄像头人脸
                                              */
                                             if (!CommonUtil.isEmptyList(exitfaceInfos)) {
                                                 for (FaceInfo houtaiFaceInfo : exitfaceInfos) {
+                                                    progress=100/faceInfoList.size();
                                                     PU_FACE_INFO_DELETE_S exitpuFaceInfoDeleteS = new PU_FACE_INFO_DELETE_S();
                                                     int[] exituFaceID = new int[100];
                                                     exituFaceID[0] = Integer.parseInt(houtaiFaceInfo.getFaceid());
@@ -1221,6 +1222,7 @@ public class FaceInfoAccCtrlController {
                                              */
                                             if (!CommonUtil.isEmptyList(entryfaceInfos)) {
                                                 for (FaceInfo houtaiFaceInfo : entryfaceInfos) {
+                                                    progress=100/faceInfoList.size();
                                                     PU_FACE_INFO_DELETE_S entrypuFaceInfoDeleteS = new PU_FACE_INFO_DELETE_S();
                                                     int[] entryuFaceID = new int[100];
                                                     entryuFaceID[0] = Integer.parseInt(houtaiFaceInfo.getFaceid());
