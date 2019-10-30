@@ -70,6 +70,11 @@ public class FaceInfoAccCtrlController {
             log.error("人脸信息id列表为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "人脸id列表为空", null);
         }
+
+        SimFaceInfoAccCtl faceAccCtrl = faceAccCtrlCache.getFaceAccCtrl(CommonConstants.FaceAccCtrl + accessControlId);
+        if (faceAccCtrl !=null){
+              return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "该门禁正在授权中", null);
+        }
         //TODO:人脸授权数据正确性校验完成后，进度数据插入redis
         //TODO:切换子线程
         //TODO:返回前端请求
@@ -129,6 +134,7 @@ public class FaceInfoAccCtrlController {
          */
         if (exitdeviceInfo == null && entrydeviceInfo == null) {
             //throw new ErrorMsgException("出口、入口摄像头设备均未上线");
+            faceAccCtrlCache.delSimFaceInfoAccCtl(CommonConstants.FaceAccCtrl+accessControlId);
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"出口、入口摄像头设备均未上线",null);
         }
         int result = faceInfoAccCtrlService.authorityFaceInfoAccCtrl(accessControlId, unexpiredFaceIds);
@@ -1041,7 +1047,8 @@ public class FaceInfoAccCtrlController {
                                             faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
 
                                         }
-                                    } else {//有人脸库也有人脸信息
+                                    }
+                                    else {//有人脸库也有人脸信息
                                         ArrayList<FaceInfo> exitfaceInfos = new ArrayList<>();
                                         if (exitfaceRecordArrySize != -1) {
                                             String exitgetfaceInfoPath=null;
@@ -1128,15 +1135,13 @@ public class FaceInfoAccCtrlController {
                                         }
                                         //若传入集合列表为空，则需要删除所有人脸
                                         if (faceInfoList.isEmpty()) {
-                                            Double progress=0.00;
+                                            Double progress = NumberUtil.div(100, exitfaceInfos.size()+entryfaceInfos.size(), 2);
+
                                             /**
                                              * 删除出口摄像头人脸
                                              */
                                             if (!CommonUtil.isEmptyList(exitfaceInfos)) {
                                                 for (FaceInfo houtaiFaceInfo : exitfaceInfos) {
-                                                   // progress = new BigDecimal((float) 100/exitfaceInfos.size()).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
-                                                   // progress = CommonUtil.toFloat(100, exitfaceInfos.size());
-                                                    progress = NumberUtil.div(100, exitfaceInfos.size(), 2);
                                                     PU_FACE_INFO_DELETE_S exitpuFaceInfoDeleteS = new PU_FACE_INFO_DELETE_S();
                                                     int[] exituFaceID = new int[100];
                                                     exituFaceID[0] = Integer.parseInt(houtaiFaceInfo.getFaceid());
@@ -1165,28 +1170,23 @@ public class FaceInfoAccCtrlController {
                                                     }
                                                     HuaWeiSdkApi.printReturnMsg();
                                                     if (exitdel) {
-                                                        log.debug("人脸门禁摄像头出口全部取消授权成功");
-                                                        simFaceInfoAccCtl.setIsSuccessed("取消出口人脸授权");
-                                                        faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
-                                                        simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
-                                                        simFaceInfoAccCtl.setUserName(houtaiFaceInfo.getUserName());
-                                                        faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
+                                                        log.debug("人脸门禁摄像头出口取消授权成功");
+                                                        simFaceInfoAccCtl.setIsSuccessed("取消出口人脸授权成功");
                                                     } else {
-                                                        System.out.println("删除人脸信息失败");
-                                                        log.error("人脸门禁摄像头出口全部取消授权失败");
+                                                        log.error("人脸门禁摄像头出口取消授权失败");
+                                                        simFaceInfoAccCtl.setIsSuccessed("取消出口人脸授权失败");
                                                     }
+                                                    faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
+                                                    simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
+                                                    simFaceInfoAccCtl.setUserName(houtaiFaceInfo.getUserName());
+                                                    faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
                                                 }
                                             }
                                             /**
                                              * 删除入口口摄像头人脸
                                              */
-                                            Double exitFaceAccCtrlProgress=0.00;
-                                            simFaceInfoAccCtl.setFaceAccCtrlProgress(exitFaceAccCtrlProgress);
-                                            faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);//开启缓存
+
                                             if (!CommonUtil.isEmptyList(entryfaceInfos)) {
-                                                //progress = new BigDecimal((float) 100/entryfaceInfos.size()).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
-                                                // progress = CommonUtil.toFloat(100, entryfaceInfos.size());
-                                                progress = NumberUtil.div(100, entryfaceInfos.size(), 2);
                                                  for (FaceInfo houtaiFaceInfo : entryfaceInfos) {
                                                     PU_FACE_INFO_DELETE_S entrypuFaceInfoDeleteS = new PU_FACE_INFO_DELETE_S();
                                                     int[] entryuFaceID = new int[100];
@@ -1216,18 +1216,19 @@ public class FaceInfoAccCtrlController {
                                                     }
                                                     HuaWeiSdkApi.printReturnMsg();
                                                     if (entrydel) {
-                                                        log.debug("人脸门禁摄像头入口全部取消授权成功");
-                                                        simFaceInfoAccCtl.setIsSuccessed("取消入口人脸授权");
-                                                        exitFaceAccCtrlProgress = NumberUtil.add(exitFaceAccCtrlProgress, progress);
-                                                        simFaceInfoAccCtl.setFaceAccCtrlProgress(exitFaceAccCtrlProgress);
-                                                        simFaceInfoAccCtl.setUserName(houtaiFaceInfo.getUserName());
-                                                        faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
+                                                        log.debug("人脸门禁摄像头入口取消授权成功");
+                                                        simFaceInfoAccCtl.setIsSuccessed("取消入口人脸授权成功");
                                                     } else {
-                                                        System.out.println("删除人脸信息失败");
-                                                        log.error("人脸门禁摄像头入口全部取消授权失败");
+                                                        log.debug("人脸门禁摄像头入口取消授权失败");
+                                                        simFaceInfoAccCtl.setIsSuccessed("取消入口人脸授权失败");
                                                     }
+                                                     faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
+                                                     simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
+                                                     simFaceInfoAccCtl.setUserName(houtaiFaceInfo.getUserName());
+                                                     faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
                                                 }
                                             }
+
                                             if (exitdeviceInfo == null && entrydeviceInfo == null) {
                                                 //return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "取消人脸授权出口、入口摄像头失败，设备未上线", null);
                                                 log.debug("取消人脸授权出口、入口摄像头失败，设备未上线");
@@ -1238,17 +1239,16 @@ public class FaceInfoAccCtrlController {
                                                // return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991, "取消人脸授权入口摄像头失败，设备未上线", null);
                                                 log.debug("取消人脸授权入口摄像头失败，设备未上线");
                                             }
-                                            //return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "人脸门禁摄像头全部取消授权成功", null);
                                             log.debug("人脸门禁摄像头全部取消授权成功");
+                                            faceAccCtrlCache.delSimFaceInfoAccCtl(CommonConstants.FaceAccCtrl+accessControlId);
+                                            return;
                                         }
+
                                         /**
                                          * 先入口删除摄像头数据库在所传入列表不在的人脸信息
                                          */
                                         if (!CommonUtil.isEmptyList(entryfaceInfos)) {
                                             for (FaceInfo houtaiFaceInfo : entryfaceInfos) {
-                                                //float progress = new BigDecimal((float) 100/entryfaceInfos.size()).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
-                                                //Double progress = CommonUtil.toFloat(100, entryfaceInfos.size());
-                                                Double progress = NumberUtil.div(100, entryfaceInfos.size(), 2);
                                                 boolean needDel = true;
                                                 for (FaceInfo qiantaiFaceInfo : faceInfoList) {
                                                     if (qiantaiFaceInfo.getUserName() != null && qiantaiFaceInfo.getUserName().equals(houtaiFaceInfo.getUserName())) {
@@ -1290,28 +1290,16 @@ public class FaceInfoAccCtrlController {
                                                     HuaWeiSdkApi.printReturnMsg();
                                                     if (entrydel) {
                                                         log.debug("删除入口摄像头中的人脸信息成功:");
-                                                        simFaceInfoAccCtl.setIsSuccessed("取消出口人脸授权");
-                                                        faceAccCtrlprogress=faceAccCtrlprogress+progress;
-                                                        simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
-                                                        simFaceInfoAccCtl.setUserName(houtaiFaceInfo.getUserName());
-                                                        faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
                                                     } else {
                                                         log.error("删除入口摄像头中的人脸信息失败");
                                                     }
                                                 }
                                             }
                                         }
-
                                         /**
                                          * 出口删除摄像头数据库在所传入列表不在的人脸信息
                                          */
-                                        Double exitFaceAccCtrlProgress=0.00;
-                                        simFaceInfoAccCtl.setFaceAccCtrlProgress(exitFaceAccCtrlProgress);
-                                        faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);//开启缓存
                                         if (!CommonUtil.isEmptyList(exitfaceInfos)) {
-                                            //float progress = new BigDecimal((float) 100/exitfaceInfos.size()).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
-                                            //Double progress = CommonUtil.toFloat(100, exitfaceInfos.size());
-                                            Double progress = NumberUtil.div(100, exitfaceInfos.size(), 2);
                                             for (FaceInfo houtaiFaceInfo : exitfaceInfos) {
                                                 boolean needDel = true;
                                                 for (FaceInfo qiantaiFaceInfo : faceInfoList) {
@@ -1354,23 +1342,17 @@ public class FaceInfoAccCtrlController {
                                                     HuaWeiSdkApi.printReturnMsg();
                                                     if (exitdell) {
                                                         log.debug("删除出口摄像头中的人脸信息成功:");
-                                                        simFaceInfoAccCtl.setIsSuccessed("取消出口人脸授权");
-                                                        exitFaceAccCtrlProgress = NumberUtil.add(exitFaceAccCtrlProgress, progress);
-                                                        simFaceInfoAccCtl.setFaceAccCtrlProgress(exitFaceAccCtrlProgress);
-                                                        simFaceInfoAccCtl.setUserName(houtaiFaceInfo.getUserName());
-                                                        faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
                                                     } else {
                                                         log.error("删除入口摄像头中的人脸信息失败");
                                                     }
                                                 }
                                             }
                                         }
+
+
                                         //再添加传入列表在数据库中找不到的人脸信息
-                                        // System.out.println("前台所传的人脸信息集合："+faceInfoList);
+                                        Double progress = NumberUtil.div(100, faceInfoList.size(), 2);
                                         for (FaceInfo qiantaiFaceInfo : faceInfoList) {
-                                            //float progress = new BigDecimal((float) 100/faceInfoList.size()).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
-                                            //Double progress = CommonUtil.toFloat(100, faceInfoList.size());
-                                            Double progress = NumberUtil.div(100, faceInfoList.size(), 2);
                                             boolean needAddEntry = true;
                                             if (!CommonUtil.isEmptyList(entryfaceInfos)) {
                                                 for (FaceInfo houtaiFaceInfo : entryfaceInfos) {
@@ -1592,6 +1574,7 @@ public class FaceInfoAccCtrlController {
                                                     log.error("有人脸库有人脸信息时，添加出口人脸失败");
                                                 }
                                             }
+
                                             if(entrygetTeZheng && exitgetTeZheng){
                                                 simFaceInfoAccCtl.setIsSuccessed("出口、入口摄像头授权成功");
                                             }else if (entrygetTeZheng){
@@ -1604,13 +1587,7 @@ public class FaceInfoAccCtrlController {
                                                 simFaceInfoAccCtl.setIsSuccessed("入口人脸授权失败，人脸图片重复");
                                             }else if (exitPrintReturnMsg != null && exitPrintReturnMsg == 12108 && entryPrintReturnMsg != null && entryPrintReturnMsg == 12108){
                                                 simFaceInfoAccCtl.setIsSuccessed("入口、出口人脸授权失败，人脸图片重复");
-                                            }/*else {
-                                                simFaceInfoAccCtl.setIsSuccessed("入口、出口人脸授权失败");
-                                                faceAccCtrlprogress=faceAccCtrlprogress+progress;
-                                                simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
-                                                simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
-                                                faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
-                                            }*/
+                                            }
                                             faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
                                             simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                             simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
