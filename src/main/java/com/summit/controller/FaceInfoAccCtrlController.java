@@ -12,7 +12,6 @@ import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
 import com.summit.entity.SimFaceInfoAccCtl;
-import com.summit.exception.ErrorMsgException;
 import com.summit.redis.face.FaceAccCtrlCache;
 import com.summit.sdk.huawei.*;
 import com.summit.sdk.huawei.api.HuaWeiSdkApi;
@@ -1170,7 +1169,7 @@ public class FaceInfoAccCtrlController {
                                         }
                                         //若传入集合列表为空，则需要删除所有人脸
                                         if (faceInfoList.isEmpty()) {
-                                            float progress=0;
+                                            float progress=0.00f;
                                             /**
                                              * 删除出口摄像头人脸
                                              */
@@ -1220,7 +1219,7 @@ public class FaceInfoAccCtrlController {
                                             /**
                                              * 删除入口口摄像头人脸
                                              */
-                                            float exitFaceAccCtrlProgress=0;
+                                            float exitFaceAccCtrlProgress=0.00f;
                                             simFaceInfoAccCtl.setFaceAccCtrlProgress(exitFaceAccCtrlProgress);
                                             faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);//开启缓存
                                             if (!CommonUtil.isEmptyList(entryfaceInfos)) {
