@@ -1220,6 +1220,9 @@ public class FaceInfoAccCtrlController {
                                             /**
                                              * 删除入口口摄像头人脸
                                              */
+                                            Integer exitFaceAccCtrlProgress=0;
+                                            simFaceInfoAccCtl.setFaceAccCtrlProgress(exitFaceAccCtrlProgress);
+                                            faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);//开启缓存
                                             if (!CommonUtil.isEmptyList(entryfaceInfos)) {
                                                 for (FaceInfo houtaiFaceInfo : entryfaceInfos) {
                                                     progress=100/entryfaceInfos.size();
@@ -1253,8 +1256,8 @@ public class FaceInfoAccCtrlController {
                                                     if (entrydel) {
                                                         log.debug("人脸门禁摄像头入口全部取消授权成功");
                                                         simFaceInfoAccCtl.setIsSuccessed("取消入口人脸授权");
-                                                        faceAccCtrlprogress=faceAccCtrlprogress+progress;
-                                                        simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
+                                                        exitFaceAccCtrlProgress=exitFaceAccCtrlProgress+progress;
+                                                        simFaceInfoAccCtl.setFaceAccCtrlProgress(exitFaceAccCtrlProgress);
                                                         simFaceInfoAccCtl.setUserName(houtaiFaceInfo.getUserName());
                                                         faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
                                                     } else {
