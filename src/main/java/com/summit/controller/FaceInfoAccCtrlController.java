@@ -1381,8 +1381,7 @@ public class FaceInfoAccCtrlController {
                                                 }
                                             }
                                         }
-
-
+                                        simFaceInfoAccCtl.setIsSuccessed("取消授权成功");
                                         //再添加传入列表在数据库中找不到的人脸信息
                                         Double progress = NumberUtil.div(100, faceInfoList.size(), 2);
                                         for (FaceInfo qiantaiFaceInfo : faceInfoList) {
@@ -1609,27 +1608,30 @@ public class FaceInfoAccCtrlController {
                                             }
                                             if(entrygetTeZheng && exitgetTeZheng){
                                                 simFaceInfoAccCtl.setIsSuccessed("出口、入口摄像头授权成功");
+                                                simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
                                                 faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null,accessControlId,qiantaiFaceInfo.getFaceid()));
                                             }else if (entrygetTeZheng){
                                                 simFaceInfoAccCtl.setIsSuccessed("入口摄像头授权成功、出口失败");
+                                                simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
                                                 faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null,accessControlId,qiantaiFaceInfo.getFaceid()));
                                             }else if (exitgetTeZheng){
                                                 simFaceInfoAccCtl.setIsSuccessed("出口摄像头授权成功、入口失败");
+                                                simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
                                                 faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null,accessControlId,qiantaiFaceInfo.getFaceid()));
                                             }else if (exitPrintReturnMsg != null && exitPrintReturnMsg == 12108) {
+                                                simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
                                                 simFaceInfoAccCtl.setIsSuccessed("出口人脸授权失败，人脸图片重复");
                                                 faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null,accessControlId,qiantaiFaceInfo.getFaceid()));
                                             }else if (entryPrintReturnMsg != null && entryPrintReturnMsg == 12108){
+                                                simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
                                                 simFaceInfoAccCtl.setIsSuccessed("入口人脸授权失败，人脸图片重复");
                                                 faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null,accessControlId,qiantaiFaceInfo.getFaceid()));
                                             }else if (exitPrintReturnMsg != null && exitPrintReturnMsg == 12108 && entryPrintReturnMsg != null && entryPrintReturnMsg == 12108){
+                                                simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
                                                 simFaceInfoAccCtl.setIsSuccessed("入口、出口人脸授权失败，人脸图片重复");
-                                            }else{
-                                                simFaceInfoAccCtl.setIsSuccessed("取消授权成功");
                                             }
                                             faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
                                             simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
-                                            simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
                                             faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
                                         }
                                     }
