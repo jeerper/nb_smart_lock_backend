@@ -74,4 +74,11 @@ public interface FaceInfoManagerService {
      * @return 城市列表
      */
     List<City> selectCityByProvinceId(String provinceId);
+
+    /**
+     * 根据用户名查询用户对象
+     * @param userName
+     * @return 城市列表
+     */
+    FaceInfo selectFaceInfoByUserNameAndCardId(String userName,String cardId);
 }
