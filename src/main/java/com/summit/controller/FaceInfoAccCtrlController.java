@@ -1254,7 +1254,6 @@ public class FaceInfoAccCtrlController {
                                             }
                                             return;
                                         }
-
                                         /**
                                          * 先入口删除摄像头数据库在所传入列表不在的人脸信息
                                          */
@@ -1641,25 +1640,25 @@ public class FaceInfoAccCtrlController {
                                                 faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
                                                 faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null,accessControlId,qiantaiFaceInfo.getFaceid()));
                                             }else if (exitPrintReturnMsg != null && exitPrintReturnMsg == 12108) {
-                                                simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
+                                               /* simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
                                                 simFaceInfoAccCtl.setIsSuccessed("出口人脸授权失败，人脸图片重复");
                                                 faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
                                                 simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                                 faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
-                                                faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null,accessControlId,qiantaiFaceInfo.getFaceid()));
+                                                faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null,accessControlId,qiantaiFaceInfo.getFaceid()));*/
                                             }else if (entryPrintReturnMsg != null && entryPrintReturnMsg == 12108){
-                                                simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
+                                                /*simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
                                                 simFaceInfoAccCtl.setIsSuccessed("入口人脸授权失败，人脸图片重复");
                                                 faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
                                                 simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                                 faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
-                                                faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null,accessControlId,qiantaiFaceInfo.getFaceid()));
+                                                faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null,accessControlId,qiantaiFaceInfo.getFaceid()));*/
                                             }else if (exitPrintReturnMsg != null && exitPrintReturnMsg == 12108 && entryPrintReturnMsg != null && entryPrintReturnMsg == 12108){
-                                                simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
+                                                /*simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
                                                 simFaceInfoAccCtl.setIsSuccessed("入口、出口人脸授权失败，人脸图片重复");
                                                 faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
                                                 simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
-                                                faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
+                                                faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);*/
                                             }
                                         }
                                     }

@@ -1,5 +1,6 @@
 package com.summit.service.impl;
 
+import cn.hutool.core.util.NumberUtil;
 import com.summit.cbb.utils.page.Page;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.SimplePage;
@@ -16,8 +17,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,7 +57,25 @@ public class AlarmServiceImplTest {
 
     @Test
     public void delLockAlarmById() {
-        alarmService.delLockAlarmById("aid01");
+        //alarmService.delLockAlarmById("aid01");
+        float faceAccCtrlprogress=0;
+        faceAccCtrlprogress=100/120;
+        System.out.println(faceAccCtrlprogress);
+        float fx = new BigDecimal((float) 100/120).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
+        System.out.println(fx);
+        Double aDouble = toFloat(100, 11111);
+        System.out.println("aDouble:"+aDouble);
+
+        double div = NumberUtil.div(100, 120, 2);
+        System.out.println("eeeeeeeee"+div);
+        String s = NumberUtil.roundStr(div, 2);
+        System.out.println("11111111"+s);
+
+    }
+    public static Double toFloat(int denominator,int numerator) {
+        // TODO 自动生成的方法存根
+        DecimalFormat df=new DecimalFormat("0.00");//设置保留位数
+        return Double.valueOf(df.format((float)denominator/numerator));
     }
 
     @Test

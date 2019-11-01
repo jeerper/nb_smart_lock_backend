@@ -62,7 +62,7 @@ public class FaceAccCtrlCache {
      */
     public boolean delSimFaceInfoAccCtl(String accessControlId) {
         boolean result = redisTemplateWithUserInfo.delete(accessControlId);
-        LOGGER.debug("设置门禁授权过期时间:{}:{}", accessControlId, result);
+        LOGGER.debug("删除授权进度信息缓存:{}:{}", accessControlId, result);
         return true;
     }
 
