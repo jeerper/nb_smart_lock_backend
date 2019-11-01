@@ -1660,6 +1660,7 @@ public class FaceInfoAccCtrlController {
                                                 simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                                 faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);*/
                                             }
+
                                         }
                                     }
                                 } else {
