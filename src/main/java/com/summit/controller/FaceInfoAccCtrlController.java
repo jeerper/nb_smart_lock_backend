@@ -617,7 +617,6 @@ public class FaceInfoAccCtrlController {
                                             simFaceInfoAccCtl.setIsSuccessed("入口、出口人脸授权失败");
                                         }
                                         faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
-                                        faceAccCtrlCache.setSimFaceInfoAccCtrlTime(accessControlId);
                                         simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                         simFaceInfoAccCtl.setUserName(faceInfo.getUserName());
                                         faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
@@ -1237,7 +1236,7 @@ public class FaceInfoAccCtrlController {
                                                                 authids.add(faceInfoAccCtrl.getId());
                                                             }
                                                         } catch (Exception e) {
-                                                            log.error("数据库查询异常");
+                                                           log.error("数据库查询失败");
                                                         }
                                                     } else {
                                                         log.debug("人脸门禁摄像头入口取消授权失败");
