@@ -1,7 +1,12 @@
 package com.summit.utils;
 
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.system.SystemUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.summit.MainAction;
 import com.summit.common.util.ApplicationContextUtil;
 import com.summit.constants.CommonConstants;
@@ -12,12 +17,14 @@ import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.entity.UnlockCommandQueue;
+import com.summit.dao.repository.AccCtrlProcessDao;
 import com.summit.dao.repository.UnlockCommandQueueDao;
 import com.summit.sdk.huawei.callback.ClientFaceInfoCallback;
 import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.sdk.huawei.model.FaceInfo;
 import com.summit.sdk.huawei.model.FaceLibType;
 import com.summit.sdk.huawei.model.LockProcessResultType;
+import com.summit.sdk.huawei.model.LockProcessType;
 import com.summit.service.AccCtrlProcessService;
 import com.summit.service.AccCtrlRealTimeService;
 import com.summit.service.AccessControlService;
@@ -34,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -57,6 +65,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
     private FaceInfoAccCtrlService faceInfoAccCtrlService;
     @Autowired
     private UnlockCommandQueueDao unlockCommandQueueDao;
+    @Autowired
+    private AccCtrlProcessDao accCtrlProcessDao;
 
     @Override
     public void invoke(Object object) {
@@ -163,6 +173,22 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                         log.debug("未找到锁编号为{}对应的门禁信息", lockCode);
                         return;
                     }
+                    IPage<AccCtrlProcess> accCtrlProcessPage = accCtrlProcessDao.selectPage(new Page<>(1, 1), Wrappers.<AccCtrlProcess>lambdaQuery()
+                            .eq(AccCtrlProcess::getAccessControlId, accessControlInfo.getAccessControlId())
+                            .eq(AccCtrlProcess::getUserName, faceInfo.getName())
+                            .eq(AccCtrlProcess::getProcessType, LockProcessType.UNLOCK.getCode())
+                            .eq(AccCtrlProcess::getProcessResult, LockProcessResultType.Success.getCode())
+                            .orderByDesc(AccCtrlProcess::getProcessTime)
+                    );
+                    List<AccCtrlProcess> accCtrlProcessList = accCtrlProcessPage.getRecords();
+                    if (accCtrlProcessList.size() != 0) {
+                        AccCtrlProcess accCtrlProcess = accCtrlProcessList.get(0);
+                        long differMinute = DateUtil.between(accCtrlProcess.getProcessTime(), new Date(), DateUnit.MINUTE);
+                        if (differMinute <= 2) {
+                            log.debug("同一门禁同一人脸不能在2分钟内开锁多次");
+                            return;
+                        }
+                    }
                     //根据人脸名称和门禁ID查询是否有该门禁的人脸授权信息
                     int count = faceInfoAccCtrlService.selectAccCtrlIdByUserNameAndAccessControlId(faceInfo.getName(),
                             accessControlInfo.getAccessControlId());
@@ -211,8 +237,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             log.info("门禁实时信息入库");
             accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity);
             //插入开锁指令队列
-            if(type==CameraUploadType.Unlock){
-                UnlockCommandQueue unlockCommandQueue=new UnlockCommandQueue();
+            if (type == CameraUploadType.Unlock) {
+                UnlockCommandQueue unlockCommandQueue = new UnlockCommandQueue();
                 unlockCommandQueue.setAccCtrlProId(accCtrlProcess.getAccCtrlProId());
                 unlockCommandQueue.setUnlockFaceName(accCtrlProcess.getUserName());
                 unlockCommandQueue.setLockCode(accCtrlProcess.getLockCode());
