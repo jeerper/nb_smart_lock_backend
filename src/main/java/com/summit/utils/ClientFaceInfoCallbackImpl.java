@@ -177,7 +177,12 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                             .eq(AccCtrlProcess::getAccessControlId, accessControlInfo.getAccessControlId())
                             .eq(AccCtrlProcess::getUserName, faceInfo.getName())
                             .eq(AccCtrlProcess::getProcessType, LockProcessType.UNLOCK.getCode())
-                            .eq(AccCtrlProcess::getProcessResult, LockProcessResultType.Success.getCode())
+                            .in(AccCtrlProcess::getProcessResult,
+                                    LockProcessResultType.Success.getCode(),
+                                    LockProcessResultType.NotResponse.getCode(),
+                                    LockProcessResultType.WaitSendCommand.getCode(),
+                                    LockProcessResultType.CommandSuccess.getCode()
+                            )
                             .orderByDesc(AccCtrlProcess::getProcessTime)
                     );
                     List<AccCtrlProcess> accCtrlProcessList = accCtrlProcessPage.getRecords();
