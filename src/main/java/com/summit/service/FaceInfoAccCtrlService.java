@@ -53,4 +53,10 @@ public interface FaceInfoAccCtrlService {
      * @return -1删除不成功
      */
     int deleteFaceAccCtrlByFaceId(String faceid);
+    /**
+     * 根据人脸id 和门禁id查询门禁授权记录
+     * @param faceid,accessControlId
+     * @return 返回门禁对象
+     */
+    FaceInfoAccCtrl seleAccCtrlInfoByFaceIdAndAccCtlId(String faceid, String accessControlId);
 }

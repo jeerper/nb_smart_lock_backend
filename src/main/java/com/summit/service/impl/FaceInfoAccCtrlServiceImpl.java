@@ -163,6 +163,13 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
         return i;
     }
 
+    @Override
+    public FaceInfoAccCtrl seleAccCtrlInfoByFaceIdAndAccCtlId(String faceid, String accessControlId) {
+        QueryWrapper<FaceInfoAccCtrl> wrapper=new QueryWrapper<>();
+        FaceInfoAccCtrl faceInfoAccCtrl = faceInfoAccCtrlDao.selectOne(wrapper.eq("face_id", faceid).eq("access_control_id", accessControlId));
+        return faceInfoAccCtrl;
+    }
+
     private int insertFaceAccCtrl(List<FaceInfoAccCtrl> faceInfoAccCtrls) {
         if(CommonUtil.isEmptyList(faceInfoAccCtrls)){
             log.error("人脸门禁权限列表为空");

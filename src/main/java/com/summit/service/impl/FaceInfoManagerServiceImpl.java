@@ -161,5 +161,16 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         return cityDao.selectList(wrapper.eq("provinceid",provinceId));
     }
 
+    @Override
+    public FaceInfo selectFaceInfoByUserNameAndCardId(String userName,String cardId) {
+        if(userName==null){
+            log.error("用户名为空");
+            return null;
+        }
+        QueryWrapper<FaceInfo> wrapper=new QueryWrapper<>();
+        FaceInfo faceInfo = faceInfoManagerDao.selectOne(wrapper.eq("user_name", userName).eq("card_id",cardId));
+        return faceInfo;
+    }
+
 
 }
