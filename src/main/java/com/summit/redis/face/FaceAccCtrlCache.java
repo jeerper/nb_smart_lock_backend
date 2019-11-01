@@ -2,12 +2,15 @@ package com.summit.redis.face;
 
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.summit.constants.CommonConstants;
 import com.summit.entity.SimFaceInfoAccCtl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class FaceAccCtrlCache {
@@ -59,7 +62,16 @@ public class FaceAccCtrlCache {
      */
     public boolean delSimFaceInfoAccCtl(String accessControlId) {
         boolean result = redisTemplateWithUserInfo.delete(accessControlId);
-        LOGGER.debug("删除用户信息缓存:{}:{}", accessControlId, result);
+        LOGGER.debug("设置门禁授权过期时间:{}:{}", accessControlId, result);
         return true;
+    }
+
+    /**
+     * 设置过期时间 60秒
+     * @param accessControlId
+     */
+    public void setSimFaceInfoAccCtrlTime(String accessControlId){
+        Boolean result = redisTemplateWithUserInfo.expire(CommonConstants.FaceAccCtrl + accessControlId, 60, TimeUnit.SECONDS);
+        LOGGER.debug("设置门禁授权过期时间:{}:{}", accessControlId, result);
     }
 }
