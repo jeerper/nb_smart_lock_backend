@@ -73,6 +73,7 @@ public class FaceInfoAccCtrlController {
             log.error("人脸信息id列表为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "人脸id列表为空", null);
         }
+
         SimFaceInfoAccCtl faceAccCtrl = faceAccCtrlCache.getFaceAccCtrl(CommonConstants.FaceAccCtrl + accessControlId);
         if (faceAccCtrl !=null){
               return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "该门禁正在授权中", null);
@@ -1031,7 +1032,6 @@ public class FaceInfoAccCtrlController {
                                                 simFaceInfoAccCtl.setIsSuccessed("入口、出口人脸授权失败");
                                             }
                                             faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
-                                            faceAccCtrlCache.setSimFaceInfoAccCtrlTime(accessControlId);
                                             simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                             simFaceInfoAccCtl.setUserName(faceInfo.getUserName());
                                             faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
@@ -1185,7 +1185,6 @@ public class FaceInfoAccCtrlController {
                                                         simFaceInfoAccCtl.setIsSuccessed("取消出口人脸授权失败");
                                                     }
                                                     faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
-                                                    faceAccCtrlCache.setSimFaceInfoAccCtrlTime(accessControlId);
                                                     simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                                     simFaceInfoAccCtl.setUserName(houtaiFaceInfo.getUserName());
                                                     faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
@@ -1225,8 +1224,8 @@ public class FaceInfoAccCtrlController {
                                                     HuaWeiSdkApi.printReturnMsg();
                                                     if (entrydel) {
                                                         log.debug("人脸门禁摄像头入口取消授权成功");
-                                                        simFaceInfoAccCtl.setIsSuccessed("取消入口人脸授权成功");
                                                         try {
+                                                            simFaceInfoAccCtl.setIsSuccessed("取消入口人脸授权成功");
                                                             FaceInfo faceInfo= faceInfoManagerService.selectFaceInfoByUserNameAndCardId(houtaiFaceInfo.getUserName(),houtaiFaceInfo.getCardId());
                                                             FaceInfoAccCtrl faceInfoAccCtrl=null;
                                                             if (faceInfo !=null){
@@ -1236,14 +1235,13 @@ public class FaceInfoAccCtrlController {
                                                                 authids.add(faceInfoAccCtrl.getId());
                                                             }
                                                         } catch (Exception e) {
-                                                           log.error("数据库查询失败");
+                                                            log.error("查询数据库失败");
                                                         }
                                                     } else {
                                                         log.debug("人脸门禁摄像头入口取消授权失败");
                                                         simFaceInfoAccCtl.setIsSuccessed("取消入口人脸授权失败");
                                                     }
                                                      faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
-                                                     faceAccCtrlCache.setSimFaceInfoAccCtrlTime(accessControlId);
                                                      simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                                      simFaceInfoAccCtl.setUserName(houtaiFaceInfo.getUserName());
                                                      faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
@@ -1319,7 +1317,6 @@ public class FaceInfoAccCtrlController {
                                                         simFaceInfoAccCtl.setUserName(houtaiFaceInfo.getUserName());
                                                         simFaceInfoAccCtl.setIsSuccessed("取消入口授权成功");
                                                         faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
-                                                        faceAccCtrlCache.setSimFaceInfoAccCtrlTime(accessControlId);
                                                         simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                                         faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
                                                     } else {
@@ -1390,7 +1387,6 @@ public class FaceInfoAccCtrlController {
                                                         simFaceInfoAccCtl.setUserName(houtaiFaceInfo.getUserName());
                                                         simFaceInfoAccCtl.setIsSuccessed("取消出口授权成功");
                                                         faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
-                                                        faceAccCtrlCache.setSimFaceInfoAccCtrlTime(accessControlId);
                                                         simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                                         faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
                                                     } else {
@@ -1627,7 +1623,6 @@ public class FaceInfoAccCtrlController {
                                                 simFaceInfoAccCtl.setIsSuccessed("出口、入口摄像头授权成功");
                                                 simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
                                                 faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
-                                                faceAccCtrlCache.setSimFaceInfoAccCtrlTime(accessControlId);
                                                 simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                                 faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
                                                 faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null,accessControlId,qiantaiFaceInfo.getFaceid()));
@@ -1635,7 +1630,6 @@ public class FaceInfoAccCtrlController {
                                                 simFaceInfoAccCtl.setIsSuccessed("入口摄像头授权成功、出口失败");
                                                 simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
                                                 faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
-                                                faceAccCtrlCache.setSimFaceInfoAccCtrlTime(accessControlId);
                                                 simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                                 faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
                                                 faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null,accessControlId,qiantaiFaceInfo.getFaceid()));
@@ -1643,7 +1637,6 @@ public class FaceInfoAccCtrlController {
                                                 simFaceInfoAccCtl.setIsSuccessed("出口摄像头授权成功、入口失败");
                                                 simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
                                                 faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
-                                                faceAccCtrlCache.setSimFaceInfoAccCtrlTime(accessControlId);
                                                 simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                                 faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
                                                 faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null,accessControlId,qiantaiFaceInfo.getFaceid()));
@@ -1651,7 +1644,6 @@ public class FaceInfoAccCtrlController {
                                                 simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
                                                 simFaceInfoAccCtl.setIsSuccessed("出口人脸授权失败，人脸图片重复");
                                                 faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
-                                                faceAccCtrlCache.setSimFaceInfoAccCtrlTime(accessControlId);
                                                 simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                                 faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
                                                 faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null,accessControlId,qiantaiFaceInfo.getFaceid()));
@@ -1659,7 +1651,6 @@ public class FaceInfoAccCtrlController {
                                                 simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
                                                 simFaceInfoAccCtl.setIsSuccessed("入口人脸授权失败，人脸图片重复");
                                                 faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
-                                                faceAccCtrlCache.setSimFaceInfoAccCtrlTime(accessControlId);
                                                 simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                                 faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
                                                 faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null,accessControlId,qiantaiFaceInfo.getFaceid()));
@@ -1667,7 +1658,6 @@ public class FaceInfoAccCtrlController {
                                                 simFaceInfoAccCtl.setUserName(qiantaiFaceInfo.getUserName());
                                                 simFaceInfoAccCtl.setIsSuccessed("入口、出口人脸授权失败，人脸图片重复");
                                                 faceAccCtrlprogress = NumberUtil.add(faceAccCtrlprogress, progress);
-                                                faceAccCtrlCache.setSimFaceInfoAccCtrlTime(accessControlId);
                                                 simFaceInfoAccCtl.setFaceAccCtrlProgress(faceAccCtrlprogress);
                                                 faceAccCtrlCache.setFaceAccCtrl(CommonConstants.FaceAccCtrl+accessControlId,simFaceInfoAccCtl);
                                             }
