@@ -2,6 +2,7 @@ package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
 import com.summit.common.entity.UserInfo;
@@ -47,8 +48,7 @@ public class AccessControlServiceImpl implements AccessControlService {
 
     @Autowired
     private AccessControlDao accessControlDao;
-    @Autowired
-    private AccessControlService accessControlService;
+
     @Autowired
     private LockInfoDao lockInfoDao;
     @Autowired
@@ -462,6 +462,11 @@ public class AccessControlServiceImpl implements AccessControlService {
         UpdateWrapper<AccessControlInfo> updateWrapper = new UpdateWrapper<>();
         int result = 0;
         try {
+            accCtrlRealTimeDao.update(null,Wrappers.<AccCtrlRealTimeEntity>lambdaUpdate()
+                    .set(AccCtrlRealTimeEntity::getLockId,  accessControlInfo.getLockId())
+                    .set(AccCtrlRealTimeEntity::getLockCode,  accessControlInfo.getLockCode())
+                    .eq(AccCtrlRealTimeEntity::getAccessControlId, accessControlId)
+            );
             result = accessControlDao.update(accessControlInfo, updateWrapper.eq("access_control_id", accessControlId));
         } catch (Exception e) {
             log.error("更新门禁{}失败", accessControlId);
