@@ -1285,10 +1285,10 @@ public class FaceInfoAccCtrlController {
                                         if (!CommonUtil.isEmptyList(toAuthList) && method.equals("cancel_auth")) {
                                             Double progress = NumberUtil.div(100, toAuthList.size(), 2);
                                             for (FaceInfo houtaiFaceInfo : entryfaceInfos) {
-                                                boolean needDel = true;
+                                                boolean needDel = false;
                                                 for (FaceInfo qiantaiFaceInfo : toAuthList) {
                                                     if (qiantaiFaceInfo.getUserName() != null && qiantaiFaceInfo.getUserName().equals(houtaiFaceInfo.getUserName())) {
-                                                        needDel = false;
+                                                        needDel = true;
                                                         break;
                                                     }
                                                 }
@@ -1356,10 +1356,10 @@ public class FaceInfoAccCtrlController {
                                         if (!CommonUtil.isEmptyList(toAuthList) && method.equals("cancel_auth")) {
                                             Double progress = NumberUtil.div(100, toAuthList.size(), 2);
                                             for (FaceInfo houtaiFaceInfo : exitfaceInfos) {
-                                                boolean needDel = true;
+                                                boolean needDel = false;
                                                 for (FaceInfo qiantaiFaceInfo : toAuthList) {
                                                     if (qiantaiFaceInfo.getUserName() != null && qiantaiFaceInfo.getUserName().equals(houtaiFaceInfo.getUserName())) {
-                                                        needDel = false;
+                                                        needDel = true;
                                                         break;
                                                     }
                                                 }

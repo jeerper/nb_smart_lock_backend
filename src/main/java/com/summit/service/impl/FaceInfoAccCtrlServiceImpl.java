@@ -58,10 +58,10 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
              }
              //先删除数据库在所传入列表找不到的门禁授权
              for(FaceInfoAccCtrl faceInfoAccCtrl:faceInfoAccCtrls){
-                 boolean needDel=true;
+                 boolean needDel=false;
                  for(String faceid:faceids){
                      if(faceid !=null && faceid.equals(faceInfoAccCtrl.getFaceid())){
-                         needDel=false;
+                         needDel=true;
                          break;
                      }
                  }
