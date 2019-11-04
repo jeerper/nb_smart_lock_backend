@@ -93,7 +93,6 @@ public class FaceInfoAccCtrlController {
         String entryCameraIp = accessControlInfo.getEntryCameraIp();
         String exitCameraIp = accessControlInfo.getExitCameraIp();
         List<FaceInfo> toAuthList = new ArrayList<>();//需要授权的人脸集合
-        List<FaceInfo> toCancleAuthList = new ArrayList<>();//需要取消授权的人脸集合
         if (!CommonUtil.isEmptyStr(method) && method.equals("auth")){
             for (String faceid : faceids) {
                 FaceInfo faceInfo = faceInfoManagerService.selectFaceInfoByID(faceid);
@@ -103,7 +102,7 @@ public class FaceInfoAccCtrlController {
             if (!CommonUtil.isEmptyList(faceids)){
                 for (String faceid : faceids) {
                     FaceInfo faceInfo = faceInfoManagerService.selectFaceInfoByID(faceid);
-                    toCancleAuthList.add(faceInfo);
+                    toAuthList.add(faceInfo);
                 }
             }
         }
@@ -408,7 +407,7 @@ public class FaceInfoAccCtrlController {
                                         }
                                     }
                                     //添加人脸信息，循环添加
-                                    if (!CommonUtil.isEmptyList(toAuthList)){
+                                    if (!CommonUtil.isEmptyList(toAuthList) && method.equals("auth")){
                                         for (FaceInfo faceInfo : toAuthList) {
                                             Double progress = NumberUtil.div(100, toAuthList.size(), 2);
                                             //入口设置人脸库对象
@@ -830,7 +829,7 @@ public class FaceInfoAccCtrlController {
                                         entrytfaceRecordArrySize = -1;
                                     }
                                     if (exitfaceRecordArrySize == 0 || entrytfaceRecordArrySize == 0) {//有人脸库没有人脸信息,这时候直接添加所传的人脸信息
-                                        if (!CommonUtil.isEmptyList(toAuthList)){
+                                        if (!CommonUtil.isEmptyList(toAuthList) && method.equals("auth")){
                                             for (FaceInfo faceInfo : toAuthList) {
                                                 Double progress = NumberUtil.div(100, toAuthList.size(), 2);
                                                 //设置出口人脸库对象
@@ -1154,7 +1153,7 @@ public class FaceInfoAccCtrlController {
                                             //log.debug("从摄像头查询到的入口人脸集合对象：" + entryfaceInfos);
                                         }
                                         //若传入集合列表为空，则需要删除所有人脸
-                                        if (toCancleAuthList.isEmpty()) {
+                                        if (toAuthList.isEmpty() && method.equals("cancel_auth")) {
                                             Double progress = NumberUtil.div(100, exitfaceInfos.size()+entryfaceInfos.size(), 2);
                                             /**
                                              * 删除出口摄像头人脸
@@ -1283,11 +1282,11 @@ public class FaceInfoAccCtrlController {
                                         /**
                                          * 先入口删除摄像头数据库在所传入列表不在的人脸信息
                                          */
-                                        if (!CommonUtil.isEmptyList(toCancleAuthList)) {
-                                            Double progress = NumberUtil.div(100, toCancleAuthList.size(), 2);
+                                        if (!CommonUtil.isEmptyList(toAuthList) && method.equals("cancel_auth")) {
+                                            Double progress = NumberUtil.div(100, toAuthList.size(), 2);
                                             for (FaceInfo houtaiFaceInfo : entryfaceInfos) {
                                                 boolean needDel = true;
-                                                for (FaceInfo qiantaiFaceInfo : toCancleAuthList) {
+                                                for (FaceInfo qiantaiFaceInfo : toAuthList) {
                                                     if (qiantaiFaceInfo.getUserName() != null && qiantaiFaceInfo.getUserName().equals(houtaiFaceInfo.getUserName())) {
                                                         needDel = false;
                                                         break;
@@ -1354,11 +1353,11 @@ public class FaceInfoAccCtrlController {
                                         /**
                                          * 出口删除摄像头数据库在所传入列表不在的人脸信息
                                          */
-                                        if (!CommonUtil.isEmptyList(toCancleAuthList)) {
-                                            Double progress = NumberUtil.div(100, toCancleAuthList.size(), 2);
+                                        if (!CommonUtil.isEmptyList(toAuthList) && method.equals("cancel_auth")) {
+                                            Double progress = NumberUtil.div(100, toAuthList.size(), 2);
                                             for (FaceInfo houtaiFaceInfo : exitfaceInfos) {
                                                 boolean needDel = true;
-                                                for (FaceInfo qiantaiFaceInfo : toCancleAuthList) {
+                                                for (FaceInfo qiantaiFaceInfo : toAuthList) {
                                                     if (qiantaiFaceInfo.getUserName() != null && qiantaiFaceInfo.getUserName().equals(houtaiFaceInfo.getUserName())) {
                                                         needDel = false;
                                                         break;
@@ -1423,7 +1422,7 @@ public class FaceInfoAccCtrlController {
                                             }
                                         }
                                         //再添加传入列表在数据库中找不到的人脸信息
-                                        if (!CommonUtil.isEmptyList(toAuthList)){
+                                        if (!CommonUtil.isEmptyList(toAuthList) && method.equals("auth")){
                                             Double progress = NumberUtil.div(100, toAuthList.size(), 2);
                                             for (FaceInfo qiantaiFaceInfo : toAuthList) {
                                                 /**
