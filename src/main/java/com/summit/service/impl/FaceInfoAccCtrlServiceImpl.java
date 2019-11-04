@@ -43,7 +43,7 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
         }
         //查出当前门禁关联的人脸信息
          List<FaceInfoAccCtrl> faceInfoAccCtrls=selectFaceInfoAccCtrlByActrlID(accessControlId);
-        System.out.println(faceInfoAccCtrls+"111");
+         System.out.println(faceInfoAccCtrls+"111");
          if(faceInfoAccCtrls !=null && !faceInfoAccCtrls.isEmpty()){
              //若传入集合列表为空，则需要删除所有授权
              if(faceids.isEmpty()){
