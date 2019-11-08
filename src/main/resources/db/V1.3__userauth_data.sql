@@ -7,3 +7,5 @@ INSERT IGNORE INTO `sys_function` VALUES ('c9f22806633642b2bd32490ddb3334e9', 'r
 INSERT IGNORE INTO `sys_function` VALUES ('d3b324976b5b48daaf91abf052609404', 'root', '位置信息', 1, 1, 'Business/map', 'environment', '和经济今年', 0);
 INSERT IGNORE INTO `sys_function` VALUES ('f27e963f84584a638ed5a8c21aed6e60', 'root', '实时状态', 2, 1, 'Business/status', 'clock-circle', '12356', 0);
 INSERT IGNORE INTO `sys_function` VALUES ('fd3683dbf6c248b0a99ac476cb5cb32e', 'root', '人脸信息', 6, 1, 'Business/face', 'smile', NULL, 0);
+DELETE FROM sys_function WHERE ID = 'b1580c5d89b3417ca098c0f6ba9aeb50';
+DELETE FROM sys_function WHERE ID = '46d6d0e1c5134e8ba60082a7223f4ded';
