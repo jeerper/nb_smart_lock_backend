@@ -2,7 +2,6 @@ package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.cbb.utils.page.Page;
-import com.summit.cbb.utils.page.Pageable;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccessControlInfo;
@@ -220,9 +219,9 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         }
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setAccessControlId(accessControlId);
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<AccCtrlProcess> pageParam = null;
+        Page<AccCtrlProcess> pageParam = null;
         if (current != null && pageSize != null) {
-            pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
+            pageParam = new Page<>(current, pageSize);
         }
         return accCtrlProcessDao.selectCondition(pageParam,accCtrlProcess, start, end,LockAuthCtrl.getRoles());
     }
@@ -252,10 +251,10 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
             log.error("门禁名称为空");
             return null;
         }
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<AccCtrlProcess> pageParam = null;
+        Page<AccCtrlProcess> pageParam = null;
 
         if (current != null && pageSize != null) {
-            pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
+            pageParam = new Page<>(current, pageSize);
         }
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setAccessControlName(accessControlName);
@@ -287,10 +286,10 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
             log.error("锁编号为空");
             return null;
         }
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<AccCtrlProcess> pageParam = null;
+        Page<AccCtrlProcess> pageParam = null;
 
         if (current != null && pageSize != null) {
-            pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
+            pageParam = new Page<>(current, pageSize);
         }
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setLockCode(lockCode);
@@ -322,10 +321,10 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
             log.error("操作类型为空");
             return null;
         }
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<AccCtrlProcess> pageParam = null;
+        Page<AccCtrlProcess> pageParam = null;
 
         if (current != null && pageSize != null) {
-            pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
+            pageParam = new Page<>(current, pageSize);
         }
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setProcessType(processType);
@@ -354,18 +353,18 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
     @Override
     public Page<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, Date start, Date end, Integer current, Integer pageSize) {
 
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<AccCtrlProcess> pageParam = null;
+        Page<AccCtrlProcess> pageParam = null;
 
         if (current != null && pageSize != null) {
-            pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
+            pageParam = new Page<>(current, pageSize);
         }
         List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, LockAuthCtrl.getRoles());
-        Pageable pageable = null;
+
         if (pageParam != null) {
-            pageable = new Pageable((int) pageParam.getTotal(), (int) pageParam.getPages(), (int) pageParam.getCurrent(), (int) pageParam.getSize()
-                    , accCtrlProcesses.size());
+            pageParam.setRecords(accCtrlProcesses);
+            return pageParam;
         }
-        return new Page<>(accCtrlProcesses, pageable);
+        return new Page<>(accCtrlProcesses, null);
     }
 
     /**

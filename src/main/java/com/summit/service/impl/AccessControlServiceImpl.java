@@ -147,9 +147,7 @@ public class AccessControlServiceImpl implements AccessControlService {
         Pageable pageable = PageConverter.getPageable(page,rowsCount);
         PageConverter.convertPage(page);
         List<AccessControlInfo> accessControlInfos = accessControlDao.selectHaveHistoryByPage(page, roles);
-        Page<AccessControlInfo> backPage = new Page<>();
-        backPage.setContent(accessControlInfos);
-        backPage.setPageable(pageable);
+        Page<AccessControlInfo> backPage = new Page<>(accessControlInfos,pageable);
         return backPage;
     }
 

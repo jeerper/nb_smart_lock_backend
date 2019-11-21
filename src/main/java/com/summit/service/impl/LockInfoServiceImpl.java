@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
 import com.summit.constants.CommonConstants;
-import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.LockInfoDao;
@@ -58,9 +57,7 @@ public class LockInfoServiceImpl implements LockInfoService {
         Pageable pageable = PageConverter.getPageable(page, rowsCount);
         PageConverter.convertPage(page);
         List<LockInfo> lockInfos = lockInfoDao.selectCondition(new LockInfo(), page, rolesList);
-        Page<LockInfo> backPage = new Page<>();
-        backPage.setContent(lockInfos);
-        backPage.setPageable(pageable);
+        Page<LockInfo> backPage = new Page<>(lockInfos,pageable);
         return backPage;
     }
 
@@ -77,9 +74,7 @@ public class LockInfoServiceImpl implements LockInfoService {
         Pageable pageable = PageConverter.getPageable(page,rowsCount);
         PageConverter.convertPage(page);
         List<LockInfo> lockInfos = lockInfoDao.selectAllHaveHistory(page, rolesList);
-        Page<LockInfo> backPage = new Page<>();
-        backPage.setContent(lockInfos);
-        backPage.setPageable(pageable);
+        Page<LockInfo> backPage = new Page<>(lockInfos,pageable);
         return backPage;
     }
 
@@ -101,9 +96,7 @@ public class LockInfoServiceImpl implements LockInfoService {
         Pageable pageable = PageConverter.getPageable(page, rowsCount);
         PageConverter.convertPage(page);
         List<LockInfo> lockInfos = lockInfoDao.selectCondition(lockInfo, page, rolesList);
-        Page<LockInfo> backPage = new Page<>();
-        backPage.setContent(lockInfos);
-        backPage.setPageable(pageable);
+        Page<LockInfo> backPage = new Page<>(lockInfos,pageable);
         return backPage;
     }
 

@@ -7,7 +7,6 @@ import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlRole;
-import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AccCtrlRoleDao;
 import com.summit.service.AccCtrlRoleService;
@@ -17,7 +16,6 @@ import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -209,9 +207,7 @@ public class AccCtrlRoleServiceImpl implements AccCtrlRoleService {
         List<AccCtrlRole> records = null;
         if(accCtrlRoleIPage != null)
             records = accCtrlRoleIPage.getRecords();
-        Page<AccCtrlRole> backPage = new Page<>();
-        backPage.setContent(records);
-        backPage.setPageable(pageable);
+        Page<AccCtrlRole> backPage = new Page<>(records,pageable);
         return backPage;
     }
 
@@ -235,9 +231,8 @@ public class AccCtrlRoleServiceImpl implements AccCtrlRoleService {
         List<AccCtrlRole> records = null;
         if(accCtrlRoleIPage != null)
             records = accCtrlRoleIPage.getRecords();
-        Page<AccCtrlRole> backPage = new Page<>();
-        backPage.setContent(records);
-        backPage.setPageable(pageable);
+        Page<AccCtrlRole> backPage = new Page<>(records,pageable);
+
         return backPage;
     }
 }

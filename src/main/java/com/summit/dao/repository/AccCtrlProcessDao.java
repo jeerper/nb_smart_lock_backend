@@ -1,7 +1,7 @@
 package com.summit.dao.repository;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.summit.cbb.utils.page.Page;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.SimplePage;
 import org.apache.ibatis.annotations.Param;
