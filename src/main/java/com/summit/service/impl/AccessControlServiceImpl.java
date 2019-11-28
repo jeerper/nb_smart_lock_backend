@@ -118,20 +118,19 @@ public class AccessControlServiceImpl implements AccessControlService {
         if(accessControlInfo == null){
             accessControlInfo = new AccessControlInfo();
         }
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<AccCtrlRealTimeEntity> pageParam = null;
+        Page<AccessControlInfo> pageParam = null;
 
         if (current != null && pageSize != null) {
-            pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
+            pageParam = new Page<>(current, pageSize);
         }
 
         List<AccessControlInfo> accessControls = accessControlDao.selectCondition(pageParam,accessControlInfo,LockAuthCtrl.getRoles());
 
-        Pageable pageable = null;
         if (pageParam != null) {
-            pageable = new Pageable((int) pageParam.getTotal(), (int) pageParam.getPages(), (int) pageParam.getCurrent(), (int) pageParam.getSize()
-                    , accessControls.size());
+            pageParam.setRecords(accessControls);
+            return pageParam;
         }
-        return new Page<>(accessControls, pageable);
+        return new Page<>(accessControls, null);
     }
 
     /**
