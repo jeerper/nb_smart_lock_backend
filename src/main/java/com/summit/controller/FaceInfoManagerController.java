@@ -1,9 +1,11 @@
 package com.summit.controller;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.system.SystemUtil;
+import com.baidu.aip.util.Base64Util;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.summit.MainAction;
 import com.summit.cbb.utils.page.Page;
@@ -37,6 +39,7 @@ import com.summit.service.FaceInfoAccCtrlService;
 import com.summit.service.FaceInfoManagerService;
 import com.summit.util.CommonUtil;
 import com.summit.util.SummitTools;
+import com.summit.utils.BaiduSdkClient;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Platform;
 import io.swagger.annotations.Api;
@@ -80,46 +83,38 @@ public class FaceInfoManagerController {
     private FaceInfoManagerService faceInfoManagerService;
     @Autowired
     private FaceInfoAccCtrlService faceInfoAccCtrlService;
+    @Autowired
+    private BaiduSdkClient baiduSdkClient;
+
 
     @ApiOperation(value = "录入人脸信息", notes = "返回不是-1则为成功")
     @PostMapping(value = "insertFaceInfo")
-    public RestfulEntityBySummit<Integer> insertFaceInfo(@RequestBody FaceInfoManagerEntity faceInfoManagerEntity) throws ParseException, IOException {
+    public RestfulEntityBySummit<Integer> insertFaceInfo(@RequestBody FaceInfoManagerEntity faceInfoManagerEntity) throws ParseException{
         String base64Str = faceInfoManagerEntity.getFaceImage();
-        System.out.println("人脸图片：" + base64Str);
-        if (base64Str == null || base64Str.isEmpty()) {
+
+        if (StrUtil.isBlank(base64Str)) {
             log.error("人脸图片为空");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "人脸图片为空", null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "人脸图片不能为空", null);
         }
-        /**
-         * 判断人脸修改时图片是否重复，
-         */
-        if (SummitTools.stringNotNull(base64Str)) {
-            List<String> faceImagesRelativePaths = new ArrayList<>();//得到所有的图片路径
-            List<FaceInfo> allFaceInfo2 = faceInfoManagerService.selectAllFaceInfo(null);
-            for (FaceInfo bianlioldFaceInfo : allFaceInfo2) {
-                if (bianlioldFaceInfo.getFaceImage() != null) {
-                    faceImagesRelativePaths.add(bianlioldFaceInfo.getFaceImage());
-                }
+        int i = base64Str.indexOf(",");
+        String subNewImageBase64 = base64Str.substring(i + 1);
+        //判断人脸图片是否在人脸库中存在
+        List<FaceInfo> faceInfoLibrary = faceInfoManagerService.selectAllFaceInfo(null);
+        for (FaceInfo faceInfo : faceInfoLibrary) {
+            if (StrUtil.isBlank(faceInfo.getFaceImage())) {
+                continue;
             }
-            List<String> imagesBase64 = new ArrayList<>();//得到所有的图片base64
-            if (!CommonUtil.isEmptyList(faceImagesRelativePaths)) {
-                for (String faceImagesRelativePath : faceImagesRelativePaths) {
-                    String faceImagesAbsolutePath = new String(new File(".").getCanonicalPath() + faceImagesRelativePath);
-                    String imageToBase64Str = CommonUtil.imageToBase64Str(faceImagesAbsolutePath);
-                    imagesBase64.add(imageToBase64Str);
+            String faceImagesAbsolutePath = SystemUtil.getUserInfo().getCurrentDir() + faceInfo.getFaceImage();
+            try {
+                String imageToBase64Str = Base64Util.encode(FileUtil.readBytes(faceImagesAbsolutePath));
+                if (StrUtil.equals(subNewImageBase64,imageToBase64Str)) {
+                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸添加失败,头像重复", null);
                 }
-            }
-            if (!CommonUtil.isEmptyList(imagesBase64)) {
-                for (String imageBase64 : imagesBase64) {
-                    String newfaceImageBase64 = faceInfoManagerEntity.getFaceImage();
-                    int i = newfaceImageBase64.indexOf(",");
-                    String subNewImageBase64 = newfaceImageBase64.substring(i + 1);
-                    if (subNewImageBase64.equals(imageBase64)) {
-                        return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸添加失败,头像重复", null);
-                    }
-                }
+            } catch (Exception e) {
+                log.error("本地人脸库图片丢失", e);
             }
         }
+
         FaceInfo faceInfo = new FaceInfo();
         if (SummitTools.stringNotNull(base64Str)) {
             StringBuffer fileName = new StringBuffer();
@@ -172,7 +167,7 @@ public class FaceInfoManagerController {
         faceInfo.setFaceEndTime(faceEndTime);
         faceInfo.setIsValidTime(0);//人脸录入时候这时候人脸肯定未过期
         try {
-            int i = faceInfoManagerService.insertFaceInfo(faceInfo);
+            faceInfoManagerService.insertFaceInfo(faceInfo);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("人脸信息录入名称已存在");
@@ -181,18 +176,29 @@ public class FaceInfoManagerController {
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "录入人脸信息成功", 1);
     }
 
-    @ApiOperation(value = "根据所传一个或多个条件组合分页查询人脸信息记录", notes = "各字段都为空则查询全部。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
+    @ApiOperation(value = "根据所传一个或多个条件组合分页查询人脸信息记录", notes = "各字段都为空则查询全部。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0" +
+            "则查不到结果")
     @GetMapping(value = "/selectFaceInfoByPage")
-    public RestfulEntityBySummit<Page<FaceInfo>> selectFaceInfoByPage(@ApiParam(value = "姓名") @RequestParam(value = "userName", required = false, defaultValue = "") String userName,
-                                                                      @ApiParam(value = "证件号") @RequestParam(value = "cardId", required = false, defaultValue = "") String cardId,
-                                                                      @ApiParam(value = "省份") @RequestParam(value = "province", required = false, defaultValue = "") String province,
-                                                                      @ApiParam(value = "城市") @RequestParam(value = "city", required = false, defaultValue = "") String city,
-                                                                      @ApiParam(value = "性别，0：男，1：女，2：未知") @RequestParam(value = "gender", required = false) Integer gender,
-                                                                      @ApiParam(value = "证件类型，0：身份证，1：护照，2：军官证，3：驾驶证，4：未知") @RequestParam(value = "cardType", required = false) Integer cardType,
-                                                                      @ApiParam(value = "人脸类型，0:内部人员，1:临时人员") @RequestParam(value = "faceType", required = false) Integer faceType,
-                                                                      @ApiParam(value = "人脸过期，0:没有过期，1:已经过期") @RequestParam(value = "isValidTime", required = false) Integer isValidTime,
-                                                                      @ApiParam(value = "当前页，大于等于1") @RequestParam(value = "current", required = false) Integer current,
-                                                                      @ApiParam(value = "每页条数，大于等于0") @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+    public RestfulEntityBySummit<Page<FaceInfo>> selectFaceInfoByPage(@ApiParam(value = "姓名") @RequestParam(value = "userName", required = false,
+            defaultValue = "") String userName,
+                                                                      @ApiParam(value = "证件号") @RequestParam(value = "cardId", required = false,
+                                                                              defaultValue = "") String cardId,
+                                                                      @ApiParam(value = "省份") @RequestParam(value = "province", required = false,
+                                                                              defaultValue = "") String province,
+                                                                      @ApiParam(value = "城市") @RequestParam(value = "city", required = false,
+                                                                              defaultValue = "") String city,
+                                                                      @ApiParam(value = "性别，0：男，1：女，2：未知") @RequestParam(value = "gender",
+                                                                              required = false) Integer gender,
+                                                                      @ApiParam(value = "证件类型，0：身份证，1：护照，2：军官证，3：驾驶证，4：未知") @RequestParam(value =
+                                                                              "cardType", required = false) Integer cardType,
+                                                                      @ApiParam(value = "人脸类型，0:内部人员，1:临时人员") @RequestParam(value = "faceType",
+                                                                              required = false) Integer faceType,
+                                                                      @ApiParam(value = "人脸过期，0:没有过期，1:已经过期") @RequestParam(value = "isValidTime",
+                                                                              required = false) Integer isValidTime,
+                                                                      @ApiParam(value = "当前页，大于等于1") @RequestParam(value = "current", required =
+                                                                              false) Integer current,
+                                                                      @ApiParam(value = "每页条数，大于等于0") @RequestParam(value = "pageSize", required =
+                                                                              false) Integer pageSize) {
         Page<FaceInfo> faceInfoPage = null;
 
         try {
@@ -218,7 +224,8 @@ public class FaceInfoManagerController {
 
     @ApiOperation(value = "更新人脸信息")
     @PutMapping(value = "/updateFaceInfo")
-    public RestfulEntityBySummit<String> updateFaceInfo(@ApiParam(value = "包含人脸信息") @RequestBody FaceInfo faceInfo) throws IOException, ParseException {
+    public RestfulEntityBySummit<String> updateFaceInfo(@ApiParam(value = "包含人脸信息") @RequestBody FaceInfo faceInfo) throws IOException,
+            ParseException {
         if (faceInfo == null) {
             log.error("人脸信息为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "人脸信息为空", null);
@@ -382,7 +389,9 @@ public class FaceInfoManagerController {
                     Integer updateAddfacelibThreshold = null;//布控的阀值
                     if (getAddFaceLib) {
                         System.out.println("查询编辑人脸库成功---------");
-                        String updateAddgetfacelibpath = new String(new File(".").getCanonicalPath() + File.separator + "updateAddFaceLib" + File.separator + "updateAddFaceLib.json");
+                        String updateAddgetfacelibpath =
+                                new String(new File(".").getCanonicalPath() + File.separator + "updateAddFaceLib" + File.separator +
+                                        "updateAddFaceLib.json");
                         String updateAddFaceLibjson = readFile(updateAddgetfacelibpath);
                         JSONObject updateAddFaceLiobject = new JSONObject(updateAddFaceLibjson);
                         JSONArray updateAddFaceLiobjectArry = updateAddFaceLiobject.getJSONArray("FaceListsArry");
@@ -559,7 +568,9 @@ public class FaceInfoManagerController {
                     Integer updatefacelibThreshold = null;//布控的阀值
                     if (getupdateFaceLib) {
                         System.out.println("查询编辑人脸库成功---------");
-                        String updategetfacelibpath = new String(new File(".").getCanonicalPath() + File.separator + "updateFaceLib" + File.separator + "updateFaceLib.json");
+                        String updategetfacelibpath =
+                                new String(new File(".").getCanonicalPath() + File.separator + "updateFaceLib" + File.separator + "updateFaceLib" +
+                                        ".json");
                         String updateFaceLibjson = readFile(updategetfacelibpath);
                         JSONObject updateFaceLiobject = new JSONObject(updateFaceLibjson);
                         JSONArray updateFaceLiobjectArry = updateFaceLiobject.getJSONArray("FaceListsArry");
@@ -623,7 +634,9 @@ public class FaceInfoManagerController {
                     if (getFace) {
                         System.out.println("查询编辑人脸信息成功");
                         //查询到人脸信息json数据
-                        String getfaceInfoPath = new String(new File(".").getCanonicalPath() + File.separator + "updatefaceInfo" + File.separator + "updatefaceInfo.json");
+                        String getfaceInfoPath =
+                                new String(new File(".").getCanonicalPath() + File.separator + "updatefaceInfo" + File.separator + "updatefaceInfo" +
+                                        ".json");
                         String facejson = readFile(getfaceInfoPath);
                         JSONObject objectface = new JSONObject(facejson);
                         JSONArray faceRecordArry = objectface.getJSONArray("FaceRecordArry");
@@ -955,7 +968,8 @@ public class FaceInfoManagerController {
 
     @ApiOperation(value = "删除人脸信息，参数为id数组", notes = "根据人脸id删除人脸信息")
     @DeleteMapping(value = "/delfaceInfoByIdBatch")
-    public RestfulEntityBySummit<String> delFaceInfo(@ApiParam(value = "人脸信息的id", required = true) @RequestParam(value = "faceInfoIds", required = false) List<String> faceInfoIds) throws ParseException, IOException {
+    public RestfulEntityBySummit<String> delFaceInfo(@ApiParam(value = "人脸信息的id", required = true) @RequestParam(value = "faceInfoIds", required =
+            false) List<String> faceInfoIds) throws ParseException, IOException {
         if (faceInfoIds == null || faceInfoIds.isEmpty()) {
             log.error("人脸信息id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "人脸信息id为空", null);
@@ -1060,7 +1074,9 @@ public class FaceInfoManagerController {
                             entryulFaceLibID = 1111;
                         } else if (delEntrygetFaceLib) {
                             System.out.println("查询入口库人脸库成功------------------------");
-                            String entrygetfacelibpath1 = new String(new File(".").getCanonicalPath() + File.separator + "delEntryFaceLib" + File.separator + "delEntryFaceLib.json");
+                            String entrygetfacelibpath1 =
+                                    new String(new File(".").getCanonicalPath() + File.separator + "delEntryFaceLib" + File.separator +
+                                            "delEntryFaceLib.json");
                             String entryjson = readFile(entrygetfacelibpath1);
                             JSONObject entryobject = new JSONObject(entryjson);
                             JSONArray entryfaceListsArry = entryobject.getJSONArray("FaceListsArry");
@@ -1078,7 +1094,9 @@ public class FaceInfoManagerController {
                             exitulFaceLibID = 1111;
                         } else if (delExitgetFaceLib) {
                             System.out.println("查询新建出口的人脸库成功---------------");
-                            String exitgetfacelibpath = new String(new File(".").getCanonicalPath() + File.separator + "delExitFaceLib" + File.separator + "delExitFaceLib.json");
+                            String exitgetfacelibpath =
+                                    new String(new File(".").getCanonicalPath() + File.separator + "delExitFaceLib" + File.separator +
+                                            "delExitFaceLib.json");
                             String exitnewFaceLibjson = readFile(exitgetfacelibpath);
                             JSONObject exitnewFaceLiobject = new JSONObject(exitnewFaceLibjson);
                             JSONArray exitnewFaceLiobjectArry = exitnewFaceLiobject.getJSONArray("FaceListsArry");
@@ -1323,7 +1341,8 @@ public class FaceInfoManagerController {
                                                     printReturnMsg = 106;
                                                 }
                                             } else {
-                                                entrytdel = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryulIdentifyId, entrypuFaceInfoDeleteS);
+                                                entrytdel = HWPuSDKLinuxLibrary.INSTANCE.IVS_PU_DelFaceInfo(entryulIdentifyId,
+                                                        entrypuFaceInfoDeleteS);
                                                 long returnMsg = HuaWeiSdkApi.printReturnMsg();
                                                 if (returnMsg == 106) {
                                                     printReturnMsg = 106;
@@ -1351,7 +1370,7 @@ public class FaceInfoManagerController {
             try {
                 faceInfoManagerService.delFaceInfoByIds(notAuthorityfaceids);
             } catch (Exception e) {
-                log.error(msg,e);
+                log.error(msg, e);
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg, null);
             }
         }
@@ -1389,7 +1408,8 @@ public class FaceInfoManagerController {
             //System.out.println(faceInfos+"TestPath");
             if (faceInfos != null) {
                 for (FaceInfo faceInfo : faceInfos) {
-                    simpleFaceInfos.add(new SimpleFaceInfo(faceInfo.getFaceid(), faceInfo.getUserName(), faceInfo.getFaceImage(), faceInfo.getIsValidTime()));
+                    simpleFaceInfos.add(new SimpleFaceInfo(faceInfo.getFaceid(), faceInfo.getUserName(), faceInfo.getFaceImage(),
+                            faceInfo.getIsValidTime()));
                 }
             }
         } catch (Exception e) {
@@ -1416,7 +1436,8 @@ public class FaceInfoManagerController {
 
     @ApiOperation(value = "根据省份的编号查询省份所对应的所有的城市")
     @GetMapping(value = "/selectCityByProvinceId")
-    public RestfulEntityBySummit<List<String>> selectCityByProvinceId(@ApiParam(value = "省份编号") @RequestParam(value = "provinceId", required = false) String provinceId) {
+    public RestfulEntityBySummit<List<String>> selectCityByProvinceId(@ApiParam(value = "省份编号") @RequestParam(value = "provinceId", required =
+            false) String provinceId) {
         if (provinceId == null) {
             log.error("省份编号为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "省份编号为空", null);

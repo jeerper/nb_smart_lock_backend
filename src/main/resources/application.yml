@@ -1,10 +1,8 @@
 sdk:
-  port: 5062
-  userName: "admin"
-  password: "HuaWei123"
-#  localhost: "${Registry_Center_IP:192.168.141.222}"
-  localhost: "${Registry_Center_IP:192.168.141.155}"
- # localhost: "${Registry_Center_IP:192.168.141.132}"
+  appId: 17708825
+  apiKey: gT9AW413oU3mS2G2tGSuX1iG
+  secretKey: 9lvVAufG1Auwg6iaYnoVET2Spd06hNYl
+
 server:
   port: 22233
 spring:
