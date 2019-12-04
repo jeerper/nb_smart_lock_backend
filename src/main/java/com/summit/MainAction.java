@@ -15,8 +15,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @MapperScan("com.summit.dao")
 public class MainAction {
 
-//    @Autowired
-//    SimpMessagingTemplate messagingTemplate;
     public static final String SnapshotFileName="snapshot";
     public static final String ExitFaceLib="exitfaceLib";
     public static final String EntryFaceLib="entryFaceLib";
@@ -39,16 +37,12 @@ public class MainAction {
     public static final String TemporaryExitRealFace="temporaryExitRealFace";//临时出口人脸信息
     public static final String InnerEntryRealFaceInfo="innerEntryRealFaceInfo";//内部入口人脸信息
     public static final String InnerExitRealFaceInfo="innerExitRealFaceInfo";//内部出口人脸信息
+
+
+
     public static void main(String[] args) {
         SpringApplication.run(MainAction.class, args);
     }
 
-//    @Scheduled(fixedDelay = 1000L)
-//    public void time() {
-//        messagingTemplate.convertAndSend("/topic/realTimeInfoList", "haha");
-//    }
-//    @MessageMapping("/realTimeInfo")
-    public void realTimeInfo(String message){
-        System.out.println(message);
-    }
+
 }

@@ -2,6 +2,7 @@ package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.cbb.utils.page.Page;
+import com.summit.common.util.UserAuthUtils;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccessControlInfo;
@@ -17,7 +18,7 @@ import com.summit.service.AccessControlService;
 import com.summit.service.AlarmService;
 import com.summit.service.LockInfoService;
 import com.summit.util.CommonUtil;
-import com.summit.util.LockAuthCtrl;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -131,7 +132,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
             log.error("锁操作信息id为空");
             return CommonConstants.UPDATE_ERROR;
         }
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         AccCtrlProcess accCtrlProcess = accCtrlProcessDao.selectAccCtrlProcessById(accCtrlProId, null);
         UpdateWrapper<AccCtrlProcess> wrapper = new UpdateWrapper<>();
         UpdateWrapper<FileInfo> fileWrapper = new UpdateWrapper<>();
@@ -185,7 +186,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
      */
     @Override
     public List<AccCtrlProcess> selectAll() {
-        return accCtrlProcessDao.selectCondition(null,null, null, null,LockAuthCtrl.getRoles());
+        return accCtrlProcessDao.selectCondition(null,null, null, null,UserAuthUtils.getRoles());
     }
 
     /**
@@ -200,7 +201,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
             log.error("门禁操作记录id为空");
             return null;
         }
-        return accCtrlProcessDao.selectAccCtrlProcessById(accCtrlProId, LockAuthCtrl.getRoles());
+        return accCtrlProcessDao.selectAccCtrlProcessById(accCtrlProId, UserAuthUtils.getRoles());
     }
 
     /**
@@ -223,7 +224,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         if (current != null && pageSize != null) {
             pageParam = new Page<>(current, pageSize);
         }
-        return accCtrlProcessDao.selectCondition(pageParam,accCtrlProcess, start, end,LockAuthCtrl.getRoles());
+        return accCtrlProcessDao.selectCondition(pageParam,accCtrlProcess, start, end,UserAuthUtils.getRoles());
     }
 
     /**
@@ -258,7 +259,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         }
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setAccessControlName(accessControlName);
-        return accCtrlProcessDao.selectCondition(pageParam,accCtrlProcess, start, end, LockAuthCtrl.getRoles());
+        return accCtrlProcessDao.selectCondition(pageParam,accCtrlProcess, start, end, UserAuthUtils.getRoles());
     }
 
     /**
@@ -293,7 +294,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         }
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setLockCode(lockCode);
-        return accCtrlProcessDao.selectCondition(pageParam,accCtrlProcess, start, end,  LockAuthCtrl.getRoles());
+        return accCtrlProcessDao.selectCondition(pageParam,accCtrlProcess, start, end,  UserAuthUtils.getRoles());
     }
 
     /**
@@ -328,7 +329,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         }
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setProcessType(processType);
-        return accCtrlProcessDao.selectCondition(pageParam,accCtrlProcess, start, end, LockAuthCtrl.getRoles());
+        return accCtrlProcessDao.selectCondition(pageParam,accCtrlProcess, start, end, UserAuthUtils.getRoles());
     }
 
     /**
@@ -358,7 +359,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         if (current != null && pageSize != null) {
             pageParam = new Page<>(current, pageSize);
         }
-        List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, LockAuthCtrl.getRoles());
+        List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, UserAuthUtils.getRoles());
 
         if (pageParam != null) {
             pageParam.setRecords(accCtrlProcesses);

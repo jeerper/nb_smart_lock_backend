@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
 import com.summit.common.entity.UserInfo;
+import com.summit.common.util.UserAuthUtils;
 import com.summit.common.web.filter.UserContextHolder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
@@ -30,7 +31,7 @@ import com.summit.service.AccessControlService;
 import com.summit.service.CameraDeviceService;
 import com.summit.service.LockInfoService;
 import com.summit.util.CommonUtil;
-import com.summit.util.LockAuthCtrl;
+
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +79,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             log.error("门禁id为空");
             return null;
         }
-        return accessControlDao.selectAccCtrlById(accessControlId, LockAuthCtrl.getRoles());
+        return accessControlDao.selectAccCtrlById(accessControlId, UserAuthUtils.getRoles());
     }
 
     /**
@@ -124,7 +125,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             pageParam = new Page<>(current, pageSize);
         }
 
-        List<AccessControlInfo> accessControls = accessControlDao.selectCondition(pageParam,accessControlInfo,LockAuthCtrl.getRoles());
+        List<AccessControlInfo> accessControls = accessControlDao.selectCondition(pageParam,accessControlInfo,UserAuthUtils.getRoles());
 
         if (pageParam != null) {
             pageParam.setRecords(accessControls);
@@ -141,7 +142,7 @@ public class AccessControlServiceImpl implements AccessControlService {
     @Override
     public Page<AccessControlInfo> selectHaveHistoryByPage(SimplePage page) {
         //转换当前页之前设置当前页
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         Integer rowsCount = accessControlDao.selectHaveHistoryCountByPage(null, roles);
         Pageable pageable = PageConverter.getPageable(page,rowsCount);
         PageConverter.convertPage(page);
@@ -177,7 +178,7 @@ public class AccessControlServiceImpl implements AccessControlService {
         if (current != null && pageSize != null) {
             pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
         }
-        return accessControlDao.selectCondition(pageParam,accessControlInfo,  LockAuthCtrl.getRoles());
+        return accessControlDao.selectCondition(pageParam,accessControlInfo,  UserAuthUtils.getRoles());
     }
 
     /**

@@ -4,13 +4,12 @@ package com.summit.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.summit.cbb.utils.page.Pageable;
+import com.summit.common.util.UserAuthUtils;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlRealTimeEntity;
-import com.summit.dao.entity.FaceInfoAccCtrl;
 import com.summit.dao.repository.AccCtrlRealTimeDao;
 import com.summit.service.AccCtrlRealTimeService;
 import com.summit.util.CommonUtil;
-import com.summit.util.LockAuthCtrl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,7 +77,7 @@ public class AccCtrlRealTimeServiceImpl implements AccCtrlRealTimeService {
     @Override
     public com.summit.cbb.utils.page.Page<AccCtrlRealTimeEntity> selectByConditionPage(AccCtrlRealTimeEntity accCtrlRealTimeEntity, Date start,
                                                                                        Date end, Integer current, Integer pageSize) {
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         Page<AccCtrlRealTimeEntity> pageParam = null;
         if (current != null && pageSize != null) {
             pageParam = new Page<>(current, pageSize);

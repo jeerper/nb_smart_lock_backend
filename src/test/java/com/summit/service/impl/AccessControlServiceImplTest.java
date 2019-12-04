@@ -1,9 +1,9 @@
 package com.summit.service.impl;
 
+import com.summit.common.util.UserAuthUtils;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.service.AccessControlService;
-import com.summit.util.LockAuthCtrl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class AccessControlServiceImplTest {
 
     @Test
     public void selectAccCtrlById() {
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         AccessControlInfo accessControlInfo = accessControlService.selectAccCtrlById("ac02");
         System.out.println(accessControlInfo);
     }

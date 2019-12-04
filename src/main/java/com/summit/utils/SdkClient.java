@@ -5,14 +5,13 @@ import com.summit.sdk.huawei.callback.ClientFaceInfoCallback;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 
 @Slf4j
-@Component
+//@Component
 public class SdkClient {
     @Autowired
     ClientFaceInfoCallback clientFaceInfoCallback;

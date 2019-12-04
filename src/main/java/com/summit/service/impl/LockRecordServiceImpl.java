@@ -1,6 +1,7 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.summit.common.util.UserAuthUtils;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.FileInfo;
@@ -13,7 +14,6 @@ import com.summit.dao.repository.FileInfoDao;
 import com.summit.dao.repository.LockProcessDao;
 import com.summit.service.LockInfoService;
 import com.summit.service.LockRecordService;
-import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,7 +112,7 @@ public class LockRecordServiceImpl implements LockRecordService {
             log.error("锁操作信息id为空");
             return CommonConstants.UPDATE_ERROR;
         }
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         LockProcess lockProcess = lockProcessDao.selectLockProcessById(processId, roles);
         UpdateWrapper<LockProcess> wrapper = new UpdateWrapper<>();
         UpdateWrapper<FileInfo> fileWrapper = new UpdateWrapper<>();
@@ -133,7 +133,7 @@ public class LockRecordServiceImpl implements LockRecordService {
     @Override
     public List<LockProcess> selectAll(SimplePage page) {
         PageConverter.convertPage(page);
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         return lockProcessDao.selectCondition(new LockProcess(), null, null, page,roles);
     }
 
@@ -148,7 +148,7 @@ public class LockRecordServiceImpl implements LockRecordService {
             log.error("锁操作信息id为空");
             return null;
         }
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         return lockProcessDao.selectLockProcessById(processId, roles);
     }
 
@@ -169,7 +169,7 @@ public class LockRecordServiceImpl implements LockRecordService {
         PageConverter.convertPage(page);
         LockProcess lockProcess = new LockProcess();
         lockProcess.setLockCode(lockCode);
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         return lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
     }
 
@@ -186,7 +186,7 @@ public class LockRecordServiceImpl implements LockRecordService {
             return null;
         }
         PageConverter.convertPage(page);
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         return lockProcessDao.selectByLockCode(lockCode, page, roles);
     }
 
@@ -207,7 +207,7 @@ public class LockRecordServiceImpl implements LockRecordService {
         PageConverter.convertPage(page);
         LockProcess lockProcess = new LockProcess();
         lockProcess.setDeviceIp(deviceIp);
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         return lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
     }
 
@@ -244,7 +244,7 @@ public class LockRecordServiceImpl implements LockRecordService {
         CameraDevice device = deviceDao.selectDeviceById(devId);
         LockProcess lp = new LockProcess();
         lp.setDeviceIp(device.getDeviceIp());
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         return lockProcessDao.selectCondition(lp, start, end, page, roles);
     }
 
@@ -280,7 +280,7 @@ public class LockRecordServiceImpl implements LockRecordService {
         PageConverter.convertPage(page);
         LockProcess lockProcess = new LockProcess();
         lockProcess.setUserName(userName);
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         return lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
     }
 
@@ -316,7 +316,7 @@ public class LockRecordServiceImpl implements LockRecordService {
         PageConverter.convertPage(page);
         LockProcess lockProcess = new LockProcess();
         lockProcess.setProcessType(processType);
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         return lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
     }
 
@@ -352,7 +352,7 @@ public class LockRecordServiceImpl implements LockRecordService {
         PageConverter.convertPage(page);
         LockProcess lockProcess = new LockProcess();
         lockProcess.setProcessResult(processResult);
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         return lockProcessDao.selectCondition(lockProcess, start, end, page, roles);
     }
 
@@ -386,7 +386,7 @@ public class LockRecordServiceImpl implements LockRecordService {
             return null;
         }
         PageConverter.convertPage(page);
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         return lockProcessDao.selectCondition(lockProcess, start, end, page,roles);
     }
 

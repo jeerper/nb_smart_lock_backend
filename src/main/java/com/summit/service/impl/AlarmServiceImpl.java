@@ -3,6 +3,7 @@ package com.summit.service.impl;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
+import com.summit.common.util.UserAuthUtils;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.CameraDevice;
@@ -13,7 +14,6 @@ import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.LockProcessDao;
 import com.summit.service.AlarmService;
 import com.summit.util.CommonUtil;
-import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,7 +104,7 @@ public class AlarmServiceImpl implements AlarmService {
         if (current != null && pageSize != null) {
             pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
         }
-        return alarmDao.selectCondition(pageParam,null, start, end, LockAuthCtrl.getRoles());
+        return alarmDao.selectCondition(pageParam,null, start, end, UserAuthUtils.getRoles());
     }
 
     /**
@@ -114,7 +114,7 @@ public class AlarmServiceImpl implements AlarmService {
      */
     @Override
     public Alarm selectAlarmById(String alarmId) {
-        return alarmDao.selectAlarmById(alarmId, LockAuthCtrl.getRoles());
+        return alarmDao.selectAlarmById(alarmId, UserAuthUtils.getRoles());
     }
 
     /**
@@ -148,7 +148,7 @@ public class AlarmServiceImpl implements AlarmService {
         Alarm alarm = new Alarm();
         alarm.setAlarmName(alarmName);
 
-        return alarmDao.selectCondition(pageParam,alarm, start, end, LockAuthCtrl.getRoles());
+        return alarmDao.selectCondition(pageParam,alarm, start, end, UserAuthUtils.getRoles());
     }
 
     /**
@@ -176,7 +176,7 @@ public class AlarmServiceImpl implements AlarmService {
         }
         Alarm alarm = new Alarm();
         alarm.setAlarmStatus(alarmStatus);
-        return alarmDao.selectCondition(pageParam,alarm, start, end, LockAuthCtrl.getRoles());
+        return alarmDao.selectCondition(pageParam,alarm, start, end, UserAuthUtils.getRoles());
     }
 
     /**
@@ -201,7 +201,7 @@ public class AlarmServiceImpl implements AlarmService {
             log.error("告警状态为空");
             return null;
         }
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         return alarmDao.selectAlarmCountByStatus(alarmStatus,roles);
     }
 
@@ -221,7 +221,7 @@ public class AlarmServiceImpl implements AlarmService {
         }
         PageConverter.convertPage(page);
         List<Alarm> alarms = new ArrayList<>();
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         List<LockProcess> lockProcesses = lockProcessDao.selectByLockCode(lockCode, page,roles);
         if (!CommonUtil.isEmptyList(lockProcesses)){
             for (LockProcess lockProcess: lockProcesses) {
@@ -265,7 +265,7 @@ public class AlarmServiceImpl implements AlarmService {
         List<Alarm> alarms = new ArrayList<>();
         LockProcess lp = new LockProcess();
         lp.setDeviceIp(deviceIp);
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lp, start, end, page,roles);
         if (!CommonUtil.isEmptyList(lockProcesses)){
             for (LockProcess lockProcess: lockProcesses) {
@@ -313,7 +313,7 @@ public class AlarmServiceImpl implements AlarmService {
         }
         LockProcess lp = new LockProcess();
         lp.setDeviceIp(cameraDevice.getDeviceIp());
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         List<LockProcess> lockProcesses = lockProcessDao.selectCondition(lp, start, end, page,roles);
         if (!CommonUtil.isEmptyList(lockProcesses)){
             for (LockProcess lockProcess: lockProcesses) {
@@ -351,7 +351,7 @@ public class AlarmServiceImpl implements AlarmService {
         if (current != null && pageSize != null) {
             pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
         }
-        List<Alarm> alarms = alarmDao.selectCondition(pageParam,alarm, start, end, LockAuthCtrl.getRoles());
+        List<Alarm> alarms = alarmDao.selectCondition(pageParam,alarm, start, end, UserAuthUtils.getRoles());
         Pageable pageable = null;
         if (pageParam != null) {
             pageable = new Pageable((int) pageParam.getTotal(), (int) pageParam.getPages(), (int) pageParam.getCurrent(), (int) pageParam.getSize()

@@ -2,45 +2,27 @@ package com.summit.sdk.huawei.callback;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONObject;
-import cn.hutool.system.SystemUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.summit.MainAction;
-import com.summit.dao.entity.*;
-import com.summit.dao.repository.FaceInfoManagerDao;
-import com.summit.sdk.huawei.*;
-import com.summit.sdk.huawei.api.HuaWeiSdkApi;
-import com.summit.sdk.huawei.model.*;
+import com.summit.sdk.huawei.HWPuSDKLibrary;
+import com.summit.sdk.huawei.PU_META_DATA;
+import com.summit.sdk.huawei.PU_UserData;
+import com.summit.sdk.huawei.model.CardType;
 import com.summit.sdk.huawei.model.FaceInfo;
-import com.summit.service.AccCtrlRealTimeService;
-import com.summit.service.FaceInfoAccCtrlService;
-import com.summit.util.CommonUtil;
+import com.summit.sdk.huawei.model.FaceLibType;
+import com.summit.sdk.huawei.model.Gender;
 import com.sun.jna.NativeLong;
-import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.ptr.PointerByReference;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 @Slf4j
-@Component
+//@Component
 public class RealDataCallBack implements HWPuSDKLibrary.pfRealDataCallBack {
     private ClientFaceInfoCallback clientFaceInfoCallback;
 

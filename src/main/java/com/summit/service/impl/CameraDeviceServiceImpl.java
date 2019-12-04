@@ -1,6 +1,7 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.summit.common.util.UserAuthUtils;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.SimplePage;
@@ -8,7 +9,6 @@ import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.service.CameraDeviceService;
 import com.summit.util.CommonUtil;
-import com.summit.util.LockAuthCtrl;
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class CameraDeviceServiceImpl implements CameraDeviceService {
             log.error("设备信息为空");
             return CommonConstants.UPDATE_ERROR;
         }
-        List<String> roles = LockAuthCtrl.getRoles();
+        List<String> roles = UserAuthUtils.getRoles();
         if(lockInfoDao.selectBylockCode(cameraDevice.getLockCode(),roles) == null){
             log.warn("所插入的锁编号在锁信息表中不存在");
         }
