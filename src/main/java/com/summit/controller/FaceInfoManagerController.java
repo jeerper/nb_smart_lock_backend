@@ -5,7 +5,6 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.system.SystemUtil;
-import com.baidu.aip.util.Base64Util;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.summit.MainAction;
 import com.summit.cbb.utils.page.Page;
@@ -98,6 +97,8 @@ public class FaceInfoManagerController {
         }
         int i = base64Str.indexOf(",");
         String subNewImageBase64 = base64Str.substring(i + 1);
+        byte[] subNewImageBase64Byte=Base64.getDecoder().decode(subNewImageBase64);
+
         //判断人脸图片是否在人脸库中存在
         List<FaceInfo> faceInfoLibrary = faceInfoManagerService.selectAllFaceInfo(null);
         for (FaceInfo faceInfo : faceInfoLibrary) {
@@ -106,8 +107,11 @@ public class FaceInfoManagerController {
             }
             String faceImagesAbsolutePath = SystemUtil.getUserInfo().getCurrentDir() + faceInfo.getFaceImage();
             try {
-                String imageToBase64Str = Base64Util.encode(FileUtil.readBytes(faceImagesAbsolutePath));
-                if (StrUtil.equals(subNewImageBase64,imageToBase64Str)) {
+
+
+                byte[] faceImagesBase64=FileUtil.readBytes(faceImagesAbsolutePath);
+
+                if (Arrays.equals(subNewImageBase64Byte,faceImagesBase64)) {
                     return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸添加失败,头像重复", null);
                 }
             } catch (Exception e) {
@@ -120,10 +124,8 @@ public class FaceInfoManagerController {
             StringBuffer fileName = new StringBuffer();
             fileName.append(UUID.randomUUID().toString().replaceAll("-", ""));
             if (base64Str.indexOf("data:image/png;") != -1) {
-                base64Str = base64Str.replace("data:image/png;base64,", "");
                 fileName.append(".png");
             } else if (base64Str.indexOf("data:image/jpeg;") != -1) {
-                base64Str = base64Str.replace("data:image/jpeg;base64,", "");
                 fileName.append(".jpeg");
             }
             String picId = IdWorker.getIdStr();
@@ -143,9 +145,8 @@ public class FaceInfoManagerController {
                     .append("_Face.jpg")
                     .toString();
             faceInfo.setFaceImage(faceUrl);
-            byte[] bytes = Base64.getDecoder().decode(base64Str);
             try {
-                FileUtil.writeBytes(bytes, facePicPath);
+                FileUtil.writeBytes(subNewImageBase64Byte, facePicPath);
             } catch (Exception e) {
                 log.error("保存人脸图片异常");
             }
