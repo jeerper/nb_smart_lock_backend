@@ -2,7 +2,6 @@ sdk:
   appId: 17708825
   apiKey: gT9AW413oU3mS2G2tGSuX1iG
   secretKey: 9lvVAufG1Auwg6iaYnoVET2Spd06hNYl
-  groupId: nb_smart
 server:
   port: 22233
 spring:

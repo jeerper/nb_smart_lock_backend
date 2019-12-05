@@ -131,12 +131,12 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         faceInfo.setIsValidTime(0);//人脸录入时候这时候人脸肯定未过期
         try {
             faceInfoManagerDao.insertFaceInfo(faceInfo);
-//            subNewImageBase64
-//            baiduSdkClient.getBaiduSdkApi().addUser()
-
-
             FileUtil.writeBytes(subNewImageBase64Byte, facePicPath);
+
+            //            subNewImageBase64
+//            baiduSdkClient.getBaiduSdkApi().addUser()
         } catch (Exception e) {
+            FileUtil.del(facePicPath);
             log.error("人脸信息录入名称已存在", e);
             throw new Exception("人脸信息录入名称已存在");
         }
