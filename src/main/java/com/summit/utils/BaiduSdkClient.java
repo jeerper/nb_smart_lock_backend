@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
+import java.util.HashMap;
 
 @Slf4j
 @Component
@@ -66,8 +67,69 @@ public class BaiduSdkClient {
 
     }
 
+    public String getGroupId() {
+        return groupId;
+    }
 
     public AipFace getBaiduSdkApi() {
         return client;
     }
+
+    /**
+     * 人脸图片有效性检测
+     *
+     * @param base64Str
+     * @return
+     * @throws Exception
+     */
+    public boolean detectFace(String base64Str) throws Exception {
+        //人脸有效性检测
+        HashMap<String, String> options = new HashMap<String, String>();
+        options.put("face_field", "age");
+        options.put("max_face_num", "1");
+        options.put("face_type", "LIVE");
+        options.put("liveness_control", "LOW");
+        JSONObject res = client.detect(base64Str, "BASE64", options);
+        if (StrUtil.isBlank(res.getString("result"))) {
+            log.debug("没有检测到人脸");
+            return false;
+        }
+        JSONObject result = res.getJSONObject("result");
+        int faceNum = Integer.parseInt(result.getString("face_num"));
+        if (faceNum != 1) {
+            log.error("图片人脸数量不符合要求");
+            return false;
+        }
+        //人脸置信度
+        double faceProbability = result.getJSONArray("face_list").getJSONObject(0).getDouble("face_probability");
+        if (faceProbability < 0.9d) {
+            log.error("图片人脸不符合要求");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 人脸录入
+     *
+     * @param base64Str
+     * @param faceId
+     */
+    public boolean addFace(String base64Str, String faceId) {
+        try {
+            // 传入可选参数调用接口
+            HashMap<String, String> options = new HashMap<String, String>();
+            options.put("quality_control", "NORMAL");
+            options.put("liveness_control", "LOW");
+            options.put("action_type", "REPLACE");
+            JSONObject res = client.addUser(base64Str, "BASE64", groupId, faceId, options);
+            log.debug(res.toString(2));
+            return true;
+        } catch (Exception e) {
+            log.error("人脸录入失败",e);
+            return false;
+        }
+    }
+
+
 }

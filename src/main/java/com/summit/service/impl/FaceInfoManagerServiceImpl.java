@@ -66,6 +66,11 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         }
         int i = base64Str.indexOf(",");
         String subNewImageBase64 = base64Str.substring(i + 1);
+
+        if(!baiduSdkClient.detectFace(subNewImageBase64)){
+            throw new Exception("没有检测到人脸");
+        }
+
         byte[] subNewImageBase64Byte = Base64.getDecoder().decode(subNewImageBase64);
 
         //判断人脸图片是否在人脸库中存在
@@ -132,9 +137,9 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         try {
             faceInfoManagerDao.insertFaceInfo(faceInfo);
             FileUtil.writeBytes(subNewImageBase64Byte, facePicPath);
-
-            //            subNewImageBase64
-//            baiduSdkClient.getBaiduSdkApi().addUser()
+            if(!baiduSdkClient.addFace(subNewImageBase64,faceInfo.getFaceid())){
+                throw new Exception("人脸录入失败");
+            }
         } catch (Exception e) {
             FileUtil.del(facePicPath);
             log.error("人脸信息录入名称已存在", e);
