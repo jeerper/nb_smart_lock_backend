@@ -1,7 +1,6 @@
 package com.summit.controller;
 
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.system.SystemUtil;
@@ -88,91 +87,11 @@ public class FaceInfoManagerController {
 
     @ApiOperation(value = "录入人脸信息", notes = "返回不是-1则为成功")
     @PostMapping(value = "insertFaceInfo")
-    public RestfulEntityBySummit<Integer> insertFaceInfo(@RequestBody FaceInfoManagerEntity faceInfoManagerEntity) throws ParseException{
-        String base64Str = faceInfoManagerEntity.getFaceImage();
-
-        if (StrUtil.isBlank(base64Str)) {
-            log.error("人脸图片为空");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "人脸图片不能为空", null);
-        }
-        int i = base64Str.indexOf(",");
-        String subNewImageBase64 = base64Str.substring(i + 1);
-        byte[] subNewImageBase64Byte=Base64.getDecoder().decode(subNewImageBase64);
-
-        //判断人脸图片是否在人脸库中存在
-        List<FaceInfo> faceInfoLibrary = faceInfoManagerService.selectAllFaceInfo(null);
-        for (FaceInfo faceInfo : faceInfoLibrary) {
-            if (StrUtil.isBlank(faceInfo.getFaceImage())) {
-                continue;
-            }
-            String faceImagesAbsolutePath = SystemUtil.getUserInfo().getCurrentDir() + faceInfo.getFaceImage();
-            try {
-
-
-                byte[] faceImagesBase64=FileUtil.readBytes(faceImagesAbsolutePath);
-
-                if (Arrays.equals(subNewImageBase64Byte,faceImagesBase64)) {
-                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸添加失败,头像重复", null);
-                }
-            } catch (Exception e) {
-                log.error("本地人脸库图片丢失", e);
-            }
-        }
-
-        FaceInfo faceInfo = new FaceInfo();
-        if (SummitTools.stringNotNull(base64Str)) {
-            StringBuffer fileName = new StringBuffer();
-            fileName.append(UUID.randomUUID().toString().replaceAll("-", ""));
-            if (base64Str.indexOf("data:image/png;") != -1) {
-                fileName.append(".png");
-            } else if (base64Str.indexOf("data:image/jpeg;") != -1) {
-                fileName.append(".jpeg");
-            }
-            String picId = IdWorker.getIdStr();
-            String facePicPath = new StringBuilder()
-                    .append(SystemUtil.getUserInfo().getCurrentDir())
-                    .append(File.separator)
-                    .append(MainAction.SnapshotFileName)
-                    .append(File.separator)
-                    .append(picId)
-                    .append("_Face.jpg")
-                    .toString();
-            String faceUrl = new StringBuilder()
-                    .append("/")
-                    .append(MainAction.SnapshotFileName)
-                    .append("/")
-                    .append(picId)
-                    .append("_Face.jpg")
-                    .toString();
-            faceInfo.setFaceImage(faceUrl);
-            try {
-                FileUtil.writeBytes(subNewImageBase64Byte, facePicPath);
-            } catch (Exception e) {
-                log.error("保存人脸图片异常");
-            }
-        }
-        faceInfo.setUserName(faceInfoManagerEntity.getUserName());
-        faceInfo.setGender(faceInfoManagerEntity.getGender());
-        faceInfo.setProvince(faceInfoManagerEntity.getProvince());
-        faceInfo.setCity(faceInfoManagerEntity.getCity());
-        faceInfo.setBirthday(faceInfoManagerEntity.getBirthday());
-        faceInfo.setCardType(faceInfoManagerEntity.getCardType());
-        faceInfo.setCardId(faceInfoManagerEntity.getCardId());
-        faceInfo.setFaceType(faceInfoManagerEntity.getFaceType());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");//设置日期格式
-        Date date = new Date();
-        String startTime = sdf.format(date);
-        Date faceStartTime = sdf.parse(startTime);
-        faceInfo.setFaceStartTime(faceStartTime);
-        Date faceEndTime = CommonUtil.dateFormat.get().parse(faceInfoManagerEntity.getFaceEndTime());
-        faceInfo.setFaceEndTime(faceEndTime);
-        faceInfo.setIsValidTime(0);//人脸录入时候这时候人脸肯定未过期
+    public RestfulEntityBySummit<Integer> insertFaceInfo(@RequestBody FaceInfoManagerEntity faceInfoManagerEntity) throws ParseException {
         try {
-            faceInfoManagerService.insertFaceInfo(faceInfo);
+            faceInfoManagerService.insertFaceInfo(faceInfoManagerEntity);
         } catch (Exception e) {
-            e.printStackTrace();
-            log.error("人脸信息录入名称已存在");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸信息录入名称已存在", CommonConstants.UPDATE_ERROR);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, e.getMessage(), CommonConstants.UPDATE_ERROR);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "录入人脸信息成功", 1);
     }

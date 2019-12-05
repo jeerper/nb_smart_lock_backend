@@ -20,10 +20,9 @@ public interface FaceInfoManagerService {
 
     /**
      * 人脸信息插入
-     * @param faceInfo 人脸信息
-     * @return 不为-1则成功
+     * @param faceInfoManagerEntity 人脸信息
      */
-    int insertFaceInfo(FaceInfo faceInfo);
+    void insertFaceInfo(FaceInfoManagerEntity faceInfoManagerEntity) throws Exception;
 
     /**
      * 根据id批量删除人脸信息
