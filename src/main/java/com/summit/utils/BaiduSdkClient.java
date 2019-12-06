@@ -110,6 +110,38 @@ public class BaiduSdkClient {
     }
 
     /**
+     * 搜索人脸库中的人脸
+     * @param base64Str
+     * @return 人脸ID
+     */
+    public String searchFace(String base64Str){
+        try {
+            //在已有人脸库中查找显示的人脸，如果相似率高达90%以上则不能录入
+            HashMap<String, String> options = new HashMap<String, String>();
+            options.put("max_face_num", "1");
+            //人脸匹配阈值为90%
+            options.put("match_threshold", "90");
+            options.put("quality_control", "NORMAL");
+            options.put("liveness_control", "LOW");
+            options.put("max_user_num", "1");
+
+            // 人脸搜索
+            JSONObject res = client.search(base64Str, "BASE64", groupId, options);
+
+            if (StrUtil.isBlank(res.getString("result"))) {
+                log.debug("没有检测到人脸");
+                return null;
+            }
+            JSONObject result = res.getJSONObject("result");
+            String faceId  = result.getJSONArray("user_list").getJSONObject(0).getString("user_id");
+            return faceId;
+        }catch (Exception e){
+            log.error("人脸搜索失败",e);
+            return null;
+        }
+    }
+
+    /**
      * 人脸录入
      *
      * @param base64Str

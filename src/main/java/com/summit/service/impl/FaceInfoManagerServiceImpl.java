@@ -25,6 +25,7 @@ import com.summit.util.PageConverter;
 import com.summit.utils.BaiduSdkClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,6 +54,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
 
     /**
      * 插入人脸信息
+     *
      * @param faceInfoManagerEntity 人脸信息
      * @return 返回-1则为不成功
      */
@@ -67,7 +69,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         int i = base64Str.indexOf(",");
         String subNewImageBase64 = base64Str.substring(i + 1);
 
-        if(!baiduSdkClient.detectFace(subNewImageBase64)){
+        if (!baiduSdkClient.detectFace(subNewImageBase64)) {
             throw new Exception("没有检测到人脸");
         }
 
@@ -86,7 +88,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
                     throw new Exception("人脸添加失败,头像重复");
                 }
             } catch (IORuntimeException e) {
-                log.error("本地人脸库图片丢失", e);
+                log.error("本地人脸库图片丢失,图片路径：" + faceImagesAbsolutePath);
             }
         }
 
@@ -137,89 +139,109 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         try {
             faceInfoManagerDao.insertFaceInfo(faceInfo);
             FileUtil.writeBytes(subNewImageBase64Byte, facePicPath);
-            if(!baiduSdkClient.addFace(subNewImageBase64,faceInfo.getFaceid())){
+
+            String faceId = baiduSdkClient.searchFace(subNewImageBase64);
+            if (StrUtil.isNotBlank(faceId)) {
+                FaceInfo similarFaceInfo = faceInfoManagerDao.selectById(faceId);
+                if (similarFaceInfo != null) {
+                    throw new Exception("发现人脸库中有相似的人脸，名字为：" + similarFaceInfo.getUserName() + "，不能重复录入相同的人脸");
+                } else {
+                    throw new Exception("发现人脸库中有相似的人脸，名字为：null，不能重复录入相同的人脸");
+                }
+
+            }
+
+            if (!baiduSdkClient.addFace(subNewImageBase64, faceInfo.getFaceid())) {
                 throw new Exception("人脸录入失败");
             }
         } catch (Exception e) {
             FileUtil.del(facePicPath);
-            log.error("人脸信息录入名称已存在", e);
-            throw new Exception("人脸信息录入名称已存在");
+            log.error(e.getMessage());
+            if(e instanceof DuplicateKeyException){
+                throw new Exception("人脸信息录入名称已存在");
+            }
+            throw new Exception(e.getMessage());
         }
     }
 
     /**
      * 根据id批量删除人脸信息
+     *
      * @param faceInfoIds
      * @return 返回-1则为不成功
      */
     @Override
     public int delFaceInfoByIds(List<String> faceInfoIds) {
-        if (faceInfoIds==null || faceInfoIds.isEmpty()){
+        if (faceInfoIds == null || faceInfoIds.isEmpty()) {
             log.error("人脸信息id列表为空");
             return CommonConstants.UPDATE_ERROR;
         }
-        for(String faceId:faceInfoIds){
-            FaceInfo faceInfo= faceInfoManagerDao.selectFaceInfoByID(faceId);
-            if(faceInfo==null|| StrUtil.isBlank(faceInfo.getFaceImage())){
+        for (String faceId : faceInfoIds) {
+            FaceInfo faceInfo = faceInfoManagerDao.selectFaceInfoByID(faceId);
+            if (faceInfo == null || StrUtil.isBlank(faceInfo.getFaceImage())) {
                 continue;
             }
-            String faceImageFilePath=StrUtil.replace(faceInfo.getFaceImage(), "/", File.separator);
-            try{
-                FileUtil.del(SystemUtil.getUserInfo().getCurrentDir()+faceImageFilePath);
-            }catch(Exception ioException){
-                log.error("路径文件:"+faceImageFilePath+"删除失败!",ioException);
+            String faceImageFilePath = StrUtil.replace(faceInfo.getFaceImage(), "/", File.separator);
+            try {
+                FileUtil.del(SystemUtil.getUserInfo().getCurrentDir() + faceImageFilePath);
+            } catch (Exception ioException) {
+                log.error("路径文件:" + faceImageFilePath + "删除失败!", ioException);
             }
         }
         return faceInfoManagerDao.deleteBatchIds(faceInfoIds);
     }
+
     /**
      * 分页查询全部人脸信息
+     *
      * @param faceInfoManagerEntity 人脸对象
-     * @param page 分页对象
+     * @param page                  分页对象
      * @return 人脸信息列表
      */
     @Override
     public Page<FaceInfo> selectFaceInfoByPage(FaceInfoManagerEntity faceInfoManagerEntity, SimplePage page) {
-        if(faceInfoManagerEntity==null){
+        if (faceInfoManagerEntity == null) {
             log.error("人脸信息对象为空");
             return null;
         }
-        List<FaceInfo> faceInfoList=faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity,null);
-       // System.out.println(faceInfoList+"qqq");
+        List<FaceInfo> faceInfoList = faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity, null);
+        // System.out.println(faceInfoList+"qqq");
         //faceInfoList=null等于0,不等于null的时候为他本身的大小
         int rowsCount = faceInfoList == null ? 0 : faceInfoList.size();
         Pageable pageable = PageConverter.getPageable(page, rowsCount);
         PageConverter.convertPage(page);
 
-        List<FaceInfo> faceInfoList1=faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity,page);
+        List<FaceInfo> faceInfoList1 = faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity, page);
         //System.out.println(faceInfoList1+"wwww");
-        Page<FaceInfo> backpage=new Page<>(faceInfoList1,pageable);
+        Page<FaceInfo> backpage = new Page<>(faceInfoList1, pageable);
         return backpage;
     }
 
     /**
      * 更新人脸信息
+     *
      * @param faceInfo 需要修改的人脸信息对象
      * @return 不为-1则为修改成功
      */
     @Override
     public int updateFaceInfo(FaceInfo faceInfo) {
-        if(faceInfo == null){
+        if (faceInfo == null) {
             log.error("人脸信息为空");
             return CommonConstants.UPDATE_ERROR;
         }
-        UpdateWrapper<FaceInfo> updateWrapper=new UpdateWrapper<>();
-        return  faceInfoManagerDao.update(faceInfo,updateWrapper.eq("face_id",faceInfo.getFaceid()));
+        UpdateWrapper<FaceInfo> updateWrapper = new UpdateWrapper<>();
+        return faceInfoManagerDao.update(faceInfo, updateWrapper.eq("face_id", faceInfo.getFaceid()));
     }
 
     /**
      * 根据人脸id查询唯一的人脸信息记录
+     *
      * @param faceid
      * @return 确定唯一的人脸信息记录
      */
     @Override
     public FaceInfo selectFaceInfoByID(String faceid) {
-        if (faceid==null){
+        if (faceid == null) {
             log.error("人脸信息的id为空");
             return null;
         }
@@ -228,44 +250,46 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
 
     /**
      * 查询所有的人脸信息
+     *
      * @param page
      * @return 人脸信息列表
      */
     @Override
     public List<FaceInfo> selectAllFaceInfo(SimplePage page) {
-        List<FaceInfo> faceInfos= faceInfoManagerDao.selectAllFaceInfo();
+        List<FaceInfo> faceInfos = faceInfoManagerDao.selectAllFaceInfo();
         return faceInfos;
     }
 
     /**
      * 查询所有的省份
+     *
      * @param page
      * @return 省份信息列表
      */
     @Override
     public List<Province> selectProvince(SimplePage page) {
-        QueryWrapper<Province> wrapper=new QueryWrapper<>();
+        QueryWrapper<Province> wrapper = new QueryWrapper<>();
         return provinceDao.selectList(wrapper);
     }
 
     @Override
     public List<City> selectCityByProvinceId(String provinceId) {
-        if(provinceId==null){
+        if (provinceId == null) {
             log.error("省份编号为空");
             return null;
         }
-        QueryWrapper<City> wrapper=new QueryWrapper<>();
-        return cityDao.selectList(wrapper.eq("provinceid",provinceId));
+        QueryWrapper<City> wrapper = new QueryWrapper<>();
+        return cityDao.selectList(wrapper.eq("provinceid", provinceId));
     }
 
     @Override
-    public FaceInfo selectFaceInfoByUserNameAndCardId(String userName,String cardId) {
-        if(userName==null){
+    public FaceInfo selectFaceInfoByUserNameAndCardId(String userName, String cardId) {
+        if (userName == null) {
             log.error("用户名为空");
             return null;
         }
-        QueryWrapper<FaceInfo> wrapper=new QueryWrapper<>();
-        FaceInfo faceInfo = faceInfoManagerDao.selectOne(wrapper.eq("user_name", userName).eq("card_id",cardId));
+        QueryWrapper<FaceInfo> wrapper = new QueryWrapper<>();
+        FaceInfo faceInfo = faceInfoManagerDao.selectOne(wrapper.eq("user_name", userName).eq("card_id", cardId));
         return faceInfo;
     }
 
