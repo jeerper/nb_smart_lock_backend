@@ -1,6 +1,7 @@
 package com.summit.utils;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import cn.hutool.system.SystemUtil;
 import com.baidu.aip.face.AipFace;
 import lombok.extern.slf4j.Slf4j;
@@ -90,7 +91,8 @@ public class BaiduSdkClient {
         options.put("face_type", "LIVE");
         options.put("liveness_control", "LOW");
         JSONObject res = client.detect(base64Str, "BASE64", options);
-        if (StrUtil.isBlank(res.getString("result"))) {
+
+        if (StrUtil.isBlank(JSONUtil.parseObj(res.toString()).getStr("result"))) {
             log.debug("没有检测到人脸");
             return false;
         }
@@ -125,11 +127,9 @@ public class BaiduSdkClient {
             options.put("quality_control", "NORMAL");
             options.put("liveness_control", "LOW");
             options.put("max_user_num", "1");
-
             // 人脸搜索
             JSONObject res = client.search(base64Str, "BASE64", groupId, options);
-
-            if (StrUtil.isBlank(res.getString("result"))) {
+            if (StrUtil.isBlank(JSONUtil.parseObj(res.toString()).getStr("result"))) {
                 log.debug("没有检测到人脸");
                 return null;
             }
