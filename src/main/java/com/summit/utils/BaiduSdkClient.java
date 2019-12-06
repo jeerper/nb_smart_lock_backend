@@ -164,6 +164,24 @@ public class BaiduSdkClient {
             return false;
         }
     }
+    public boolean updateFace(String base64Str, String faceId){
+        try {
+            // 传入可选参数调用接口
+            HashMap<String, String> options = new HashMap<String, String>();
+            options.put("quality_control", "NORMAL");
+            options.put("liveness_control", "LOW");
+            options.put("action_type", "REPLACE");
+            // 人脸更新
+            JSONObject res = client.updateUser(base64Str, "BASE64", groupId, faceId, options);
+            log.debug(res.toString(2));
+            return true;
+        }catch (Exception e){
+            log.error("人脸更新失败", e);
+            return false;
+        }
+    }
+
+
     /**
      * 人脸删除
      * @param faceId 人脸ID

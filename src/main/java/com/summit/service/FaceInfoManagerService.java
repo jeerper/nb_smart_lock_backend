@@ -44,7 +44,7 @@ public interface FaceInfoManagerService {
      * @param faceInfo 需要修改的人脸信息对象
      * @return 返回-1则为不成功
      */
-    int updateFaceInfo(FaceInfo faceInfo);
+    void updateFaceInfo(FaceInfo faceInfo)throws Exception;
 
     /**
      * 更具faceid查询唯一一条人脸信息

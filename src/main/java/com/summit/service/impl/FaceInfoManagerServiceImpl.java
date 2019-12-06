@@ -5,13 +5,11 @@ import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.system.SystemUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.summit.MainAction;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
 import com.summit.common.util.ApplicationContextUtil;
-import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.City;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.Province;
@@ -176,7 +174,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
      */
     @Override
     public void delFaceInfoByIds(List<String> faceInfoIds) throws Exception {
-        if (faceInfoIds==null||faceInfoIds.size()==0) {
+        if (faceInfoIds == null || faceInfoIds.size() == 0) {
             throw new Exception("人脸信息id为空");
         }
         try {
@@ -233,14 +231,60 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
      * @param faceInfo 需要修改的人脸信息对象
      * @return 不为-1则为修改成功
      */
+    @Transactional(rollbackFor = {Exception.class})
     @Override
-    public int updateFaceInfo(FaceInfo faceInfo) {
+    public void updateFaceInfo(FaceInfo faceInfo) throws Exception {
         if (faceInfo == null) {
-            log.error("人脸信息为空");
-            return CommonConstants.UPDATE_ERROR;
+            log.error("人脸信息参数为空");
+            throw new Exception("人脸信息参数为空");
         }
-        UpdateWrapper<FaceInfo> updateWrapper = new UpdateWrapper<>();
-        return faceInfoManagerDao.update(faceInfo, updateWrapper.eq("face_id", faceInfo.getFaceid()));
+
+        String base64Str = faceInfo.getFaceImage();
+        if (StrUtil.isBlank(base64Str)) {
+            log.error("人脸图片为空");
+            throw new Exception("人脸图片不能为空");
+        }
+        int i = base64Str.indexOf(",");
+        String subNewImageBase64 = base64Str.substring(i + 1);
+        if (!baiduSdkClient.detectFace(subNewImageBase64)) {
+            throw new Exception("没有检测到人脸");
+        }
+
+        byte[] subNewImageBase64Byte = Base64.getDecoder().decode(subNewImageBase64);
+
+        String faceId = baiduSdkClient.searchFace(subNewImageBase64);
+        if (StrUtil.isNotBlank(faceId) && (!StrUtil.equals(faceInfo.getFaceid(), faceId))) {
+            FaceInfo similarFaceInfo = faceInfoManagerDao.selectById(faceId);
+            if (similarFaceInfo != null) {
+                throw new Exception("发现人脸库中有相似的人脸，名字为：" + similarFaceInfo.getUserName() + "，不能重复录入相同的人脸");
+            } else {
+                throw new Exception("发现人脸库中有相似的人脸，名字为：null，不能重复录入相同的人脸");
+            }
+        }
+
+        if (!baiduSdkClient.updateFace(subNewImageBase64, faceInfo.getFaceid())) {
+            throw new Exception("人脸更新失败");
+        }
+
+        try {
+            //TODO:判断新图片的扩展名
+            FaceInfo dbFaceInfo = faceInfoManagerDao.selectById(faceInfo.getFaceid());
+            String oldImagePath = SystemUtil.getUserInfo().getCurrentDir() + dbFaceInfo.getFaceImage();
+            String newImageUrl = "";
+            String newImagePath = "";
+
+
+            faceInfo.setFaceImage(newImageUrl);
+            faceInfoManagerDao.updateById(faceInfo);
+
+            FileUtil.del(oldImagePath);
+
+            FileUtil.writeBytes(subNewImageBase64Byte, newImagePath);
+
+        } catch (Exception e) {
+            throw new Exception("人脸更新失败");
+        }
+
     }
 
     /**
