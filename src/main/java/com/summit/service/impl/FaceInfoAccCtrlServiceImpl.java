@@ -1,6 +1,7 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
@@ -158,8 +159,7 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
      */
     @Override
     public int deleteFaceAccCtrlByFaceId(String faceid) {
-        QueryWrapper<FaceInfoAccCtrl> wrapper=new QueryWrapper<>();
-        int i = faceInfoAccCtrlDao.delete(wrapper.eq("face_id", faceid));
+        int i = faceInfoAccCtrlDao.delete( Wrappers.<FaceInfoAccCtrl>lambdaQuery().eq(FaceInfoAccCtrl::getFaceid,faceid));
         return i;
     }
 

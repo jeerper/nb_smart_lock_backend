@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.summit.MainAction;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
+import com.summit.common.util.ApplicationContextUtil;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.City;
 import com.summit.dao.entity.FaceInfo;
@@ -19,6 +20,7 @@ import com.summit.dao.repository.CityDao;
 import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.dao.repository.ProvinceDao;
 import com.summit.entity.FaceInfoManagerEntity;
+import com.summit.service.FaceInfoAccCtrlService;
 import com.summit.service.FaceInfoManagerService;
 import com.summit.util.CommonUtil;
 import com.summit.util.PageConverter;
@@ -49,6 +51,8 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
     private ProvinceDao provinceDao;
     @Autowired
     private CityDao cityDao;
+    @Autowired
+    private FaceInfoAccCtrlService faceInfoAccCtrlService;
     @Autowired
     private BaiduSdkClient baiduSdkClient;
 
@@ -157,7 +161,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         } catch (Exception e) {
             FileUtil.del(facePicPath);
             log.error(e.getMessage());
-            if(e instanceof DuplicateKeyException){
+            if (e instanceof DuplicateKeyException) {
                 throw new Exception("人脸信息录入名称已存在");
             }
             throw new Exception(e.getMessage());
@@ -171,24 +175,30 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
      * @return 返回-1则为不成功
      */
     @Override
-    public int delFaceInfoByIds(List<String> faceInfoIds) {
-        if (faceInfoIds == null || faceInfoIds.isEmpty()) {
-            log.error("人脸信息id列表为空");
-            return CommonConstants.UPDATE_ERROR;
+    public void delFaceInfoByIds(List<String> faceInfoIds) throws Exception {
+        if (faceInfoIds==null||faceInfoIds.size()==0) {
+            throw new Exception("人脸信息id为空");
         }
-        for (String faceId : faceInfoIds) {
-            FaceInfo faceInfo = faceInfoManagerDao.selectFaceInfoByID(faceId);
-            if (faceInfo == null || StrUtil.isBlank(faceInfo.getFaceImage())) {
-                continue;
+        try {
+            for (String faceId : faceInfoIds) {
+                ApplicationContextUtil.getBean(FaceInfoManagerServiceImpl.class).delFaceInfoById(faceId);
             }
-            String faceImageFilePath = StrUtil.replace(faceInfo.getFaceImage(), "/", File.separator);
-            try {
-                FileUtil.del(SystemUtil.getUserInfo().getCurrentDir() + faceImageFilePath);
-            } catch (Exception ioException) {
-                log.error("路径文件:" + faceImageFilePath + "删除失败!", ioException);
-            }
+        } catch (Exception e) {
+            throw new Exception("人脸删除异常");
         }
-        return faceInfoManagerDao.deleteBatchIds(faceInfoIds);
+    }
+
+    @Transactional(rollbackFor = {Exception.class})
+    public void delFaceInfoById(String faceId) throws Exception {
+        if (!baiduSdkClient.deleteFace(faceId)) {
+            throw new Exception("图片删除失败");
+        }
+        FaceInfo faceInfo = faceInfoManagerDao.selectById(faceId);
+        if (StrUtil.isNotBlank(faceInfo.getFaceImage())) {
+            FileUtil.del(SystemUtil.getUserInfo().getCurrentDir() + faceInfo.getFaceImage());
+        }
+        faceInfoAccCtrlService.deleteFaceAccCtrlByFaceId(faceId);
+        faceInfoManagerDao.deleteById(faceId);
     }
 
     /**

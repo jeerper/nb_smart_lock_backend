@@ -29,7 +29,7 @@ public interface FaceInfoManagerService {
      * @param faceInfoIds
      * @return 返回-1则为不成功
      */
-    int delFaceInfoByIds(List<String> faceInfoIds);
+    void delFaceInfoByIds(List<String> faceInfoIds)throws Exception;
 
     /**
      * 分页查询人脸信息

@@ -111,10 +111,11 @@ public class BaiduSdkClient {
 
     /**
      * 搜索人脸库中的人脸
+     *
      * @param base64Str
      * @return 人脸ID
      */
-    public String searchFace(String base64Str){
+    public String searchFace(String base64Str) {
         try {
             //在已有人脸库中查找显示的人脸，如果相似率高达90%以上则不能录入
             HashMap<String, String> options = new HashMap<String, String>();
@@ -133,10 +134,10 @@ public class BaiduSdkClient {
                 return null;
             }
             JSONObject result = res.getJSONObject("result");
-            String faceId  = result.getJSONArray("user_list").getJSONObject(0).getString("user_id");
+            String faceId = result.getJSONArray("user_list").getJSONObject(0).getString("user_id");
             return faceId;
-        }catch (Exception e){
-            log.error("人脸搜索失败",e);
+        } catch (Exception e) {
+            log.error("人脸搜索失败", e);
             return null;
         }
     }
@@ -146,6 +147,7 @@ public class BaiduSdkClient {
      *
      * @param base64Str
      * @param faceId
+     * @return ture:录入成功 false:录入失败
      */
     public boolean addFace(String base64Str, String faceId) {
         try {
@@ -158,7 +160,21 @@ public class BaiduSdkClient {
             log.debug(res.toString(2));
             return true;
         } catch (Exception e) {
-            log.error("人脸录入失败",e);
+            log.error("人脸录入失败", e);
+            return false;
+        }
+    }
+    /**
+     * 人脸删除
+     * @param faceId 人脸ID
+     */
+    public boolean deleteFace(String faceId){
+        try{
+            // 删除用户
+            client.deleteUser(groupId, faceId, null);
+            return true;
+        }catch (Exception e){
+            log.error("图片删除异常",e);
             return false;
         }
     }
