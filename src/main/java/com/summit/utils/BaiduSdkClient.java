@@ -130,7 +130,7 @@ public class BaiduSdkClient {
             // 人脸搜索
             JSONObject res = client.search(base64Str, "BASE64", groupId, options);
             if (StrUtil.isBlank(JSONUtil.parseObj(res.toString()).getStr("result"))) {
-                log.debug("没有检测到人脸");
+                log.debug("人脸库中没有搜索到人脸");
                 return null;
             }
             JSONObject result = res.getJSONObject("result");

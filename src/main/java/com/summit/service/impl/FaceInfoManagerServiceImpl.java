@@ -35,7 +35,6 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by Administrator on 2019/8/21.
@@ -94,13 +93,6 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
             }
         }
 
-        StringBuffer fileName = new StringBuffer();
-        fileName.append(UUID.randomUUID().toString().replaceAll("-", ""));
-        if (base64Str.indexOf("data:image/png;") != -1) {
-            fileName.append(".png");
-        } else if (base64Str.indexOf("data:image/jpeg;") != -1) {
-            fileName.append(".jpeg");
-        }
         String picId = IdWorker.getIdStr();
         String facePicPath = new StringBuilder()
                 .append(SystemUtil.getUserInfo().getCurrentDir())
@@ -268,19 +260,51 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
 
         try {
             //TODO:判断新图片的扩展名
-            FaceInfo dbFaceInfo = faceInfoManagerDao.selectById(faceInfo.getFaceid());
-            String oldImagePath = SystemUtil.getUserInfo().getCurrentDir() + dbFaceInfo.getFaceImage();
-            String newImageUrl = "";
-            String newImagePath = "";
+            String extension = "";
+            if (base64Str.indexOf("data:image/png;") != -1) {
+                extension = ".png";
+            } else if (base64Str.indexOf("data:image/jpeg;") != -1) {
+                extension = ".jpeg";
+            }
 
+
+            FaceInfo dbFaceInfo = faceInfoManagerDao.selectById(faceInfo.getFaceid());
+            String newImageUrl = "";
+            String oldImagePath = "";
+            String newImagePath = "";
+            if (StrUtil.isNotBlank(dbFaceInfo.getFaceImage())) {
+                String faceImageUrl = dbFaceInfo.getFaceImage();
+                int oldExtensionIndex = faceImageUrl.lastIndexOf(".");
+                String oldExtension = faceImageUrl.substring(oldExtensionIndex);
+                newImageUrl = StrUtil.replace(faceImageUrl, oldExtensionIndex, oldExtension, extension, false);
+                newImagePath = SystemUtil.getUserInfo().getCurrentDir() + newImageUrl;
+                oldImagePath = SystemUtil.getUserInfo().getCurrentDir() + dbFaceInfo.getFaceImage();
+            }else{
+                String picId = IdWorker.getIdStr();
+                newImagePath = new StringBuilder()
+                        .append(SystemUtil.getUserInfo().getCurrentDir())
+                        .append(File.separator)
+                        .append(MainAction.SnapshotFileName)
+                        .append(File.separator)
+                        .append(picId)
+                        .append("_Face.jpg")
+                        .toString();
+                newImageUrl = new StringBuilder()
+                        .append("/")
+                        .append(MainAction.SnapshotFileName)
+                        .append("/")
+                        .append(picId)
+                        .append("_Face.jpg")
+                        .toString();
+            }
 
             faceInfo.setFaceImage(newImageUrl);
+
             faceInfoManagerDao.updateById(faceInfo);
-
-            FileUtil.del(oldImagePath);
-
+            if (StrUtil.isNotBlank(oldImagePath)) {
+                FileUtil.del(oldImagePath);
+            }
             FileUtil.writeBytes(subNewImageBase64Byte, newImagePath);
-
         } catch (Exception e) {
             throw new Exception("人脸更新失败");
         }
