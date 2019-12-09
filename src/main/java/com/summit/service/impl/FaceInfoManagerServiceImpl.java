@@ -259,7 +259,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         }
 
         try {
-            //TODO:判断新图片的扩展名
+            //判断新图片的扩展名
             String extension = "";
             if (base64Str.indexOf("data:image/png;") != -1) {
                 extension = ".png";
