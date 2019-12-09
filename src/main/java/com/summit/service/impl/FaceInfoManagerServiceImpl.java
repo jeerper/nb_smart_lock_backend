@@ -93,6 +93,14 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
             }
         }
 
+        //判断图片的扩展名
+        String extension = "";
+        if (base64Str.indexOf("data:image/png;") != -1) {
+            extension = ".png";
+        } else if (base64Str.indexOf("data:image/jpeg;") != -1) {
+            extension = ".jpeg";
+        }
+
         String picId = IdWorker.getIdStr();
         String facePicPath = new StringBuilder()
                 .append(SystemUtil.getUserInfo().getCurrentDir())
@@ -100,14 +108,16 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
                 .append(MainAction.SnapshotFileName)
                 .append(File.separator)
                 .append(picId)
-                .append("_Face.jpg")
+                .append("_Face")
+                .append(extension)
                 .toString();
         String faceUrl = new StringBuilder()
                 .append("/")
                 .append(MainAction.SnapshotFileName)
                 .append("/")
                 .append(picId)
-                .append("_Face.jpg")
+                .append("_Face")
+                .append(extension)
                 .toString();
 
         FaceInfo faceInfo = new FaceInfo();
@@ -287,14 +297,16 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
                         .append(MainAction.SnapshotFileName)
                         .append(File.separator)
                         .append(picId)
-                        .append("_Face.jpg")
+                        .append("_Face")
+                        .append(extension)
                         .toString();
                 newImageUrl = new StringBuilder()
                         .append("/")
                         .append(MainAction.SnapshotFileName)
                         .append("/")
                         .append(picId)
-                        .append("_Face.jpg")
+                        .append("_Face")
+                        .append(extension)
                         .toString();
             }
 
