@@ -9,11 +9,10 @@ import com.summit.dao.entity.City;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.Province;
 import com.summit.dao.entity.SimplePage;
+import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.entity.SimpleFaceInfo;
-import com.summit.service.FaceInfoAccCtrlService;
 import com.summit.service.FaceInfoManagerService;
-import com.summit.utils.BaiduSdkClient;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -42,9 +41,8 @@ public class FaceInfoManagerController {
     @Autowired
     private FaceInfoManagerService faceInfoManagerService;
     @Autowired
-    private FaceInfoAccCtrlService faceInfoAccCtrlService;
-    @Autowired
-    private BaiduSdkClient baiduSdkClient;
+    private FaceInfoManagerDao faceInfoManagerDao;
+
 
 
     @ApiOperation(value = "录入人脸信息", notes = "返回不是-1则为成功")
@@ -151,8 +149,7 @@ public class FaceInfoManagerController {
     public RestfulEntityBySummit<List<SimpleFaceInfo>> selectAllFaceInfo() {
         List<SimpleFaceInfo> simpleFaceInfos = new ArrayList<>();
         try {
-            List<FaceInfo> faceInfos = faceInfoManagerService.selectAllFaceInfo(null);
-            //System.out.println(faceInfos+"TestPath");
+            List<FaceInfo> faceInfos = faceInfoManagerDao.selectList(null);
             if (faceInfos != null) {
                 for (FaceInfo faceInfo : faceInfos) {
                     simpleFaceInfos.add(new SimpleFaceInfo(faceInfo.getFaceid(), faceInfo.getUserName(), faceInfo.getFaceImage(),

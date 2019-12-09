@@ -9,13 +9,6 @@ import java.util.List;
  * Created by Administrator on 2019/8/29.
  */
 public interface FaceInfoAccCtrlService {
-    /**
-     * 批量刷新指定人脸关联的门禁",notes = "为指定的人脸信息更新门禁权限，所传的人脸信息之前没有关联某门禁且所传列表中有添加，之前已关联过门禁而所传列表中有则不添加，之前已关联过门禁而所传列表中没有则删除
-     * @param accessControlId  门禁id
-     * @param faceids 人脸关联的所有门禁的id
-     * @return 返回-1则为不成功
-     */
-    int authorityFaceInfoAccCtrl(String accessControlId, List<String> faceids);
 
     /**
      * 根据门禁id查询所有的人脸信息列表
@@ -40,12 +33,6 @@ public interface FaceInfoAccCtrlService {
      */
     List<AccessControlInfo> seleAccCtrlInfoByFaceID(String faceid);
 
-    /**
-     * 根据门禁id
-     * @param accessControlId
-     * @return -1删除不成功
-     */
-    int deleteFaceAccCtrlByAccCtlId(String accessControlId);
 
     /**
      * 根据人脸id 删除门禁授权记录
@@ -53,10 +40,5 @@ public interface FaceInfoAccCtrlService {
      * @return -1删除不成功
      */
     int deleteFaceAccCtrlByFaceId(String faceid);
-    /**
-     * 根据人脸id 和门禁id查询门禁授权记录
-     * @param faceid,accessControlId
-     * @return 返回门禁对象
-     */
-    FaceInfoAccCtrl seleAccCtrlInfoByFaceIdAndAccCtlId(String faceid, String accessControlId);
+
 }

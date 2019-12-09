@@ -77,7 +77,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         byte[] subNewImageBase64Byte = Base64.getDecoder().decode(subNewImageBase64);
 
         //判断人脸图片是否在人脸库中存在
-        List<FaceInfo> faceInfoLibrary = this.selectAllFaceInfo(null);
+        List<FaceInfo> faceInfoLibrary = faceInfoManagerDao.selectList(null);
         for (FaceInfo faceInfo : faceInfoLibrary) {
             if (StrUtil.isBlank(faceInfo.getFaceImage())) {
                 continue;
@@ -338,17 +338,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         return faceInfoManagerDao.selectFaceInfoByID(faceid);
     }
 
-    /**
-     * 查询所有的人脸信息
-     *
-     * @param page
-     * @return 人脸信息列表
-     */
-    @Override
-    public List<FaceInfo> selectAllFaceInfo(SimplePage page) {
-        List<FaceInfo> faceInfos = faceInfoManagerDao.selectAllFaceInfo();
-        return faceInfos;
-    }
+
 
     /**
      * 查询所有的省份

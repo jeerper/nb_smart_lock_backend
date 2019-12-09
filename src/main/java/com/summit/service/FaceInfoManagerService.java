@@ -54,13 +54,6 @@ public interface FaceInfoManagerService {
     FaceInfo selectFaceInfoByID(String faceid);
 
     /**
-     * 查询所有的人脸信息
-     * @param page
-     * @return 人脸信息列表
-     */
-    List<FaceInfo> selectAllFaceInfo(SimplePage page);
-
-    /**
      * 查询所有的省份
      * @param page
      * @return 省份列表
