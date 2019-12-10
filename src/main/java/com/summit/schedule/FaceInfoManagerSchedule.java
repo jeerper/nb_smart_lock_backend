@@ -1,5 +1,6 @@
 package com.summit.schedule;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.service.FaceInfoAccCtrlService;
@@ -56,8 +57,9 @@ public class FaceInfoManagerSchedule {
                 long isValidEndDate = isValidEndTime.getTime();
                 //说明这个人脸已经过期，需要把人脸过期从0变为1
                 if (isValidNowDate > isValidEndDate) {
-                    faceInfo.setIsValidTime(1);
-                    faceInfoManagerService.updateFaceInfo(faceInfo);
+                    faceInfoManagerDao.update(null, Wrappers.<FaceInfo>lambdaUpdate()
+                            .set(FaceInfo::getIsValidTime,1)
+                            .eq(FaceInfo::getFaceid,faceInfo.getFaceid()));
                     faceInfoAccCtrlService.deleteFaceAccCtrlByFaceId(faceInfo.getFaceid());
                 }
                 //临时人员
