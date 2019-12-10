@@ -1,8 +1,6 @@
 package com.summit.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
 import com.summit.dao.repository.FaceInfoAccCtrlDao;
 import com.summit.dao.repository.FaceInfoManagerDao;
@@ -12,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -61,19 +58,6 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
             return 0;
         }
         return faceInfoAccCtrlDao.selectCountAccCtrlIdByFaceIdAndAccessControlId(faceid,accessControlId);
-    }
-
-    @Override
-    public List<AccessControlInfo> seleAccCtrlInfoByFaceID(String faceid) {
-        QueryWrapper<FaceInfoAccCtrl> wrapper=new QueryWrapper<>();
-        List<FaceInfoAccCtrl> faceInfoAccCtrls = faceInfoAccCtrlDao.selectList(wrapper.eq("face_id", faceid));
-        //System.out.println(faceInfoAccCtrls+"关联门禁");
-        List<AccessControlInfo> accessControlInfos=new ArrayList<>();
-        for(FaceInfoAccCtrl faceInfoAccCtrl:faceInfoAccCtrls){
-            AccessControlInfo accessControlInfo = accessControlService.selectAccCtrlByIdBeyondAuthority(faceInfoAccCtrl.getAccessControlId());
-            accessControlInfos.add(accessControlInfo);
-        }
-        return accessControlInfos;
     }
 
     /**

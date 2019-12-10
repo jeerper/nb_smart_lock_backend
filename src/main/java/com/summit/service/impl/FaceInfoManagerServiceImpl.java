@@ -189,6 +189,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
     }
 
     @Transactional(rollbackFor = {Exception.class})
+    @Override
     public void delFaceInfoById(String faceId) throws Exception {
         if (!baiduSdkClient.deleteFace(faceId)) {
             throw new Exception("图片删除失败");

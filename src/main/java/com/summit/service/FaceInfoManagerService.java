@@ -32,6 +32,13 @@ public interface FaceInfoManagerService {
     void delFaceInfoByIds(List<String> faceInfoIds)throws Exception;
 
     /**
+     * 根据ID删除人脸信息
+     * @param faceId 人脸ID
+     * @throws Exception
+     */
+    void delFaceInfoById(String faceId) throws Exception ;
+
+    /**
      * 分页查询人脸信息
      * @param faceInfoManagerEntity 人脸对象
      * @param  simplePage 分页对象
