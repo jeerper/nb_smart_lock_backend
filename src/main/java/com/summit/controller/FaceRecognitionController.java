@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -56,6 +57,48 @@ public class FaceRecognitionController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸扫描信息上传失败", null);
         }
     }
+    @ApiOperation(value = "人脸扫描")
+    @PostMapping(value = "/face-scan/lock-code", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public RestfulEntityBySummit<String> faceScan(@ApiParam(value = "人脸图片", required = true)
+                                                  @RequestPart("faceImageFile") MultipartFile faceImageFile,
+                                                  @ApiParam(value = "锁编码",required = true)
+                                                  @RequestParam("lockCode") String lockCode) {
+        try {
+            byte[] faceFileByteArray = faceImageFile.getBytes();
+            String faceFileStr = Base64.encode(faceFileByteArray);
+            String faceId = baiduSdkClient.searchFace(faceFileStr);
+            if (StrUtil.isBlank(faceId)) {
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有匹配到人脸", null);
+            }
+            FaceInfo faceInfo=faceInfoManagerDao.selectById(faceId);
+            log.debug(faceInfo.getUserName());
+            return ResultBuilder.buildSuccess(faceInfo.getUserName());
+        } catch (Exception e) {
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸扫描信息上传失败", null);
+        }
+    }
+//    @ApiOperation(value = "人脸扫描")
+//    @PostMapping(value = "/face-scan/lock-code", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public RestfulEntityBySummit<String> faceScan(@ApiParam(value = "人脸图片", required = true)
+//                                                  @RequestPart("faceImageFile") MultipartFile faceImageFile,
+//                                                  @ApiParam(value = "其他人图片", required = true)
+//                                                  @RequestPart("otherPeopleImageFiles") MultipartFile[] otherPeopleImageFiles,
+//                                                  @ApiParam(value = "锁编码",required = true)
+//                                                  @RequestParam("lockCode") String lockCode) {
+//        try {
+//            byte[] faceFileByteArray = faceImageFile.getBytes();
+//            String faceFileStr = Base64.encode(faceFileByteArray);
+//            String faceId = baiduSdkClient.searchFace(faceFileStr);
+//            if (StrUtil.isBlank(faceId)) {
+//                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有匹配到人脸", null);
+//            }
+//            FaceInfo faceInfo=faceInfoManagerDao.selectById(faceId);
+//            log.debug(faceInfo.getUserName());
+//            return ResultBuilder.buildSuccess(faceInfo.getUserName());
+//        } catch (Exception e) {
+//            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸扫描信息上传失败", null);
+//        }
+//    }
 
 
 }
