@@ -8,7 +8,8 @@ services:
     restart: always
     env_file:
       - .env
-    network_mode: "host"
+    ports:
+      - "${WebServer_Port}:${WebServer_Port}"
     volumes:
       - ./logs:/opt/App/logs
       - /home/nb_smart_lock_backend/snapshot:/opt/App/snapshot
