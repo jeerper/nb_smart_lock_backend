@@ -5,6 +5,7 @@ import com.summit.dao.entity.FaceInfoAccCtrl;
 import org.apache.ibatis.annotations.Param;
 
 /**
+ * 门禁和人脸授权信息关联表Dao
  * Created by Administrator on 2019/8/29.
  */
 public interface FaceInfoAccCtrlDao extends BaseMapper<FaceInfoAccCtrl> {

@@ -23,3 +23,9 @@ mybatis-plus:
 
 nbLock:
   baseUrl: http://47.106.35.122:8088/intf/
+
+jwt:
+  token:
+    secret-key: Summit
+    #单位分钟
+    expire-length: 5
