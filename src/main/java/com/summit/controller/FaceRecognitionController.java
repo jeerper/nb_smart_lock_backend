@@ -29,15 +29,21 @@ import com.summit.sdk.huawei.model.LockProcessType;
 import com.summit.util.CommonUtil;
 import com.summit.util.JwtSettings;
 import com.summit.utils.BaiduSdkClient;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -48,6 +54,7 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 人脸识别操作接口
@@ -63,6 +70,8 @@ public class FaceRecognitionController {
 
     @Autowired
     JwtSettings jwtSettings;
+    @Autowired
+    RedisTemplate<String, Object> genericRedisTemplate;
     @Autowired
     private BaiduSdkClient baiduSdkClient;
     @Autowired
@@ -97,14 +106,60 @@ public class FaceRecognitionController {
             String token = Jwts.builder()
                     .setId(IdWorker.getIdStr())
                     .setSubject(faceInfo.getUserName())
-                    .claim("faceId", faceId)
+                    .claim(MainAction.FACE_ID, faceId)
                     .signWith(SignatureAlgorithm.HS512, jwtSettings.getSecretKey())
                     .compact();
+            genericRedisTemplate.opsForValue().set(MainAction.FACE_AUTH_CACHE_PREFIX + token, token, jwtSettings.getExpireLength(), TimeUnit.MINUTES);
             return ResultBuilder.buildSuccess(token);
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸扫描信息上传失败", null);
         }
     }
+
+    @ApiOperation(value = "智能锁编码解析")
+    @PostMapping(value = "/lock-code-parse")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "人脸认证token", required = true, dataType = "string", paramType = "header"),
+            @ApiImplicitParam(name="lockCodes",value="智能锁编码",paramType = "body", required = true),
+    })
+    public RestfulEntityBySummit<String> lockCodeParse(@RequestBody List<String> lockCodes,
+                                                       @RequestHeader(value="Authorization") String token) {
+        try {
+
+            String cacheToken=(String)genericRedisTemplate.opsForValue().get(MainAction.FACE_AUTH_CACHE_PREFIX +token);
+            if(StrUtil.isBlank(cacheToken)){
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_4008);
+            }
+            Claims claims = Jwts.parser()
+                    .setSigningKey(jwtSettings.getSecretKey())
+                    .parseClaimsJws(token)
+                    .getBody();
+            String faceId=(String)claims.get(MainAction.FACE_ID);
+
+            log.debug(faceId);
+
+//            FaceInfo faceInfo = faceInfoManagerDao.selectById(faceId);
+//            if (faceInfo == null) {
+//                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸信息不存在", null);
+//            }
+//            //生成token
+//            // 设置过期时间
+//            Calendar calendar = Calendar.getInstance();
+//            calendar.add(Calendar.MINUTE, jwtSettings.getExpireLength());
+//            Date time = calendar.getTime();
+//            String token = Jwts.builder()
+//                    .setId(IdWorker.getIdStr())
+//                    .setSubject(faceInfo.getUserName())
+//                    .claim("faceId", faceId)
+//                    .signWith(SignatureAlgorithm.HS512, jwtSettings.getSecretKey())
+//                    .compact();
+//            genericRedisTemplate.opsForValue().set("face_auth:"+token,token,5, TimeUnit.MINUTES);
+            return ResultBuilder.buildSuccess("");
+        } catch (Exception e) {
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸扫描信息上传失败", null);
+        }
+    }
+
 
     @ApiOperation(value = "人脸扫描")
     @PostMapping(value = "/face-scan/lock-code", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
