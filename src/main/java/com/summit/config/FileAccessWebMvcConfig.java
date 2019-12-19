@@ -14,7 +14,6 @@ public class FileAccessWebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/" + MainAction.SnapshotFileName + "/**").addResourceLocations("file:" + SystemUtil.getUserInfo().getCurrentDir() + File.separator + MainAction.SnapshotFileName + File.separator);
-        WebMvcConfigurer.super.addResourceHandlers(registry);
     }
 
 
