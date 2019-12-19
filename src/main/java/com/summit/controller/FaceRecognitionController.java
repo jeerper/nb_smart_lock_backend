@@ -27,9 +27,9 @@ import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessType;
 import com.summit.util.CommonUtil;
+import com.summit.util.FaceInfoContextHolder;
 import com.summit.util.JwtSettings;
 import com.summit.utils.BaiduSdkClient;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.swagger.annotations.Api;
@@ -43,7 +43,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -119,22 +118,11 @@ public class FaceRecognitionController {
     @ApiOperation(value = "智能锁编码解析")
     @PostMapping(value = "/lock-code-parse")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "人脸认证token", required = true, dataType = "string", paramType = "header"),
             @ApiImplicitParam(name="lockCodes",value="智能锁编码",paramType = "body", required = true),
     })
-    public RestfulEntityBySummit<String> lockCodeParse(@RequestBody List<String> lockCodes,
-                                                       @RequestHeader(value="Authorization") String token) {
+    public RestfulEntityBySummit<String> lockCodeParse(@RequestBody List<String> lockCodes) {
         try {
-
-            String cacheToken=(String)genericRedisTemplate.opsForValue().get(MainAction.FACE_AUTH_CACHE_PREFIX +token);
-            if(StrUtil.isBlank(cacheToken)){
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_4008);
-            }
-            Claims claims = Jwts.parser()
-                    .setSigningKey(jwtSettings.getSecretKey())
-                    .parseClaimsJws(token)
-                    .getBody();
-            String faceId=(String)claims.get(MainAction.FACE_ID);
+            String faceId=FaceInfoContextHolder.getFaceId();
 
             log.debug(faceId);
 
