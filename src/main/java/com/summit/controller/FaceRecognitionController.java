@@ -126,22 +126,6 @@ public class FaceRecognitionController {
 
             log.debug(faceId);
 
-//            FaceInfo faceInfo = faceInfoManagerDao.selectById(faceId);
-//            if (faceInfo == null) {
-//                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸信息不存在", null);
-//            }
-//            //生成token
-//            // 设置过期时间
-//            Calendar calendar = Calendar.getInstance();
-//            calendar.add(Calendar.MINUTE, jwtSettings.getExpireLength());
-//            Date time = calendar.getTime();
-//            String token = Jwts.builder()
-//                    .setId(IdWorker.getIdStr())
-//                    .setSubject(faceInfo.getUserName())
-//                    .claim("faceId", faceId)
-//                    .signWith(SignatureAlgorithm.HS512, jwtSettings.getSecretKey())
-//                    .compact();
-//            genericRedisTemplate.opsForValue().set("face_auth:"+token,token,5, TimeUnit.MINUTES);
             return ResultBuilder.buildSuccess("");
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸扫描信息上传失败", null);

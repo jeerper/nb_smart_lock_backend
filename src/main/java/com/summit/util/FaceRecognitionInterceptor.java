@@ -10,6 +10,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -18,12 +19,11 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
 public class FaceRecognitionInterceptor extends HandlerInterceptorAdapter {
-
-
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -43,7 +43,8 @@ public class FaceRecognitionInterceptor extends HandlerInterceptorAdapter {
             printWriter.append(objectMapper.writeValueAsString(ResultBuilder.buildError(ResponseCodeEnum.CODE_4007)));
             return false;
         }
-        String cacheToken=(String)genericRedisTemplate.opsForValue().get(MainAction.FACE_AUTH_CACHE_PREFIX +token);
+        BoundValueOperations<String,Object> boundValueOperations=genericRedisTemplate.boundValueOps(MainAction.FACE_AUTH_CACHE_PREFIX +token);
+        String cacheToken=(String)boundValueOperations.get();
         if(StrUtil.isBlank(cacheToken)){
             response.setCharacterEncoding(CommonConstant.UTF8);
             response.setContentType(CommonConstant.CONTENT_TYPE);
@@ -59,7 +60,7 @@ public class FaceRecognitionInterceptor extends HandlerInterceptorAdapter {
                 .getBody();
         String faceId=(String)claims.get(MainAction.FACE_ID);
         FaceInfoContextHolder.setFaceId(faceId);
-        log.debug("预处理");
+        boundValueOperations.expire(jwtSettings.getExpireLength(), TimeUnit.MINUTES);
         return true;
     }
 
@@ -67,7 +68,6 @@ public class FaceRecognitionInterceptor extends HandlerInterceptorAdapter {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,
                                 Exception ex) throws Exception {
         FaceInfoContextHolder.clear();
-        log.debug("释放资源");
     }
 
 
