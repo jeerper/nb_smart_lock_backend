@@ -43,6 +43,7 @@ public class FaceRecognitionInterceptor extends HandlerInterceptorAdapter {
             printWriter.append(objectMapper.writeValueAsString(ResultBuilder.buildError(ResponseCodeEnum.CODE_4007)));
             return false;
         }
+        token=token.replace("Bearer ", "");
         BoundValueOperations<String,Object> boundValueOperations=genericRedisTemplate.boundValueOps(MainAction.FACE_AUTH_CACHE_PREFIX +token);
         String cacheToken=(String)boundValueOperations.get();
         if(StrUtil.isBlank(cacheToken)){
