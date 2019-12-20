@@ -33,9 +33,22 @@ public class LockInfo {
     @ApiModelProperty(value="锁状态,1开锁，2锁定，3告警，录入时默认为2锁定状态",name="status",notes = "1开锁，2锁定，3告警")
     @TableField(value = "status")
     private Integer status;
+
+
     @ApiModelProperty(value="锁创建人,取当前用户名称",name="createby",notes = "这里填name",hidden = true)
     @TableField(value = "createby")
     private String createby;
+
+    @ApiModelProperty(value="当前密码",name="currentPassword",hidden = true)
+    @TableField(value = "current_password")
+    private String currentPassword;
+
+    @ApiModelProperty(value="新密码",name="newPassword",hidden = true)
+    @TableField(value = "new_password")
+    private String newPassword;
+
+
+
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     @ApiModelProperty(hidden = true)
