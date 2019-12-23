@@ -27,7 +27,7 @@ public class LockInfoServiceImplTest {
 
     @Test
     public void insertLock() throws ParseException {
-        LockInfo lockInfo = new LockInfo(null,"lc08",1,"user008","111111","000000", dateFormat.parse("2019-7-27 08:00:00"),dateFormat.parse("2019-7-28 08:00:00"),null,null);
+        LockInfo lockInfo = new LockInfo(null,"lc08",1,"user008","111111","000000", dateFormat.parse("2019-7-27 08:00:00"),dateFormat.parse("2019-7-28 08:00:00"),null,null,"");
         lockInfoService.insertLock(lockInfo);
         System.out.println(lockInfo);
     }

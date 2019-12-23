@@ -19,15 +19,16 @@ import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
 import com.summit.dao.entity.FileInfo;
+import com.summit.dao.entity.LockInfo;
 import com.summit.dao.repository.AccCtrlProcessDao;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.FaceInfoAccCtrlDao;
 import com.summit.dao.repository.FaceInfoManagerDao;
+import com.summit.dao.repository.LockInfoDao;
 import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessType;
 import com.summit.util.CommonUtil;
-import com.summit.util.FaceInfoContextHolder;
 import com.summit.util.JwtSettings;
 import com.summit.utils.BaiduSdkClient;
 import io.jsonwebtoken.Jwts;
@@ -81,6 +82,9 @@ public class FaceRecognitionController {
     private AccessControlDao accessControlDao;
     @Autowired
     private AccCtrlProcessDao accCtrlProcessDao;
+    @Autowired
+    private LockInfoDao lockInfoDao;
+
 
     @ApiOperation(value = "人脸扫描")
     @PostMapping(value = "/face-scan", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -118,15 +122,14 @@ public class FaceRecognitionController {
     @ApiOperation(value = "智能锁编码解析")
     @PostMapping(value = "/lock-code-parse")
     @ApiImplicitParams({
-            @ApiImplicitParam(name="lockCodes",value="智能锁编码",paramType = "body", required = true),
+            @ApiImplicitParam(name = "lockCodes", value = "智能锁编码", paramType = "body", required = true),
     })
-    public RestfulEntityBySummit<String> lockCodeParse(@RequestBody List<String> lockCodes) {
+    public RestfulEntityBySummit<List<LockInfo>> lockCodeParse(@RequestBody List<String> lockCodes) {
         try {
-            String faceId=FaceInfoContextHolder.getFaceId();
-
-            log.debug(faceId);
-
-            return ResultBuilder.buildSuccess("");
+            if (lockCodes.size() == 0) {
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "锁列表为空", null);
+            }
+            return ResultBuilder.buildSuccess(lockInfoDao.selectByLockCodes(lockCodes));
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸扫描信息上传失败", null);
         }

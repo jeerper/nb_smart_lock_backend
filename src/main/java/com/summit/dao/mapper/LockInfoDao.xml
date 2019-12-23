@@ -1,180 +1,212 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.summit.dao.repository.LockInfoDao">
-  <resultMap id="BaseResultMap" type="com.summit.dao.entity.LockInfo">
-    <result column="lock_id" jdbcType="VARCHAR" property="lockId" />
-    <result column="lock_code" jdbcType="VARCHAR" property="lockCode" />
-    <result column="status" jdbcType="INTEGER" property="status" />
-    <result column="createby" jdbcType="VARCHAR" property="createby" />
-    <result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
-    <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+    <resultMap id="BaseResultMap" type="com.summit.dao.entity.LockInfo">
+        <result column="lock_id" jdbcType="VARCHAR" property="lockId"/>
+        <result column="lock_code" jdbcType="VARCHAR" property="lockCode"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="createby" jdbcType="VARCHAR" property="createby"/>
+        <result column="createtime" jdbcType="TIMESTAMP" property="createtime"/>
+        <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime"/>
 
-    <collection property="devices" resultMap="devicesResult"  />
-    <collection property="roles" resultMap="rolesResult"  />
-  </resultMap>
+        <collection property="devices" resultMap="devicesResult"/>
+        <collection property="roles" resultMap="rolesResult"/>
+    </resultMap>
 
-  <resultMap id="devicesResult" type="com.summit.dao.entity.CameraDevice">
-    <result column="cd_dev_id" jdbcType="VARCHAR" property="devId" />
-    <result column="cd_device_ip" jdbcType="VARCHAR" property="deviceIp" />
-    <result column="cd_lock_code" jdbcType="VARCHAR" property="lockCode" />
-    <result column="cd_status" jdbcType="VARCHAR" property="status" />
-    <result column="cd_type" jdbcType="VARCHAR" property="type" />
-    <result column="cd_createby" jdbcType="VARCHAR" property="createby" />
-    <result column="cd_createtime" jdbcType="TIMESTAMP" property="createtime" />
-    <result column="cd_updatetime" jdbcType="TIMESTAMP" property="updatetime" />
-  </resultMap>
-  <resultMap id="rolesResult" type="com.summit.dao.entity.LockRole">
-    <result column="au_id" jdbcType="VARCHAR" property="id" />
-    <result column="au_role_id" jdbcType="VARCHAR" property="roleCode" />
-    <result column="au_lock_id" jdbcType="VARCHAR" property="lockId" />
-    <result column="au_lock_code" jdbcType="VARCHAR" property="lockCode" />
-  </resultMap>
+    <resultMap id="devicesResult" type="com.summit.dao.entity.CameraDevice">
+        <result column="cd_dev_id" jdbcType="VARCHAR" property="devId"/>
+        <result column="cd_device_ip" jdbcType="VARCHAR" property="deviceIp"/>
+        <result column="cd_lock_code" jdbcType="VARCHAR" property="lockCode"/>
+        <result column="cd_status" jdbcType="VARCHAR" property="status"/>
+        <result column="cd_type" jdbcType="VARCHAR" property="type"/>
+        <result column="cd_createby" jdbcType="VARCHAR" property="createby"/>
+        <result column="cd_createtime" jdbcType="TIMESTAMP" property="createtime"/>
+        <result column="cd_updatetime" jdbcType="TIMESTAMP" property="updatetime"/>
+    </resultMap>
+    <resultMap id="rolesResult" type="com.summit.dao.entity.LockRole">
+        <result column="au_id" jdbcType="VARCHAR" property="id"/>
+        <result column="au_role_id" jdbcType="VARCHAR" property="roleCode"/>
+        <result column="au_lock_id" jdbcType="VARCHAR" property="lockId"/>
+        <result column="au_lock_code" jdbcType="VARCHAR" property="lockCode"/>
+    </resultMap>
 
-  <sql id="Base_Column_List">
-    lock_id, lock_code, status, createby, createtime, updatetime
-  </sql>
-  <sql id="Lock_Have_Alias_List">
-    li.lock_id, li.lock_code, li.status, li.createby, li.createtime, li.updatetime
-  </sql>
-  <sql id="Device_Have_Alias_List">
-    cd.dev_id cd_dev_id, cd.device_ip cd_device_ip, cd.lock_code cd_lock_code, cd.status cd_status,
+    <sql id="Base_Column_List">
+        lock_id, lock_code, status, createby, createtime, updatetime
+    </sql>
+    <sql id="Lock_Have_Alias_List">
+        li.lock_id, li.lock_code, li.status, li.createby, li.createtime, li.updatetime
+    </sql>
+    <sql id="Device_Have_Alias_List">
+        cd.dev_id cd_dev_id, cd.device_ip cd_device_ip, cd.lock_code cd_lock_code, cd.status cd_status,
     cd.type cd_type, cd.createby cd_createby, cd.createtime cd_createtime,
     cd.updatetime cd_updatetime
-  </sql>
-  <sql id="Auth_Have_Alias_List">
-    au.id au_id, au.role_id au_role_id, au.lock_id au_lock_id, au.lock_code au_lock_code
-  </sql>
-  <sql id="Auth_No_Alias_List">
-    au.id , au.role_id , au.lock_id , au.lock_code
-  </sql>
+    </sql>
+    <sql id="Auth_Have_Alias_List">
+        au.id au_id, au.role_id au_role_id, au.lock_id au_lock_id, au.lock_code au_lock_code
+    </sql>
+    <sql id="Auth_No_Alias_List">
+        au.id , au.role_id , au.lock_id , au.lock_code
+    </sql>
 
-  <select id="selectLockById" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select
-    <include refid="Lock_Have_Alias_List" />,
-    <include refid="Device_Have_Alias_List" />,
-    <include refid="Auth_Have_Alias_List" />
-    from
-    (select distinct <include refid="Lock_Have_Alias_List" /> from lock_info li
-    <if test="roles != null">
-      inner join (
-      select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
-      <where>
-        au.role_id in
-        <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
-          #{role}
-        </foreach>
-      </where>
-      ) au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
-    </if>
-    <where>
-      li.lock_id=#{lockId}
-    </where>
-    ) li
-    left join camera_device cd on li.lock_code = cd.lock_code
-    left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
+    <select id="selectLockById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Lock_Have_Alias_List"/>,
+        <include refid="Device_Have_Alias_List"/>,
+        <include refid="Auth_Have_Alias_List"/>
+        from
+        (select distinct
+        <include refid="Lock_Have_Alias_List"/>
+        from lock_info li
+        <if test="roles != null">
+            inner join (
+            select
+            <include refid="Auth_No_Alias_List"/>
+            from role_lock_auth au
+            <where>
+                au.role_id in
+                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
+                    #{role}
+                </foreach>
+            </where>
+            ) au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
+        </if>
+        <where>
+            li.lock_id=#{lockId}
+        </where>
+        ) li
+        left join camera_device cd on li.lock_code = cd.lock_code
+        left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
 
-  </select>
+    </select>
 
-  <select id="selectBylockCode" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select
-    <include refid="Lock_Have_Alias_List" />,
-    <include refid="Device_Have_Alias_List" />,
-    <include refid="Auth_Have_Alias_List" />
-    from
-    (select distinct <include refid="Lock_Have_Alias_List" /> from lock_info li
-    <if test="roles != null">
-      inner join (
-      select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
-      <where>
-        au.role_id in
-        <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
-          #{role}
-        </foreach>
-      </where>
-      ) au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
-    </if>
-    <where>
-      li.lock_code=#{lockCode}
-    </where>
-    ) li
-    left join camera_device cd on li.lock_code = cd.lock_code
-    left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
+    <select id="selectBylockCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Lock_Have_Alias_List"/>,
+        <include refid="Device_Have_Alias_List"/>,
+        <include refid="Auth_Have_Alias_List"/>
+        from
+        (select distinct
+        <include refid="Lock_Have_Alias_List"/>
+        from lock_info li
+        <if test="roles != null">
+            inner join (
+            select
+            <include refid="Auth_No_Alias_List"/>
+            from role_lock_auth au
+            <where>
+                au.role_id in
+                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
+                    #{role}
+                </foreach>
+            </where>
+            ) au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
+        </if>
+        <where>
+            li.lock_code=#{lockCode}
+        </where>
+        ) li
+        left join camera_device cd on li.lock_code = cd.lock_code
+        left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
 
-  </select>
-
-
-  <select id="selectAllHaveHistory" resultMap="BaseResultMap">
-    select
-    <include refid="Lock_Have_Alias_List" />,
-    <include refid="Device_Have_Alias_List" />,
-    <include refid="Auth_Have_Alias_List" />
-    from
-    (select distinct <include refid="Lock_Have_Alias_List" /> from lock_info li
-    <if test="roles != null">
-      inner join lock_process lo on li.lock_code = lo.lock_code
-      inner join (
-      select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
-      <where>
-        au.role_id in
-        <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
-          #{role}
-        </foreach>
-      </where>
-      ) au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
-    </if>
-    <if test="page != null and page.current != null and  page.pageSize != null ">
-      limit #{page.current},#{page.pageSize}
-    </if>
-    ) li
-    left join camera_device cd on li.lock_code = cd.lock_code
-    left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
-
-  </select>
-
-  <select id="selectCondition" parameterType="com.summit.dao.entity.LockInfo" resultMap="BaseResultMap">
-    select
-    <include refid="Lock_Have_Alias_List" />,
-    <include refid="Device_Have_Alias_List" />,
-    <include refid="Auth_Have_Alias_List" />
-    from
-    (select distinct <include refid="Lock_Have_Alias_List" /> from lock_info li
-    <if test="roles != null">
-      inner join (
-      select <include refid="Auth_No_Alias_List" /> from role_lock_auth au
-      <where>
-        au.role_id in
-        <foreach  item="role" collection="roles" index="index"  open="(" separator="," close=")">
-          #{role}
-        </foreach>
-      </where>
-      ) au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
-    </if>
-    <where>
-      <if test="lockInfo.lockId != null">
-        li.lock_id = #{lockInfo.lockId}
-      </if>
-      <if test="lockInfo.lockCode != null">
-        and li.lock_code = #{lockInfo.lockCode}
-      </if>
-      <if test="lockInfo.status != null">
-        and li.status = #{lockInfo.status}
-      </if>
-      <if test="lockInfo.createby != null">
-        and li.createby like concat('%', #{lockInfo.createby}, '%')
-      </if>
-      <if test="lockInfo.updatetime != null">
-        and li.updatetime = #{lockInfo.updatetime}
-      </if>
-    </where>
-    order by updatetime desc
-      <if test="page != null and page.current != null and  page.pageSize != null ">
-        limit #{page.current},#{page.pageSize}
-      </if>
-    ) li
-    left join camera_device cd on li.lock_code = cd.lock_code
-    left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
+    </select>
 
 
-  </select>
+    <select id="selectAllHaveHistory" resultMap="BaseResultMap">
+        select
+        <include refid="Lock_Have_Alias_List"/>,
+        <include refid="Device_Have_Alias_List"/>,
+        <include refid="Auth_Have_Alias_List"/>
+        from
+        (select distinct
+        <include refid="Lock_Have_Alias_List"/>
+        from lock_info li
+        <if test="roles != null">
+            inner join lock_process lo on li.lock_code = lo.lock_code
+            inner join (
+            select
+            <include refid="Auth_No_Alias_List"/>
+            from role_lock_auth au
+            <where>
+                au.role_id in
+                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
+                    #{role}
+                </foreach>
+            </where>
+            ) au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
+        </if>
+        <if test="page != null and page.current != null and  page.pageSize != null ">
+            limit #{page.current},#{page.pageSize}
+        </if>
+        ) li
+        left join camera_device cd on li.lock_code = cd.lock_code
+        left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
+
+    </select>
+
+    <select id="selectCondition" parameterType="com.summit.dao.entity.LockInfo" resultMap="BaseResultMap">
+        select
+        <include refid="Lock_Have_Alias_List"/>,
+        <include refid="Device_Have_Alias_List"/>,
+        <include refid="Auth_Have_Alias_List"/>
+        from
+        (select distinct
+        <include refid="Lock_Have_Alias_List"/>
+        from lock_info li
+        <if test="roles != null">
+            inner join (
+            select
+            <include refid="Auth_No_Alias_List"/>
+            from role_lock_auth au
+            <where>
+                au.role_id in
+                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
+                    #{role}
+                </foreach>
+            </where>
+            ) au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
+        </if>
+        <where>
+            <if test="lockInfo.lockId != null">
+                li.lock_id = #{lockInfo.lockId}
+            </if>
+            <if test="lockInfo.lockCode != null">
+                and li.lock_code = #{lockInfo.lockCode}
+            </if>
+            <if test="lockInfo.status != null">
+                and li.status = #{lockInfo.status}
+            </if>
+            <if test="lockInfo.createby != null">
+                and li.createby like concat('%', #{lockInfo.createby}, '%')
+            </if>
+            <if test="lockInfo.updatetime != null">
+                and li.updatetime = #{lockInfo.updatetime}
+            </if>
+        </where>
+        order by updatetime desc
+        <if test="page != null and page.current != null and  page.pageSize != null ">
+            limit #{page.current},#{page.pageSize}
+        </if>
+        ) li
+        left join camera_device cd on li.lock_code = cd.lock_code
+        left join role_lock_auth au on (li.lock_id = au.lock_id or li.lock_code = au.lock_code)
+
+
+    </select>
+
+    <select id="selectByLockCodes" parameterType="map" resultType="com.summit.dao.entity.LockInfo">
+        select ac.access_control_name as accessControlName,
+        ac.lock_code as lockCode,
+        li.current_password as currentPassword,
+        li.new_password as newPassword
+        from access_control ac
+        inner join lock_info li
+        on ac.lock_id = li.lock_id
+        <where>
+            ac.lock_code in
+            <foreach item="lockCode" collection="lockCodes" index="index" open="(" separator="," close=")">
+                #{lockCode}
+            </foreach>
+        </where>
+    </select>
 
 </mapper>

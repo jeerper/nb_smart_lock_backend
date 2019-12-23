@@ -19,6 +19,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @JsonIgnoreProperties(value={"devices","roles"},ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @TableName(value = "lock_info")
 @ApiModel(value="锁信息类", description="封装锁信息")
 public class LockInfo {
@@ -62,14 +63,21 @@ public class LockInfo {
     private Date updatetime;
 
     @ApiModelProperty(value="锁关联的摄像头列表,为null则json中不返回此字段",name="devices",hidden = true)
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     @TableField(exist = false)
     private List<CameraDevice> devices;
 
     @ApiModelProperty(value="锁关联的角色列表,此字段不返回前台",name="devices",hidden = true)
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     @TableField(exist = false)
     private List<LockRole> roles;
+
+
+    @ApiModelProperty(value="门禁名称",name="accessControlName",hidden = true)
+    @TableField(exist = false)
+    private String accessControlName;
+
+
+
+
 
     public LockInfo(){}
 
