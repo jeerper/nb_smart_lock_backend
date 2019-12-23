@@ -1,5 +1,6 @@
 package com.summit.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
@@ -111,6 +112,9 @@ public class LockInfoServiceImpl implements LockInfoService {
             log.error("锁信息为空");
             return CommonConstants.UPDATE_ERROR;
         }
+        lockInfo.setCurrentPassword("111111");
+        //随机生成6位新密码
+        lockInfo.setNewPassword(RandomUtil.randomStringUpper(6));
         return lockInfoDao.insert(lockInfo);
     }
 
