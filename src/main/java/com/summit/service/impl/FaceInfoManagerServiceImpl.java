@@ -1,5 +1,6 @@
 package com.summit.service.impl;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.util.StrUtil;
@@ -241,7 +242,13 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
             log.error("人脸信息参数为空");
             throw new Exception("人脸信息参数为空");
         }
-
+        boolean isExpire=DateTime.of(faceInfo.getFaceEndTime()).isAfterOrEquals(new Date());
+        if(isExpire){
+            faceInfo.setIsValidTime(0);
+        }else{
+            //过期
+            faceInfo.setIsValidTime(1);
+        }
         String base64Str = faceInfo.getFaceImage();
         if (StrUtil.isBlank(base64Str)) {
             faceInfoManagerDao.updateById(faceInfo);
