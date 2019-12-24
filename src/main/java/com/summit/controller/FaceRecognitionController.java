@@ -104,6 +104,10 @@ public class FaceRecognitionController {
             if (faceInfo == null) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸信息不存在", null);
             }
+            if(faceInfo.getIsValidTime()==1){
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸信息已过期", null);
+            }
+
             //生成token
             // 设置过期时间
             Calendar calendar = Calendar.getInstance();
