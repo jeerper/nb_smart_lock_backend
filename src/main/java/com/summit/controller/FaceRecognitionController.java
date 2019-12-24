@@ -29,6 +29,7 @@ import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessType;
 import com.summit.util.CommonUtil;
+import com.summit.util.FaceInfoContextHolder;
 import com.summit.util.JwtSettings;
 import com.summit.utils.BaiduSdkClient;
 import io.jsonwebtoken.Jwts;
@@ -42,6 +43,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -131,6 +134,28 @@ public class FaceRecognitionController {
             }
             return ResultBuilder.buildSuccess(lockInfoDao.selectByLockCodes(lockCodes));
         } catch (Exception e) {
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸扫描信息上传失败", null);
+        }
+    }
+    @ApiOperation(value = "获取智能锁密码")
+    @GetMapping(value = "/lock-code-password/{lockCode}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "lockCode", value = "智能锁编码", paramType = "path", required = true),
+    })
+    public RestfulEntityBySummit<LockInfo> lockCodePassword(@PathVariable String lockCode) {
+        try {
+            if (StrUtil.isBlank(lockCode)) {
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "锁编码为空", null);
+            }
+
+            int count =faceInfoAccCtrlDao.selectCountByFaceIdAndLockCode(FaceInfoContextHolder.getFaceId(),lockCode);
+            if(count<1){
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有操作该门禁锁的权限", null);
+            }
+
+            return ResultBuilder.buildSuccess(lockInfoDao.selectLockPassWordByLockCode(lockCode));
+        } catch (Exception e) {
+            log.error(e.getMessage());
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸扫描信息上传失败", null);
         }
     }

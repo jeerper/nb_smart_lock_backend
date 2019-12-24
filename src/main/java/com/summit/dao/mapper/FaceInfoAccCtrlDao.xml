@@ -10,4 +10,15 @@
            face_id=#{faceid} and access_control_id=#{accessControlId}
        </where>
    </select>
+
+    <select id="selectCountByFaceIdAndLockCode" parameterType="map" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM face_info_access_control fiac
+        inner join access_control ac
+        on fiac.access_control_id=ac.access_control_id
+        <where>
+            fiac.face_id=#{faceId} and ac.lock_code=#{lockCode}
+        </where>
+    </select>
 </mapper>

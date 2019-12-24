@@ -244,8 +244,8 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
 
         String base64Str = faceInfo.getFaceImage();
         if (StrUtil.isBlank(base64Str)) {
-            log.error("人脸图片为空");
-            throw new Exception("人脸图片不能为空");
+            faceInfoManagerDao.updateById(faceInfo);
+            return;
         }
         int i = base64Str.indexOf(",");
         String subNewImageBase64 = base64Str.substring(i + 1);

@@ -20,4 +20,6 @@ public interface LockInfoDao  extends BaseMapper<LockInfo> {
     List<LockInfo> selectAllHaveHistory(@Param("page") SimplePage page, @Param("roles") List<String> roles);
 
     List<LockInfo> selectByLockCodes(@Param("lockCodes")List<String> lockCodes);
+
+    LockInfo selectLockPassWordByLockCode(@Param("lockCode")String lockCode);
 }

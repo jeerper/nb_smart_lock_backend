@@ -10,4 +10,5 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface FaceInfoAccCtrlDao extends BaseMapper<FaceInfoAccCtrl> {
     int selectCountAccCtrlIdByFaceIdAndAccessControlId(@Param("faceid") String faceid,@Param("accessControlId") String accessControlId);
+    int selectCountByFaceIdAndLockCode(@Param("faceId") String faceid,@Param("lockCode") String lockCode);
 }

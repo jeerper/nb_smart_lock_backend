@@ -195,12 +195,8 @@
 
     <select id="selectByLockCodes" parameterType="map" resultType="com.summit.dao.entity.LockInfo">
         select ac.access_control_name as accessControlName,
-        ac.lock_code as lockCode,
-        li.current_password as currentPassword,
-        li.new_password as newPassword
+        ac.lock_code as lockCode
         from access_control ac
-        inner join lock_info li
-        on ac.lock_id = li.lock_id
         <where>
             ac.lock_code in
             <foreach item="lockCode" collection="lockCodes" index="index" open="(" separator="," close=")">
@@ -208,5 +204,18 @@
             </foreach>
         </where>
     </select>
+
+    <select id="selectLockPassWordByLockCode" parameterType="map" resultType="com.summit.dao.entity.LockInfo">
+        select ac.lock_code as lockCode,
+        li.current_password as currentPassword,
+        li.new_password as newPassword
+        from access_control ac
+        inner join lock_info li
+        on ac.lock_id = li.lock_id
+        <where>
+            ac.lock_code = #{lockCode}
+        </where>
+    </select>
+
 
 </mapper>
