@@ -171,6 +171,8 @@ public class FaceRecognitionController {
 
             int count =faceInfoAccCtrlDao.selectCountByFaceIdAndLockCode(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId(),lockCode);
             if(count<1){
+                //todo:人脸扫描时的照片缓存清理功能
+                //TODO:没有操作权限时需要执行报警操作
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有操作该门禁锁的权限", null);
             }
 
