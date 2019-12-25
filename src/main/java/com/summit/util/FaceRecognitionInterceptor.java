@@ -6,6 +6,7 @@ import com.summit.MainAction;
 import com.summit.common.constant.CommonConstant;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.util.ResultBuilder;
+import com.summit.entity.FaceRecognitionInfo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
@@ -45,9 +46,10 @@ public class FaceRecognitionInterceptor extends HandlerInterceptorAdapter {
         }
         boolean isContains= token.startsWith(CommonConstant.TOKEN_SPLIT);
         token=token.replace(CommonConstant.TOKEN_SPLIT, "");
-        BoundValueOperations<String,Object> boundValueOperations=genericRedisTemplate.boundValueOps(MainAction.FACE_AUTH_CACHE_PREFIX +token);
-        String cacheToken=(String)boundValueOperations.get();
-        if(StrUtil.isBlank(cacheToken)||(!isContains)){
+
+        boolean isExists=genericRedisTemplate.hasKey(MainAction.FACE_AUTH_CACHE_PREFIX +token);
+
+        if((!isExists)||(!isContains)){
             response.setCharacterEncoding(CommonConstant.UTF8);
             response.setContentType(CommonConstant.CONTENT_TYPE);
             response.setStatus(HttpStatus.OK.value());
@@ -55,13 +57,16 @@ public class FaceRecognitionInterceptor extends HandlerInterceptorAdapter {
             printWriter.append(objectMapper.writeValueAsString(ResultBuilder.buildError(ResponseCodeEnum.CODE_4008)));
             return false;
         }
+        BoundValueOperations<String,Object> boundValueOperations=genericRedisTemplate.boundValueOps(MainAction.FACE_AUTH_CACHE_PREFIX +token);
 
+        FaceRecognitionInfo faceRecognitionInfo=(FaceRecognitionInfo)boundValueOperations.get();
         Claims claims = Jwts.parser()
                 .setSigningKey(jwtSettings.getSecretKey())
                 .parseClaimsJws(token)
                 .getBody();
         String faceId=(String)claims.get(MainAction.FACE_ID);
-        FaceInfoContextHolder.setFaceId(faceId);
+
+        FaceInfoContextHolder.setFaceRecognitionInfo(faceRecognitionInfo);
         boundValueOperations.expire(jwtSettings.getExpireLength(), TimeUnit.MINUTES);
         return true;
     }

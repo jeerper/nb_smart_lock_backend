@@ -3,6 +3,7 @@ package com.summit.controller;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.system.SystemUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -25,6 +26,7 @@ import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.FaceInfoAccCtrlDao;
 import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.dao.repository.LockInfoDao;
+import com.summit.entity.FaceRecognitionInfo;
 import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessType;
@@ -54,7 +56,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -109,17 +110,33 @@ public class FaceRecognitionController {
             }
 
             //生成token
-            // 设置过期时间
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.MINUTE, jwtSettings.getExpireLength());
-            Date time = calendar.getTime();
             String token = Jwts.builder()
                     .setId(IdWorker.getIdStr())
                     .setSubject(faceInfo.getUserName())
                     .claim(MainAction.FACE_ID, faceId)
                     .signWith(SignatureAlgorithm.HS512, jwtSettings.getSecretKey())
                     .compact();
-            genericRedisTemplate.opsForValue().set(MainAction.FACE_AUTH_CACHE_PREFIX + token, token, jwtSettings.getExpireLength(), TimeUnit.MINUTES);
+
+            String extName=FileUtil.extName(faceImageFile.getOriginalFilename());
+            String filePath = new StringBuilder()
+                    .append(SystemUtil.getUserInfo().getCurrentDir())
+                    .append(File.separator)
+                    .append(MainAction.SnapshotFileName)
+                    .append(File.separator)
+                    .append(MainAction.FaceRecognitionFileName)
+                    .append(File.separator)
+                    .append(IdWorker.getIdStr())
+                    .append(StrUtil.DOT)
+                    .append(extName)
+                    .toString();
+
+            FaceRecognitionInfo faceRecognitionInfo=new FaceRecognitionInfo();
+            faceRecognitionInfo.setFaceId(faceId);
+            faceRecognitionInfo.setFaceImagePath(filePath);
+
+            genericRedisTemplate.opsForValue().set(MainAction.FACE_AUTH_CACHE_PREFIX + token, faceRecognitionInfo, jwtSettings.getExpireLength(), TimeUnit.MINUTES);
+
+            FileUtil.writeBytes(faceFileByteArray,filePath);
             return ResultBuilder.buildSuccess(token);
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸扫描信息上传失败", null);
@@ -152,7 +169,7 @@ public class FaceRecognitionController {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "锁编码为空", null);
             }
 
-            int count =faceInfoAccCtrlDao.selectCountByFaceIdAndLockCode(FaceInfoContextHolder.getFaceId(),lockCode);
+            int count =faceInfoAccCtrlDao.selectCountByFaceIdAndLockCode(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId(),lockCode);
             if(count<1){
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有操作该门禁锁的权限", null);
             }

@@ -1,6 +1,7 @@
 package com.summit.util;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
+import com.summit.entity.FaceRecognitionInfo;
 
 /**
  * 人脸信息全局获取工具类
@@ -11,24 +12,24 @@ public class FaceInfoContextHolder {
     /**
      * 人脸信息实体存储容器.
      */
-    private final static ThreadLocal<String> FACE_INFO_THREAD_LOCAL = new TransmittableThreadLocal<>();
+    private final static ThreadLocal<FaceRecognitionInfo> FACE_INFO_THREAD_LOCAL = new TransmittableThreadLocal<>();
 
     /**
      * 获取人脸ID
      *
      * @return
      */
-    public static String getFaceId() {
+    public static FaceRecognitionInfo getFaceRecognitionInfo() {
         return FACE_INFO_THREAD_LOCAL.get();
     }
 
     /**
      * 设置人脸ID
      *
-     * @param faceId 人脸ID
+     * @param faceRecognitionInfo 人脸识别信息
      */
-    static void setFaceId(String faceId) {
-        FACE_INFO_THREAD_LOCAL.set(faceId);
+    static void setFaceRecognitionInfo(FaceRecognitionInfo faceRecognitionInfo) {
+        FACE_INFO_THREAD_LOCAL.set(faceRecognitionInfo);
     }
 
     /**
