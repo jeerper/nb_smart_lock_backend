@@ -37,24 +37,6 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
 
 
-        <association property="accessControlInfo" javaType="com.summit.dao.entity.AccessControlInfo">
-            <result column="ac_access_control_id" jdbcType="VARCHAR" property="accessControlId"/>
-            <result column="ac_access_control_name" jdbcType="VARCHAR" property="accessControlName"/>
-            <result column="ac_lock_id" jdbcType="VARCHAR" property="lockId"/>
-            <result column="ac_lock_code" jdbcType="VARCHAR" property="lockCode"/>
-            <result column="ac_entry_camera_id" jdbcType="VARCHAR" property="entryCameraId"/>
-            <result column="ac_entry_camera_ip" jdbcType="VARCHAR" property="entryCameraIp"/>
-            <result column="ac_exit_camera_id" jdbcType="VARCHAR" property="exitCameraId"/>
-            <result column="ac_exit_camera_ip" jdbcType="VARCHAR" property="exitCameraIp"/>
-            <result column="ac_status" jdbcType="INTEGER" property="status"/>
-            <result column="ac_createby" jdbcType="VARCHAR" property="createby"/>
-            <result column="ac_createtime" jdbcType="TIMESTAMP" property="createtime"/>
-            <result column="ac_updatetime" jdbcType="TIMESTAMP" property="updatetime"/>
-            <result column="ac_longitude" jdbcType="VARCHAR" property="longitude"/>
-            <result column="ac_latitude" jdbcType="VARCHAR" property="latitude"/>
-
-        </association>
-
         <association property="facePanorama" javaType="com.summit.dao.entity.FileInfo">
             <result column="fi1_id" jdbcType="VARCHAR" property="fileId"/>
             <result column="fi1_name" jdbcType="VARCHAR" property="filenName"/>
