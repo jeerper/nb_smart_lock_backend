@@ -28,6 +28,7 @@ import com.summit.dao.repository.FaceInfoAccCtrlDao;
 import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.entity.FaceRecognitionInfo;
+import com.summit.entity.UnlockResultInfo;
 import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessType;
@@ -216,6 +217,58 @@ public class FaceRecognitionController {
         } catch (Exception e) {
             log.error(e.getMessage());
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸扫描信息上传失败", null);
+        }
+    }
+    @ApiOperation(value = "提交智能锁开锁结果")
+    @PostMapping(value = "/unlock-result")
+    public RestfulEntityBySummit<String> unlockResult(@RequestBody UnlockResultInfo unlockResultInfo) {
+        try {
+//            if (StrUtil.isBlank(lockCode)) {
+//                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "锁编码为空", null);
+//            }
+//
+//            int count =faceInfoAccCtrlDao.selectCountByFaceIdAndLockCode(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId(),lockCode);
+//            if(count<1){
+//                //没有操作权限时需要执行报警操作
+//                Date date = new Date();
+//                String snapshotTime = CommonUtil.dateFormat.get().format(date);
+//                LockProcessResultType processResult = LockProcessResultType.Failure;
+//                String failReason = "没有操作该门禁锁的权限";
+//                CameraUploadType type = CameraUploadType.Alarm;
+//
+//                String fileName=FileUtil.getName(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceImagePath());
+//
+//                //人脸扫描图片URL
+//                String facePanoramaUrl = new StringBuilder()
+//                        .append(MainAction.SnapshotFileName)
+//                        .append(CommonConstants.URL_SEPARATOR)
+//                        .append(snapshotTime)
+//                        .append(CommonConstants.URL_SEPARATOR)
+//                        .append(type.getCode())
+//                        .append(CommonConstants.URL_SEPARATOR)
+//                        .append(fileName)
+//                        .toString();
+//                String facePanoramaFilePath=SystemUtil.getUserInfo().getCurrentDir()+File.separator+facePanoramaUrl;
+//                FileUtil.copy(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceImagePath(),facePanoramaFilePath,true);
+//
+//
+//                FileInfo facePanoramaFile = new FileInfo(snapshotTime + CommonConstants.FACE_PANORAMA_SUFFIX, facePanoramaUrl, "人脸全景图");
+//
+//                FaceInfo faceInfo=faceInfoManagerDao.selectById(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId());
+//
+//                AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(lockCode,faceInfo, type, facePanoramaFile, date, processResult,
+//                        failReason);
+//
+//                //在事务控制下插入门禁操作记录、门禁实时信息、告警
+//                ApplicationContextUtil.getBean(ClientFaceInfoCallbackImpl.class).insertData(type, accCtrlProcess);
+//
+//                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有操作该门禁锁的权限", null);
+//            }
+
+            return ResultBuilder.buildSuccess();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "开锁结果提交失败", null);
         }
     }
 
