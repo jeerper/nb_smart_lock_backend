@@ -1,6 +1,7 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.cbb.utils.page.Page;
 import com.summit.common.util.UserAuthUtils;
 import com.summit.constants.CommonConstants;
@@ -18,7 +19,6 @@ import com.summit.service.AccessControlService;
 import com.summit.service.AlarmService;
 import com.summit.service.LockInfoService;
 import com.summit.util.CommonUtil;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,26 +65,18 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
             fileInfoDao.insert(facePanorama);
             accCtrlProcess.setFacePanoramaId(facePanorama.getFileId());
         }
-        FileInfo facePic = accCtrlProcess.getFacePic();
-        if (facePic != null && facePic.getFilePath() != null) {
-            fileInfoDao.insert(facePic);
-            accCtrlProcess.setFacePicId(facePic.getFileId());
-        }
-        FileInfo faceMatch = accCtrlProcess.getFaceMatch();
-        if (faceMatch != null && faceMatch.getFilePath() != null) {
-            fileInfoDao.insert(faceMatch);
-            accCtrlProcess.setFaceMatchId(faceMatch.getFileId());
-        }
 
-        AccessControlInfo accessControlInfo = accCtrlProcess.getAccessControlInfo();
-        if (accessControlInfo != null) {
-            accessControlDao.update(accessControlInfo, new UpdateWrapper<AccessControlInfo>().eq("access_control_id",
-                    accessControlInfo.getAccessControlId()));
-            LockInfo lockInfo = accessControlInfo.getLockInfo();
-            if (lockInfo != null) {
-                lockInfoService.updateLock(lockInfo);
-            }
-        }
+        accessControlDao.update(null, Wrappers.<AccessControlInfo>lambdaUpdate()
+                .set(AccessControlInfo::getStatus,accCtrlProcess.getProcessType())
+                .eq(AccessControlInfo::getAccessControlId, accCtrlProcess.getAccessControlId()));
+
+        LockInfo lockInfo = new LockInfo();
+        lockInfo.setLockId(accCtrlProcess.getLockId());
+        lockInfo.setLockCode(accCtrlProcess.getLockCode());
+        lockInfo.setStatus(accCtrlProcess.getProcessType());
+        lockInfo.setUpdatetime(accCtrlProcess.getCreateTime());
+        lockInfoService.updateLock(lockInfo);
+
         return accCtrlProcessDao.insert(accCtrlProcess);
     }
 
@@ -181,12 +173,11 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
     /**
      * 查询所有门禁操作记录
      *
-
      * @return 门禁操作记录列表
      */
     @Override
     public List<AccCtrlProcess> selectAll() {
-        return accCtrlProcessDao.selectCondition(null,null, null, null,UserAuthUtils.getRoles());
+        return accCtrlProcessDao.selectCondition(null, null, null, null, UserAuthUtils.getRoles());
     }
 
     /**
@@ -224,7 +215,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         if (current != null && pageSize != null) {
             pageParam = new Page<>(current, pageSize);
         }
-        return accCtrlProcessDao.selectCondition(pageParam,accCtrlProcess, start, end,UserAuthUtils.getRoles());
+        return accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, UserAuthUtils.getRoles());
     }
 
     /**
@@ -235,7 +226,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
      */
     @Override
     public List<AccCtrlProcess> selectAccCtrlProcessByAccCtrlId(String accessControlId, Integer current, Integer pageSize) {
-        return selectAccCtrlProcessByAccCtrlId(accessControlId,null,null, current, pageSize);
+        return selectAccCtrlProcessByAccCtrlId(accessControlId, null, null, current, pageSize);
     }
 
     /**
@@ -259,7 +250,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         }
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setAccessControlName(accessControlName);
-        return accCtrlProcessDao.selectCondition(pageParam,accCtrlProcess, start, end, UserAuthUtils.getRoles());
+        return accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, UserAuthUtils.getRoles());
     }
 
     /**
@@ -294,7 +285,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         }
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setLockCode(lockCode);
-        return accCtrlProcessDao.selectCondition(pageParam,accCtrlProcess, start, end,  UserAuthUtils.getRoles());
+        return accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, UserAuthUtils.getRoles());
     }
 
     /**
@@ -329,7 +320,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         }
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setProcessType(processType);
-        return accCtrlProcessDao.selectCondition(pageParam,accCtrlProcess, start, end, UserAuthUtils.getRoles());
+        return accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, UserAuthUtils.getRoles());
     }
 
     /**
@@ -352,7 +343,8 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
      * @return 门禁操作记录列表
      */
     @Override
-    public Page<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, Date start, Date end, Integer current, Integer pageSize) {
+    public Page<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, Date start, Date end, Integer current,
+                                                              Integer pageSize) {
 
         Page<AccCtrlProcess> pageParam = null;
 
@@ -370,6 +362,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
 
     /**
      * 根据门禁操作id记录查询当前的操所记录
+     *
      * @param accCtrlProId
      * @return 当前的操所记录
      */

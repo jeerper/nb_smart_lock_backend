@@ -45,8 +45,7 @@ public class AccCtrlProcess {
     @TableField(value = "lock_code")
     private String lockCode;
 
-    @TableField(exist = false)
-    private AccessControlInfo accessControlInfo;
+
 
     @ApiModelProperty(value="用户id",name="userId")
     @TableField(value = "user_id")

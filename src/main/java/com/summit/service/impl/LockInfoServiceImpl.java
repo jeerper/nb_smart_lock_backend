@@ -1,7 +1,9 @@
 package com.summit.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
 import com.summit.common.util.UserAuthUtils;
@@ -25,6 +27,7 @@ public class LockInfoServiceImpl implements LockInfoService {
 
     /**
      * 根据锁id查询唯一锁信息
+     *
      * @param lockId 锁id
      * @return 唯一锁信息对象
      */
@@ -36,6 +39,7 @@ public class LockInfoServiceImpl implements LockInfoService {
 
     /**
      * 根据锁编号查询唯一锁信息
+     *
      * @param lockCode 锁编号
      * @return 唯一锁信息对象
      */
@@ -47,6 +51,7 @@ public class LockInfoServiceImpl implements LockInfoService {
 
     /**
      * 分页查询全部锁信息
+     *
      * @param page 分页对象
      * @return 锁信息列表
      */
@@ -58,12 +63,13 @@ public class LockInfoServiceImpl implements LockInfoService {
         Pageable pageable = PageConverter.getPageable(page, rowsCount);
         PageConverter.convertPage(page);
         List<LockInfo> lockInfos = lockInfoDao.selectCondition(new LockInfo(), page, rolesList);
-        Page<LockInfo> backPage = new Page<>(lockInfos,pageable);
+        Page<LockInfo> backPage = new Page<>(lockInfos, pageable);
         return backPage;
     }
 
     /**
      * 分页查询全部有操作记录的锁信息
+     *
      * @param page 分页对象
      * @return 锁信息列表
      */
@@ -72,22 +78,23 @@ public class LockInfoServiceImpl implements LockInfoService {
         List<String> rolesList = UserAuthUtils.getRoles();
         List<LockInfo> infoList = lockInfoDao.selectAllHaveHistory(null, rolesList);
         Integer rowsCount = infoList == null ? 0 : infoList.size();
-        Pageable pageable = PageConverter.getPageable(page,rowsCount);
+        Pageable pageable = PageConverter.getPageable(page, rowsCount);
         PageConverter.convertPage(page);
         List<LockInfo> lockInfos = lockInfoDao.selectAllHaveHistory(page, rolesList);
-        Page<LockInfo> backPage = new Page<>(lockInfos,pageable);
+        Page<LockInfo> backPage = new Page<>(lockInfos, pageable);
         return backPage;
     }
 
     /**
      * 条件查询锁信息
+     *
      * @param lockInfo 锁信息对象
-     * @param page 分页对象
+     * @param page     分页对象
      * @return 锁信息列表
      */
     @Override
     public Page<LockInfo> selectCondition(LockInfo lockInfo, SimplePage page) {
-        if(lockInfo == null){
+        if (lockInfo == null) {
             log.error("锁信息为空");
             return null;
         }
@@ -97,18 +104,19 @@ public class LockInfoServiceImpl implements LockInfoService {
         Pageable pageable = PageConverter.getPageable(page, rowsCount);
         PageConverter.convertPage(page);
         List<LockInfo> lockInfos = lockInfoDao.selectCondition(lockInfo, page, rolesList);
-        Page<LockInfo> backPage = new Page<>(lockInfos,pageable);
+        Page<LockInfo> backPage = new Page<>(lockInfos, pageable);
         return backPage;
     }
 
     /**
      * 插入锁信息
+     *
      * @param lockInfo 锁信息对象
      * @return 返回不为-1则为成功
      */
     @Override
     public int insertLock(LockInfo lockInfo) {
-        if(lockInfo == null){
+        if (lockInfo == null) {
             log.error("锁信息为空");
             return CommonConstants.UPDATE_ERROR;
         }
@@ -120,34 +128,35 @@ public class LockInfoServiceImpl implements LockInfoService {
 
     /**
      * 更新锁信息
+     *
      * @param lockInfo 锁信息对象
      * @return 返回不为-1则为成功
      */
     @Override
     public int updateLock(LockInfo lockInfo) {
-        if(lockInfo == null){
+        if (lockInfo == null) {
             log.error("锁信息为空");
             return CommonConstants.UPDATE_ERROR;
         }
+
         String lockCode = lockInfo.getLockCode();
         String lockId = lockInfo.getLockId();
-        if(lockCode != null && lockId != null){
-            lockCode = null;
-        }
-        UpdateWrapper<LockInfo> updateWrapper = new UpdateWrapper<>();
 
-        return lockInfoDao.update(lockInfo, updateWrapper.eq("lock_id", lockId)
-                .or().eq("lock_code", lockCode));
+        return lockInfoDao.update(lockInfo, Wrappers.<LockInfo>lambdaUpdate()
+                .eq(StrUtil.isNotBlank(lockId), LockInfo::getLockId, lockId)
+                .or()
+                .eq(StrUtil.isNotBlank(lockCode), LockInfo::getLockCode, lockCode));
     }
 
     /**
      * 根据id删除锁信息
+     *
      * @param lockId 锁id
      * @return 返回不为-1则为成功
      */
     @Override
     public int delLockByLockId(String lockId) {
-        if(lockId == null){
+        if (lockId == null) {
             log.error("锁id为空");
             return CommonConstants.UPDATE_ERROR;
         }
@@ -157,12 +166,13 @@ public class LockInfoServiceImpl implements LockInfoService {
 
     /**
      * 根据锁编号删除锁信息
+     *
      * @param lockCode 锁编号
      * @return 返回不为-1则为成功
      */
     @Override
     public int delLockByLockCode(String lockCode) {
-        if(lockCode == null){
+        if (lockCode == null) {
             log.error("锁编号为空");
             return CommonConstants.UPDATE_ERROR;
         }

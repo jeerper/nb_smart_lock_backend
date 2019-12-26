@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.summit.MainAction;
-import com.summit.common.util.ApplicationContextUtil;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.AccCtrlRealTimeEntity;
@@ -16,7 +15,6 @@ import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.FileInfo;
-import com.summit.dao.entity.UnlockCommandQueue;
 import com.summit.dao.repository.AccCtrlProcessDao;
 import com.summit.dao.repository.UnlockCommandQueueDao;
 import com.summit.sdk.huawei.callback.ClientFaceInfoCallback;
@@ -36,6 +34,7 @@ import com.summit.util.AccCtrlProcessUtil;
 import com.summit.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -43,7 +42,7 @@ import java.util.Date;
 import java.util.List;
 
 @Slf4j
-//@Component
+@Component
 public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
 
     @Autowired
@@ -211,11 +210,11 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                 FileUtil.writeBytes(faceInfo.getFacePanorama(), picturePathFacePanorama);
                 FileUtil.writeBytes(faceInfo.getFacePic(), picturePathFacePic);
 
-                AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(faceInfo, type, facePanoramaFile, facePicFile, processResult,
-                        failReason);
-
-                //在事务控制下插入门禁操作记录、门禁实时信息、告警
-                ApplicationContextUtil.getBean(ClientFaceInfoCallbackImpl.class).insertData(type, accCtrlProcess);
+//                AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(faceInfo, type, facePanoramaFile, facePicFile, processResult,
+//                        failReason);
+//
+//                //在事务控制下插入门禁操作记录、门禁实时信息、告警
+//                ApplicationContextUtil.getBean(ClientFaceInfoCallbackImpl.class).insertData(type, accCtrlProcess);
             }
         } catch (Exception e) {
             log.error("摄像头上报信息处理异常", e);
@@ -240,15 +239,15 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             }
             log.info("门禁实时信息入库");
             accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity);
-            //插入开锁指令队列
-            if (type == CameraUploadType.Unlock) {
-                UnlockCommandQueue unlockCommandQueue = new UnlockCommandQueue();
-                unlockCommandQueue.setAccCtrlProId(accCtrlProcess.getAccCtrlProId());
-                unlockCommandQueue.setUnlockFaceName(accCtrlProcess.getUserName());
-                unlockCommandQueue.setLockCode(accCtrlProcess.getLockCode());
-                unlockCommandQueue.setCreateTime(new Date());
-                unlockCommandQueueDao.insert(unlockCommandQueue);
-            }
+            //TODO:(废弃)插入开锁指令队列
+//            if (type == CameraUploadType.Unlock) {
+//                UnlockCommandQueue unlockCommandQueue = new UnlockCommandQueue();
+//                unlockCommandQueue.setAccCtrlProId(accCtrlProcess.getAccCtrlProId());
+//                unlockCommandQueue.setUnlockFaceName(accCtrlProcess.getUserName());
+//                unlockCommandQueue.setLockCode(accCtrlProcess.getLockCode());
+//                unlockCommandQueue.setCreateTime(new Date());
+//                unlockCommandQueueDao.insert(unlockCommandQueue);
+//            }
         } catch (Exception e) {
             log.error("门禁操作信息入库失败", e);
             throw new Exception("门禁操作信息入库失败");

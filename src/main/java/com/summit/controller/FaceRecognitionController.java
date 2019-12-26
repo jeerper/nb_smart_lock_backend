@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.summit.MainAction;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
+import com.summit.common.util.ApplicationContextUtil;
 import com.summit.common.util.ResultBuilder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
@@ -35,6 +36,7 @@ import com.summit.util.CommonUtil;
 import com.summit.util.FaceInfoContextHolder;
 import com.summit.util.JwtSettings;
 import com.summit.utils.BaiduSdkClient;
+import com.summit.utils.ClientFaceInfoCallbackImpl;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.swagger.annotations.Api;
@@ -174,7 +176,7 @@ public class FaceRecognitionController {
 
             int count =faceInfoAccCtrlDao.selectCountByFaceIdAndLockCode(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId(),lockCode);
             if(count<1){
-                //TODO:没有操作权限时需要执行报警操作
+                //没有操作权限时需要执行报警操作
                 Date date = new Date();
                 String snapshotTime = CommonUtil.dateFormat.get().format(date);
                 LockProcessResultType processResult = LockProcessResultType.Failure;
@@ -199,11 +201,13 @@ public class FaceRecognitionController {
 
                 FileInfo facePanoramaFile = new FileInfo(snapshotTime + CommonConstants.FACE_PANORAMA_SUFFIX, facePanoramaUrl, "人脸全景图");
 
-//                AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(faceInfo, type, facePanoramaFile, null, processResult,
-//                        failReason);
-//
-//                //在事务控制下插入门禁操作记录、门禁实时信息、告警
-//                ApplicationContextUtil.getBean(ClientFaceInfoCallbackImpl.class).insertData(type, accCtrlProcess);
+                FaceInfo faceInfo=faceInfoManagerDao.selectById(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId());
+
+                AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(lockCode,faceInfo, type, facePanoramaFile, date, processResult,
+                        failReason);
+
+                //在事务控制下插入门禁操作记录、门禁实时信息、告警
+                ApplicationContextUtil.getBean(ClientFaceInfoCallbackImpl.class).insertData(type, accCtrlProcess);
 
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有操作该门禁锁的权限", null);
             }
