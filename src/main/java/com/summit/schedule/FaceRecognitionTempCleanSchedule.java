@@ -38,14 +38,17 @@ public class FaceRecognitionTempCleanSchedule {
 
     @Scheduled(fixedDelay = 2000)
     public void cleanFaceRecognitionTemp() {
+        if(!FileUtil.exist(tempRootPath)){
+            return;
+        }
         File[] fileList = FileUtil.ls(tempRootPath);
+
         for (File file : fileList) {
             boolean isExist = isExistFaceRecognitionTempFile(file.getAbsolutePath());
             if (!isExist) {
                 FileUtil.del(file);
             }
         }
-
 
     }
 
