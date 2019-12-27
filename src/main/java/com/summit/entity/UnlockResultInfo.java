@@ -12,8 +12,14 @@ import lombok.Data;
 public class UnlockResultInfo {
     @ApiModelProperty(value="锁编码")
     private String lockCode;
+    @ApiModelProperty(value="状态码")
+    private int statusCode;
+    @ApiModelProperty(value="电池电量")
+    private int batteryLevel;
+    @ApiModelProperty(value="开锁次数")
+    private int unlockNum;
+    @ApiModelProperty(value="操作结果")
+    private int result;
     @ApiModelProperty(value="是否成功开锁",notes = "true代表成功,false代表失败")
     private boolean success;
-    @ApiModelProperty(value="开锁信息")
-    private String message;
 }

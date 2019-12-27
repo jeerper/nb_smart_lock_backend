@@ -18,6 +18,7 @@ import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.entity.FaceRecognitionInfo;
 import com.summit.entity.SearchFaceResult;
+import com.summit.entity.UnlockResultEnum;
 import com.summit.entity.UnlockResultInfo;
 import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.sdk.huawei.model.LockProcessResultType;
@@ -194,7 +195,7 @@ public class FaceRecognitionController {
             }else{
                 processResult = LockProcessResultType.Failure;
                 cameraUploadType=CameraUploadType.Alarm;
-                failReason=unlockResultInfo.getMessage();
+                failReason=UnlockResultEnum.codeOf(unlockResultInfo.getResult()).getDescription();
             }
             accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode,cameraUploadType,processResult,failReason);
             return ResultBuilder.buildSuccess();
