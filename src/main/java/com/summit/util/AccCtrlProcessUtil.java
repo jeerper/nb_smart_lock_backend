@@ -375,11 +375,12 @@ public class AccCtrlProcessUtil {
         //设置门禁状态、经度、纬度需要查询门禁
         if (accessControlInfo != null) {
             //只有当为报警状态时，才传入上报类型，更新门禁状态，其他状态由轮训器更改
-            if (accCtrlProcess.getProcessType() == LockProcessType.LOCK_ALARM.getCode()) {
-                accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());
-            } else if (accCtrlProcess.getProcessResult() != null && LockProcessResultType.codeOf(accCtrlProcess.getProcessResult()) != LockProcessResultType.CommandSuccess) {
-                accCtrlRealTimeEntity.setAccCtrlStatus(LockProcessType.CLOSE_LOCK.getCode());
-            }
+//            if (accCtrlProcess.getProcessType() == LockProcessType.LOCK_ALARM.getCode()) {
+//                accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());
+//            } else if (accCtrlProcess.getProcessResult() != null && LockProcessResultType.codeOf(accCtrlProcess.getProcessResult()) != LockProcessResultType.CommandSuccess) {
+//                accCtrlRealTimeEntity.setAccCtrlStatus(LockProcessType.CLOSE_LOCK.getCode());
+//            }
+            accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());
             accCtrlRealTimeEntity.setLongitude(accessControlInfo.getLongitude());
             accCtrlRealTimeEntity.setLatitude(accessControlInfo.getLatitude());
         }

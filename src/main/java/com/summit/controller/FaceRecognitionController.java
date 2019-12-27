@@ -179,6 +179,10 @@ public class FaceRecognitionController {
             if (StrUtil.isBlank(lockCode)) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "锁编码为空", null);
             }
+            int count =faceInfoAccCtrlDao.selectCountByFaceIdAndLockCode(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId(),lockCode);
+            if(count<1){
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有操作该门禁锁的权限", null);
+            }
             LockProcessResultType processResult;
             String failReason = null;
 
