@@ -187,14 +187,16 @@ public class FaceRecognitionController {
             }
             LockProcessResultType processResult;
             String failReason = null;
-
+            CameraUploadType cameraUploadType;
             if(unlockResultInfo.isSuccess()){
                  processResult = LockProcessResultType.Success;
+                cameraUploadType=CameraUploadType.Unlock;
             }else{
                 processResult = LockProcessResultType.Failure;
+                cameraUploadType=CameraUploadType.Alarm;
                 failReason=unlockResultInfo.getMessage();
             }
-            accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode,CameraUploadType.Unlock,processResult,failReason);
+            accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode,cameraUploadType,processResult,failReason);
             return ResultBuilder.buildSuccess();
         } catch (Exception e) {
             log.error(e.getMessage());
