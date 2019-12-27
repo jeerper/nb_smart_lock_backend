@@ -145,7 +145,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
             faceInfoManagerDao.insertFaceInfo(faceInfo);
             FileUtil.writeBytes(subNewImageBase64Byte, facePicPath);
 
-            String faceId = baiduSdkClient.searchFace(subNewImageBase64);
+            String faceId = baiduSdkClient.searchFace(subNewImageBase64).getFaceId();
             if (StrUtil.isNotBlank(faceId)) {
                 FaceInfo similarFaceInfo = faceInfoManagerDao.selectById(faceId);
                 if (similarFaceInfo != null) {
@@ -262,7 +262,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
 
         byte[] subNewImageBase64Byte = Base64.getDecoder().decode(subNewImageBase64);
 
-        String faceId = baiduSdkClient.searchFace(subNewImageBase64);
+        String faceId = baiduSdkClient.searchFace(subNewImageBase64).getFaceId();
         if (StrUtil.isNotBlank(faceId) && (!StrUtil.equals(faceInfo.getFaceid(), faceId))) {
             FaceInfo similarFaceInfo = faceInfoManagerDao.selectById(faceId);
             if (similarFaceInfo != null) {

@@ -1,8 +1,10 @@
 package com.summit.utils;
 
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baidu.aip.face.AipFace;
+import com.summit.entity.SearchFaceResult;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -115,7 +117,7 @@ public class BaiduSdkClient {
      * @param base64Str
      * @return 人脸ID
      */
-    public String searchFace(String base64Str) {
+    public SearchFaceResult searchFace(String base64Str) {
         try {
             //在已有人脸库中查找显示的人脸，如果相似率高达90%以上则不能录入
             HashMap<String, String> options = new HashMap<String, String>();
@@ -133,7 +135,8 @@ public class BaiduSdkClient {
             }
             JSONObject result = res.getJSONObject("result");
             String faceId = result.getJSONArray("user_list").getJSONObject(0).getString("user_id");
-            return faceId;
+            String score = NumberUtil.roundStr(result.getJSONArray("user_list").getJSONObject(0).getDouble("score"), 2);
+            return new SearchFaceResult(faceId, Float.parseFloat(score));
         } catch (Exception e) {
             log.error("人脸搜索失败", e);
             return null;
@@ -162,7 +165,8 @@ public class BaiduSdkClient {
             return false;
         }
     }
-    public boolean updateFace(String base64Str, String faceId){
+
+    public boolean updateFace(String base64Str, String faceId) {
         try {
             // 传入可选参数调用接口
             HashMap<String, String> options = new HashMap<String, String>();
@@ -173,7 +177,7 @@ public class BaiduSdkClient {
             JSONObject res = client.updateUser(base64Str, "BASE64", groupId, faceId, options);
             log.debug(res.toString(2));
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("人脸更新失败", e);
             return false;
         }
@@ -182,15 +186,16 @@ public class BaiduSdkClient {
 
     /**
      * 人脸删除
+     *
      * @param faceId 人脸ID
      */
-    public boolean deleteFace(String faceId){
-        try{
+    public boolean deleteFace(String faceId) {
+        try {
             // 删除用户
             client.deleteUser(groupId, faceId, null);
             return true;
-        }catch (Exception e){
-            log.error("图片删除异常",e);
+        } catch (Exception e) {
+            log.error("图片删除异常", e);
             return false;
         }
     }

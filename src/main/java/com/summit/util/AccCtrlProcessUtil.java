@@ -250,7 +250,7 @@ public class AccCtrlProcessUtil {
      * @param failReason       人脸识别或门禁操作识别原因
      * @return 组装好的门禁操作记录信息对象
      */
-    public AccCtrlProcess getAccCtrlProcess(String lockCode,FaceInfo faceInfo, CameraUploadType type, FileInfo facePanoramaFile, Date snapshotTime,
+    public AccCtrlProcess getAccCtrlProcess(String lockCode,FaceInfo faceInfo,float score, CameraUploadType type, FileInfo facePanoramaFile, Date snapshotTime,
                                             LockProcessResultType processResult, String failReason) {
 
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
@@ -269,8 +269,8 @@ public class AccCtrlProcessUtil {
         if (faceInfo.getCardType() != null)
             accCtrlProcess.setCardType(faceInfo.getCardType());
         accCtrlProcess.setCardId(faceInfo.getCardId());
-        //TODO:人脸匹配率需要提供
-//        accCtrlProcess.setFaceMatchRate(faceInfo.getFaceMatchRate());
+        //人脸匹配率需要提供
+        accCtrlProcess.setFaceMatchRate(score);
         accCtrlProcess.setFacePanorama(facePanoramaFile);
 
         accCtrlProcess.setCreateTime(snapshotTime);

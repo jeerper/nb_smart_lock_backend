@@ -17,6 +17,7 @@ import com.summit.dao.repository.FaceInfoAccCtrlDao;
 import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.entity.FaceRecognitionInfo;
+import com.summit.entity.SearchFaceResult;
 import com.summit.entity.UnlockResultInfo;
 import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.sdk.huawei.model.LockProcessResultType;
@@ -87,7 +88,8 @@ public class FaceRecognitionController {
         try {
             byte[] faceFileByteArray = faceImageFile.getBytes();
             String faceFileStr = Base64.encode(faceFileByteArray);
-            String faceId = baiduSdkClient.searchFace(faceFileStr);
+            SearchFaceResult searchFaceResult=baiduSdkClient.searchFace(faceFileStr);
+            String faceId = searchFaceResult.getFaceId();
             if (StrUtil.isBlank(faceId)) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有匹配到人脸", null);
             }
@@ -123,7 +125,7 @@ public class FaceRecognitionController {
             FaceRecognitionInfo faceRecognitionInfo=new FaceRecognitionInfo();
             faceRecognitionInfo.setFaceId(faceId);
             faceRecognitionInfo.setFaceImagePath(filePath);
-
+            faceRecognitionInfo.setScore(searchFaceResult.getScore());
             genericRedisTemplate.opsForValue().set(MainAction.FACE_AUTH_CACHE_PREFIX + token, faceRecognitionInfo, jwtSettings.getExpireLength(), TimeUnit.MINUTES);
 
             FileUtil.writeBytes(faceFileByteArray,filePath);

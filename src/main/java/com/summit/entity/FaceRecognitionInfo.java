@@ -9,4 +9,5 @@ import lombok.Data;
 public class FaceRecognitionInfo {
     private String faceId;
     private String faceImagePath;
+    private float score;
 }

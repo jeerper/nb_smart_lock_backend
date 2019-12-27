@@ -9,6 +9,7 @@ import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.repository.FaceInfoManagerDao;
+import com.summit.entity.FaceRecognitionInfo;
 import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.service.AccessControlLockOperationService;
@@ -40,7 +41,9 @@ public class AccessControlLockOperationServiceImpl implements AccessControlLockO
         try {
             Date date = new Date();
             String snapshotTime = CommonUtil.dateFormat.get().format(date);
-            String fileName = FileUtil.getName(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceImagePath());
+            FaceRecognitionInfo faceRecognitionInfo= FaceInfoContextHolder.getFaceRecognitionInfo();
+            String fileName = FileUtil.getName(faceRecognitionInfo.getFaceImagePath());
+
             //人脸扫描图片URL
             String facePanoramaUrl = new StringBuilder()
                     .append(MainAction.SnapshotFileName)
@@ -52,11 +55,11 @@ public class AccessControlLockOperationServiceImpl implements AccessControlLockO
                     .append(fileName)
                     .toString();
             String facePanoramaFilePath = SystemUtil.getUserInfo().getCurrentDir() + File.separator + facePanoramaUrl;
-            FileUtil.copy(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceImagePath(), facePanoramaFilePath, true);
+            FileUtil.copy(faceRecognitionInfo.getFaceImagePath(), facePanoramaFilePath, true);
             FileInfo facePanoramaFile = new FileInfo(snapshotTime + CommonConstants.FACE_PANORAMA_SUFFIX, facePanoramaUrl, "人脸全景图");
-            FaceInfo faceInfo = faceInfoManagerDao.selectById(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId());
+            FaceInfo faceInfo = faceInfoManagerDao.selectById(faceRecognitionInfo.getFaceId());
 
-            AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(lockCode, faceInfo, type, facePanoramaFile, date, processResult,
+            AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(lockCode, faceInfo,faceRecognitionInfo.getScore(), type, facePanoramaFile, date, processResult,
                     failReason);
             //在事务控制下插入门禁操作记录、门禁实时信息、告警
             ApplicationContextUtil.getBean(ClientFaceInfoCallbackImpl.class).insertData(type, accCtrlProcess);
