@@ -13,7 +13,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.summit.MainAction;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
-import com.summit.common.util.ApplicationContextUtil;
 import com.summit.common.util.ResultBuilder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
@@ -32,12 +31,11 @@ import com.summit.entity.UnlockResultInfo;
 import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessType;
-import com.summit.util.AccCtrlProcessUtil;
+import com.summit.service.AccessControlLockOperationService;
 import com.summit.util.CommonUtil;
 import com.summit.util.FaceInfoContextHolder;
 import com.summit.util.JwtSettings;
 import com.summit.utils.BaiduSdkClient;
-import com.summit.utils.ClientFaceInfoCallbackImpl;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.swagger.annotations.Api;
@@ -93,7 +91,7 @@ public class FaceRecognitionController {
     @Autowired
     private LockInfoDao lockInfoDao;
     @Autowired
-    private AccCtrlProcessUtil accCtrlProcessUtil;
+    AccessControlLockOperationService accessControlLockOperationService;
 
 
     @ApiOperation(value = "人脸扫描")
@@ -174,45 +172,13 @@ public class FaceRecognitionController {
             if (StrUtil.isBlank(lockCode)) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "锁编码为空", null);
             }
-
             int count =faceInfoAccCtrlDao.selectCountByFaceIdAndLockCode(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId(),lockCode);
             if(count<1){
                 //没有操作权限时需要执行报警操作
-                Date date = new Date();
-                String snapshotTime = CommonUtil.dateFormat.get().format(date);
-                LockProcessResultType processResult = LockProcessResultType.Failure;
                 String failReason = "没有操作该门禁锁的权限";
-                CameraUploadType type = CameraUploadType.Alarm;
-
-                String fileName=FileUtil.getName(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceImagePath());
-
-                //人脸扫描图片URL
-                String facePanoramaUrl = new StringBuilder()
-                        .append(MainAction.SnapshotFileName)
-                        .append(CommonConstants.URL_SEPARATOR)
-                        .append(snapshotTime)
-                        .append(CommonConstants.URL_SEPARATOR)
-                        .append(type.getCode())
-                        .append(CommonConstants.URL_SEPARATOR)
-                        .append(fileName)
-                        .toString();
-                String facePanoramaFilePath=SystemUtil.getUserInfo().getCurrentDir()+File.separator+facePanoramaUrl;
-                FileUtil.copy(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceImagePath(),facePanoramaFilePath,true);
-
-
-                FileInfo facePanoramaFile = new FileInfo(snapshotTime + CommonConstants.FACE_PANORAMA_SUFFIX, facePanoramaUrl, "人脸全景图");
-
-                FaceInfo faceInfo=faceInfoManagerDao.selectById(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId());
-
-                AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(lockCode,faceInfo, type, facePanoramaFile, date, processResult,
-                        failReason);
-
-                //在事务控制下插入门禁操作记录、门禁实时信息、告警
-                ApplicationContextUtil.getBean(ClientFaceInfoCallbackImpl.class).insertData(type, accCtrlProcess);
-
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有操作该门禁锁的权限", null);
+                accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode,CameraUploadType.Alarm,LockProcessResultType.Failure,failReason);
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, failReason, null);
             }
-
             return ResultBuilder.buildSuccess(lockInfoDao.selectLockPassWordByLockCode(lockCode));
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -223,48 +189,20 @@ public class FaceRecognitionController {
     @PostMapping(value = "/unlock-result")
     public RestfulEntityBySummit<String> unlockResult(@RequestBody UnlockResultInfo unlockResultInfo) {
         try {
-//            if (StrUtil.isBlank(lockCode)) {
-//                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "锁编码为空", null);
-//            }
-//
-//            int count =faceInfoAccCtrlDao.selectCountByFaceIdAndLockCode(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId(),lockCode);
-//            if(count<1){
-//                //没有操作权限时需要执行报警操作
-//                Date date = new Date();
-//                String snapshotTime = CommonUtil.dateFormat.get().format(date);
-//                LockProcessResultType processResult = LockProcessResultType.Failure;
-//                String failReason = "没有操作该门禁锁的权限";
-//                CameraUploadType type = CameraUploadType.Alarm;
-//
-//                String fileName=FileUtil.getName(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceImagePath());
-//
-//                //人脸扫描图片URL
-//                String facePanoramaUrl = new StringBuilder()
-//                        .append(MainAction.SnapshotFileName)
-//                        .append(CommonConstants.URL_SEPARATOR)
-//                        .append(snapshotTime)
-//                        .append(CommonConstants.URL_SEPARATOR)
-//                        .append(type.getCode())
-//                        .append(CommonConstants.URL_SEPARATOR)
-//                        .append(fileName)
-//                        .toString();
-//                String facePanoramaFilePath=SystemUtil.getUserInfo().getCurrentDir()+File.separator+facePanoramaUrl;
-//                FileUtil.copy(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceImagePath(),facePanoramaFilePath,true);
-//
-//
-//                FileInfo facePanoramaFile = new FileInfo(snapshotTime + CommonConstants.FACE_PANORAMA_SUFFIX, facePanoramaUrl, "人脸全景图");
-//
-//                FaceInfo faceInfo=faceInfoManagerDao.selectById(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId());
-//
-//                AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(lockCode,faceInfo, type, facePanoramaFile, date, processResult,
-//                        failReason);
-//
-//                //在事务控制下插入门禁操作记录、门禁实时信息、告警
-//                ApplicationContextUtil.getBean(ClientFaceInfoCallbackImpl.class).insertData(type, accCtrlProcess);
-//
-//                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有操作该门禁锁的权限", null);
-//            }
+            String lockCode= unlockResultInfo.getLockCode();
+            if (StrUtil.isBlank(lockCode)) {
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "锁编码为空", null);
+            }
+            LockProcessResultType processResult;
+            String failReason = null;
 
+            if(unlockResultInfo.isSuccess()){
+                 processResult = LockProcessResultType.Success;
+            }else{
+                processResult = LockProcessResultType.Failure;
+                failReason=unlockResultInfo.getMessage();
+            }
+            accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode,CameraUploadType.Unlock,processResult,failReason);
             return ResultBuilder.buildSuccess();
         } catch (Exception e) {
             log.error(e.getMessage());
