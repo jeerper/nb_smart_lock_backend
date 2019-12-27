@@ -11,10 +11,10 @@ public interface AccessControlLockOperationService {
 
     /**
      * 新增门禁锁操作事件
-     * @param lockCode
-     * @param type
-     * @param processResult
-     * @param failReason
+     * @param lockCode 锁编码
+     * @param type 操作类型
+     * @param processResult  操作结果
+     * @param failReason  失败信息描述 成功则传入null
      * @throws Exception
      */
     void insertAccessControlLockOperationEvent(String lockCode, CameraUploadType type, LockProcessResultType processResult, String failReason) throws Exception;
