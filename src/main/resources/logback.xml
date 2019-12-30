@@ -56,6 +56,7 @@
 	<!--<appender-ref ref="FILE"/>-->
 	<!--<appender-ref ref="ERRORFILE"/>-->
 	<!--</appender>-->
+	<logger name="org.redisson" level="error"/>
 	<logger name="io.netty" level="error"/>
 	<logger name="org.springframework" level="error"/>
 	<logger name="com.zaxxer.hikari" level="error"/>
@@ -71,6 +72,7 @@
 	<logger name="com.baomidou" level="error"/>
 	<logger name="org.mybatis" level="error"/>
 	<logger name="com.summit.dao" level="error"/>
+	<logger name="com.summit.dao.repository.LockInfoDao" level="error"/>
 	<logger name="com.summit.schedule.UnlockCommandHandleSchedule" level="error"/>
 	<logger name="com.summit.service.impl.NBLockServiceImpl" level="error"/>
 	<logger name="com.summit.common.redis.user.UserInfoCache" level="error"/>
