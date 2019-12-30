@@ -2,9 +2,11 @@ package com.summit.controller;
 
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.system.SystemUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.MainAction;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
@@ -34,6 +36,8 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
@@ -67,6 +71,10 @@ public class FaceRecognitionController {
     @Autowired
     RedisTemplate<String, Object> genericRedisTemplate;
     @Autowired
+    AccessControlLockOperationService accessControlLockOperationService;
+    @Autowired
+    RedissonClient redissonClient;
+    @Autowired
     private BaiduSdkClient baiduSdkClient;
     @Autowired
     private FaceInfoManagerDao faceInfoManagerDao;
@@ -78,9 +86,6 @@ public class FaceRecognitionController {
     private AccCtrlProcessDao accCtrlProcessDao;
     @Autowired
     private LockInfoDao lockInfoDao;
-    @Autowired
-    AccessControlLockOperationService accessControlLockOperationService;
-
 
     @ApiOperation(value = "人脸扫描")
     @PostMapping(value = "/face-scan", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -89,7 +94,7 @@ public class FaceRecognitionController {
         try {
             byte[] faceFileByteArray = faceImageFile.getBytes();
             String faceFileStr = Base64.encode(faceFileByteArray);
-            SearchFaceResult searchFaceResult=baiduSdkClient.searchFace(faceFileStr);
+            SearchFaceResult searchFaceResult = baiduSdkClient.searchFace(faceFileStr);
             String faceId = searchFaceResult.getFaceId();
             if (StrUtil.isBlank(faceId)) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有匹配到人脸", null);
@@ -98,7 +103,7 @@ public class FaceRecognitionController {
             if (faceInfo == null) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸信息不存在", null);
             }
-            if(faceInfo.getIsValidTime()==1){
+            if (faceInfo.getIsValidTime() == 1) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸信息已过期", null);
             }
 
@@ -110,7 +115,7 @@ public class FaceRecognitionController {
                     .signWith(SignatureAlgorithm.HS512, jwtSettings.getSecretKey())
                     .compact();
 
-            String extName=FileUtil.extName(faceImageFile.getOriginalFilename());
+            String extName = FileUtil.extName(faceImageFile.getOriginalFilename());
             String filePath = new StringBuilder()
                     .append(SystemUtil.getUserInfo().getCurrentDir())
                     .append(File.separator)
@@ -123,13 +128,14 @@ public class FaceRecognitionController {
                     .append(extName)
                     .toString();
 
-            FaceRecognitionInfo faceRecognitionInfo=new FaceRecognitionInfo();
+            FaceRecognitionInfo faceRecognitionInfo = new FaceRecognitionInfo();
             faceRecognitionInfo.setFaceId(faceId);
             faceRecognitionInfo.setFaceImagePath(filePath);
             faceRecognitionInfo.setScore(searchFaceResult.getScore());
-            genericRedisTemplate.opsForValue().set(MainAction.FACE_AUTH_CACHE_PREFIX + token, faceRecognitionInfo, jwtSettings.getExpireLength(), TimeUnit.MINUTES);
+            genericRedisTemplate.opsForValue().set(MainAction.FACE_AUTH_CACHE_PREFIX + token, faceRecognitionInfo, jwtSettings.getExpireLength(),
+                    TimeUnit.MINUTES);
 
-            FileUtil.writeBytes(faceFileByteArray,filePath);
+            FileUtil.writeBytes(faceFileByteArray, filePath);
             return ResultBuilder.buildSuccess(token);
         } catch (Exception e) {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸扫描信息上传失败", null);
@@ -151,6 +157,7 @@ public class FaceRecognitionController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸扫描信息上传失败", null);
         }
     }
+
     @ApiOperation(value = "获取智能锁密码")
     @GetMapping(value = "/lock-code-password/{lockCode}")
     @ApiImplicitParams({
@@ -161,11 +168,12 @@ public class FaceRecognitionController {
             if (StrUtil.isBlank(lockCode)) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "锁编码为空", null);
             }
-            int count =faceInfoAccCtrlDao.selectCountByFaceIdAndLockCode(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId(),lockCode);
-            if(count<1){
+            int count = faceInfoAccCtrlDao.selectCountByFaceIdAndLockCode(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId(), lockCode);
+            if (count < 1) {
                 //没有操作权限时需要执行报警操作
                 String failReason = "没有操作该门禁锁的权限";
-                accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode,CameraUploadType.Alarm,LockProcessResultType.Failure,failReason);
+                accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode, CameraUploadType.Alarm,
+                        LockProcessResultType.Failure, failReason);
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, failReason, null);
             }
             return ResultBuilder.buildSuccess(lockInfoDao.selectLockPassWordByLockCode(lockCode));
@@ -174,30 +182,50 @@ public class FaceRecognitionController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸扫描信息上传失败", null);
         }
     }
+
     @ApiOperation(value = "提交智能锁开锁结果")
     @PostMapping(value = "/unlock-result")
     public RestfulEntityBySummit<String> unlockResult(@RequestBody UnlockResultInfo unlockResultInfo) {
         try {
-            String lockCode= unlockResultInfo.getLockCode();
+            String lockCode = unlockResultInfo.getLockCode();
             if (StrUtil.isBlank(lockCode)) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "锁编码为空", null);
             }
-            int count =faceInfoAccCtrlDao.selectCountByFaceIdAndLockCode(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId(),lockCode);
-            if(count<1){
+            int count = faceInfoAccCtrlDao.selectCountByFaceIdAndLockCode(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId(), lockCode);
+            if (count < 1) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有操作该门禁锁的权限", null);
             }
             LockProcessResultType processResult;
             String failReason = null;
             CameraUploadType cameraUploadType;
-            if(unlockResultInfo.isSuccess()){
-                 processResult = LockProcessResultType.Success;
-                cameraUploadType=CameraUploadType.Unlock;
-            }else{
+            if (unlockResultInfo.isSuccess()) {
+                processResult = LockProcessResultType.Success;
+                cameraUploadType = CameraUploadType.Unlock;
+                //开启分布式锁，然后再更新数据库中的密码
+                RLock lock = redissonClient.getLock(MainAction.ChangeLockPasswordLockPrefix + lockCode);
+                boolean acquire = lock.tryLock(2, 20, TimeUnit.SECONDS);
+                if (acquire) {
+                    try{
+                        lockInfoDao.update(null, Wrappers.<LockInfo>lambdaUpdate()
+                                .set(LockInfo::getCurrentPassword,unlockResultInfo.getNewPassword())
+                                .set(LockInfo::getNewPassword, RandomUtil.randomStringUpper(6))
+                                .eq(LockInfo::getLockCode,lockCode)
+                                .eq(LockInfo::getCurrentPassword,unlockResultInfo.getCurrentPassword())
+                                .eq(LockInfo::getNewPassword,unlockResultInfo.getNewPassword()));
+                    } finally {
+                        try {
+                            lock.unlock();
+                        }catch (Exception er){
+                            log.error("当前锁不存在");
+                        }
+                    }
+                }
+            } else {
                 processResult = LockProcessResultType.Failure;
-                cameraUploadType=CameraUploadType.Alarm;
-                failReason=UnlockResultEnum.codeOf(unlockResultInfo.getResult()).getDescription();
+                cameraUploadType = CameraUploadType.Alarm;
+                failReason = UnlockResultEnum.codeOf(unlockResultInfo.getResult()).getDescription();
             }
-            accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode,cameraUploadType,processResult,failReason);
+            accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode, cameraUploadType, processResult, failReason);
             return ResultBuilder.buildSuccess();
         } catch (Exception e) {
             log.error(e.getMessage());

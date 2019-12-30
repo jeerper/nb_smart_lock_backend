@@ -19,6 +19,7 @@ public class MainAction {
     public static final String FaceRecognitionFileName="face-recognition";
     public static final String FACE_AUTH_CACHE_PREFIX = "face_auth:";
     public static final String FACE_ID = "face_id";
+    public static final String ChangeLockPasswordLockPrefix="change_lock_password_lock:";
 
 
     public static void main(String[] args) {

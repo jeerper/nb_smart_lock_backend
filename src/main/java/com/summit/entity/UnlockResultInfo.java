@@ -22,4 +22,8 @@ public class UnlockResultInfo {
     private int result;
     @ApiModelProperty(value="是否成功开锁",notes = "true代表成功,false代表失败")
     private boolean success;
+    @ApiModelProperty(value="当前密码",name="currentPassword")
+    private String currentPassword;
+    @ApiModelProperty(value="新密码",name="newPassword")
+    private String newPassword;
 }
