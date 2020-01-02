@@ -288,6 +288,7 @@ public class AccCtrlProcessUtil {
 
         if (CameraUploadType.Unlock == type) {
             //改为在开锁真正成功后更新状态
+            accCtrlProcess.setProcessTime(new Date());
             accCtrlProcess.setProcessType(LockProcessType.UNLOCK.getCode());
             //刷脸成功后开锁操作也有可能失败,成功则failReason=null
             accCtrlProcess.setFailReason(failReason);
