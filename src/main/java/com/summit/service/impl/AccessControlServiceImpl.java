@@ -14,7 +14,6 @@ import com.summit.dao.entity.AccCtrlRealTimeEntity;
 import com.summit.dao.entity.AccCtrlRole;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.Alarm;
-import com.summit.dao.entity.CameraDevice;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AccCtrlProcessDao;
@@ -26,12 +25,10 @@ import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.exception.ErrorMsgException;
 import com.summit.sdk.huawei.model.AlarmType;
-import com.summit.sdk.huawei.model.DeviceType;
 import com.summit.service.AccessControlService;
 import com.summit.service.CameraDeviceService;
 import com.summit.service.LockInfoService;
 import com.summit.util.CommonUtil;
-
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -238,65 +235,6 @@ public class AccessControlServiceImpl implements AccessControlService {
                 throw new ErrorMsgException("录入锁信息失败，锁" + lockCode + "已存在且已属于其他门禁");
             }
         }
-        CameraDevice entryCamera = accessControlInfo.getEntryCamera();
-        CameraDevice exitCamera = accessControlInfo.getExitCamera();
-        if(entryCamera != null && exitCamera != null){
-            String entryDeviceIp = entryCamera.getDeviceIp();
-            String exitDeviceIp = exitCamera.getDeviceIp();
-            if(entryDeviceIp != null && entryDeviceIp.equals(exitDeviceIp))
-                throw new ErrorMsgException("入口摄像头ip不能和出口摄像头一样");
-        }
-        if(entryCamera != null){
-            entryCamera.setDevId(null);
-            entryCamera.setCreateby(name);
-            entryCamera.setType(DeviceType.ENTRY.getCode());
-            entryCamera.setCreatetime(time);
-            entryCamera.setUpdatetime(time);
-            if(entryCamera.getStatus() == null)
-                entryCamera.setStatus(0);
-            entryCamera.setLockId(lockId);
-            entryCamera.setLockCode(lockCode);
-            String deviceIp = entryCamera.getDeviceIp();
-            CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
-            if(cameraDevice != null){
-                log.error("录入入口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
-                throw new ErrorMsgException("录入入口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
-            }
-            accessControlInfo.setEntryCameraIp(deviceIp);
-            try {
-                cameraDeviceService.insertDevice(entryCamera);
-                accessControlInfo.setEntryCameraId(entryCamera.getDevId());
-            } catch (Exception e) {
-                log.error("录入入口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
-                throw new ErrorMsgException("录入入口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
-            }
-        }
-
-        if(exitCamera != null){
-            exitCamera.setDevId(null);
-            exitCamera.setCreateby(name);
-            exitCamera.setType(DeviceType.EXIT.getCode());
-            exitCamera.setCreatetime(time);
-            exitCamera.setUpdatetime(time);
-            if(exitCamera.getStatus() == null)
-                exitCamera.setStatus(0);
-            exitCamera.setLockId(lockId);
-            exitCamera.setLockCode(lockCode);
-            String deviceIp = exitCamera.getDeviceIp();
-            CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
-            if(cameraDevice != null){
-                log.error("录入出口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
-                throw new ErrorMsgException("录入出口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
-            }
-            accessControlInfo.setExitCameraIp(deviceIp);
-            try {
-                cameraDeviceService.insertDevice(exitCamera);
-                accessControlInfo.setExitCameraId(exitCamera.getDevId());
-            } catch (Exception e) {
-                log.error("录入出口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
-                throw new ErrorMsgException("录入出口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
-            }
-        }
         return accessControlDao.insert(accessControlInfo);
     }
 
@@ -356,103 +294,6 @@ public class AccessControlServiceImpl implements AccessControlService {
                     } catch (Exception e) {
                         log.error("更新锁信息失败，锁{}已存在且已属于其他门禁", lockCode);
                         throw new ErrorMsgException("更新锁信息失败，锁" + lockCode + "已存在且已属于其他门禁");
-                    }
-                }
-            }
-        }
-        String newEntryCameraIp = accessControlInfo.getEntryCameraIp();
-        String newExitCameraIp = accessControlInfo.getExitCameraIp();
-        if(newEntryCameraIp != null && newEntryCameraIp.equals(newExitCameraIp)){
-            throw new ErrorMsgException("入口摄像头ip不能和出口摄像头一样");
-        }
-        CameraDevice entryCamera = accessControlInfo.getEntryCamera();
-        CameraDevice exitCamera = accessControlInfo.getExitCamera();
-        if(entryCamera != null && exitCamera != null){
-            String entryDeviceIp = entryCamera.getDeviceIp();
-            newEntryCameraIp = entryDeviceIp;
-            String exitDeviceIp = exitCamera.getDeviceIp();
-            newExitCameraIp = exitDeviceIp;
-            if(entryDeviceIp != null && entryDeviceIp.equals(exitDeviceIp))
-                throw new ErrorMsgException("入口摄像头ip不能和出口摄像头一样");
-        }
-
-        if(entryCamera != null){
-            entryCamera.setLockId(lockId);
-            entryCamera.setLockCode(lockCode);
-            entryCamera.setType(DeviceType.ENTRY.getCode());
-            entryCamera.setUpdatetime(time);
-            String devId = entryCamera.getDevId();
-            accessControlInfo.setEntryCameraId(devId);
-            String deviceIp = entryCamera.getDeviceIp();
-            accessControlInfo.setEntryCameraIp(deviceIp);
-            CameraDevice oldEntryCameraDevice = cameraDeviceDao.selectById(devId);
-            if(oldEntryCameraDevice != null)
-                oldEntryCameraIp = oldEntryCameraDevice.getDeviceIp();
-
-            if(deviceIp != null){
-                if(!deviceIp.equals(oldEntryCameraIp)){
-                    CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
-                    if(cameraDevice != null){
-                        log.error("更新入口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
-                        throw new ErrorMsgException("更新入口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
-                    }
-                    try {
-                        cameraDeviceService.updateDevice(entryCamera);
-                    } catch (Exception e) {
-                        log.error("更新入口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
-                        throw new ErrorMsgException("更新入口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
-                    }
-                }
-                if(lockCode != null && !lockCode.equals(oldLockCode)){
-                    try {
-                        CameraDevice device = new CameraDevice();
-                        device.setDevId(devId);
-                        device.setLockCode(lockCode);
-                        cameraDeviceService.updateDevice(device);
-                    } catch (Exception e) {
-                        log.error("更新入口摄像头{}对应的锁信息失败", deviceIp);
-                        throw new ErrorMsgException("更新入口摄像头" + deviceIp + "对应的锁信息失败");
-                    }
-                }
-            }
-        }
-
-        if(exitCamera != null){
-            exitCamera.setLockId(lockId);
-            exitCamera.setLockCode(lockCode);
-            exitCamera.setType(DeviceType.EXIT.getCode());
-            exitCamera.setUpdatetime(time);
-            String devId = exitCamera.getDevId();
-            accessControlInfo.setExitCameraId(devId);
-            String deviceIp = exitCamera.getDeviceIp();
-
-            accessControlInfo.setExitCameraIp(deviceIp);
-            CameraDevice oldExitcameraDevice = cameraDeviceDao.selectById(devId);
-            if(oldExitcameraDevice != null)
-                oldExitCameraIp = oldExitcameraDevice.getDeviceIp();
-            if(deviceIp != null){
-                if(!deviceIp.equals(oldExitCameraIp)){
-                    CameraDevice cameraDevice = cameraDeviceService.selectDeviceByIpAddress(deviceIp);
-                    if(cameraDevice != null){
-                        log.error("更新出口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
-                        throw new ErrorMsgException("更新出口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
-                    }
-                    try {
-                        cameraDeviceService.updateDevice(exitCamera);
-                    } catch (Exception e) {
-                        log.error("更新出口摄像头信息失败，摄像头{}已存在且已属于其他门禁", deviceIp);
-                        throw new ErrorMsgException("更新出口摄像头信息失败，摄像头" + deviceIp + "已存在且已属于其他门禁");
-                    }
-                }
-                if(lockCode != null && !lockCode.equals(oldLockCode)){
-                    try {
-                        CameraDevice device = new CameraDevice();
-                        device.setDevId(devId);
-                        device.setLockCode(lockCode);
-                        cameraDeviceService.updateDevice(device);
-                    } catch (Exception e) {
-                        log.error("更新出口摄像头{}对应的锁信息失败", deviceIp);
-                        throw new ErrorMsgException("更新出口摄像头" + deviceIp + "对应的锁信息失败");
                     }
                 }
             }
