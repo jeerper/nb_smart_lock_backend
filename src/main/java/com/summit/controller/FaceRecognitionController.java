@@ -211,7 +211,7 @@ public class FaceRecognitionController {
                                 .eq(LockInfo::getCurrentPassword, unlockResultInfo.getCurrentPassword())
                                 .eq(LockInfo::getNewPassword, unlockResultInfo.getNewPassword()));
                         if (lockCount == 0) {
-                            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "开锁信息不匹配，无法确认开锁结果的真伪性", null);
+                            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "开锁信息不匹配，无法确认开锁结果的真伪", null);
                         }
                         lockInfoDao.update(null, Wrappers.<LockInfo>lambdaUpdate()
                                 .set(LockInfo::getCurrentPassword, unlockResultInfo.getNewPassword())
