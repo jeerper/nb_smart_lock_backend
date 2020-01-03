@@ -205,17 +205,24 @@ public class FaceRecognitionController {
                 RLock lock = redissonClient.getLock(MainAction.ChangeLockPasswordLockPrefix + lockCode);
                 boolean acquire = lock.tryLock(2, 20, TimeUnit.SECONDS);
                 if (acquire) {
-                    try{
+                    try {
+                        int lockCount = lockInfoDao.selectCount(Wrappers.<LockInfo>lambdaQuery()
+                                .eq(LockInfo::getLockCode, lockCode)
+                                .eq(LockInfo::getCurrentPassword, unlockResultInfo.getCurrentPassword())
+                                .eq(LockInfo::getNewPassword, unlockResultInfo.getNewPassword()));
+                        if (lockCount == 0) {
+                            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "开锁信息不匹配，无法确认开锁结果的真伪性", null);
+                        }
                         lockInfoDao.update(null, Wrappers.<LockInfo>lambdaUpdate()
-                                .set(LockInfo::getCurrentPassword,unlockResultInfo.getNewPassword())
+                                .set(LockInfo::getCurrentPassword, unlockResultInfo.getNewPassword())
                                 .set(LockInfo::getNewPassword, RandomUtil.randomStringUpper(6))
-                                .eq(LockInfo::getLockCode,lockCode)
-                                .eq(LockInfo::getCurrentPassword,unlockResultInfo.getCurrentPassword())
-                                .eq(LockInfo::getNewPassword,unlockResultInfo.getNewPassword()));
+                                .eq(LockInfo::getLockCode, lockCode)
+                                .eq(LockInfo::getCurrentPassword, unlockResultInfo.getCurrentPassword())
+                                .eq(LockInfo::getNewPassword, unlockResultInfo.getNewPassword()));
                     } finally {
                         try {
                             lock.unlock();
-                        }catch (Exception er){
+                        } catch (Exception er) {
                             log.error("当前锁不存在");
                         }
                     }
