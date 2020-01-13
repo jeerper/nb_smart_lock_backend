@@ -202,7 +202,7 @@ public class FaceRecognitionController {
                 processResult = LockProcessResultType.Success;
                 cameraUploadType = CameraUploadType.Unlock;
                 //开启分布式锁，然后再更新数据库中的密码
-                RLock lock = redissonClient.getLock(MainAction.ChangeLockPasswordLockPrefix + lockCode);
+                RLock lock = redissonClient.getLock(MainAction.CHANGE_LOCK_PSW_LOCK_PREFIX + lockCode);
                 boolean acquire = lock.tryLock(2, 20, TimeUnit.SECONDS);
                 if (acquire) {
                     try {
