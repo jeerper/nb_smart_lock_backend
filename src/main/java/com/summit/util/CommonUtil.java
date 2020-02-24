@@ -104,6 +104,9 @@ public class CommonUtil {
         return str == null || str.trim().length() == 0;
     }
 
+
+
+
     /**
      *
      * @param beginTime 开始时间
