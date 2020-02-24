@@ -1,11 +1,18 @@
 package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.summit.cbb.utils.page.Page;
+import com.summit.cbb.utils.page.Pageable;
 import com.summit.constants.CommonConstants;
+import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AccCtrlDeptDao;
 import com.summit.entity.AccCtrlDept;
 import com.summit.service.AccCtrlDeptService;
 import com.summit.util.CommonUtil;
+import com.summit.util.MybatisPage;
+import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -75,6 +82,35 @@ public class AccCtrlDeptServiceImpl  implements AccCtrlDeptService {
         }
         return 0;
     }
+
+    @Override
+    public Page<AccCtrlDept> selectAccCtrlDeptsByPage(SimplePage page) {
+        QueryWrapper<AccCtrlDept> wrapper = new QueryWrapper<>();
+        List<AccCtrlDept> accCtrlDepts = accCtrlDeptDao.selectList(wrapper);
+        int rowsCount = accCtrlDepts == null ? 0 : accCtrlDepts.size();
+        Pageable pageable = PageConverter.getPageable(page, rowsCount);
+        page = PageConverter.filterPage(page);
+        IPage<AccCtrlDept> tempPage = new MybatisPage<>();
+        if(page != null){
+            tempPage = new MybatisPage<>(page.getCurrent(),page.getPageSize());
+        }
+        IPage<AccCtrlDept> accCtrlDeptIPage = accCtrlDeptDao.selectPage(tempPage, wrapper);
+        List<AccCtrlDept> records = null;
+        if(accCtrlDeptIPage != null)
+            records = accCtrlDeptIPage.getRecords();
+        Page<AccCtrlDept> backPage = new Page<>(records,pageable);
+        return backPage;
+    }
+
+    @Override
+    public List<AccCtrlDept> selectAccCtrlInfoByDeptId(String deptId) {
+        if(deptId==null){
+            log.error("部门id为空");
+            return null;
+        }
+        return accCtrlDeptDao.selectList(Wrappers.<AccCtrlDept>lambdaQuery().eq(AccCtrlDept::getDeptId,deptId));
+    }
+
 
     private int insertAccCtrlDeptBatch(List<AccCtrlDept> acctrlDepts) {
         if(CommonUtil.isEmptyList(acctrlDepts)){
