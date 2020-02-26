@@ -59,8 +59,6 @@ public class AccessControlServiceImpl implements AccessControlService {
     @Autowired
     private ExcelUtil excelUtil;
 
-    @Value("${cbbuserdataBase}")
-    private String cbbuserdataBase;
     /**
      * 根据门禁id查询唯一门禁信息
      * @param accessControlId 门禁id
