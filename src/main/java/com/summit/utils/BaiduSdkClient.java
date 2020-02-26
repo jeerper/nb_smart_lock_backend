@@ -131,7 +131,7 @@ public class BaiduSdkClient {
             JSONObject res = client.search(base64Str, "BASE64", groupId, options);
             if (StrUtil.isBlank(JSONUtil.parseObj(res.toString()).getStr("result"))) {
                 log.debug(res.getString("error_msg"));
-                return null;
+                return new SearchFaceResult(null,0.0f);
             }
             JSONObject result = res.getJSONObject("result");
             String faceId = result.getJSONArray("user_list").getJSONObject(0).getString("user_id");
@@ -139,7 +139,7 @@ public class BaiduSdkClient {
             return new SearchFaceResult(faceId, Float.parseFloat(score));
         } catch (Exception e) {
             log.error("人脸搜索失败", e);
-            return null;
+            return new SearchFaceResult(null,0.0f);
         }
     }
 

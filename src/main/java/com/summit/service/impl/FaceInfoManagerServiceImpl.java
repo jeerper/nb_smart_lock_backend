@@ -161,7 +161,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
             }
         } catch (Exception e) {
             FileUtil.del(facePicPath);
-            log.error(e.getMessage());
+            log.error("人脸录入异常",e);
             if (e instanceof DuplicateKeyException) {
                 throw new Exception("人脸信息录入名称已存在");
             }
