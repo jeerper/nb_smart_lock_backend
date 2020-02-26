@@ -22,4 +22,6 @@ public interface LockInfoDao  extends BaseMapper<LockInfo> {
     List<LockInfo> selectByLockCodes(@Param("lockCodes")List<String> lockCodes);
 
     LockInfo selectLockPassWordByLockCode(@Param("lockCode")String lockCode);
+
+    void insertLockInfos(@Param("lockInfos")List<LockInfo> lockInfos);
 }

@@ -102,4 +102,10 @@ public class AccessControlInfo {
         this.exitCameraIp = exitCameraIp;
         this.status = status;
     }
+
+    public AccessControlInfo(String accessControlName,  String createby,String lockCode) {
+        this.accessControlName = accessControlName;
+        this.lockCode = lockCode;
+        this.createby = createby;
+    }
 }

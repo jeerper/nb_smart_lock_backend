@@ -1,5 +1,9 @@
 package com.summit.controller;
 
+import cn.hutool.system.SystemUtil;
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.summit.MainAction;
 import com.summit.cbb.utils.page.Page;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
@@ -15,20 +19,18 @@ import com.summit.service.AccCtrlRoleService;
 import com.summit.service.AccessControlService;
 import com.summit.service.AddAccCtrlprocessService;
 import com.summit.util.CommonUtil;
+import com.summit.util.ExcelExportUtil;
+import com.summit.util.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +46,10 @@ public class AccessControlInfoController {
     private AccCtrlRoleService accCtrlRoleService;
     @Autowired
     private AddAccCtrlprocessService addAccCtrlprocessService;
+    @Autowired
+    private ExcelUtil excelUtil;
+
+    private String filePath;
 
 
 
@@ -173,6 +179,104 @@ public class AccessControlInfoController {
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询门禁id列表成功",ids);
     }
+
+    @ApiOperation(value = "根据用户名查询所关联的门禁信息列表", notes = "根据用户名查询所关联的门禁信息列表")
+    @GetMapping(value = "/selectAccCtrlInfosByUserName")
+    public RestfulEntityBySummit<List<AccessControlInfo>> selectAccCtrlInfosByUserName(@ApiParam(value = "登录名",required = true)  @RequestParam(value = "userName") String userName) {
+        if(userName == null){
+            log.error("用户名userName为空");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"用户名userName为空",null);
+        }
+        List<AccessControlInfo> accessControlInfos=null;
+        try{
+            accessControlInfos=accessControlService.selectAccCtrlInfosByUserName(userName);
+        }catch (Exception e){
+            log.error("查询门禁信息列表失败",e);
+            e.printStackTrace();
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询门禁信息列表失败",accessControlInfos);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询门禁信息列表成功",accessControlInfos);
+    }
+
+    @ApiOperation(value = "门禁信息批量导入excel")
+    @RequestMapping(value = "/batchImport", method = RequestMethod.POST,consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public RestfulEntityBySummit<String> batchImport(@ApiParam(value = "门禁模板excel", required = true) @RequestParam("file") MultipartFile file){
+        if(file !=null){
+            log.error("上传文件为空");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"上传文件为空",null);
+        }
+        try{
+          //  MultipartFile mulFileByPath = excelUtil.getMulFileByPath("D:\\qianyy\\nb_smart_lock_backend\\snapshot\\1232571339395223554_AccCtrlExportTemplate.xls");
+            boolean b= accessControlService.batchImport(file);
+        }catch (Exception e){
+            log.error("批量导入失败",e);
+            e.printStackTrace();
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"门禁信息批量导入excel失败",null);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"门禁信息批量导入excel成功",null);
+    }
+
+    @ApiOperation(value="门禁信息批量导出excel模板")
+    @RequestMapping(value = "/loginAccessControlInfoExport", method = RequestMethod.GET)
+    public RestfulEntityBySummit<String> loginAccessControlInfoExport( @ApiParam(value = "门禁名")  @RequestParam(value = "accessControlName",required = false) String accessControlName,
+                                                                       @ApiParam(value = "创建人")  @RequestParam(value = "createby",required = false) String createby,
+                                                                       @ApiParam(value = "锁编号")  @RequestParam(value = "lockCode",required = false) String lockCode) {
+        AccessControlInfo accessControlInfo = new AccessControlInfo(accessControlName,createby,lockCode);
+        String fileName=null;
+        try{
+            List<AccessControlInfo> accessControlInfos= accessControlService.loginAccessControlInfoExport(accessControlInfo);
+            if(accessControlInfos!=null && accessControlInfos.size()>0){
+                List<JSONObject> dataList= new ArrayList<>();
+                for (AccessControlInfo accCtrl:accessControlInfos){
+                    JSONObject jsonObject=new JSONObject();
+                    jsonObject.put("accessControlId",accCtrl.getAccessControlId());
+                    jsonObject.put("accessControlName",accCtrl.getAccessControlName());
+                    jsonObject.put("accessControlId",accCtrl.getAccessControlId());
+                    jsonObject.put("lockId",accCtrl.getLockId());
+                    jsonObject.put("lockCode",accCtrl.getLockCode());
+                    jsonObject.put("entryCameraId",accCtrl.getEntryCameraId());
+                    jsonObject.put("entryCameraIp",accCtrl.getEntryCameraIp());
+                    jsonObject.put("exitCameraId",accCtrl.getExitCameraId());
+                    jsonObject.put("exitCameraIp",accCtrl.getExitCameraIp());
+                    jsonObject.put("status",accCtrl.getStatus());
+                    jsonObject.put("createby",accCtrl.getCreateby());
+                    jsonObject.put("createtime",accCtrl.getCreatetime());
+                    jsonObject.put("updatetime",accCtrl.getUpdatetime());
+                    jsonObject.put("longitude",accCtrl.getLongitude());
+                    jsonObject.put("latitude",accCtrl.getLatitude());
+                    dataList.add(jsonObject);
+                }
+                String picId = IdWorker.getIdStr();
+                filePath = new StringBuilder()
+                        .append(SystemUtil.getUserInfo().getCurrentDir())
+                        .append(File.separator)
+                        .append(MainAction.SnapshotFileName)
+                        .append(File.separator)
+                        .append(picId)
+                        .append("_AccCtrlExportTemplate")
+                        .toString();
+                fileName =System.currentTimeMillis()+".xls";
+                String [] title = new String[]{"门禁id","门禁名称","锁id","锁编号","入口摄像头id","入口摄像头ip地址","出口摄像头id","出口摄像头ip地址","门禁状态","创建人","创建时间","更新时间","经度","纬度"};  //设置表格表头字段
+                String [] properties = new String[]{"accessControlId","accessControlName","lockId","lockCode","entryCameraId","entryCameraIp","exitCameraId","exitCameraIp","status","createby","createtime","updatetime","longitude","latitude"};  // 查询对应的字段
+                ExcelExportUtil excelExport2 = new ExcelExportUtil();
+                excelExport2.setData(dataList);
+                excelExport2.setHeadKey(properties);
+                excelExport2.setFontSize(20);
+                excelExport2.setSheetName("门禁信息导出模板");
+                excelExport2.setTitle("门禁信息导出模板");
+                excelExport2.setHeadList(title);
+                excelExport2.setResponseInfo(filePath,fileName);
+            }
+        }catch (Exception e){
+            log.error("门禁信息批量导出excel模板失败",e);
+            e.printStackTrace();
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"门禁信息批量导出excel模板失败",fileName);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"门禁信息批量导出excel模板成功",fileName);
+    }
+
+
+
 
     @ApiOperation(value = "查询全部门禁信息，包括门禁id和name", notes = "无论有无门禁权限都查询全部")
     @GetMapping(value = "/selectAllAccessControl")

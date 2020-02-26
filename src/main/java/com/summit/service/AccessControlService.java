@@ -3,6 +3,7 @@ package com.summit.service;
 import com.summit.cbb.utils.page.Page;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.SimplePage;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -92,4 +93,16 @@ public interface AccessControlService {
      * @return 返回不为-1则为成功
      */
     int delAccCtrlByLockCode(String lockCode);
+
+    /**
+     * 根据用户名查询所关联的门禁信息列表
+     * @param userName 登录名
+     * @return
+     */
+    List<AccessControlInfo> selectAccCtrlInfosByUserName(String userName);
+
+    boolean batchImport(MultipartFile uploadFile) throws Exception;
+
+    List<AccessControlInfo> loginAccessControlInfoExport(AccessControlInfo accessControlInfo);
+
 }

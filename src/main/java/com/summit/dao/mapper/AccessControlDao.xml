@@ -154,6 +154,85 @@
 
     </select>
 
+    <select id="selectAccCtrlInfosByUserName" resultMap="BaseResultMap">
+        select
+        <include refid="AccCtrl_Have_Alias_List"/>
+        from access_control ac
+        inner JOIN dept_accesscontrol_auth deptAcc on ac.access_control_id=deptAcc.access_control_id
+        inner JOIN cbb_userauth.sys_user_dept userDept on userDept.DEPTID=deptAcc.dept_id
+        inner JOIN cbb_userauth.sys_user user on user.USERNAME=userDept.USERNAME
+        <where>
+            user.USERNAME=#{userName}
+        </where>
+    </select>
+
+
+    <select id="loginAccessControlInfoExport" resultMap="BaseResultMap">
+        select
+        ac.access_control_id, ac.access_control_name, ac.lock_id, ac.lock_code, ac.entry_camera_id,
+        ac.entry_camera_ip, ac.exit_camera_id, ac.exit_camera_ip, ac.status, ac.createby,
+        DATE_FORMAT(ac.createtime,'%Y-%m-%d %H:%i:%s')as createtime,
+        DATE_FORMAT(ac.updatetime,'%Y-%m-%d %H:%i:%s')as updatetime ,
+        ac.longitude, ac.latitude
+        from
+        access_control ac
+        <where>
+            <if test="accessControlInfo.accessControlName != null">
+                and ac.access_control_name like concat('%', #{accessControlInfo.accessControlName}, '%')
+            </if>
+            <if test="accessControlInfo.lockId != null">
+                and ac.lock_id = #{accessControlInfo.lockId}
+            </if>
+            <if test="accessControlInfo.lockCode != null">
+                and ac.lock_code like concat('%', #{accessControlInfo.lockCode}, '%')
+            </if>
+        </where>
+        LIMIT 0,2
+    </select>
+
+
+    <insert id="insertAccessControlInfos"  parameterType="java.util.List">
+
+        INSERT INTO access_control (
+        <trim suffix="" suffixOverrides=",">
+            access_control_id ,
+            access_control_name ,
+            lock_id ,
+            lock_code ,
+            entry_camera_id,
+            entry_camera_ip,
+            exit_camera_id,
+            exit_camera_ip,
+            status,
+            createby,
+            createtime,
+            updatetime,
+            longitude,
+            latitude
+        </trim>
+        ) VALUES
+        <foreach collection="accessControlInfos" item="item" index="index" separator=",">
+            (
+            #{item.accessControlId} ,
+            #{item.accessControlName} ,
+            #{item.lockId} ,
+            #{item.lockCode} ,
+            #{item.entryCameraId},
+            #{item.entryCameraIp},
+            #{item.exitCameraId},
+            #{item.exitCameraIp},
+            #{item.status},
+            #{item.createby},
+            #{item.createtime},
+            #{item.updatetime},
+            #{item.longitude},
+            #{item.latitude}
+            )
+        </foreach>
+    </insert>
+
+
+
     <select id="selectHaveHistoryByPage" resultMap="BaseResultMap">
         select
         <include refid="AccCtrl_Have_Alias_List"/>,

@@ -26,4 +26,11 @@ public interface AccessControlDao  extends BaseMapper<AccessControlInfo> {
     List<String>  selectAllLockCodes(@Param("roles") List<String> roles);
 
     Integer  selectStatusLockCode(@Param("lockCode") String lockCode, @Param("roles") List<String> roles);
+
+    List<AccessControlInfo> selectAccCtrlInfosByUserName(@Param("userName") String userName);
+
+    void insertAccessControlInfos(@Param("accessControlInfos")List<AccessControlInfo> accessControlInfos);
+
+    List<AccessControlInfo> loginAccessControlInfoExport( @Param("accessControlInfo")AccessControlInfo accessControlInfo);
+
 }

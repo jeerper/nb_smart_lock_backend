@@ -9,36 +9,28 @@ import com.summit.common.entity.UserInfo;
 import com.summit.common.util.UserAuthUtils;
 import com.summit.common.web.filter.UserContextHolder;
 import com.summit.constants.CommonConstants;
-import com.summit.dao.entity.AccCtrlProcess;
-import com.summit.dao.entity.AccCtrlRealTimeEntity;
-import com.summit.dao.entity.AccCtrlRole;
-import com.summit.dao.entity.AccessControlInfo;
-import com.summit.dao.entity.Alarm;
-import com.summit.dao.entity.LockInfo;
-import com.summit.dao.entity.SimplePage;
-import com.summit.dao.repository.AccCtrlProcessDao;
-import com.summit.dao.repository.AccCtrlRealTimeDao;
-import com.summit.dao.repository.AccCtrlRoleDao;
-import com.summit.dao.repository.AccessControlDao;
-import com.summit.dao.repository.AlarmDao;
-import com.summit.dao.repository.CameraDeviceDao;
-import com.summit.dao.repository.LockInfoDao;
+import com.summit.dao.entity.*;
+import com.summit.dao.repository.*;
 import com.summit.exception.ErrorMsgException;
 import com.summit.sdk.huawei.model.AlarmType;
 import com.summit.service.AccessControlService;
 import com.summit.service.CameraDeviceService;
 import com.summit.service.LockInfoService;
 import com.summit.util.CommonUtil;
+import com.summit.util.ExcelUtil;
 import com.summit.util.PageConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -64,7 +56,11 @@ public class AccessControlServiceImpl implements AccessControlService {
     private AccCtrlProcessDao accCtrlProcessDao;
     @Autowired
     private AccCtrlRealTimeDao accCtrlRealTimeDao;
+    @Autowired
+    private ExcelUtil excelUtil;
 
+    @Value("${cbbuserdataBase}")
+    private String cbbuserdataBase;
     /**
      * 根据门禁id查询唯一门禁信息
      * @param accessControlId 门禁id
@@ -480,5 +476,47 @@ public class AccessControlServiceImpl implements AccessControlService {
         }
         UpdateWrapper<AccessControlInfo> wrapper = new UpdateWrapper<>();
         return accessControlDao.delete(wrapper.eq("lock_code",lockCode));
+    }
+
+    @Override
+    public List<AccessControlInfo> selectAccCtrlInfosByUserName(String userName) {
+       /* StringBuffer sql=new StringBuffer("SELECT acc.access_control_id,acc.access_control_name,acc.createby,acc.createtime,acc.entry_camera_id,acc.entry_camera_ip,acc.exit_camera_id,acc.exit_camera_ip,acc.latitude,acc.lock_code,acc.lock_id,acc.longitude,acc.`status`,acc.updatetime ");
+        sql.append("from access_control acc LEFT JOIN dept_accesscontrol_auth deptAcc on acc.access_control_id=deptAcc.access_control_id  ");
+        sql.append("LEFT JOIN "+cbbuserdataBase+".sys_user_dept userDept on userDept.DEPTID=deptAcc.dept_id ");
+        sql.append("LEFT JOIN "+cbbuserdataBase+".sys_user user on user.USERNAME=userDept.USERNAME WHERE USER.USERNAME= ?");
+        LinkedMap lm=new LinkedMap();
+        linkedMap.put(1, adcd);
+        List dataList = ur.queryAllCustom(sql, linkedMap);*/
+        if(userName == null){
+            log.error("锁编号为空");
+            return null;
+        }
+        List<AccessControlInfo> accessControlInfos=  accessControlDao.selectAccCtrlInfosByUserName(userName);
+        return accessControlInfos;
+    }
+
+    @Override
+    @Transactional(propagation= Propagation.REQUIRED, rollbackFor = {Exception.class} )
+    public boolean batchImport(MultipartFile uploadFile) throws Exception {
+        Map<String, Object> stringObjectMap = excelUtil.loadExcel(uploadFile);
+        List<AccessControlInfo> accessControlInfos = (List<AccessControlInfo>)stringObjectMap.get("accessControlInfos");
+        List<LockInfo> lockInfos=(List<LockInfo>)stringObjectMap.get("lockInfos");
+        try{
+            accessControlDao.insertAccessControlInfos(accessControlInfos);
+            lockInfoDao.insertLockInfos(lockInfos);
+        }catch (Exception e){
+            log.error("批量插入数据失败");
+            throw new ErrorMsgException("批量插入数据失败");
+        }
+        return true;
+    }
+
+    @Override
+    public List<AccessControlInfo> loginAccessControlInfoExport(AccessControlInfo accessControlInfo) {
+        if (accessControlInfo ==null){
+            accessControlInfo=new AccessControlInfo();
+        }
+        List<AccessControlInfo>  accessControlInfos=  accessControlDao.loginAccessControlInfoExport(accessControlInfo);
+        return accessControlInfos;
     }
 }

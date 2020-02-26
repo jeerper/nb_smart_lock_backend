@@ -217,5 +217,31 @@
         </where>
     </select>
 
+    <insert id="insertLockInfos"  parameterType="java.util.List">
+        INSERT INTO lock_info (
+        <trim suffix="" suffixOverrides=",">
+            lock_id ,
+            lock_code ,
+            status ,
+            createby ,
+            createtime,
+            updatetime,
+            current_password,
+            new_password
+        </trim>
+        ) VALUES
+        <foreach collection="lockInfos" item="item" index="index" separator=",">
+            (
+            #{item.lockId} ,
+            #{item.lockCode} ,
+            #{item.status} ,
+            #{item.createby} ,
+            #{item.createtime} ,
+            #{item.updatetime} ,
+            #{item.currentPassword},
+            #{item.newPassword}
+            )
+        </foreach>
+    </insert>
 
 </mapper>
