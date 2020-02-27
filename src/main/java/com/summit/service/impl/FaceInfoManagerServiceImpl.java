@@ -11,37 +11,36 @@ import com.summit.MainAction;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
 import com.summit.common.util.ApplicationContextUtil;
-import com.summit.dao.entity.City;
-import com.summit.dao.entity.FaceInfo;
-import com.summit.dao.entity.Province;
-import com.summit.dao.entity.SimplePage;
+import com.summit.dao.entity.*;
 import com.summit.dao.repository.CityDao;
 import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.dao.repository.ProvinceDao;
 import com.summit.entity.FaceInfoManagerEntity;
+import com.summit.exception.ErrorMsgException;
 import com.summit.service.FaceInfoAccCtrlService;
 import com.summit.service.FaceInfoManagerService;
 import com.summit.util.CommonUtil;
+import com.summit.util.ExcelUtil;
 import com.summit.util.PageConverter;
 import com.summit.utils.BaiduSdkClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Administrator on 2019/8/21.
  */
 @Slf4j
 @Service
+
 public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
     @Autowired
     private FaceInfoManagerDao faceInfoManagerDao;
@@ -53,7 +52,8 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
     private FaceInfoAccCtrlService faceInfoAccCtrlService;
     @Autowired
     private BaiduSdkClient baiduSdkClient;
-
+    @Autowired
+    private ExcelUtil excelUtil;
     /**
      * 插入人脸信息
      *
@@ -379,6 +379,26 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         QueryWrapper<FaceInfo> wrapper = new QueryWrapper<>();
         FaceInfo faceInfo = faceInfoManagerDao.selectOne(wrapper.eq("user_name", userName).eq("card_id", cardId));
         return faceInfo;
+    }
+
+    @Override
+    public List<FaceInfo> faceInfoExport() {
+        List<FaceInfo> faceInfos= faceInfoManagerDao.faceInfoExport();
+        return faceInfos;
+    }
+
+    @Override
+    @Transactional(propagation= Propagation.REQUIRED, rollbackFor = {Exception.class} )
+    public boolean batchImport(MultipartFile file) throws Exception {
+        Map<String, Object> stringObjectMap = excelUtil.loadFaceExcel(file);
+        List<FaceInfo> faceInfos = (List<FaceInfo>)stringObjectMap.get("faceInfos");
+        try{
+            faceInfoManagerDao.insertFaceInfos(faceInfos);
+        }catch (Exception e){
+            log.error("批量插入数据失败");
+            throw new ErrorMsgException("批量插入数据失败");
+        }
+        return true;
     }
 
 

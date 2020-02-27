@@ -216,7 +216,7 @@ public class AccessControlInfoController {
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"门禁信息批量导入excel成功",null);
     }
 
-    @ApiOperation(value="门禁信息批量导出excel模板")
+    @ApiOperation(value="门禁信息导出excel模板")
     @RequestMapping(value = "/loginAccessControlInfoExport", method = RequestMethod.GET)
     public RestfulEntityBySummit<String> loginAccessControlInfoExport( @ApiParam(value = "门禁名")  @RequestParam(value = "accessControlName",required = false) String accessControlName,
                                                                        @ApiParam(value = "创建人")  @RequestParam(value = "createby",required = false) String createby,

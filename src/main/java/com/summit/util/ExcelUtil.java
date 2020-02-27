@@ -1,10 +1,12 @@
 package com.summit.util;
 
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.summit.common.entity.UserInfo;
 import com.summit.common.web.filter.UserContextHolder;
 import com.summit.dao.entity.AccessControlInfo;
+import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.LockInfo;
 import com.summit.exception.ErrorMsgException;
 import com.summit.service.LockInfoService;
@@ -111,11 +113,11 @@ public class ExcelUtil {
                 String createby = getCellValue(row.getCell(9));
                 accessControlInfo.setCreateby(createby);
                 String createtime = getCellValue(row.getCell(10));
-                accessControlInfo.setCreatetime(DateUtil.stringToDate(createtime));
-                lockInfo.setCreatetime(DateUtil.stringToDate(createtime));
+                accessControlInfo.setCreatetime(DateUtil.stringToDate(createtime,"yyyy-MM-dd-HH-mm-ss"));
+                lockInfo.setCreatetime(DateUtil.stringToDate(createtime,"yyyy-MM-dd-HH-mm-ss"));
                 String updatetime = getCellValue(row.getCell(11));
-                accessControlInfo.setUpdatetime(DateUtil.stringToDate(updatetime));
-                lockInfo.setUpdatetime(DateUtil.stringToDate(updatetime));
+                accessControlInfo.setUpdatetime(DateUtil.stringToDate(updatetime,"yyyy-MM-dd-HH-mm-ss"));
+                lockInfo.setUpdatetime(DateUtil.stringToDate(updatetime,"yyyy-MM-dd-HH-mm-ss"));
                 String longitude = getCellValue(row.getCell(12));
                 accessControlInfo.setLongitude(longitude);
                 String latitude = getCellValue(row.getCell(13));
@@ -130,6 +132,89 @@ public class ExcelUtil {
         map.put("lockInfos",lockInfos);
         return map;
     }
+
+
+
+    public Map<String, Object> loadFaceExcel(MultipartFile file) throws Exception {
+        Map<String,Object> map=new HashMap<>();
+        List<FaceInfo> faceInfos = new ArrayList<>();
+        Workbook workbook = null;
+        String fileName = file.getOriginalFilename();
+        if(fileName.endsWith(XLS)) {
+            //2003
+            try {
+                workbook = new HSSFWorkbook(file.getInputStream());
+            } catch (Exception e) {
+                e.printStackTrace( );
+            }
+
+        }else if(fileName.endsWith(XLSK)) {
+            try {
+                //2007
+                workbook = new XSSFWorkbook(file.getInputStream());
+            } catch (Exception e) {
+                e.printStackTrace( );
+            }
+        }else {
+            throw new Exception("文件不是Excel文件");
+        }
+        Sheet sheet = workbook.getSheet("人脸信息导出模板");
+        int rows = sheet.getLastRowNum();//指定行数。一共多少行
+        if(rows==0) {
+            throw new Exception("请填写行数");
+        }
+        for (int i = 2; i < rows+1; i++) {
+            Row row = sheet.getRow(i);
+            if(row != null) {
+                FaceInfo faceInfo=new FaceInfo();
+                //读取cell
+                faceInfo.setFaceid(IdWorker.getIdStr());
+                String userName = getCellValue(row.getCell(0));
+                faceInfo.setUserName(userName);
+                String gender = getCellValue(row.getCell(1));
+                if (!StrUtil.isEmpty(gender)){
+                    faceInfo.setGender(Integer.parseInt(gender));
+                }
+                String birthday = getCellValue(row.getCell(2));
+                faceInfo.setBirthday(birthday);
+                String province = getCellValue(row.getCell(3));
+                faceInfo.setProvince(province);
+                String city = getCellValue(row.getCell(4));
+                faceInfo.setCity(city);
+                String cardType = getCellValue(row.getCell(5));
+                if (!StrUtil.isEmpty(cardType)){
+                    faceInfo.setCardType(Integer.parseInt(cardType));
+                }
+                String cardId = getCellValue(row.getCell(6));
+                faceInfo.setCardId(cardId);
+                String faceMatchrate = getCellValue(row.getCell(7));
+                if (!StrUtil.isEmpty(faceMatchrate)){
+                    faceInfo.setFaceMatchrate(Float.parseFloat(faceMatchrate));
+                }
+                String faceImage = getCellValue(row.getCell(8));
+                faceInfo.setFaceImage(faceImage);
+                String faceType = getCellValue(row.getCell(9));
+                if (!StrUtil.isEmpty(faceType)){
+                    faceInfo.setFaceType(Integer.parseInt(faceType));
+                }
+                String faceEndTime = getCellValue(row.getCell(10));
+                if (!StrUtil.isEmpty(faceEndTime)){
+                    faceInfo.setFaceType(Integer.parseInt(faceType));
+                    faceInfo.setFaceEndTime(DateUtil.stringToDate(faceEndTime,"yyyy-MM-dd"));
+                }
+                faceInfo.setFaceStartTime(DateUtil.getDatePattern("yyyy-MM-dd-HH-mm-ss"));
+                faceInfo.setIsValidTime(0);
+                faceInfos.add(faceInfo);
+            }
+        }
+        map.put("faceInfos",faceInfos);
+        return map;
+    }
+
+
+
+
+
 
     //获取Cell内容
     public  String getCellValue(Cell cell) {
@@ -208,4 +293,5 @@ public class ExcelUtil {
         }
         return item;
     }
+
 }

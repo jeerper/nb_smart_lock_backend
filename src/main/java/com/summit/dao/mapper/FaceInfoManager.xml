@@ -90,4 +90,48 @@
         <include refid="faceInfoCloum"/>
         FROM  face_info
     </select>
+    <select id="faceInfoExport" resultMap="facemanager">
+        SELECT
+        face.user_name,face.gender,face.birthday,face.province,face.city,face.card_type,face.card_id,face.face_match_rate,face.face_image,face.face_type,face.face_startTime,face.face_endTime,face.is_valid_time
+        from face_info  face
+        LIMIT 0,2
+    </select>
+    <insert id="insertFaceInfos"  parameterType="java.util.List">
+        INSERT INTO face_info (
+        <trim suffix="" suffixOverrides=",">
+            face_id ,
+            user_name ,
+            gender,
+            birthday ,
+            province ,
+            city,
+            card_type,
+            card_id,
+            face_match_rate,
+            face_image,
+            face_type,
+            face_startTime,
+            face_endTime,
+            is_valid_time
+        </trim>
+        ) VALUES
+        <foreach collection="faceInfos" item="item" index="index" separator=",">
+            (
+            #{item.faceid} ,
+            #{item.userName} ,
+            #{item.gender} ,
+            #{item.birthday} ,
+            #{item.province} ,
+            #{item.city} ,
+            #{item.cardType},
+            #{item.cardId},
+            #{item.faceMatchrate},
+            #{item.faceImage},
+            #{item.faceType},
+            #{item.faceStartTime},
+            #{item.faceEndTime},
+            #{item.isValidTime}
+            )
+        </foreach>
+    </insert>
 </mapper>

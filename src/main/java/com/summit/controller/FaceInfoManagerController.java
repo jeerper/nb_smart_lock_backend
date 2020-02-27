@@ -1,5 +1,9 @@
 package com.summit.controller;
 
+import cn.hutool.system.SystemUtil;
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.summit.MainAction;
 import com.summit.cbb.utils.page.Page;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
@@ -13,20 +17,18 @@ import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.entity.SimpleFaceInfo;
 import com.summit.service.FaceInfoManagerService;
+import com.summit.util.ExcelExportUtil;
+import com.summit.util.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,12 +44,15 @@ public class FaceInfoManagerController {
     private FaceInfoManagerService faceInfoManagerService;
     @Autowired
     private FaceInfoManagerDao faceInfoManagerDao;
+    @Autowired
+    private ExcelUtil excelUtil;
 
 
+    private String filePath;
 
     @ApiOperation(value = "录入人脸信息", notes = "返回不是-1则为成功")
     @PostMapping(value = "insertFaceInfo")
-    public RestfulEntityBySummit<Integer> insertFaceInfo(@RequestBody FaceInfoManagerEntity faceInfoManagerEntity)  {
+    public RestfulEntityBySummit<Integer> insertFaceInfo(@RequestBody FaceInfoManagerEntity faceInfoManagerEntity) {
         try {
             faceInfoManagerService.insertFaceInfo(faceInfoManagerEntity);
         } catch (Exception e) {
@@ -104,11 +109,11 @@ public class FaceInfoManagerController {
 
     @ApiOperation(value = "更新人脸信息")
     @PutMapping(value = "/updateFaceInfo")
-    public RestfulEntityBySummit<String> updateFaceInfo(@ApiParam(value = "包含人脸信息") @RequestBody FaceInfo faceInfo){
+    public RestfulEntityBySummit<String> updateFaceInfo(@ApiParam(value = "包含人脸信息") @RequestBody FaceInfo faceInfo) {
         try {
             faceInfoManagerService.updateFaceInfo(faceInfo);
         } catch (Exception e) {
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, e.getMessage(),null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, e.getMessage(), null);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "更新人脸信息成功", null);
     }
@@ -117,11 +122,11 @@ public class FaceInfoManagerController {
     @ApiOperation(value = "删除人脸信息，参数为id数组", notes = "根据人脸id删除人脸信息")
     @DeleteMapping(value = "/delfaceInfoByIdBatch")
     public RestfulEntityBySummit<String> delFaceInfo(@ApiParam(value = "人脸信息的id", required = true)
-                                                     @RequestParam(value = "faceInfoIds") List<String> faceInfoIds)  {
+                                                     @RequestParam(value = "faceInfoIds") List<String> faceInfoIds) {
         try {
             faceInfoManagerService.delFaceInfoByIds(faceInfoIds);
         } catch (Exception e) {
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, e.getMessage(),null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, e.getMessage(), null);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "删除人脸信息成功", null);
     }
@@ -200,4 +205,78 @@ public class FaceInfoManagerController {
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "查询城市信息列表成功", cityNames);
     }
+
+
+    @ApiOperation(value = "人脸信息导出excel模板")
+    @RequestMapping(value = "/faceInfoExport", method = RequestMethod.GET)
+    public RestfulEntityBySummit<String> faceInfoExport() {
+        String fileName=null;
+        try{
+          List<FaceInfo>  faceInfos=faceInfoManagerService.faceInfoExport();
+          if (faceInfos !=null && faceInfos.size()>0){
+              List<JSONObject> dataList= new ArrayList<>();
+              for(FaceInfo faceInfo:faceInfos){
+                  JSONObject jsonObject=new JSONObject();
+                  jsonObject.put("userName",faceInfo.getUserName());
+                  jsonObject.put("gender",faceInfo.getGender());
+                  jsonObject.put("birthday",faceInfo.getBirthday());
+                  jsonObject.put("province",faceInfo.getProvince());
+                  jsonObject.put("city",faceInfo.getCity());
+                  jsonObject.put("cardType",faceInfo.getCardType());
+                  jsonObject.put("cardId",faceInfo.getCardId());
+                  jsonObject.put("faceMatchrate",faceInfo.getFaceMatchrate());
+                  jsonObject.put("faceImage",faceInfo.getFaceImage());
+                  jsonObject.put("faceType",faceInfo.getFaceType());
+                  jsonObject.put("faceStartTime",faceInfo.getFaceStartTime());
+                  jsonObject.put("faceEndTime",faceInfo.getFaceEndTime());
+                  dataList.add(jsonObject);
+              }
+              String picId = IdWorker.getIdStr();
+              filePath = new StringBuilder()
+                      .append(SystemUtil.getUserInfo().getCurrentDir())
+                      .append(File.separator)
+                      .append(MainAction.SnapshotFileName)
+                      .append(File.separator)
+                      .append(picId)
+                      .append("_FaceInfoExportTemplate")
+                      .toString();
+              fileName =System.currentTimeMillis()+".xls";
+              String [] title = new String[]{"姓名","性别","生日","省份","城市","证件类型","身份证号","人脸匹配率","人脸图片","人脸类型","人脸有效期时间"};  //设置表格表头字段
+              String [] properties = new String[]{"userName","gender","birthday","province","city","cardType","cardId","faceMatchrate","faceImage","faceType","faceEndTime"};  // 查询对应的字段
+              ExcelExportUtil excelExport2 = new ExcelExportUtil();
+              excelExport2.setData(dataList);
+              excelExport2.setHeadKey(properties);
+              excelExport2.setFontSize(20);
+              excelExport2.setSheetName("人脸信息导出模板");
+              excelExport2.setTitle("人脸信息导出模板");
+              excelExport2.setHeadList(title);
+              excelExport2.setResponseInfo(filePath,fileName);
+          }
+        }catch (Exception e){
+            log.error("人脸信息批量导出excel模板失败",e);
+            e.printStackTrace();
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸信息批量导出excel模板失败",fileName);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸信息批量导出excel模板成功",fileName);
+    }
+
+
+    @ApiOperation(value = "人脸信息批量导入excel")
+    @RequestMapping(value = "/batchImport", method = RequestMethod.POST,consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public RestfulEntityBySummit<String> batchImport(@ApiParam(value = "人脸模板excel", required = true) @RequestParam("file") MultipartFile file){
+        if(file !=null){
+            log.error("上传文件为空");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"上传文件为空",null);
+        }
+        try{
+           //  MultipartFile mulFileByPath = excelUtil.getMulFileByPath("D:\\qianyy\\nb_smart_lock_backend\\snapshot\\1232951399314862082_FaceInfoExportTemplate.xls");
+             boolean b= faceInfoManagerService.batchImport(file);
+        }catch (Exception e){
+            log.error("批量导入失败",e);
+            e.printStackTrace();
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸信息批量导入excel失败",null);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸信息批量导入excel成功",null);
+    }
+
 }

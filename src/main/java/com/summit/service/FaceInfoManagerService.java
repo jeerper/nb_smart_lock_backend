@@ -6,6 +6,7 @@ import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.Province;
 import com.summit.dao.entity.SimplePage;
 import com.summit.entity.FaceInfoManagerEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -80,4 +81,10 @@ public interface FaceInfoManagerService {
      * @return 城市列表
      */
     FaceInfo selectFaceInfoByUserNameAndCardId(String userName,String cardId);
+
+    List<FaceInfo> faceInfoExport();
+
+
+    boolean batchImport(MultipartFile file) throws Exception;
+
 }

@@ -21,4 +21,10 @@ public interface FaceInfoManagerDao extends BaseMapper<FaceInfo> {
     String selectFaceIdByUserName(@Param("userName") String userName);
 
     List<FaceInfo> selectAllFaceInfo();
+
+    List<FaceInfo> faceInfoExport();
+
+
+    void insertFaceInfos(@Param("faceInfos") List<FaceInfo> faceInfos);
+
 }
