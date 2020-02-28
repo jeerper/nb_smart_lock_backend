@@ -26,7 +26,7 @@ public class AddAccCtrlprocessController {
     @Autowired
     private AddAccCtrlprocessService addAccCtrlprocessService;
 
-    @ApiOperation(value = "查询全部统计分析信息，其中包括统计分析信息的id,门禁的id,门禁的名称,开锁或者关锁的次数,电池的电量")
+    @ApiOperation(value = "查询全部统计分析信息，其中包括统计分析信息的id,门禁的id,门禁的名称,开锁或者关锁的次数,电池的电量,报警次数")
     @GetMapping(value = "/selectAddAccCtrlprocess")
     public RestfulEntityBySummit<List<AddAccCtrlprocess>> selectAddAccCtrlprocess() {
         List<AddAccCtrlprocess> addAccCtrlprocesses=null;

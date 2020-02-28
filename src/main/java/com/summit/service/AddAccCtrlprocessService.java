@@ -54,4 +54,12 @@ public interface AddAccCtrlprocessService {
      * @return -1则没有删除成功
      */
     int  deladdAccCtrlprocessByAccCtrlId(List<String> needDeladdAccCtrlprocessIds);
+
+    /**
+     * 修改统计分析记录报警次数
+     * @param accessControlId
+     * @return
+     */
+    int updateAddAccProcessAlarmCount(String accessControlId);
+
 }

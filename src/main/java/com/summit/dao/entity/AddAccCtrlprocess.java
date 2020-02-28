@@ -42,6 +42,10 @@ public class AddAccCtrlprocess {
     @TableField(exist = false)
     private String accessControlName;
 
+    @ApiModelProperty(value = "报警次数",name = "alarmCount")
+    @TableField(value = "alarm_count")
+    private Integer alarmCount;
+
     public AddAccCtrlprocess() {
     }
 }

@@ -112,4 +112,15 @@ public class AddAccCtrlprocessServiceImpl implements AddAccCtrlprocessService {
         }
         return result;
     }
+
+    /**
+     * 修改统计分析记录报警次数
+     * @param accessControlId
+     * @return
+     */
+    @Override
+    public int updateAddAccProcessAlarmCount(String accessControlId) {
+        int i=addAccCtrlprocessDao.updateAddAccProcessAlarmCount(accessControlId);
+        return i;
+    }
 }

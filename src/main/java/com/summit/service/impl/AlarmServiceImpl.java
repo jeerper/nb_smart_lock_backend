@@ -5,13 +5,11 @@ import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
 import com.summit.common.util.UserAuthUtils;
 import com.summit.constants.CommonConstants;
-import com.summit.dao.entity.Alarm;
-import com.summit.dao.entity.CameraDevice;
-import com.summit.dao.entity.LockProcess;
-import com.summit.dao.entity.SimplePage;
+import com.summit.dao.entity.*;
 import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.LockProcessDao;
+import com.summit.service.AddAccCtrlprocessService;
 import com.summit.service.AlarmService;
 import com.summit.util.CommonUtil;
 import com.summit.util.PageConverter;
@@ -35,6 +33,8 @@ public class AlarmServiceImpl implements AlarmService {
     @Autowired
     private CameraDeviceDao deviceDao;
 
+    @Autowired
+    private AddAccCtrlprocessService addAccCtrlprocessService;
     /**
      * 告警插入
      * @param alarm 告警对象
@@ -42,6 +42,18 @@ public class AlarmServiceImpl implements AlarmService {
      */
     @Override
     public int insertAlarm(Alarm alarm) {
+        //todo 插入统计分析告警次数显示
+        String accessControlId = alarm.getAccessControlId();
+        AddAccCtrlprocess addccCtrlprocess = addAccCtrlprocessService.selectAddAccCtrlByAccCtrlID(accessControlId);
+        if (null == addccCtrlprocess){
+            AddAccCtrlprocess addAccCtrlprocess=new AddAccCtrlprocess();
+            Integer alarmCount=1;
+            addAccCtrlprocess.setAccessControlId(accessControlId);
+            addAccCtrlprocess.setAlarmCount(alarmCount);
+            int add=addAccCtrlprocessService.insert(addAccCtrlprocess);
+        }else {
+            int i=addAccCtrlprocessService.updateAddAccProcessAlarmCount(accessControlId);
+        }
         return alarmDao.insert(alarm);
     }
 
