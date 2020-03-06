@@ -120,7 +120,7 @@ public class LockInfoServiceImpl implements LockInfoService {
             log.error("锁信息为空");
             return CommonConstants.UPDATE_ERROR;
         }
-        lockInfo.setCurrentPassword("111111");
+        lockInfo.setCurrentPassword("123456");
         //随机生成6位新密码
         lockInfo.setNewPassword(RandomUtil.randomStringUpper(6));
         return lockInfoDao.insert(lockInfo);
