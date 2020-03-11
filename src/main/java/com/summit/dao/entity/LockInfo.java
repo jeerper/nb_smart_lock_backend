@@ -62,6 +62,49 @@ public class LockInfo {
     @TableField(value = "updatetime")
     private Date updatetime;
 
+    @ApiModelProperty(value="固定实时设置开始时间",name="fixedRealTimeStart")
+    @TableField(value = "fixed_realTime_start")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    private Date fixedRealTimeStart;
+
+
+    @ApiModelProperty(value="固定实时设置结束时间",name="fixedRealTimeEnd")
+    @TableField(value = "fixed_realTime_end")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    private Date fixedRealTimeEnd;
+
+
+    @ApiModelProperty(value="忙时是否在线设置(0:在线,1:不在线)",name="busyOnlineOrNot")
+    @TableField(value = "busy_online_orNot")
+    private int busyOnlineOrNot;
+
+    @ApiModelProperty(value="低电压告警设置",name="lowVoltageAlarm")
+    @TableField(value = "low_voltage_alarm")
+    private int lowVoltageAlarm;
+
+    @ApiModelProperty(value="低电量告警设置",name="lowPowerAlarm")
+    @TableField(value = "low_power_alarm")
+    private int lowPowerAlarm;
+
+
+    @ApiModelProperty(value="非法开锁告警设置（0:合法，1：非法）",name="illegallUnlockingAlarm")
+    @TableField(value = "illegall_unlocking_alarm")
+    private int illegallUnlockingAlarm;
+
+    @ApiModelProperty(value="闲时休眠设置",name="dormancySet")
+    @TableField(value = "dormancy_set")
+    private String dormancySet;
+
+    @ApiModelProperty(value="掉线告警设置",name="dropLineAlarm")
+    @TableField(value = "drop_line_alarm")
+    private String dropLineAlarm;
+
+    @ApiModelProperty(value="关锁超时设置",name="lockTimeoutSet")
+    @TableField(value = "lock_timeout_set")
+    private int lockTimeoutSet;
+
     @ApiModelProperty(value="锁关联的摄像头列表,为null则json中不返回此字段",name="devices",hidden = true)
     @TableField(exist = false)
     private List<CameraDevice> devices;

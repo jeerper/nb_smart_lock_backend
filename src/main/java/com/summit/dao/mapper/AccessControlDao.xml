@@ -294,10 +294,10 @@
         from
         access_control ac
         <where>
-            <if test="roles != null">
-                ac.access_control_id IN ( SELECT DISTINCT au.access_control_id FROM role_accesscontrol_auth au WHERE au.role_id IN
-                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
-                    #{role}
+            <if test="depts != null">
+                ac.access_control_id IN ( SELECT DISTINCT au.access_control_id FROM dept_accesscontrol_auth au WHERE au.dept_id IN
+                <foreach item="dept" collection="depts" index="index" open="(" separator="," close=")">
+                    #{dept}
                 </foreach>
                 )
             </if>

@@ -19,6 +19,7 @@ import com.summit.service.LockInfoService;
 import com.summit.util.CommonUtil;
 import com.summit.util.ExcelUtil;
 import com.summit.util.PageConverter;
+import com.summit.util.UserDeptAuthUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -115,7 +116,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             pageParam = new Page<>(current, pageSize);
         }
 
-        List<AccessControlInfo> accessControls = accessControlDao.selectCondition(pageParam,accessControlInfo,UserAuthUtils.getRoles());
+        List<AccessControlInfo> accessControls = accessControlDao.selectCondition(pageParam,accessControlInfo, UserDeptAuthUtils.getDepts());
 
         if (pageParam != null) {
             pageParam.setRecords(accessControls);
