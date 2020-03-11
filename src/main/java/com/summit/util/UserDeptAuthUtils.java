@@ -15,12 +15,16 @@ public class UserDeptAuthUtils {
     }
 
     public static List<String> getDepts(){
-        UserInfo uerInfo = UserContextHolder.getUserInfo();
-        List deptList;
+        UserInfo userInfo = UserContextHolder.getUserInfo();
+        List deptList=null;
         List rolesList=null;
-        if (uerInfo != null) {
-            deptList = Arrays.asList(uerInfo.getDepts());
-            rolesList=Arrays.asList(uerInfo.getRoles());
+        if (userInfo != null) {
+            if (userInfo.getDepts()!=null && userInfo.getDepts().length>0){
+                deptList = Arrays.asList(userInfo.getDepts());
+            }else {
+                deptList = Arrays.asList("DEPT_INVALID");
+            }
+            rolesList=Arrays.asList(userInfo.getRoles());
         } else {
             deptList = Arrays.asList("DEPT_INVALID");
         }
