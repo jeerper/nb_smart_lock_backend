@@ -14,7 +14,9 @@ import com.summit.dao.entity.AccCtrlRole;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.AddAccCtrlprocess;
 import com.summit.dao.entity.SimpleAccCtrlInfo;
+import com.summit.entity.AccCtrlDept;
 import com.summit.exception.ErrorMsgException;
+import com.summit.service.AccCtrlDeptService;
 import com.summit.service.AccCtrlRoleService;
 import com.summit.service.AccessControlService;
 import com.summit.service.AddAccCtrlprocessService;
@@ -48,6 +50,8 @@ public class AccessControlInfoController {
     private AddAccCtrlprocessService addAccCtrlprocessService;
     @Autowired
     private ExcelUtil excelUtil;
+    @Autowired
+    private AccCtrlDeptService accCtrlDeptService;
 
     private String filePath;
 
@@ -87,10 +91,11 @@ public class AccessControlInfoController {
             accessControlService.insertAccCtrl(accessControlInfo);
             //录入后立即给当前用户授权改门禁
             if(uerInfo != null){
-                String[] roles = uerInfo.getRoles();
+                String[] depts = uerInfo.getDepts();
                 //暂时取第一个角色
-                if(!CommonUtil.isEmptyArr(roles))
-                    accCtrlRoleService.insertAccCtrlRole(new AccCtrlRole(null,null,roles[0],accessControlInfo.getAccessControlId()));
+                if(!CommonUtil.isEmptyArr(depts))
+                  //  accCtrlRoleService.insertAccCtrlRole(new AccCtrlRole(null,null,roles[0],accessControlInfo.getAccessControlId()));
+                    accCtrlDeptService.insertAccCtrlDept(new AccCtrlDept(null,depts[0],accessControlInfo.getAccessControlId()));
             }
         } catch (Exception e) {
             msg = getErrorMsg(msg, e);

@@ -111,6 +111,15 @@ public class AccCtrlDeptServiceImpl  implements AccCtrlDeptService {
         return accCtrlDeptDao.selectList(Wrappers.<AccCtrlDept>lambdaQuery().eq(AccCtrlDept::getDeptId,deptId));
     }
 
+    @Override
+    public int insertAccCtrlDept(AccCtrlDept accCtrlDept) {
+        if(accCtrlDept == null){
+            log.error("门禁部门权限对象为空");
+            return CommonConstants.UPDATE_ERROR;
+        }
+        return accCtrlDeptDao.insert(accCtrlDept);
+    }
+
 
     private int insertAccCtrlDeptBatch(List<AccCtrlDept> acctrlDepts) {
         if(CommonUtil.isEmptyList(acctrlDepts)){

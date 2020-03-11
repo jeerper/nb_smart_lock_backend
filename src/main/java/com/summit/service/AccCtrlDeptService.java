@@ -14,4 +14,7 @@ public interface AccCtrlDeptService {
 
     List<AccCtrlDept> selectAccCtrlInfoByDeptId(String deptId);
 
+    int insertAccCtrlDept(AccCtrlDept accCtrlDept);
+
+
 }
