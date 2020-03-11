@@ -2,13 +2,13 @@ package com.summit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.summit.common.util.UserAuthUtils;
 import com.summit.dao.entity.AddAccCtrlprocess;
 import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AddAccCtrlprocessDao;
 import com.summit.exception.ErrorMsgException;
 import com.summit.service.AddAccCtrlprocessService;
 import com.summit.util.CommonUtil;
+import com.summit.util.UserDeptAuthUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,8 +66,8 @@ public class AddAccCtrlprocessServiceImpl implements AddAccCtrlprocessService {
      */
     @Override
     public List<AddAccCtrlprocess> selectAddAccCtrlprocess(SimplePage page) {
-        List<String> roles = UserAuthUtils.getRoles();
-        List<AddAccCtrlprocess> addAccCtrlprocesses=addAccCtrlprocessDao.selectAddAccCtrlprocessDesc(roles);
+        List<String> depts = UserDeptAuthUtils.getDepts();
+        List<AddAccCtrlprocess> addAccCtrlprocesses=addAccCtrlprocessDao.selectAddAccCtrlprocessDesc(depts);
         return addAccCtrlprocesses;
     }
     /**

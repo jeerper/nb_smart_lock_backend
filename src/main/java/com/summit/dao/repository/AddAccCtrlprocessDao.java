@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface AddAccCtrlprocessDao  extends BaseMapper<AddAccCtrlprocess>{
 
-    List<AddAccCtrlprocess> selectAddAccCtrlprocessDesc(@Param("roles") List<String> roles);
+    List<AddAccCtrlprocess> selectAddAccCtrlprocessDesc(@Param("depts") List<String> depts);
 
     int updateAddAccCtrlprocess(@Param("accessControlId") String accessControlId);
 
