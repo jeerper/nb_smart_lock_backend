@@ -4,8 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 public class ExcelExportUtil {
@@ -275,7 +274,7 @@ public class ExcelExportUtil {
             CellStyle cellStyle = ExcelStyleUtilFor2003.getHeadStyle(this.workbook,14);
             writeTableHead(this.headList,cellStyle,1);
             writeMainData(2);
-            FileOutputStream output=new FileOutputStream(filePath+".xls");
+            FileOutputStream output=new FileOutputStream(filePath+fileName);
             //Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile),"utf-8"));
             workbook.write(output);
             //关闭流

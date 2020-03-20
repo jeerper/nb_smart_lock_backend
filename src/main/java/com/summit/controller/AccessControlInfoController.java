@@ -2,7 +2,6 @@ package com.summit.controller;
 
 import cn.hutool.system.SystemUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.summit.MainAction;
 import com.summit.cbb.utils.page.Page;
 import com.summit.common.entity.ResponseCodeEnum;
@@ -32,7 +31,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -251,16 +251,13 @@ public class AccessControlInfoController {
                     jsonObject.put("latitude",accCtrl.getLatitude());
                     dataList.add(jsonObject);
                 }
-                String picId = IdWorker.getIdStr();
                 filePath = new StringBuilder()
                         .append(SystemUtil.getUserInfo().getCurrentDir())
                         .append(File.separator)
                         .append(MainAction.SnapshotFileName)
                         .append(File.separator)
-                        .append(picId)
-                        .append("_AccCtrlExportTemplate")
                         .toString();
-                fileName =System.currentTimeMillis()+".xls";
+                fileName =System.currentTimeMillis()+"AccCtrl.xls";
                 String [] title = new String[]{"门禁id","门禁名称","锁id","锁编号","入口摄像头id","入口摄像头ip地址","出口摄像头id","出口摄像头ip地址","门禁状态","创建人","创建时间","更新时间","经度","纬度"};  //设置表格表头字段
                 String [] properties = new String[]{"accessControlId","accessControlName","lockId","lockCode","entryCameraId","entryCameraIp","exitCameraId","exitCameraIp","status","createby","createtime","updatetime","longitude","latitude"};  // 查询对应的字段
                 ExcelExportUtil excelExport2 = new ExcelExportUtil();
@@ -279,6 +276,46 @@ public class AccessControlInfoController {
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"门禁信息批量导出excel模板成功",fileName);
     }
+
+    @RequestMapping(value = "/fileDownload", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "文件下载")
+    public RestfulEntityBySummit<String>  fileDownload(@RequestBody String filepath, HttpServletResponse response) {
+        JSONObject paramJson=JSONObject.parseObject(filepath);
+        String fileName =paramJson.getString("filepath") ;//获取附件路径
+        filePath = new StringBuilder()
+                .append(SystemUtil.getUserInfo().getCurrentDir())
+                .append(File.separator)
+                .append(MainAction.SnapshotFileName)
+                .append(File.separator)
+                .toString();
+        File file = new File(filePath+fileName); //1.获取要下载的文件的绝对路径
+        if (file.exists()) { // 判断文件父目录是否存在
+            // response.setHeader("content-type", "application/octet-stream");
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment;filename=" + fileName); // 3.设置content-disposition响应头控制浏览器以下载的形式打开文件
+            byte[] buff = new byte[1024]; // 5.创建数据缓冲区
+            BufferedInputStream bis = null;
+            OutputStream os = null;//
+            try {
+                os = response.getOutputStream(); // 6.通过response对象获取OutputStream流
+                bis = new BufferedInputStream(new FileInputStream(file)); // 4.根据文件路径获取要下载的文件输入流
+                int i = bis.read(buff); // 7.将FileInputStream流写入到buffer缓冲区
+                while (i != -1) {
+                    os.write(buff, 0, buff.length); // 8.使用将OutputStream缓冲区的数据输出到客户端浏览器
+                    os.flush();
+                    i = bis.read(buff);
+                }
+                bis.close();
+            }catch (IOException e) {
+                log.error("文件下载失败",e);
+                e.printStackTrace();
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"文件下载失败",fileName);
+            }
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"文件下载成功",fileName);
+    }
+
+
 
 
 

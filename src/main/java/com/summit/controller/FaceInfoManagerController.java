@@ -2,7 +2,6 @@ package com.summit.controller;
 
 import cn.hutool.system.SystemUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.summit.MainAction;
 import com.summit.cbb.utils.page.Page;
 import com.summit.common.entity.ResponseCodeEnum;
@@ -231,16 +230,14 @@ public class FaceInfoManagerController {
                   jsonObject.put("faceEndTime",faceInfo.getFaceEndTime());
                   dataList.add(jsonObject);
               }
-              String picId = IdWorker.getIdStr();
+
               filePath = new StringBuilder()
                       .append(SystemUtil.getUserInfo().getCurrentDir())
                       .append(File.separator)
                       .append(MainAction.SnapshotFileName)
                       .append(File.separator)
-                      .append(picId)
-                      .append("_FaceInfoExportTemplate")
                       .toString();
-              fileName =System.currentTimeMillis()+".xls";
+              fileName =System.currentTimeMillis()+"FaceInfo.xls";
               String [] title = new String[]{"姓名","性别","生日","省份","城市","证件类型","身份证号","人脸匹配率","人脸图片","人脸类型","人脸有效期时间"};  //设置表格表头字段
               String [] properties = new String[]{"userName","gender","birthday","province","city","cardType","cardId","faceMatchrate","faceImage","faceType","faceEndTime"};  // 查询对应的字段
               ExcelExportUtil excelExport2 = new ExcelExportUtil();
