@@ -207,6 +207,7 @@ public class AccessControlInfoController {
     @RequestMapping(value = "/batchImport", method = RequestMethod.POST,consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public RestfulEntityBySummit<String> batchImport(@ApiParam(value = "门禁模板excel", required = true) @RequestPart("accCtrlExcel") MultipartFile accCtrlExcel){
         JSONObject filesName = null;
+        String msg = "门禁信息批量导入excel失败";
         if(accCtrlExcel!=null){
             try{
                 filePath = new StringBuilder()
@@ -220,9 +221,9 @@ public class AccessControlInfoController {
                 MultipartFile mulFileByPath = excelUtil.getMulFileByPath(filePath+orginFileName);
                 boolean b= accessControlService.batchImport(mulFileByPath);
             }catch (Exception e){
-                log.error("批量导入失败",e);
-                e.printStackTrace();
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"门禁信息批量导入excel失败",null);
+                msg = getErrorMsg(msg, e);
+                log.error(msg);
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg,null);
             }
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"门禁信息批量导入excel成功",null);
         }
@@ -266,8 +267,8 @@ public class AccessControlInfoController {
                         .append(File.separator)
                         .toString();
                 fileName =System.currentTimeMillis()+"AccCtrl.xls";
-                String [] title = new String[]{"门禁id","门禁名称","锁id","锁编号","入口摄像头id","入口摄像头ip地址","出口摄像头id","出口摄像头ip地址","门禁状态","创建人","创建时间","更新时间","经度","纬度"};  //设置表格表头字段
-                String [] properties = new String[]{"accessControlId","accessControlName","lockId","lockCode","entryCameraId","entryCameraIp","exitCameraId","exitCameraIp","status","createby","createtime","updatetime","longitude","latitude"};  // 查询对应的字段
+                String [] title = new String[]{"门禁名称","锁编号","入口摄像头ip地址","出口摄像头ip地址","经度","纬度"};  //设置表格表头字段
+                String [] properties = new String[]{"accessControlName","lockCode","entryCameraIp","exitCameraIp","longitude","latitude"};  // 查询对应的字段
                 ExcelExportUtil excelExport2 = new ExcelExportUtil();
                 excelExport2.setData(dataList);
                 excelExport2.setHeadKey(properties);

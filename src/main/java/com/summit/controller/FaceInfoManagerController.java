@@ -15,6 +15,7 @@ import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.entity.SimpleFaceInfo;
+import com.summit.exception.ErrorMsgException;
 import com.summit.service.FaceInfoManagerService;
 import com.summit.util.ExcelExportUtil;
 import com.summit.util.ExcelUtil;
@@ -96,7 +97,6 @@ public class FaceInfoManagerController {
             faceInfoManagerEntity.setCardType(cardType);
             faceInfoManagerEntity.setFaceType(faceType);
             faceInfoManagerEntity.setIsValidTime(isValidTime);
-            System.out.println(faceInfoManagerEntity + "ggg");
             faceInfoPage = faceInfoManagerService.selectFaceInfoByPage(faceInfoManagerEntity, new SimplePage(current, pageSize));
 
         } catch (Exception e) {
@@ -228,7 +228,7 @@ public class FaceInfoManagerController {
                   jsonObject.put("faceImage",faceInfo.getFaceImage());
                   jsonObject.put("faceType",faceInfo.getFaceType());
                   jsonObject.put("faceStartTime",faceInfo.getFaceStartTime());
-                  jsonObject.put("faceEndTime",faceInfo.getFaceEndTime());
+                  jsonObject.put("faceEndTime","2020-10-24");
                   dataList.add(jsonObject);
               }
 
@@ -239,8 +239,8 @@ public class FaceInfoManagerController {
                       .append(File.separator)
                       .toString();
               fileName =System.currentTimeMillis()+"FaceInfo.xls";
-              String [] title = new String[]{"姓名","性别","生日","省份","城市","证件类型","身份证号","人脸匹配率","人脸图片","人脸类型","人脸有效期时间"};  //设置表格表头字段
-              String [] properties = new String[]{"userName","gender","birthday","province","city","cardType","cardId","faceMatchrate","faceImage","faceType","faceEndTime"};  // 查询对应的字段
+              String [] title = new String[]{"姓名","性别:(0男，1女，2未知)","生日","省份","城市","证件类型:(证件类型。0：身份证，1：护照，2：军官证，3：驾驶证，4：未知)","身份证号","人脸类型:(0表示内部人员，1表示临时人员)","人脸有效期时间"};  //设置表格表头字段
+              String [] properties = new String[]{"userName","gender","birthday","province","city","cardType","cardId","faceType","faceEndTime"};  // 查询对应的字段
               ExcelExportUtil excelExport2 = new ExcelExportUtil();
               excelExport2.setData(dataList);
               excelExport2.setHeadKey(properties);
@@ -264,6 +264,7 @@ public class FaceInfoManagerController {
     public RestfulEntityBySummit<String> batchImport(@ApiParam(value = "人脸图片", required = true)
                                                      @RequestPart("faceExcel") MultipartFile faceExcel) throws IOException {
         JSONObject filesName = null;
+        String msg = "人脸信息批量导入excel失败";
         if(faceExcel!=null){
             try{
                 filePath = new StringBuilder()
@@ -277,14 +278,21 @@ public class FaceInfoManagerController {
                 MultipartFile mulFileByPath = excelUtil.getMulFileByPath(filePath+orginFileName);
                 boolean b= faceInfoManagerService.batchImport(mulFileByPath);
             }catch (Exception e){
-                log.error("批量导入失败",e);
-                e.printStackTrace();
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸信息批量导入excel失败",null);
+                msg = getErrorMsg(msg, e);
+                log.error(msg);
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg,null);
             }
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸信息批量导入excel成功",null);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"导入文件为空",null);
 
+    }
+
+    private String getErrorMsg(String msg, Exception e) {
+        if(e instanceof ErrorMsgException){
+            return ((ErrorMsgException) e).getErrorMsg();
+        }
+        return msg;
     }
 
 }

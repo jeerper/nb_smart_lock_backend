@@ -67,12 +67,12 @@ public class ExcelUtil {
                 e.printStackTrace( );
             }
         }else {
-            throw new Exception("文件不是Excel文件");
+            throw new ErrorMsgException("文件不是Excel文件");
         }
         Sheet sheet = workbook.getSheet("门禁信息导出模板");
         int rows = sheet.getLastRowNum();//指定行数。一共多少+
         if(rows==0) {
-            throw new Exception("请填写行数");
+            throw new ErrorMsgException("请填写行数");
         }
         for (int i = 2; i < rows+1; i++) {
             Row row = sheet.getRow(i);
@@ -80,14 +80,12 @@ public class ExcelUtil {
                 AccessControlInfo accessControlInfo=new AccessControlInfo();
                 LockInfo lockInfo=new LockInfo();
                 //读取cell
-                //String access_control_id = getCellValue(row.getCell(0));
                 accessControlInfo.setAccessControlId(IdWorker.getIdStr());
-                String access_control_name = getCellValue(row.getCell(1));
+                String access_control_name = getCellValue(row.getCell(0));
                 accessControlInfo.setAccessControlName(access_control_name);
-                //String lock_id = getCellValue(row.getCell(2));
                 lockInfo.setLockId(IdWorker.getIdStr());
                 accessControlInfo.setLockId(lockInfo.getLockId());
-                String lock_code = getCellValue(row.getCell(3));
+                String lock_code = getCellValue(row.getCell(1));
                 LockInfo lock = lockInfoService.selectBylockCode(lock_code);
                 if(lock != null){
                     log.error("录入锁信息失败，锁{}已存在且已属于其他门禁", lock.getLockCode());
@@ -98,29 +96,23 @@ public class ExcelUtil {
                 UserInfo uerInfo = UserContextHolder.getUserInfo();
                 if(uerInfo != null){
                     lockInfo.setCreateby(uerInfo.getName());
+                    accessControlInfo.setCreateby(uerInfo.getName());
                 }
                 accessControlInfo.setLockCode(lock_code);
-                String entry_camera_id = getCellValue(row.getCell(4));
-                accessControlInfo.setEntryCameraId(entry_camera_id);
-                String entry_camera_ip = getCellValue(row.getCell(5));
+                accessControlInfo.setEntryCameraId(IdWorker.getIdStr());
+                String entry_camera_ip = getCellValue(row.getCell(2));
                 accessControlInfo.setEntryCameraIp(entry_camera_ip);
-                String exit_camera_id = getCellValue(row.getCell(6));
-                accessControlInfo.setExitCameraId(exit_camera_id);
-                String exit_camera_ip = getCellValue(row.getCell(7));
+                accessControlInfo.setExitCameraId(IdWorker.getIdStr());
+                String exit_camera_ip = getCellValue(row.getCell(3));
                 accessControlInfo.setExitCameraIp(exit_camera_ip);
-                String status = getCellValue(row.getCell(8));
-                accessControlInfo.setStatus(Integer.parseInt(status));
-                String createby = getCellValue(row.getCell(9));
-                accessControlInfo.setCreateby(createby);
-                String createtime = getCellValue(row.getCell(10));
-                accessControlInfo.setCreatetime(DateUtil.stringToDate(createtime,"yyyy-MM-dd-HH-mm-ss"));
-                lockInfo.setCreatetime(DateUtil.stringToDate(createtime,"yyyy-MM-dd-HH-mm-ss"));
-                String updatetime = getCellValue(row.getCell(11));
-                accessControlInfo.setUpdatetime(DateUtil.stringToDate(updatetime,"yyyy-MM-dd-HH-mm-ss"));
-                lockInfo.setUpdatetime(DateUtil.stringToDate(updatetime,"yyyy-MM-dd-HH-mm-ss"));
-                String longitude = getCellValue(row.getCell(12));
+                accessControlInfo.setStatus(2);
+                accessControlInfo.setCreatetime(new Date());
+                lockInfo.setCreatetime(new Date());
+                accessControlInfo.setUpdatetime(new Date());
+                lockInfo.setUpdatetime(new Date());
+                String longitude = getCellValue(row.getCell(4));
                 accessControlInfo.setLongitude(longitude);
-                String latitude = getCellValue(row.getCell(13));
+                String latitude = getCellValue(row.getCell(5));
                 accessControlInfo.setLatitude(latitude);
                 lockInfo.setCurrentPassword("111111");
                 lockInfo.setNewPassword(RandomUtil.randomStringUpper(6));
@@ -156,12 +148,12 @@ public class ExcelUtil {
                 e.printStackTrace( );
             }
         }else {
-            throw new Exception("文件不是Excel文件");
+            throw new ErrorMsgException("文件不是Excel文件");
         }
         Sheet sheet = workbook.getSheet("人脸信息导出模板");
         int rows = sheet.getLastRowNum();//指定行数。一共多少行
         if(rows==0) {
-            throw new Exception("请填写行数");
+            throw new ErrorMsgException("请填写行数");
         }
         for (int i = 2; i < rows+1; i++) {
             Row row = sheet.getRow(i);
@@ -187,17 +179,11 @@ public class ExcelUtil {
                 }
                 String cardId = getCellValue(row.getCell(6));
                 faceInfo.setCardId(cardId);
-                String faceMatchrate = getCellValue(row.getCell(7));
-                if (!StrUtil.isEmpty(faceMatchrate)){
-                    faceInfo.setFaceMatchrate(Float.parseFloat(faceMatchrate));
-                }
-                String faceImage = getCellValue(row.getCell(8));
-                faceInfo.setFaceImage(faceImage);
-                String faceType = getCellValue(row.getCell(9));
+                String faceType = getCellValue(row.getCell(7));
                 if (!StrUtil.isEmpty(faceType)){
                     faceInfo.setFaceType(Integer.parseInt(faceType));
                 }
-                String faceEndTime = getCellValue(row.getCell(10));
+                String faceEndTime = getCellValue(row.getCell(8));
                 if (!StrUtil.isEmpty(faceEndTime)){
                     faceInfo.setFaceType(Integer.parseInt(faceType));
                     faceInfo.setFaceEndTime(DateUtil.stringToDate(faceEndTime,"yyyy-MM-dd"));
