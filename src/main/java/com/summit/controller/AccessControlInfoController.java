@@ -205,20 +205,28 @@ public class AccessControlInfoController {
 
     @ApiOperation(value = "门禁信息批量导入excel")
     @RequestMapping(value = "/batchImport", method = RequestMethod.POST,consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public RestfulEntityBySummit<String> batchImport(@ApiParam(value = "门禁模板excel", required = true) @RequestParam("file") MultipartFile file){
-        if(file !=null){
-            log.error("上传文件为空");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"上传文件为空",null);
+    public RestfulEntityBySummit<String> batchImport(@ApiParam(value = "门禁模板excel", required = true) @RequestPart("accCtrlExcel") MultipartFile accCtrlExcel){
+        JSONObject filesName = null;
+        if(accCtrlExcel!=null){
+            try{
+                filePath = new StringBuilder()
+                        .append(SystemUtil.getUserInfo().getCurrentDir())
+                        .append(File.separator)
+                        .append(MainAction.SnapshotFileName)
+                        .append(File.separator)
+                        .toString();
+                filesName = com.summit.util.FileUtil.uploadFile(filePath, accCtrlExcel);
+                String orginFileName = filesName.getString("fileName");
+                MultipartFile mulFileByPath = excelUtil.getMulFileByPath(filePath+orginFileName);
+                boolean b= accessControlService.batchImport(mulFileByPath);
+            }catch (Exception e){
+                log.error("批量导入失败",e);
+                e.printStackTrace();
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"门禁信息批量导入excel失败",null);
+            }
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"门禁信息批量导入excel成功",null);
         }
-        try{
-          //  MultipartFile mulFileByPath = excelUtil.getMulFileByPath("D:\\qianyy\\nb_smart_lock_backend\\snapshot\\1232571339395223554_AccCtrlExportTemplate.xls");
-            boolean b= accessControlService.batchImport(file);
-        }catch (Exception e){
-            log.error("批量导入失败",e);
-            e.printStackTrace();
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"门禁信息批量导入excel失败",null);
-        }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"门禁信息批量导入excel成功",null);
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"导入文件为空",null);
     }
 
     @ApiOperation(value="门禁信息导出excel模板")

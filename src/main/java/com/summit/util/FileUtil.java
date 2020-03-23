@@ -202,14 +202,11 @@ public class FileUtil {
         // 文件重命名，防止重复
         String key = UUID.randomUUID().toString().replace("-", "");
         String fileName = key + "" + orginFileName.substring(orginFileName.lastIndexOf("."));
-        fileName = filePath + fileName;
-        String fileUrl=uploadFilePath+filePath;
         JSONObject jsonObject=new JSONObject();
         jsonObject.put("fileName",fileName);
-        jsonObject.put("fileUrl",fileUrl);
         jsonObject.put("orginFileName",orginFileName);
         // 文件对象
-        File dest = new File(fileName);
+        File dest = new File(filePath + fileName);
         // 判断路径是否存在，如果不存在则创建
         if(!dest.getParentFile().exists()) {
             dest.getParentFile().mkdirs();

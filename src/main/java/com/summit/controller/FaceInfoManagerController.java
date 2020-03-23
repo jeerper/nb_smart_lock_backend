@@ -261,9 +261,10 @@ public class FaceInfoManagerController {
 
     @ApiOperation(value = "人脸信息批量导入excel")
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST,consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public RestfulEntityBySummit<String> batchImport(@ApiParam(value = "人脸excel",allowMultiple = true)MultipartFile[] uploadFile) throws IOException {
-        List<JSONObject> filesNames = null;
-        if(uploadFile!=null && uploadFile.length>0){
+    public RestfulEntityBySummit<String> batchImport(@ApiParam(value = "人脸图片", required = true)
+                                                     @RequestPart("faceExcel") MultipartFile faceExcel) throws IOException {
+        JSONObject filesName = null;
+        if(faceExcel!=null){
             try{
                 filePath = new StringBuilder()
                         .append(SystemUtil.getUserInfo().getCurrentDir())
@@ -271,9 +272,8 @@ public class FaceInfoManagerController {
                         .append(MainAction.SnapshotFileName)
                         .append(File.separator)
                         .toString();
-                filesNames = com.summit.util.FileUtil.uploadFilesList(filePath, uploadFile);
-                JSONObject jsonObject = filesNames.get(0);
-                String orginFileName = jsonObject.getString("orginFileName");
+                filesName = com.summit.util.FileUtil.uploadFile(filePath, faceExcel);
+                String orginFileName = filesName.getString("fileName");
                 MultipartFile mulFileByPath = excelUtil.getMulFileByPath(filePath+orginFileName);
                 boolean b= faceInfoManagerService.batchImport(mulFileByPath);
             }catch (Exception e){
