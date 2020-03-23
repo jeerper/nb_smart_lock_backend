@@ -11,12 +11,16 @@ import com.summit.MainAction;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
 import com.summit.common.util.ApplicationContextUtil;
-import com.summit.dao.entity.*;
+import com.summit.dao.entity.City;
+import com.summit.dao.entity.FaceInfo;
+import com.summit.dao.entity.Province;
+import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.CityDao;
 import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.dao.repository.ProvinceDao;
 import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.exception.ErrorMsgException;
+import com.summit.service.DeptFaceService;
 import com.summit.service.FaceInfoAccCtrlService;
 import com.summit.service.FaceInfoManagerService;
 import com.summit.util.CommonUtil;
@@ -54,6 +58,8 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
     private BaiduSdkClient baiduSdkClient;
     @Autowired
     private ExcelUtil excelUtil;
+    @Autowired
+    private DeptFaceService deptFaceService;
     /**
      * 插入人脸信息
      *
@@ -124,7 +130,8 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         FaceInfo faceInfo = new FaceInfo();
 
         faceInfo.setFaceImage(faceUrl);
-
+        String face_id = IdWorker.getIdStr();
+        faceInfo.setFaceid(face_id);
         faceInfo.setUserName(faceInfoManagerEntity.getUserName());
         faceInfo.setGender(faceInfoManagerEntity.getGender());
         faceInfo.setProvince(faceInfoManagerEntity.getProvince());
@@ -159,6 +166,8 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
             if (!baiduSdkClient.addFace(subNewImageBase64, faceInfo.getFaceid())) {
                 throw new Exception("人脸录入失败");
             }
+            //插入部门人脸关系数据表
+            int result= deptFaceService.insert(faceInfoManagerEntity.getDeptId(),face_id);
         } catch (Exception e) {
             FileUtil.del(facePicPath);
             log.error("人脸录入异常",e);
