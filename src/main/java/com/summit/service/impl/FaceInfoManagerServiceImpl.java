@@ -264,6 +264,11 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
             faceInfo.setIsValidTime(1);
         }
         String base64Str = faceInfo.getFaceImage();
+        // 修改所属部门
+        String deptFaceSql = " delete from dept_face_auth where face_id  IN ('" + faceInfo.getFaceid() + "') ";
+        jdbcTemplate.update(deptFaceSql);
+        deptFaceService.insert(faceInfo.getDeptId(),faceInfo.getFaceid());
+
         if (StrUtil.isBlank(base64Str)) {
             faceInfoManagerDao.updateById(faceInfo);
             return;
@@ -339,11 +344,6 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
                 FileUtil.del(oldImagePath);
             }
             FileUtil.writeBytes(subNewImageBase64Byte, newImagePath);
-
-            // 修改所属部门
-            String deptFaceSql = " delete from dept_face_auth where face_id  IN ('" + faceInfo.getFaceid() + "') ";
-            jdbcTemplate.update(deptFaceSql);
-            deptFaceService.insert(faceInfo.getDeptId(),faceInfo.getFaceid());
         } catch (Exception e) {
             throw new Exception("人脸更新失败");
         }
