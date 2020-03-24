@@ -17,6 +17,7 @@
        <result column="face_endTime" jdbcType="TIMESTAMP" property="faceEndTime"/>
        <result column="is_valid_time" jdbcType="INTEGER" property="isValidTime"/>
        <result column="deptNames" jdbcType="VARCHAR" property="deptNames"/>
+       <result column="depts" jdbcType="VARCHAR" property="deptId"/>
    </resultMap>
     <insert id="insertFaceInfo" parameterType="com.summit.dao.entity.FaceInfo">
         INSERT INTO face_info
@@ -28,7 +29,7 @@
         )
     </insert>
     <sql id="faceInfoCloum">
-      faceInfo.face_id,faceInfo.user_name,faceInfo.gender,faceInfo.birthday,faceInfo.province,faceInfo.city,faceInfo.card_type,faceInfo.card_id,faceInfo.face_image,faceInfo.face_type,faceInfo.face_startTime,faceInfo.face_endTime,faceInfo.is_valid_time,deptFace.deptNames
+      faceInfo.face_id,faceInfo.user_name,faceInfo.gender,faceInfo.birthday,faceInfo.province,faceInfo.city,faceInfo.card_type,faceInfo.card_id,faceInfo.face_image,faceInfo.face_type,faceInfo.face_startTime,faceInfo.face_endTime,faceInfo.is_valid_time,deptFace.deptNames,deptFace.depts
     </sql>
     <select id="selectFaceInfoByPage" parameterType="com.summit.entity.FaceInfoManagerEntity" resultMap="facemanager">
         SELECT

@@ -125,6 +125,10 @@ public class FaceInfo {
     @TableField(exist = false)
     private String deptNames;
 
+    @ApiModelProperty(value = "部门Id", name = "deptId")
+    @TableField(exist = false)
+    private String deptId;
+
     public FaceInfo() {
     }
 }
