@@ -185,6 +185,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
      * @return 返回-1则为不成功
      */
     @Override
+
     public void delFaceInfoByIds(List<String> faceInfoIds) throws Exception {
         if (faceInfoIds == null || faceInfoIds.size() == 0) {
             throw new Exception("人脸信息id为空");
@@ -210,6 +211,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         }
         faceInfoAccCtrlService.deleteFaceAccCtrlByFaceId(faceId);
         faceInfoManagerDao.deleteById(faceId);
+        deptFaceService.delDeptFaceByFaceIdBatch(faceId);
     }
 
     /**
