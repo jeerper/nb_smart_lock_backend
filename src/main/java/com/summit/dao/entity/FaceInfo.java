@@ -121,6 +121,10 @@ public class FaceInfo {
     @TableField(value = "is_valid_time")
     private Integer isValidTime;
 
+    @ApiModelProperty(value = "所属部门", name = "deptNames")
+    @TableField(exist = false)
+    private String deptNames;
+
     public FaceInfo() {
     }
 }

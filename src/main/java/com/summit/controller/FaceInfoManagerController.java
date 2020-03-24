@@ -81,10 +81,12 @@ public class FaceInfoManagerController {
                                                                               required = false) Integer faceType,
                                                                       @ApiParam(value = "人脸过期，0:没有过期，1:已经过期") @RequestParam(value = "isValidTime",
                                                                               required = false) Integer isValidTime,
+                                                                      @ApiParam(value = "部门id") @RequestParam(value = "deptId", required = false,
+                                                                              defaultValue = "") String deptId,
                                                                       @ApiParam(value = "当前页，大于等于1") @RequestParam(value = "current", required =
-                                                                              false) Integer current,
+                                                                              true) Integer current,
                                                                       @ApiParam(value = "每页条数，大于等于0") @RequestParam(value = "pageSize", required =
-                                                                              false) Integer pageSize) {
+                                                                              true) Integer pageSize) {
         Page<FaceInfo> faceInfoPage = null;
 
         try {
@@ -97,6 +99,7 @@ public class FaceInfoManagerController {
             faceInfoManagerEntity.setCardType(cardType);
             faceInfoManagerEntity.setFaceType(faceType);
             faceInfoManagerEntity.setIsValidTime(isValidTime);
+            faceInfoManagerEntity.setDeptId(deptId);
             faceInfoPage = faceInfoManagerService.selectFaceInfoByPage(faceInfoManagerEntity, new SimplePage(current, pageSize));
 
         } catch (Exception e) {
@@ -142,6 +145,7 @@ public class FaceInfoManagerController {
         try {
             faceInfo = faceInfoManagerService.selectFaceInfoByID(faceid);
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("查询人脸信息失败");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "根据id查询人脸信息失败", faceInfo);
         }

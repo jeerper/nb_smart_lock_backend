@@ -17,11 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,6 +110,22 @@ public class FaceInfoAccCtrlController {
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "查询人脸信息列表成功", ids);
     }
+
+
+   /* @ApiOperation(value = "根据部门id查询当前以及子部门下的人脸信息")
+    @GetMapping(value = "/selectAllFaceByDeptId")
+    public RestfulEntityBySummit<List<FaceInfo>> selectAllFaceByDeptId(@ApiParam(value = "部门Id",required = true) @RequestParam(value = "deptId")String deptId){
+
+    }
+
+*/
+
+
+
+
+
+
+
 
     @ApiOperation(value = "根据门禁id查询人脸授权过程")
     @GetMapping(value = "/selectSimFaceInfoByAccCtrlId")

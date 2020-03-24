@@ -16,6 +16,7 @@
        <result column="face_startTime" jdbcType="TIMESTAMP" property="faceStartTime"/>
        <result column="face_endTime" jdbcType="TIMESTAMP" property="faceEndTime"/>
        <result column="is_valid_time" jdbcType="INTEGER" property="isValidTime"/>
+       <result column="deptNames" jdbcType="VARCHAR" property="deptNames"/>
    </resultMap>
     <insert id="insertFaceInfo" parameterType="com.summit.dao.entity.FaceInfo">
         INSERT INTO face_info
@@ -27,39 +28,45 @@
         )
     </insert>
     <sql id="faceInfoCloum">
-      face_id,user_name,gender,birthday,province,city,card_type,card_id,face_image,face_type,face_startTime,face_endTime,is_valid_time
+      faceInfo.face_id,faceInfo.user_name,faceInfo.gender,faceInfo.birthday,faceInfo.province,faceInfo.city,faceInfo.card_type,faceInfo.card_id,faceInfo.face_image,faceInfo.face_type,faceInfo.face_startTime,faceInfo.face_endTime,faceInfo.is_valid_time,deptFace.deptNames
     </sql>
     <select id="selectFaceInfoByPage" parameterType="com.summit.entity.FaceInfoManagerEntity" resultMap="facemanager">
         SELECT
         <include refid="faceInfoCloum"/>
-        FROM  face_info
+        FROM  face_info faceInfo
+        LEFT JOIN
+        (SELECT deptFace.face_id,GROUP_CONCAT(deptFace.dept_id)AS depts, GROUP_CONCAT(dept.DEPTNAME)AS deptNames  FROM dept_face_auth deptFace  inner join cbb_userauth.sys_dept dept on deptFace.dept_id=dept.ID  GROUP BY face_id)deptFace
+        on faceInfo.face_id=deptFace.face_id
         <where>
             <if test="faceInfoManagerEntity.userName !=null and faceInfoManagerEntity.userName !=''">
-                user_name like concat('%',#{faceInfoManagerEntity.userName}, '%')
+                faceInfo.user_name like concat('%',#{faceInfoManagerEntity.userName}, '%')
             </if>
             <if test="faceInfoManagerEntity.cardId !=null and faceInfoManagerEntity.cardId !=''">
-               AND card_id like concat('%',#{faceInfoManagerEntity.cardId}, '%')
+               AND faceInfo.card_id like concat('%',#{faceInfoManagerEntity.cardId}, '%')
             </if>
             <if test="faceInfoManagerEntity.province !=null and faceInfoManagerEntity.province !=''">
-                AND province like concat('%',#{faceInfoManagerEntity.province}, '%')
+                AND faceInfo.province like concat('%',#{faceInfoManagerEntity.province}, '%')
             </if>
             <if test="faceInfoManagerEntity.city !=null and faceInfoManagerEntity.city !=''">
-                AND city  like concat('%',#{faceInfoManagerEntity.city}, '%')
+                AND faceInfo.city  like concat('%',#{faceInfoManagerEntity.city}, '%')
             </if>
             <if test="faceInfoManagerEntity.gender !=null">
-                AND gender=#{faceInfoManagerEntity.gender}
+                AND faceInfo.gender=#{faceInfoManagerEntity.gender}
             </if>
             <if test="faceInfoManagerEntity.cardType !=null">
-                AND card_type=#{faceInfoManagerEntity.cardType}
+                AND faceInfo.card_type=#{faceInfoManagerEntity.cardType}
             </if>
             <if test="faceInfoManagerEntity.faceType !=null">
-                AND face_type=#{faceInfoManagerEntity.faceType}
+                AND faceInfo.face_type=#{faceInfoManagerEntity.faceType}
             </if>
             <if test="faceInfoManagerEntity.faceEndTime !=null">
-                AND face_endTime=#{faceInfoManagerEntity.faceEndTime}
+                AND faceInfo.face_endTime=#{faceInfoManagerEntity.faceEndTime}
             </if>
             <if test="faceInfoManagerEntity.isValidTime !=null">
-                AND is_valid_time=#{faceInfoManagerEntity.isValidTime}
+                AND faceInfo.is_valid_time=#{faceInfoManagerEntity.isValidTime}
+            </if>
+            <if test="faceInfoManagerEntity.deptId !=null and faceInfoManagerEntity.deptId !=''">
+                AND faceInfo.depts like concat('%',#{faceInfoManagerEntity.deptId}, '%')
             </if>
         </where>
         ORDER BY
@@ -72,9 +79,12 @@
     <select id="selectFaceInfoByID" parameterType="java.lang.String" resultMap="facemanager">
         SELECT
         <include refid="faceInfoCloum"/>
-        FROM  face_info
+        FROM  face_info faceInfo
+        LEFT JOIN
+        (SELECT deptFace.face_id,GROUP_CONCAT(deptFace.dept_id)AS depts, GROUP_CONCAT(dept.DEPTNAME)AS deptNames  FROM dept_face_auth deptFace  inner join cbb_userauth.sys_dept dept on deptFace.dept_id=dept.ID  GROUP BY face_id)deptFace
+        on faceInfo.face_id=deptFace.face_id
         <where>
-          face_id=#{faceid}
+            faceInfo.face_id=#{faceid}
         </where>
     </select>
     <select id="selectFaceIdByUserName" resultType="java.lang.String" >
@@ -88,12 +98,19 @@
     <select id="selectAllFaceInfo" resultMap="facemanager" >
         SELECT
         <include refid="faceInfoCloum"/>
-        FROM  face_info
+        FROM  face_info faceInfo
+        LEFT JOIN
+        (SELECT deptFace.face_id,GROUP_CONCAT(deptFace.dept_id)AS depts, GROUP_CONCAT(dept.DEPTNAME)AS deptNames  FROM dept_face_auth deptFace  inner join cbb_userauth.sys_dept dept on deptFace.dept_id=dept.ID  GROUP BY face_id)deptFace
+        on faceInfo.face_id=deptFace.face_id
+        ORDER BY faceInfo.face_startTime  DESC
     </select>
     <select id="faceInfoExport" resultMap="facemanager">
         SELECT
-        face.user_name,face.gender,face.birthday,face.province,face.city,face.card_type,face.card_id,face.face_match_rate,face.face_image,face.face_type,face.face_startTime,face.face_endTime,face.is_valid_time
-        from face_info  face
+        faceInfo.face_id,faceInfo.user_name,faceInfo.gender,faceInfo.birthday,faceInfo.province,faceInfo.city,faceInfo.card_type,faceInfo.card_id,faceInfo.face_image,faceInfo.face_type,faceInfo.face_startTime,faceInfo.face_endTime,faceInfo.is_valid_time,deptFace.deptNames
+        from face_info  faceInfo
+        LEFT JOIN
+        (SELECT deptFace.face_id,GROUP_CONCAT(deptFace.dept_id)AS depts, GROUP_CONCAT(dept.DEPTNAME)AS deptNames  FROM dept_face_auth deptFace  inner join cbb_userauth.sys_dept dept on deptFace.dept_id=dept.ID  GROUP BY face_id)deptFace
+        on faceInfo.face_id=deptFace.face_id
         LIMIT 0,2
     </select>
     <insert id="insertFaceInfos"  parameterType="java.util.List">
