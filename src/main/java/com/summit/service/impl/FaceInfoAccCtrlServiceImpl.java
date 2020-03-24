@@ -1,15 +1,19 @@
 package com.summit.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
 import com.summit.dao.repository.FaceInfoAccCtrlDao;
 import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.service.AccessControlService;
+import com.summit.service.DeptsService;
 import com.summit.service.FaceInfoAccCtrlService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,7 +29,8 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
     private FaceInfoManagerDao faceInfoManagerDao;
     @Autowired
     private AccessControlService accessControlService;
-
+    @Autowired
+    private DeptsService deptsService;
 
     /**
      * 根据门禁id查询人脸信息列表
@@ -69,5 +74,29 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
     public int deleteFaceAccCtrlByFaceId(String faceid) {
         int i = faceInfoAccCtrlDao.delete( Wrappers.<FaceInfoAccCtrl>lambdaQuery().eq(FaceInfoAccCtrl::getFaceid,faceid));
         return i;
+    }
+
+    /**
+     * 根据部门id查询当前以及子部门下的人脸信息
+     * @param deptIds
+     * @return
+     */
+    @Override
+    public List<FaceInfo> selectAllFaceByDeptId(List<String> deptIds) {
+        List<FaceInfo> faceInfos =null;
+        if (deptIds.size()>1){
+            List<String> depts=new ArrayList<>();
+            for(String deptId:deptIds){
+                depts.add(deptId);
+            }
+            faceInfos= faceInfoManagerDao.selectAllFaceByDeptId(depts);
+        }else {
+            String dept = deptIds.get(0);
+            JSONObject paramJson=new JSONObject();
+            paramJson.put("pdept",dept);
+            List<String> depts = deptsService.getDeptsByPdept(paramJson);
+            faceInfos= faceInfoManagerDao.selectAllFaceByDeptId(depts);
+        }
+        return faceInfos;
     }
 }

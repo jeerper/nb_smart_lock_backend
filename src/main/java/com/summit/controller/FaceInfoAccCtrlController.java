@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
+import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
 import com.summit.dao.repository.FaceInfoAccCtrlDao;
 import com.summit.entity.SimFaceInfoAccCtl;
@@ -14,6 +15,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +33,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/faceInfoAccCtrl")
 public class FaceInfoAccCtrlController {
-
+    private static final Logger logger = LoggerFactory.getLogger(FaceInfoAccCtrlController.class);
     @Autowired
     private FaceInfoAccCtrlService faceInfoAccCtrlService;
     @Autowired
@@ -112,13 +115,24 @@ public class FaceInfoAccCtrlController {
     }
 
 
-   /* @ApiOperation(value = "根据部门id查询当前以及子部门下的人脸信息")
+    @ApiOperation(value = "根据部门id查询当前以及子部门下的人脸信息")
     @GetMapping(value = "/selectAllFaceByDeptId")
-    public RestfulEntityBySummit<List<FaceInfo>> selectAllFaceByDeptId(@ApiParam(value = "部门Id",required = true) @RequestParam(value = "deptId")String deptId){
-
+    public RestfulEntityBySummit<List<FaceInfo>> selectAllFaceByDeptId(@ApiParam(value = "部门Id",required = true) @RequestParam(value = "deptIds")List<String> deptIds){
+        if(CommonUtil.isEmptyList(deptIds)){
+            log.error("部门id为空");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"部门id为空",null);
+        }
+        List<FaceInfo> faceInfos=null;
+        try{
+            faceInfos=faceInfoAccCtrlService.selectAllFaceByDeptId(deptIds);
+        }catch (Exception e){
+            logger.error("查询人脸信息失败：", e);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "查询人脸信息失败", faceInfos);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "根据id查询人脸信息成功", faceInfos);
     }
 
-*/
+
 
 
 

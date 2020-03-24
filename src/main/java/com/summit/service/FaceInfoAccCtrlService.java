@@ -1,5 +1,6 @@
 package com.summit.service;
 
+import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
 
 import java.util.List;
@@ -34,4 +35,10 @@ public interface FaceInfoAccCtrlService {
      */
     int deleteFaceAccCtrlByFaceId(String faceid);
 
+    /**
+     * 根据部门id查询当前以及子部门下的人脸信息
+     * @param deptIds
+     * @return
+     */
+    List<FaceInfo> selectAllFaceByDeptId(List<String> deptIds);
 }

@@ -25,6 +25,8 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -124,6 +126,7 @@ public class FaceInfoManagerController {
 
     @ApiOperation(value = "删除人脸信息，参数为id数组", notes = "根据人脸id删除人脸信息")
     @DeleteMapping(value = "/delfaceInfoByIdBatch")
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
     public RestfulEntityBySummit<String> delFaceInfo(@ApiParam(value = "人脸信息的id", required = true)
                                                      @RequestParam(value = "faceInfoIds") List<String> faceInfoIds) {
         try {

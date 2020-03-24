@@ -152,4 +152,16 @@
             )
         </foreach>
     </insert>
+    <select id="selectAllFaceByDeptId" resultMap="facemanager">
+        SELECT  faceInfo.face_id,faceInfo.user_name,faceInfo.face_image,faceInfo.is_valid_time  FROM  face_info faceInfo
+        <where>
+            <if test="depts != null">
+                face_id IN ( SELECT DISTINCT deptFace.face_id FROM dept_face_auth deptFace WHERE deptFace.dept_id IN
+                <foreach item="dept" collection="depts" index="index" open="(" separator="," close=")">
+                    #{dept}
+                </foreach>
+                )
+            </if>
+        </where>
+    </select>
 </mapper>
