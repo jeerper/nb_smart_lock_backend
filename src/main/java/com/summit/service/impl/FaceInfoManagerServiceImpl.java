@@ -30,6 +30,7 @@ import com.summit.utils.BaiduSdkClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +61,8 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
     private ExcelUtil excelUtil;
     @Autowired
     private DeptFaceService deptFaceService;
+    @Autowired
+    public JdbcTemplate jdbcTemplate;
     /**
      * 插入人脸信息
      *
@@ -336,6 +339,11 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
                 FileUtil.del(oldImagePath);
             }
             FileUtil.writeBytes(subNewImageBase64Byte, newImagePath);
+
+            // 修改所属部门
+            String deptFaceSql = " delete from dept_face_auth where face_id  IN ('" + faceInfo.getFaceid() + "') ";
+            jdbcTemplate.update(deptFaceSql);
+            deptFaceService.insert(faceInfo.getDeptId(),faceInfo.getFaceid());
         } catch (Exception e) {
             throw new Exception("人脸更新失败");
         }
