@@ -44,10 +44,10 @@ public class FaceInfoAccCtrlController {
     @PostMapping("/authorityFaceInfoAccCtrl")
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
     public RestfulEntityBySummit<String> authorityFaceInfoAccCtrl(@ApiParam(value = "是否授权", required = true) @RequestParam(value = "method") String method,
-                                                                  @ApiParam(value = "门禁id", required = true) @RequestParam(value = "accessControlId") String accessControlId,
+                                                                  @ApiParam(value = "门禁id列表", required = true) @RequestParam(value = "accessControlIds") List<String> accessControlIds,
                                                                   @ApiParam(value = "人脸id列表", required = true) @RequestParam(value = "faceids") List<String> faceids) {
 
-        if (StrUtil.isBlank(accessControlId)) {
+        if (CommonUtil.isEmptyList(accessControlIds)) {
             log.error("门禁信息id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "门禁信息id为空", null);
         }
@@ -56,13 +56,14 @@ public class FaceInfoAccCtrlController {
             log.error("门禁和人脸关联类型字段为为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "门禁和人脸关联类型字段为为空", null);
         }
-
         if (!CommonUtil.isEmptyList(faceids) && method.equals("auth")) {
-            for (String faceId : faceids) {
-                try {
-                    faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null, accessControlId, faceId));
-                } catch (Exception e) {
-                    log.error("人脸授权关系添加异常", e);
+            for (String accessControlId:accessControlIds){
+                for (String faceId : faceids) {
+                    try {
+                        faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null, accessControlId, faceId));
+                    } catch (Exception e) {
+                        log.error("人脸授权关系添加异常", e);
+                    }
                 }
             }
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "人脸授权成功", null);
@@ -70,20 +71,24 @@ public class FaceInfoAccCtrlController {
         if (method.equals("cancel_auth")) {
             //若传入集合列表为空，则需要删除所有人脸
             if (CommonUtil.isEmptyList(faceids)) {
-                try {
-                    faceInfoAccCtrlDao.delete(Wrappers.<FaceInfoAccCtrl>lambdaQuery()
-                            .eq(FaceInfoAccCtrl::getAccessControlId, accessControlId));
-                } catch (Exception e) {
-                    log.error("人脸授权关系删除异常", e);
-                }
-            } else {
-                for (String faceId : faceids) {
+                for (String accessControlId:accessControlIds){
                     try {
                         faceInfoAccCtrlDao.delete(Wrappers.<FaceInfoAccCtrl>lambdaQuery()
-                                .eq(FaceInfoAccCtrl::getAccessControlId, accessControlId)
-                                .eq(FaceInfoAccCtrl::getFaceid, faceId));
+                                .eq(FaceInfoAccCtrl::getAccessControlId, accessControlId));
                     } catch (Exception e) {
                         log.error("人脸授权关系删除异常", e);
+                    }
+                }
+            } else {
+                for (String accessControlId:accessControlIds){
+                    for (String faceId : faceids) {
+                        try {
+                            faceInfoAccCtrlDao.delete(Wrappers.<FaceInfoAccCtrl>lambdaQuery()
+                                    .eq(FaceInfoAccCtrl::getAccessControlId, accessControlId)
+                                    .eq(FaceInfoAccCtrl::getFaceid, faceId));
+                        } catch (Exception e) {
+                            log.error("人脸授权关系删除异常", e);
+                        }
                     }
                 }
             }
