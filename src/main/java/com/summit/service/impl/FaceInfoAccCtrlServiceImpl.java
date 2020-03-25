@@ -2,6 +2,7 @@ package com.summit.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
 import com.summit.dao.repository.FaceInfoAccCtrlDao;
@@ -98,5 +99,24 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
             faceInfos= faceInfoManagerDao.selectAllFaceByDeptId(depts);
         }
         return faceInfos;
+    }
+
+    @Override
+    public List<AccessControlInfo> selectAllAccCtrlByDeptId(List<String> deptIds) {
+        List<AccessControlInfo> accessControlInfos=null;
+        if (deptIds.size()>1){
+            List<String> depts=new ArrayList<>();
+            for(String deptId:deptIds){
+                depts.add(deptId);
+            }
+            accessControlInfos= faceInfoAccCtrlDao.selectAllAccCtrlByDeptId(depts);
+        }else {
+            String dept = deptIds.get(0);
+            JSONObject paramJson=new JSONObject();
+            paramJson.put("pdept",dept);
+            List<String> depts = deptsService.getDeptsByPdept(paramJson);
+            accessControlInfos= faceInfoAccCtrlDao.selectAllAccCtrlByDeptId(depts);
+        }
+        return accessControlInfos;
     }
 }

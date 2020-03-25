@@ -1,5 +1,6 @@
 package com.summit.service;
 
+import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
 
@@ -41,4 +42,11 @@ public interface FaceInfoAccCtrlService {
      * @return
      */
     List<FaceInfo> selectAllFaceByDeptId(List<String> deptIds);
+
+    /**
+     * 根据所传部门Id查询当前以及子部门下的门禁信息
+     * @param deptIds
+     * @return
+     */
+    List<AccessControlInfo> selectAllAccCtrlByDeptId(List<String> deptIds);
 }

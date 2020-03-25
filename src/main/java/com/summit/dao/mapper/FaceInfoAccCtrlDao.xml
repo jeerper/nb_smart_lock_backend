@@ -21,4 +21,22 @@
             fiac.face_id=#{faceId} and ac.lock_code=#{lockCode}
         </where>
     </select>
+
+    <resultMap id="accCtrlInfo" type="com.summit.dao.entity.AccessControlInfo">
+        <result column="access_control_id" jdbcType="VARCHAR" property="accessControlId"/>
+        <result column="access_control_name" jdbcType="VARCHAR" property="accessControlName"/>
+    </resultMap>
+    <select id="selectAllAccCtrlByDeptId" resultMap="accCtrlInfo">
+        SELECT ac.access_control_id,ac.access_control_name from access_control  ac
+        <where>
+            <if test="depts != null">
+                ac.access_control_id IN (SELECT DISTINCT du.access_control_id FROM dept_accesscontrol_auth du WHERE du.dept_id IN
+                <foreach item="dept" collection="depts" index="index" open="(" separator="," close=")">
+                    #{dept}
+                </foreach>
+                )
+            </if>
+        </where>
+    </select>
+
 </mapper>
