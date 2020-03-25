@@ -39,8 +39,16 @@
         </where>
     </select>
 
-    <select id="selectFaceInfoAccCtrlByActrlIds" resultType="string">
-        SELECT DISTINCT fc.face_id from face_info_access_control fc
+    <resultMap id="faceInfo" type="com.summit.dao.entity.FaceInfo">
+        <result column="face_id"  jdbcType="VARCHAR" property="faceid"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="face_image" jdbcType="VARCHAR" property="faceImage"/>
+        <result column="is_valid_time" jdbcType="INTEGER" property="isValidTime"/>
+        <result column="auth_status" jdbcType="VARCHAR" property="authStatus"/>
+    </resultMap>
+    <select id="selectFaceInfoAccCtrlByActrlIds" resultMap="faceInfo">
+        SELECT face.face_id,face.user_name,face.face_image,face.is_valid_time,faceAuth.auth_status from face_info face
+        INNER JOIN (SELECT DISTINCT fc.face_id,fc.auth_status from face_info_access_control fc
         <where>
             <if test="accCtrlIds != null">
                 fc.access_control_id IN
@@ -49,6 +57,7 @@
                 </foreach>
             </if>
         </where>
+        ) faceAuth on faceAuth.face_id =face.face_id
     </select>
 
 </mapper>

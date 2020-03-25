@@ -156,7 +156,7 @@ public class FaceInfoManagerController {
             if (faceInfos != null) {
                 for (FaceInfo faceInfo : faceInfos) {
                     simpleFaceInfos.add(new SimpleFaceInfo(faceInfo.getFaceid(), faceInfo.getUserName(), faceInfo.getFaceImage(),
-                            faceInfo.getIsValidTime()));
+                            faceInfo.getIsValidTime(),faceInfo.getAuthStatus()));
                 }
             }
         } catch (Exception e) {

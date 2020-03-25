@@ -129,6 +129,10 @@ public class FaceInfo {
     @TableField(exist = false)
     private String deptId;
 
+    @ApiModelProperty(value = "人脸录入状态(0：已录入，1：未录入)", name = "authStatus")
+    @TableField(exist = false)
+    private String authStatus;
+
     public FaceInfo() {
     }
 }

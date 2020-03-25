@@ -20,4 +20,7 @@ public class SimpleFaceInfo {
     private String faceImage;
     @ApiModelProperty(value = "人脸是否过期", name = "isValidTime")
     private Integer isValidTime;
+    @ApiModelProperty(value = "人脸录入状态(0：已录入，1：未录入", name = "authStatus")
+    private String authStatus;
+
 }

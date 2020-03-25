@@ -2,6 +2,7 @@ package com.summit.dao.repository;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.summit.dao.entity.AccessControlInfo;
+import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,5 +18,5 @@ public interface FaceInfoAccCtrlDao extends BaseMapper<FaceInfoAccCtrl> {
 
     List<AccessControlInfo> selectAllAccCtrlByDeptId(@Param("depts") List<String> depts);
 
-    List<String> selectFaceInfoAccCtrlByActrlIds(@Param("accCtrlIds")List<String> accCtrlIds);
+    List<FaceInfo> selectFaceInfoAccCtrlByActrlIds(@Param("accCtrlIds")List<String> accCtrlIds);
 }

@@ -40,13 +40,13 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
      * @return 人脸信息列表
      */
     @Override
-    public List<String> selectFaceInfoAccCtrlByActrlIds(List<String> accCtrlIds) {
+    public List<FaceInfo> selectFaceInfoAccCtrlByActrlIds(List<String> accCtrlIds) {
         if(CommonUtil.isEmptyList(accCtrlIds)){
             log.error("门禁id为空");
             return null;
         }
-        List<String> faceInfoAccCtrlIds=faceInfoAccCtrlDao.selectFaceInfoAccCtrlByActrlIds(accCtrlIds);
-        return faceInfoAccCtrlIds;
+        List<FaceInfo> faceInfos=faceInfoAccCtrlDao.selectFaceInfoAccCtrlByActrlIds(accCtrlIds);
+        return faceInfos;
     }
 
     /**

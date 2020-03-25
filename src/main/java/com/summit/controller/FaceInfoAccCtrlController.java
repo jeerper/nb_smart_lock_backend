@@ -10,6 +10,7 @@ import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
 import com.summit.dao.repository.FaceInfoAccCtrlDao;
 import com.summit.entity.SimFaceInfoAccCtl;
+import com.summit.entity.SimpleFaceInfo;
 import com.summit.service.FaceInfoAccCtrlService;
 import com.summit.util.CommonUtil;
 import io.swagger.annotations.Api;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -98,38 +100,50 @@ public class FaceInfoAccCtrlController {
 
     @ApiOperation(value = "根据所传门禁Id查询已经授权的人脸信息列表", notes = "查询已经和门禁关联的人脸信息列表")
     @GetMapping(value = "/selectFaceInfoByAccCtrlId")
-    public RestfulEntityBySummit<List<String>> selectFaceInfoByAccCtrlId(@ApiParam(value = "门禁id") @RequestParam(value = "accCtrlIds", required =
+    public RestfulEntityBySummit<List<SimpleFaceInfo>> selectFaceInfoByAccCtrlId(@ApiParam(value = "门禁id") @RequestParam(value = "accCtrlIds", required =
             false) List<String> accCtrlIds) {
         if (CommonUtil.isEmptyList(accCtrlIds)) {
             log.error("门禁id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "门禁id为空", null);
         }
-        List<String> faceInfoAccCtrlIds=null;
+        List<SimpleFaceInfo> simpleFaceInfos = new ArrayList<>();
         try {
-            faceInfoAccCtrlIds = faceInfoAccCtrlService.selectFaceInfoAccCtrlByActrlIds(accCtrlIds);
+            List<FaceInfo> faceInfos = faceInfoAccCtrlService.selectFaceInfoAccCtrlByActrlIds(accCtrlIds);
+            if (faceInfos != null) {
+                for (FaceInfo faceInfo : faceInfos) {
+                    simpleFaceInfos.add(new SimpleFaceInfo(faceInfo.getFaceid(), faceInfo.getUserName(), faceInfo.getFaceImage(),
+                            faceInfo.getIsValidTime(),faceInfo.getAuthStatus()));
+                }
+            }
         } catch (Exception e) {
             log.error("查询人脸信息列表失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "查询人脸信息列表失败", faceInfoAccCtrlIds);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "查询人脸信息列表失败", simpleFaceInfos);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "查询人脸信息列表成功", faceInfoAccCtrlIds);
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "查询人脸信息列表成功", simpleFaceInfos);
     }
 
 
     @ApiOperation(value = "根据所传部门Id查询当前以及子部门下的人脸信息")
     @GetMapping(value = "/selectAllFaceByDeptId")
-    public RestfulEntityBySummit<List<FaceInfo>> selectAllFaceByDeptId(@ApiParam(value = "部门Id",required = true) @RequestParam(value = "deptIds")List<String> deptIds){
+    public RestfulEntityBySummit<List<SimpleFaceInfo>> selectAllFaceByDeptId(@ApiParam(value = "部门Id",required = true) @RequestParam(value = "deptIds")List<String> deptIds){
         if(CommonUtil.isEmptyList(deptIds)){
             log.error("部门id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"部门id为空",null);
         }
-        List<FaceInfo> faceInfos=null;
+        List<SimpleFaceInfo> simpleFaceInfos = new ArrayList<>();
         try{
-            faceInfos=faceInfoAccCtrlService.selectAllFaceByDeptId(deptIds);
+            List<FaceInfo> faceInfos =faceInfoAccCtrlService.selectAllFaceByDeptId(deptIds);
+            if (faceInfos != null) {
+                for (FaceInfo faceInfo : faceInfos) {
+                    simpleFaceInfos.add(new SimpleFaceInfo(faceInfo.getFaceid(), faceInfo.getUserName(), faceInfo.getFaceImage(),
+                            faceInfo.getIsValidTime(),faceInfo.getAuthStatus()));
+                }
+            }
         }catch (Exception e){
             logger.error("查询人脸信息失败：", e);
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "查询人脸信息失败", faceInfos);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "查询人脸信息失败", simpleFaceInfos);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "查询人脸信息成功", faceInfos);
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "查询人脸信息成功", simpleFaceInfos);
     }
 
     @ApiOperation(value = "根据所传部门Id查询当前以及子部门下的门禁信息")
