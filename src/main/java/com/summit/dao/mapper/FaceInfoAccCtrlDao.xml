@@ -39,4 +39,16 @@
         </where>
     </select>
 
+    <select id="selectFaceInfoAccCtrlByActrlIds" resultType="string">
+        SELECT DISTINCT fc.face_id from face_info_access_control fc
+        <where>
+            <if test="accCtrlIds != null">
+                fc.access_control_id IN
+                <foreach item="accCtrlId" collection="accCtrlIds" index="index" open="(" separator="," close=")">
+                    #{accCtrlId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
 </mapper>

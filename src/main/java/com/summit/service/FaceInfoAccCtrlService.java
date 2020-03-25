@@ -2,7 +2,6 @@ package com.summit.service;
 
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.FaceInfo;
-import com.summit.dao.entity.FaceInfoAccCtrl;
 
 import java.util.List;
 
@@ -13,10 +12,10 @@ public interface FaceInfoAccCtrlService {
 
     /**
      * 根据门禁id查询所有的人脸信息列表
-     * @param accCtrlId
+     * @param accCtrlIds
      * @return 人脸信息列表
      */
-    List<FaceInfoAccCtrl> selectFaceInfoAccCtrlByActrlId(String accCtrlId);
+    List<String> selectFaceInfoAccCtrlByActrlIds(List<String> accCtrlIds);
 
     /**
      * 根据人脸名称和身份证号查询门禁的id

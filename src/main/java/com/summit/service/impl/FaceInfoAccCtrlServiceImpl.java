@@ -10,6 +10,7 @@ import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.service.AccessControlService;
 import com.summit.service.DeptsService;
 import com.summit.service.FaceInfoAccCtrlService;
+import com.summit.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,16 +36,17 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
 
     /**
      * 根据门禁id查询人脸信息列表
-     * @param accCtrlId
+     * @param accCtrlIds
      * @return 人脸信息列表
      */
     @Override
-    public List<FaceInfoAccCtrl> selectFaceInfoAccCtrlByActrlId(String accCtrlId) {
-        if(accCtrlId==null){
+    public List<String> selectFaceInfoAccCtrlByActrlIds(List<String> accCtrlIds) {
+        if(CommonUtil.isEmptyList(accCtrlIds)){
             log.error("门禁id为空");
             return null;
         }
-        return faceInfoAccCtrlDao.selectList(Wrappers.<FaceInfoAccCtrl>lambdaQuery().eq(FaceInfoAccCtrl::getAccessControlId,accCtrlId));
+        List<String> faceInfoAccCtrlIds=faceInfoAccCtrlDao.selectFaceInfoAccCtrlByActrlIds(accCtrlIds);
+        return faceInfoAccCtrlIds;
     }
 
     /**

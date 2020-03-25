@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -97,27 +96,22 @@ public class FaceInfoAccCtrlController {
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸授权操作失败", null);
     }
 
-    @ApiOperation(value = "根据门禁id查询已经授权的人脸信息列表", notes = "查询已经和门禁关联的人脸信息列表")
+    @ApiOperation(value = "根据所传门禁Id查询已经授权的人脸信息列表", notes = "查询已经和门禁关联的人脸信息列表")
     @GetMapping(value = "/selectFaceInfoByAccCtrlId")
-    public RestfulEntityBySummit<List<String>> selectFaceInfoByAccCtrlId(@ApiParam(value = "门禁id") @RequestParam(value = "accCtrlId", required =
-            false) String accCtrlId) {
-        if (accCtrlId == null) {
+    public RestfulEntityBySummit<List<String>> selectFaceInfoByAccCtrlId(@ApiParam(value = "门禁id") @RequestParam(value = "accCtrlIds", required =
+            false) List<String> accCtrlIds) {
+        if (CommonUtil.isEmptyList(accCtrlIds)) {
             log.error("门禁id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "门禁id为空", null);
         }
-        List<String> ids = new ArrayList<>();
+        List<String> faceInfoAccCtrlIds=null;
         try {
-            List<FaceInfoAccCtrl> faceInfoAccCtrls = faceInfoAccCtrlService.selectFaceInfoAccCtrlByActrlId(accCtrlId);
-            if (faceInfoAccCtrls != null) {
-                for (FaceInfoAccCtrl faceInfoAccCtrl : faceInfoAccCtrls) {
-                    ids.add(faceInfoAccCtrl.getFaceid());
-                }
-            }
+            faceInfoAccCtrlIds = faceInfoAccCtrlService.selectFaceInfoAccCtrlByActrlIds(accCtrlIds);
         } catch (Exception e) {
             log.error("查询人脸信息列表失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "查询人脸信息列表失败", ids);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "查询人脸信息列表失败", faceInfoAccCtrlIds);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "查询人脸信息列表成功", ids);
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "查询人脸信息列表成功", faceInfoAccCtrlIds);
     }
 
 
@@ -154,13 +148,6 @@ public class FaceInfoAccCtrlController {
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "查询人脸信息成功", accessControlInfos);
     }
-
-
-
-
-
-
-
 
 
     @ApiOperation(value = "根据门禁id查询人脸授权过程")
