@@ -30,6 +30,11 @@ public class FaceInfoAccCtrl {
     @TableField(value = "face_id")
     private String faceid;
 
+    @ApiModelProperty(value = "人脸录入状态(0：已录入，1：未录入)",name = "faceid")
+    @TableField(value = "auth_status")
+    private String authStatus;
+
+
     public FaceInfoAccCtrl() {
     }
 }

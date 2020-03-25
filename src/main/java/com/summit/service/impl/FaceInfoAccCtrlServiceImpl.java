@@ -1,7 +1,9 @@
 package com.summit.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
@@ -14,6 +16,7 @@ import com.summit.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,5 +123,83 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
             accessControlInfos= faceInfoAccCtrlDao.selectAllAccCtrlByDeptId(depts);
         }
         return accessControlInfos;
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class})
+    public int refreshAccCtrlFaceBatch(List<String> accessControlIds, List<String> faceids) throws Exception {
+        if (CommonUtil.isEmptyList(accessControlIds)){
+            return CommonConstants.UPDATE_ERROR;
+        }
+        for (String accessControlId:accessControlIds){
+            // 查出门禁关联的人脸
+            List<FaceInfoAccCtrl> faceInfoAccCtrls=selectFaceInfoAccCtrlsByAccCtrlId(accessControlId);
+            if(faceInfoAccCtrls != null && !faceInfoAccCtrls.isEmpty()){
+                //若传入列表为空集合，说明需要删除所有授权
+                if(faceids.isEmpty()){
+                    List<String> authIds = new ArrayList<>();
+                    for(FaceInfoAccCtrl faceInfoAccCtrl : faceInfoAccCtrls){
+                        if(faceInfoAccCtrl == null)
+                            continue;
+                        authIds.add(faceInfoAccCtrl.getId());
+                    }
+                     faceInfoAccCtrlDao.deleteBatchIds(authIds);
+                }
+                //先删除数据库在传入列表中找不到的门禁授权
+                for(FaceInfoAccCtrl faceInfoAccCtrl : faceInfoAccCtrls) {
+                    if(faceInfoAccCtrl == null)
+                        continue;
+                    if(!faceids.contains(faceInfoAccCtrl.getFaceid())){
+                        faceInfoAccCtrlDao.deleteById(faceInfoAccCtrl.getId());
+                    }
+                }
+                //再添加传入列表在数据库在中找不到的门禁授权
+                for(String faceid : faceids) {
+                    boolean needAdd = true;
+                    for(FaceInfoAccCtrl faceInfoAccCtrl : faceInfoAccCtrls) {
+                        if(faceid != null && faceid.equals(faceInfoAccCtrl.getFaceid())){
+                            needAdd = false;
+                            break;
+                        }
+                    }
+                    if(needAdd){
+                        faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null, accessControlId, faceid,"0"));
+                    }
+                }
+            }else {
+                //若之前无此角色对应的门禁权限，则直接添加
+                List<FaceInfoAccCtrl>  faceInfoAccCtrlList = new ArrayList<>();
+                for(String faceid : faceids) {
+                    faceInfoAccCtrlList.add(new FaceInfoAccCtrl(null,accessControlId,faceid,"0"));
+                }
+                insertFaceInfoAccCtrlBatch(faceInfoAccCtrlList);
+            }
+        }
+        return 0;
+    }
+
+    @Transactional(rollbackFor = {Exception.class})
+    public void insertFaceInfoAccCtrlBatch(List<FaceInfoAccCtrl> faceInfoAccCtrlList) throws Exception {
+        if(CommonUtil.isEmptyList(faceInfoAccCtrlList)){
+            log.error("门禁人脸权限对象数组为空");
+        }
+        for(FaceInfoAccCtrl faceInfoAccCtrl : faceInfoAccCtrlList) {
+            try {
+                faceInfoAccCtrlDao.insert(faceInfoAccCtrl);
+            } catch (Exception e) {
+                log.error("为门禁添加人脸{}时失败",faceInfoAccCtrl.getFaceid());
+                log.error("为门禁添加人脸失败",e);
+                throw new Exception(e.getMessage());
+            }
+        }
+    }
+
+    private List<FaceInfoAccCtrl> selectFaceInfoAccCtrlsByAccCtrlId(String accessControlId) {
+        if(accessControlId == null){
+            log.error("门禁id魏空");
+            return null;
+        }
+        QueryWrapper<FaceInfoAccCtrl> wrapper = new QueryWrapper<>();
+        return faceInfoAccCtrlDao.selectList(wrapper.eq("access_control_id",accessControlId));
     }
 }

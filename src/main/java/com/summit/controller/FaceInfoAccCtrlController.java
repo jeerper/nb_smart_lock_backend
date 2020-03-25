@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
+import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
@@ -46,7 +47,7 @@ public class FaceInfoAccCtrlController {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
     public RestfulEntityBySummit<String> authorityFaceInfoAccCtrl(@ApiParam(value = "是否授权", required = true) @RequestParam(value = "method") String method,
                                                                   @ApiParam(value = "门禁id列表", required = true) @RequestParam(value = "accessControlIds") List<String> accessControlIds,
-                                                                  @ApiParam(value = "人脸id列表", required = true) @RequestParam(value = "faceids") List<String> faceids) {
+                                                                  @ApiParam(value = "人脸id列表", required = true) @RequestParam(value = "faceids") List<String> faceids) throws Exception {
 
         if (CommonUtil.isEmptyList(accessControlIds)) {
             log.error("门禁信息id为空");
@@ -57,8 +58,13 @@ public class FaceInfoAccCtrlController {
             log.error("门禁和人脸关联类型字段为为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "门禁和人脸关联类型字段为为空", null);
         }
-        if (!CommonUtil.isEmptyList(faceids) && method.equals("auth")) {
-            for (String accessControlId:accessControlIds){
+        if (method.equals("auth")) {
+            int result=faceInfoAccCtrlService.refreshAccCtrlFaceBatch(accessControlIds,faceids);
+            if(result == CommonConstants.UPDATE_ERROR){
+                log.error("人脸门禁授权失败");
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸门禁授权失败",null);
+            }
+            /*for (String accessControlId:accessControlIds){
                 for (String faceId : faceids) {
                     try {
                         faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null, accessControlId, faceId));
@@ -66,7 +72,7 @@ public class FaceInfoAccCtrlController {
                         log.error("人脸授权关系添加异常", e);
                     }
                 }
-            }
+            }*/
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "人脸授权成功", null);
         }
         if (method.equals("cancel_auth")) {

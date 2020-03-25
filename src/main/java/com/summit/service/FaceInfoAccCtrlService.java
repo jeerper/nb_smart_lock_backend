@@ -48,4 +48,6 @@ public interface FaceInfoAccCtrlService {
      * @return
      */
     List<AccessControlInfo> selectAllAccCtrlByDeptId(List<String> deptIds);
+
+    int refreshAccCtrlFaceBatch(List<String> accessControlIds, List<String> faceids) throws Exception;
 }
