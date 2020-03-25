@@ -39,17 +39,8 @@
         (SELECT deptFace.face_id,GROUP_CONCAT(deptFace.dept_id)AS depts, GROUP_CONCAT(dept.DEPTNAME)AS deptNames  FROM dept_face_auth deptFace  inner join cbb_userauth.sys_dept dept on deptFace.dept_id=dept.ID  GROUP BY face_id)deptFace
         on faceInfo.face_id=deptFace.face_id
         <where>
-            <if test="faceInfoManagerEntity.userName !=null and faceInfoManagerEntity.userName !=''">
-                faceInfo.user_name like concat('%',#{faceInfoManagerEntity.userName}, '%')
-            </if>
-            <if test="faceInfoManagerEntity.cardId !=null and faceInfoManagerEntity.cardId !=''">
-               AND faceInfo.card_id like concat('%',#{faceInfoManagerEntity.cardId}, '%')
-            </if>
-            <if test="faceInfoManagerEntity.province !=null and faceInfoManagerEntity.province !=''">
-                AND faceInfo.province like concat('%',#{faceInfoManagerEntity.province}, '%')
-            </if>
-            <if test="faceInfoManagerEntity.city !=null and faceInfoManagerEntity.city !=''">
-                AND faceInfo.city  like concat('%',#{faceInfoManagerEntity.city}, '%')
+            <if test="faceInfoManagerEntity.pubquery !=null and faceInfoManagerEntity.pubquery !=''">
+                AND concat(faceInfo.user_name,faceInfo.card_id,faceInfo.province,faceInfo.city) like concat('%',#{faceInfoManagerEntity.pubquery}, '%')
             </if>
             <if test="faceInfoManagerEntity.gender !=null">
                 AND faceInfo.gender=#{faceInfoManagerEntity.gender}

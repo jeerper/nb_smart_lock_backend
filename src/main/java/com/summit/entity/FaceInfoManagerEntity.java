@@ -20,4 +20,5 @@ public class FaceInfoManagerEntity {
     private String faceEndTime;
     private Integer isValidTime;
     private String deptId;
+    private String pubquery;
 }

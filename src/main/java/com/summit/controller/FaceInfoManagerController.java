@@ -67,14 +67,8 @@ public class FaceInfoManagerController {
     @ApiOperation(value = "根据所传一个或多个条件组合分页查询人脸信息记录", notes = "各字段都为空则查询全部。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0" +
             "则查不到结果")
     @GetMapping(value = "/selectFaceInfoByPage")
-    public RestfulEntityBySummit<Page<FaceInfo>> selectFaceInfoByPage(@ApiParam(value = "姓名") @RequestParam(value = "userName", required = false,
-            defaultValue = "") String userName,
-                                                                      @ApiParam(value = "证件号") @RequestParam(value = "cardId", required = false,
-                                                                              defaultValue = "") String cardId,
-                                                                      @ApiParam(value = "省份") @RequestParam(value = "province", required = false,
-                                                                              defaultValue = "") String province,
-                                                                      @ApiParam(value = "城市") @RequestParam(value = "city", required = false,
-                                                                              defaultValue = "") String city,
+    public RestfulEntityBySummit<Page<FaceInfo>> selectFaceInfoByPage( @ApiParam(value = "姓名、省份、城市、证件号") @RequestParam(value = "pubquery", required = false,
+                                                                              defaultValue = "") String pubquery,
                                                                       @ApiParam(value = "性别，0：男，1：女，2：未知") @RequestParam(value = "gender",
                                                                               required = false) Integer gender,
                                                                       @ApiParam(value = "证件类型，0：身份证，1：护照，2：军官证，3：驾驶证，4：未知") @RequestParam(value =
@@ -93,10 +87,7 @@ public class FaceInfoManagerController {
 
         try {
             FaceInfoManagerEntity faceInfoManagerEntity = new FaceInfoManagerEntity();
-            faceInfoManagerEntity.setUserName(userName);
-            faceInfoManagerEntity.setCardId(cardId);
-            faceInfoManagerEntity.setProvince(province);
-            faceInfoManagerEntity.setCity(city);
+            faceInfoManagerEntity.setPubquery(pubquery);
             faceInfoManagerEntity.setGender(gender);
             faceInfoManagerEntity.setCardType(cardType);
             faceInfoManagerEntity.setFaceType(faceType);

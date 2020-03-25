@@ -115,7 +115,7 @@ public class FaceInfoAccCtrlController {
     }
 
 
-    @ApiOperation(value = "根据部门id查询当前以及子部门下的人脸信息")
+    @ApiOperation(value = "根据所传部门Id查询当前以及子部门下的人脸信息")
     @GetMapping(value = "/selectAllFaceByDeptId")
     public RestfulEntityBySummit<List<FaceInfo>> selectAllFaceByDeptId(@ApiParam(value = "部门Id",required = true) @RequestParam(value = "deptIds")List<String> deptIds){
         if(CommonUtil.isEmptyList(deptIds)){
