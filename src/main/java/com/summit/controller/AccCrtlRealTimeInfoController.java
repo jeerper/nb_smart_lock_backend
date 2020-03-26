@@ -41,41 +41,50 @@ public class AccCrtlRealTimeInfoController {
 
     @ApiOperation(value = "分页查询门禁操作实时信息", notes = "分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0则查不到结果")
     @GetMapping(value = "/selectAccCtrlRealTimeByPage")
-    public RestfulEntityBySummit<Map<String,Object>> selectAllLockRealTimeInfo(AccCtrlRealTimeEntity accCtrlRealTimeEntity,
-                                                                               @ApiParam(value = "当前页，大于等于1")  @RequestParam(value = "current", required = false) Integer current,
-                                                                               @ApiParam(value = "每页条数，大于等于0")  @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        Map<String,Object> data = new HashMap<>();
+    public RestfulEntityBySummit<Map<String, Object>> selectAllLockRealTimeInfo(AccCtrlRealTimeEntity accCtrlRealTimeEntity,
+                                                                                @ApiParam(value = "当前页，大于等于1") @RequestParam(value = "current", required = false) Integer current,
+                                                                                @ApiParam(value = "每页条数，大于等于0") @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        Map<String, Object> data = new HashMap<>();
         try {
             //查出有操作记录的门禁并再分页
-            Page<AccCtrlRealTimeEntity> accCtrlRealTimePage = accCtrlRealTimeService.selectByConditionPage(accCtrlRealTimeEntity, null, null, current,pageSize);
+            Page<AccCtrlRealTimeEntity> accCtrlRealTimePage = accCtrlRealTimeService.selectByConditionPage(accCtrlRealTimeEntity, null, null, current, pageSize);
             Integer integer = alarmService.selectAlarmCountByStatus(AlarmStatus.UNPROCESSED.getCode());
             int allAlarmCount = integer == null ? 0 : integer;
-            data.put("allAlarmCount",allAlarmCount);
+            data.put("allAlarmCount", allAlarmCount);
             data.put("content", accCtrlRealTimePage.getContent());
-            data.put("pageable",accCtrlRealTimePage.getPageable());
+            data.put("pageable", accCtrlRealTimePage.getPageable());
         } catch (Exception e) {
-            log.error("查询门禁操作记录失败",e);
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询门禁操作记录失败", data);
+            log.error("查询门禁操作记录失败", e);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "查询门禁操作记录失败", data);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询门禁操作记录成功", data);
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "查询门禁操作记录成功", data);
 
     }
 
     @ApiOperation(value = "从所有门禁实时信息中查询最后更新时间毫秒值", notes = "从所有门禁实时信息中查询最后更新时间毫秒值")
     @GetMapping(value = "/selectLastUpdatetime")
-    public RestfulEntityBySummit<Long> selectLastUpdatetime(){
+    public RestfulEntityBySummit<Long> selectLastUpdatetime() {
         Long updatetime = null;
         try {
             updatetime = accCtrlRealTimeService.selectLastUpdatetime();
         } catch (Exception e) {
             log.error("查询门禁最近更新时间失败");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询门禁最近更新时间失败", updatetime);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "查询门禁最近更新时间失败", updatetime);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询门禁最近更新时间成功", updatetime);
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "查询门禁最近更新时间成功", updatetime);
     }
 
 
-
-
-
+    @ApiOperation(value = "查询告警次数，其中告警状态为未处理，门禁操作类型为告警")
+    @GetMapping(value = "/selectAllAlarmCount")
+    public RestfulEntityBySummit<Integer> selectAllAlarmCount() {
+        Integer allAlarmCount=0;
+        try{
+            allAlarmCount = alarmService.selectAlarmCountByStatus(AlarmStatus.UNPROCESSED.getCode());
+        }catch (Exception e){
+            log.error("查询告警次数失败", e);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "查询告警次数失败", allAlarmCount);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "查询告警次数成功", allAlarmCount);
+    }
 }

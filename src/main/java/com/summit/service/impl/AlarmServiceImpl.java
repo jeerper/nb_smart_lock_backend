@@ -13,6 +13,7 @@ import com.summit.service.AddAccCtrlprocessService;
 import com.summit.service.AlarmService;
 import com.summit.util.CommonUtil;
 import com.summit.util.PageConverter;
+import com.summit.util.UserDeptAuthUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -213,8 +214,8 @@ public class AlarmServiceImpl implements AlarmService {
             log.error("告警状态为空");
             return null;
         }
-        List<String> roles = UserAuthUtils.getRoles();
-        return alarmDao.selectAlarmCountByStatus(alarmStatus,roles);
+        List<String> depts = UserDeptAuthUtils.getDepts();
+        return alarmDao.selectAlarmCountByStatus(alarmStatus,depts);
     }
 
     /**
