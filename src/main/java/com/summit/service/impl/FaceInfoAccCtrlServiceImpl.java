@@ -3,7 +3,6 @@ package com.summit.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
@@ -128,14 +127,11 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public int refreshAccCtrlFaceBatch(List<String> accessControlIds, List<String> faceids) throws Exception {
-        if (CommonUtil.isEmptyList(accessControlIds)){
-            return CommonConstants.UPDATE_ERROR;
-        }
         for (String accessControlId:accessControlIds){
             // 查出门禁关联的人脸
             List<FaceInfoAccCtrl> faceInfoAccCtrls=selectFaceInfoAccCtrlsByAccCtrlId(accessControlId);
             if(faceInfoAccCtrls != null && !faceInfoAccCtrls.isEmpty()){
-                //若传入列表为空集合，说明需要删除所有授权
+               /* //若传入列表为空集合，说明需要删除所有授权
                 if(faceids.isEmpty()){
                     List<String> authIds = new ArrayList<>();
                     for(FaceInfoAccCtrl faceInfoAccCtrl : faceInfoAccCtrls){
@@ -144,15 +140,15 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
                         authIds.add(faceInfoAccCtrl.getId());
                     }
                      faceInfoAccCtrlDao.deleteBatchIds(authIds);
-                }
+                }*/
                 //先删除数据库在传入列表中找不到的门禁授权
-                for(FaceInfoAccCtrl faceInfoAccCtrl : faceInfoAccCtrls) {
+                /*for(FaceInfoAccCtrl faceInfoAccCtrl : faceInfoAccCtrls) {
                     if(faceInfoAccCtrl == null)
                         continue;
                     if(!faceids.contains(faceInfoAccCtrl.getFaceid())){
                         faceInfoAccCtrlDao.deleteById(faceInfoAccCtrl.getId());
                     }
-                }
+                }*/
                 //再添加传入列表在数据库在中找不到的门禁授权
                 for(String faceid : faceids) {
                     boolean needAdd = true;

@@ -5,13 +5,13 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
-import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FaceInfoAccCtrl;
 import com.summit.dao.repository.FaceInfoAccCtrlDao;
 import com.summit.entity.SimFaceInfoAccCtl;
 import com.summit.entity.SimpleFaceInfo;
+import com.summit.exception.ErrorMsgException;
 import com.summit.service.FaceInfoAccCtrlService;
 import com.summit.util.CommonUtil;
 import io.swagger.annotations.Api;
@@ -53,49 +53,31 @@ public class FaceInfoAccCtrlController {
             log.error("门禁信息id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "门禁信息id为空", null);
         }
-
+        if (CommonUtil.isEmptyList(faceids)) {
+            log.error("人脸id为空");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "人脸id为空", null);
+        }
         if (StrUtil.isBlank(method)) {
             log.error("门禁和人脸关联类型字段为为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "门禁和人脸关联类型字段为为空", null);
         }
         if (method.equals("auth")) {
-            int result=faceInfoAccCtrlService.refreshAccCtrlFaceBatch(accessControlIds,faceids);
-            if(result == CommonConstants.UPDATE_ERROR){
-                log.error("人脸门禁授权失败");
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"人脸门禁授权失败",null);
+            try{
+                faceInfoAccCtrlService.refreshAccCtrlFaceBatch(accessControlIds,faceids);
+            }catch (Exception e){
+                log.error("人脸授权关系添加异常", e);
             }
-            /*for (String accessControlId:accessControlIds){
-                for (String faceId : faceids) {
-                    try {
-                        faceInfoAccCtrlDao.insert(new FaceInfoAccCtrl(null, accessControlId, faceId));
-                    } catch (Exception e) {
-                        log.error("人脸授权关系添加异常", e);
-                    }
-                }
-            }*/
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "人脸授权成功", null);
         }
         if (method.equals("cancel_auth")) {
-            //若传入集合列表为空，则需要删除所有人脸
-            if (CommonUtil.isEmptyList(faceids)) {
-                for (String accessControlId:accessControlIds){
+            for (String accessControlId:accessControlIds) {
+                for (String faceId : faceids) {
                     try {
                         faceInfoAccCtrlDao.delete(Wrappers.<FaceInfoAccCtrl>lambdaQuery()
-                                .eq(FaceInfoAccCtrl::getAccessControlId, accessControlId));
+                                .eq(FaceInfoAccCtrl::getAccessControlId, accessControlId)
+                                .eq(FaceInfoAccCtrl::getFaceid, faceId));
                     } catch (Exception e) {
                         log.error("人脸授权关系删除异常", e);
-                    }
-                }
-            } else {
-                for (String accessControlId:accessControlIds){
-                    for (String faceId : faceids) {
-                        try {
-                            faceInfoAccCtrlDao.delete(Wrappers.<FaceInfoAccCtrl>lambdaQuery()
-                                    .eq(FaceInfoAccCtrl::getAccessControlId, accessControlId)
-                                    .eq(FaceInfoAccCtrl::getFaceid, faceId));
-                        } catch (Exception e) {
-                            log.error("人脸授权关系删除异常", e);
-                        }
                     }
                 }
             }
@@ -179,6 +161,13 @@ public class FaceInfoAccCtrlController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "门禁id为空", null);
         }
         return ResultBuilder.buildSuccess();
+    }
+
+    private String getErrorMsg(String msg, Exception e) {
+        if(e instanceof ErrorMsgException){
+            return ((ErrorMsgException) e).getErrorMsg();
+        }
+        return msg;
     }
 }
 
