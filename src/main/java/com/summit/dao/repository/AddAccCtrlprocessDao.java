@@ -18,5 +18,5 @@ public interface AddAccCtrlprocessDao  extends BaseMapper<AddAccCtrlprocess>{
 
     int updateAddAccProcessAlarmCount(@Param("accessControlId") String accessControlId);
 
-
+    List<AddAccCtrlprocess> selectAddAcpByAcIds(@Param("acCtrlIds") List<String> acCtrlIds);
 }

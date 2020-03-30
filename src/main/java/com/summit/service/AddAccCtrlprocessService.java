@@ -5,7 +5,6 @@ package com.summit.service;
  */
 
 import com.summit.dao.entity.AddAccCtrlprocess;
-import com.summit.dao.entity.SimplePage;
 
 import java.util.List;
 
@@ -38,7 +37,7 @@ public interface AddAccCtrlprocessService {
      * 查询所有的统计分析记录
      * @return 所有的统计分析记录
      */
-    List<AddAccCtrlprocess> selectAddAccCtrlprocess(SimplePage page);
+    List<AddAccCtrlprocess> selectAddAccCtrlprocess(List<String> accCtrlIds);
     /**
      * 根据门禁id修改统计记录表
      * @return 所有的统计分析记录

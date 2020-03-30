@@ -40,4 +40,16 @@
         update addup_acc_ctrl_process set alarm_count = alarm_count + 1
         where  access_control_id==#{accessControlId}
     </update>
+
+    <select id="selectAddAcpByAcIds" resultMap="accCtrlprocess">
+        SELECT
+        <include refid="accCtrlprocessCloum"/>
+        FROM addup_acc_ctrl_process  aacp inner join access_control  ac on aacp.access_control_id=ac.access_control_id
+        <where>
+            aacp.access_control_id IN
+            <foreach item="acCtrlId" collection="acCtrlIds" index="index" open="(" separator="," close=")">
+                #{acCtrlId}
+            </foreach>
+        </where>
+    </select>
 </mapper>

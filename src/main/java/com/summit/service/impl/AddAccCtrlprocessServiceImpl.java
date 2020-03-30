@@ -1,18 +1,23 @@
 package com.summit.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.summit.common.Common;
+import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.AddAccCtrlprocess;
-import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AddAccCtrlprocessDao;
+import com.summit.dao.repository.FaceInfoAccCtrlDao;
 import com.summit.exception.ErrorMsgException;
 import com.summit.service.AddAccCtrlprocessService;
+import com.summit.service.DeptsService;
+import com.summit.service.FaceInfoAccCtrlService;
 import com.summit.util.CommonUtil;
-import com.summit.util.UserDeptAuthUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +28,12 @@ import java.util.List;
 public class AddAccCtrlprocessServiceImpl implements AddAccCtrlprocessService {
     @Autowired
     private AddAccCtrlprocessDao addAccCtrlprocessDao;
-
+    @Autowired
+    private FaceInfoAccCtrlService faceInfoAccCtrlService;
+    @Autowired
+    private DeptsService deptsService;
+    @Autowired
+    private FaceInfoAccCtrlDao faceInfoAccCtrlDao;
     /**
      * 分析统计记录插入
      * @param addAccCtrlprocess
@@ -65,9 +75,26 @@ public class AddAccCtrlprocessServiceImpl implements AddAccCtrlprocessService {
      * @return 所有的统计分析记录
      */
     @Override
-    public List<AddAccCtrlprocess> selectAddAccCtrlprocess(SimplePage page) {
-        List<String> depts = UserDeptAuthUtils.getDepts();
-        List<AddAccCtrlprocess> addAccCtrlprocesses=addAccCtrlprocessDao.selectAddAccCtrlprocessDesc(depts);
+    public List<AddAccCtrlprocess> selectAddAccCtrlprocess(List<String> accCtrlIds) {
+        List<AddAccCtrlprocess> addAccCtrlprocesses=null;
+        if (!CommonUtil.isEmptyList(accCtrlIds)){
+             addAccCtrlprocesses=addAccCtrlprocessDao.selectAddAcpByAcIds(accCtrlIds);
+        }else {
+            if(Common.getLogUser().getDepts()!=null && Common.getLogUser().getDepts().length>0){
+                String pdept=Common.getLogUser().getDepts()[0];
+                JSONObject paramJson=new JSONObject();
+                paramJson.put("pdept",pdept);
+                List<String> depts = deptsService.getDeptsByPdept(paramJson);
+                List<AccessControlInfo> accessControlInfos= faceInfoAccCtrlDao.selectAllAccCtrlByDeptId(depts);
+                List<String> actIds=new ArrayList<>();
+                for (AccessControlInfo accessControlInfo:accessControlInfos){
+                    actIds.add(accessControlInfo.getAccessControlId());
+                }
+                addAccCtrlprocesses=addAccCtrlprocessDao.selectAddAcpByAcIds(actIds);
+            }
+        }
+        /*List<String> depts = UserDeptAuthUtils.getDepts();
+        List<AddAccCtrlprocess> addAccCtrlprocesses=addAccCtrlprocessDao.selectAddAccCtrlprocessDesc(depts);*/
         return addAccCtrlprocesses;
     }
     /**
