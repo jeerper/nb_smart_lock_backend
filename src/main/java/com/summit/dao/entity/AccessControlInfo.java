@@ -92,6 +92,15 @@ public class AccessControlInfo {
     @TableField(value = "latitude")
     private String latitude;
 
+
+    @ApiModelProperty(value="工作状态(0：实时在线，1：忙时在线，2:闲时休眠)",name="workStatus")
+    @TableField(value = "work_status")
+    private Integer workStatus;
+
+    @ApiModelProperty(value="告警状态(0：低电压告警，2低电量告警，1：非法开锁告警，3：掉线告警，4：故障告警，5：关锁超时报警)",name="alarmStatus")
+    @TableField(value = "alarm_status")
+    private Integer alarmStatus;
+
     public AccessControlInfo(){}
 
     public AccessControlInfo(String accessControlName, String createby, String lockCode, String entryCameraIp, String exitCameraIp, Integer status){

@@ -83,8 +83,8 @@ public class AccCtrlProcess {
     @TableField(value = "face_lib_type")
     private Integer faceLibType;
 
-    //1：开锁，2：关锁
-    @ApiModelProperty(value="门禁操作类型，1：开锁，2：关锁，3：告警",name="processType")
+    //1：开锁，2：关锁，3:不在线
+    @ApiModelProperty(value="门禁操作类型，1：开锁，2：关锁，3：不在线",name="processType")
     @TableField(value = "process_type")
     private Integer processType;
 
@@ -153,6 +153,22 @@ public class AccCtrlProcess {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     @TableField(value = "create_time")
     private Date createTime;
+
+    @ApiModelProperty(value="进出方式(0:进,1:出)",name="enterOrExit")
+    @TableField(value = "enterOrExit")
+    private Integer enterOrExit;
+
+    @ApiModelProperty(value="开锁事由",name="unlockCause")
+    @TableField(value = "unlockCause")
+    private String unlockCause;
+
+    @ApiModelProperty(value="工作状态(0：实时在线，1：忙时在线，2:闲时休眠)",name="workStatus")
+    @TableField(value = "work_status")
+    private Integer workStatus;
+
+    @ApiModelProperty(value="告警状态(0：低电压告警，2低电量告警，1：非法开锁告警，3：掉线告警，4：故障告警，5：关锁超时报警)",name="alarmStatus")
+    @TableField(value = "alarm_status")
+    private Integer alarmStatus;
 
     public AccCtrlProcess(){}
 }

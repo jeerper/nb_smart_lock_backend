@@ -80,7 +80,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                 CameraUploadType type;
                 if (faceInfo.getFaceLibType() == FaceLibType.FACE_LIB_ALARM) {
                     log.debug("开始报警!!!!！！！！");
-                    type = CameraUploadType.Alarm;
+                    type = CameraUploadType.Illegal_Alarm;
                 } else {
                     type = CameraUploadType.Unlock;
                 }
@@ -203,7 +203,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
                         log.debug("用户{}没有打开门禁{}的权限", faceInfo.getName(), accessControlInfo.getAccessControlId());
                         processResult = LockProcessResultType.Failure;
                         failReason = "用户" + faceInfo.getName() + "没有打开门禁" + accessControlInfo.getAccessControlName() + "的权限";
-                        type = CameraUploadType.Alarm;
+                        type = CameraUploadType.Illegal_Alarm;
                     }
                 }
 
@@ -227,11 +227,11 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
         try {
             log.info("门禁操作记录信息入库");
             //插入门禁操作记录并更新门禁信息表和锁信息表(门禁信息表和锁信息表中都含有门禁状态)
-            accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess);
+            accCtrlProcessService.insertAccCtrlProcess(type,accCtrlProcess);
             //获取实时状态信息
-            AccCtrlRealTimeEntity accCtrlRealTimeEntity = accCtrlProcessUtil.getAccCtrlRealTimeEntity(accCtrlProcess);
+            AccCtrlRealTimeEntity accCtrlRealTimeEntity = accCtrlProcessUtil.getAccCtrlRealTimeEntity(type,accCtrlProcess);
             //如果是告警类型需要同时插入告警表
-            if (CameraUploadType.Alarm == type) {
+            if (CameraUploadType.Illegal_Alarm == type) {
                 log.info("门禁操作告警信息入库");
                 Alarm alarm = accCtrlProcessUtil.getAlarm(accCtrlProcess);
                 alarmService.insertAlarm(alarm);

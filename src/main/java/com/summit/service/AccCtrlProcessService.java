@@ -2,6 +2,7 @@ package com.summit.service;
 
 import com.summit.cbb.utils.page.Page;
 import com.summit.dao.entity.AccCtrlProcess;
+import com.summit.sdk.huawei.model.CameraUploadType;
 
 import java.util.Date;
 import java.util.List;
@@ -15,7 +16,7 @@ public interface AccCtrlProcessService {
      * @param accCtrlProcess 门禁操作记录
      * @return 不为-1则成功
      */
-    int insertAccCtrlProcess(AccCtrlProcess accCtrlProcess);
+    int insertAccCtrlProcess(CameraUploadType type, AccCtrlProcess accCtrlProcess);
 
     /**
      * 门禁操作记录更新

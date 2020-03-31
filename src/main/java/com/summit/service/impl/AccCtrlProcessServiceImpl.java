@@ -5,15 +5,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.cbb.utils.page.Page;
 import com.summit.common.util.UserAuthUtils;
 import com.summit.constants.CommonConstants;
-import com.summit.dao.entity.AccCtrlProcess;
-import com.summit.dao.entity.AccessControlInfo;
-import com.summit.dao.entity.Alarm;
-import com.summit.dao.entity.FileInfo;
-import com.summit.dao.entity.LockInfo;
+import com.summit.dao.entity.*;
 import com.summit.dao.repository.AccCtrlProcessDao;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.FileInfoDao;
+import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.service.AccCtrlProcessService;
 import com.summit.service.AccessControlService;
 import com.summit.service.AlarmService;
@@ -55,7 +52,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
      */
     @Override
     @Transactional
-    public int insertAccCtrlProcess(AccCtrlProcess accCtrlProcess) {
+    public int insertAccCtrlProcess(CameraUploadType type, AccCtrlProcess accCtrlProcess) {
         if (accCtrlProcess == null) {
             log.error("锁操作信息为空");
             return CommonConstants.UPDATE_ERROR;
@@ -66,14 +63,31 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
             accCtrlProcess.setFacePanoramaId(facePanorama.getFileId());
         }
 
-        accessControlDao.update(null, Wrappers.<AccessControlInfo>lambdaUpdate()
-                .set(AccessControlInfo::getStatus,accCtrlProcess.getProcessType())
-                .eq(AccessControlInfo::getAccessControlId, accCtrlProcess.getAccessControlId()));
+        if (type !=null && CameraUploadType.Unlock == type ){
+            accessControlDao.update(null, Wrappers.<AccessControlInfo>lambdaUpdate()
+                    .set(AccessControlInfo::getStatus,accCtrlProcess.getProcessType())
+                    .eq(AccessControlInfo::getAccessControlId, accCtrlProcess.getAccessControlId()));
+        }else if (type !=null  && CameraUploadType.Illegal_Alarm == type){
+            accessControlDao.update(null, Wrappers.<AccessControlInfo>lambdaUpdate()
+                    .set(AccessControlInfo::getAlarmStatus,accCtrlProcess.getAlarmStatus())
+                    .eq(AccessControlInfo::getAccessControlId, accCtrlProcess.getAccessControlId()));
+        }else if (type !=null && CameraUploadType.Lock==type){
+            accessControlDao.update(null, Wrappers.<AccessControlInfo>lambdaUpdate()
+                    .set(AccessControlInfo::getStatus,accCtrlProcess.getProcessType())
+                    .eq(AccessControlInfo::getAccessControlId, accCtrlProcess.getAccessControlId()));
+        }
+
 
         LockInfo lockInfo = new LockInfo();
         lockInfo.setLockId(accCtrlProcess.getLockId());
         lockInfo.setLockCode(accCtrlProcess.getLockCode());
-        lockInfo.setStatus(accCtrlProcess.getProcessType());
+        if ( type !=null && CameraUploadType.Lock==type){
+            lockInfo.setStatus(accCtrlProcess.getProcessType());
+        }else if (type !=null && CameraUploadType.Illegal_Alarm == type){
+            lockInfo.setAlarmStatus(accCtrlProcess.getAlarmStatus());
+        }else if (type !=null && CameraUploadType.Unlock == type ){
+            lockInfo.setStatus(accCtrlProcess.getProcessType());
+        }
         lockInfo.setUpdatetime(accCtrlProcess.getCreateTime());
         lockInfoService.updateLock(lockInfo);
 

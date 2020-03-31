@@ -23,4 +23,11 @@ public class UpdateAlarmParam {
     private String lockId;
     @ApiModelProperty(value="是否需要开锁，默认false",name="needUnLock")
     private boolean needUnLock = false;
+    @ApiModelProperty(value="进出方式(0:进,1:出)",name="enterOrExit")
+    private Integer enterOrExit;
+    @ApiModelProperty(value="开锁事由",name="unlockCause")
+    private String unlockCause;
+
+    public UpdateAlarmParam() {
+    }
 }

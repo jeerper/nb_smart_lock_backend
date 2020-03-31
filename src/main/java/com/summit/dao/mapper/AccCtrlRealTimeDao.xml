@@ -9,7 +9,7 @@
         <result column="lock_code" jdbcType="VARCHAR" property="lockCode"/>
         <result column="acc_ctrl_status" jdbcType="INTEGER" property="accCtrlStatus"/>
         <result column="lock_status" jdbcType="INTEGER" property="lockStatus"/>
-        <result column="device_id" jdbcType="VARCHAR" property="deviceId"/>
+        <result column="device_id" jdbcType="VARCHAR" property="devId"/>
         <result column="device_ip" jdbcType="VARCHAR" property="deviceIp"/>
         <result column="device_type" jdbcType="VARCHAR" property="deviceType"/>
         <result column="face_id" jdbcType="VARCHAR" property="faceId"/>

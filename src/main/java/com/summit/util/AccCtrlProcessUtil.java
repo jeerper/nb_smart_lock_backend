@@ -5,26 +5,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.entity.UserInfo;
 import com.summit.common.web.filter.UserContextHolder;
-import com.summit.dao.entity.AccCtrlProcess;
-import com.summit.dao.entity.AccCtrlRealTimeEntity;
-import com.summit.dao.entity.AccessControlInfo;
-import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.FaceInfo;
-import com.summit.dao.entity.FileInfo;
-import com.summit.dao.entity.LockInfo;
-import com.summit.dao.repository.AccCtrlProcessDao;
-import com.summit.dao.repository.AccCtrlRealTimeDao;
-import com.summit.dao.repository.AccessControlDao;
-import com.summit.dao.repository.AlarmDao;
-import com.summit.dao.repository.FaceInfoManagerDao;
-import com.summit.dao.repository.LockInfoDao;
+import com.summit.dao.entity.*;
+import com.summit.dao.repository.*;
 import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
-import com.summit.sdk.huawei.model.AlarmStatus;
-import com.summit.sdk.huawei.model.CameraUploadType;
-import com.summit.sdk.huawei.model.LockProcessMethod;
-import com.summit.sdk.huawei.model.LockProcessResultType;
-import com.summit.sdk.huawei.model.LockProcessType;
+import com.summit.sdk.huawei.model.*;
 import com.summit.service.AccCtrlProcessService;
 import com.summit.service.AccessControlService;
 import com.summit.service.CameraDeviceService;
@@ -229,7 +215,8 @@ public class AccCtrlProcessUtil {
             }
         }
         try {
-            accCtrlProcessService.insertAccCtrlProcess(accCtrlProcess);
+            CameraUploadType type =null;
+            accCtrlProcessService.insertAccCtrlProcess(type, accCtrlProcess);
             log.info("门禁操作记录入库成功");
         } catch (Exception e) {
             log.error("门禁操作记录入库失败");
@@ -289,13 +276,11 @@ public class AccCtrlProcessUtil {
         if (CameraUploadType.Unlock == type) {
             //改为在开锁真正成功后更新状态
             accCtrlProcess.setProcessTime(new Date());
-            accCtrlProcess.setProcessType(LockProcessType.UNLOCK.getCode());
+            accCtrlProcess.setProcessType(LockProcessType.UNLOCK.getCode());//开锁
             //刷脸成功后开锁操作也有可能失败,成功则failReason=null
             accCtrlProcess.setFailReason(failReason);
-        } else if (CameraUploadType.Alarm == type) {
-
-            accCtrlProcess.setProcessType(LockProcessType.LOCK_ALARM.getCode());
-
+        } else if (CameraUploadType.Illegal_Alarm == type) {
+            accCtrlProcess.setAlarmStatus(AlarmProcessType.Illegal_LOCK_ALARM.getCode());//非法开锁告警
             if (CommonUtil.isEmptyStr(failReason)) {
                 accCtrlProcess.setFailReason("匹配度过低");
             } else {
@@ -303,7 +288,7 @@ public class AccCtrlProcessUtil {
             }
         } else {
             //关锁
-            accCtrlProcess.setProcessType(LockProcessType.CLOSE_LOCK.getCode());
+            accCtrlProcess.setProcessType(LockProcessType.CLOSE_LOCK.getCode());//关锁
         }
         if (processResult != null) {
             accCtrlProcess.setProcessResult(processResult.getCode());
@@ -350,7 +335,7 @@ public class AccCtrlProcessUtil {
      * @param accCtrlProcess 门禁操作信息对象
      * @return 门禁实时信息对象
      */
-    public AccCtrlRealTimeEntity getAccCtrlRealTimeEntity(AccCtrlProcess accCtrlProcess) {
+    public AccCtrlRealTimeEntity getAccCtrlRealTimeEntity(CameraUploadType type,AccCtrlProcess accCtrlProcess) {
 
         String accessControlId;
         if (accCtrlProcess == null || (accessControlId = accCtrlProcess.getAccessControlId()) == null)
@@ -381,7 +366,13 @@ public class AccCtrlProcessUtil {
 //            } else if (accCtrlProcess.getProcessResult() != null && LockProcessResultType.codeOf(accCtrlProcess.getProcessResult()) != LockProcessResultType.CommandSuccess) {
 //                accCtrlRealTimeEntity.setAccCtrlStatus(LockProcessType.CLOSE_LOCK.getCode());
 //            }
-            accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());
+            if (type !=null && CameraUploadType.Unlock == type ){
+                accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());
+            }else if (type !=null && CameraUploadType.Lock==type){
+                accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());
+            }else if (type !=null  && CameraUploadType.Illegal_Alarm == type){
+                accCtrlRealTimeEntity.setAlarmStatus(accCtrlProcess.getAlarmStatus());
+            }
             accCtrlRealTimeEntity.setLongitude(accessControlInfo.getLongitude());
             accCtrlRealTimeEntity.setLatitude(accessControlInfo.getLatitude());
         }

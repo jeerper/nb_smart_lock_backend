@@ -33,7 +33,7 @@ public class AccCtrlRealTimeEntity {
     @ApiModelProperty(value="锁编号",name="lockCode")
     @TableField(value = "lock_code")
     private String lockCode;
-    @ApiModelProperty(value="门禁状态,1打开，2锁定，3告警",name="accCtrlStatus")
+    @ApiModelProperty(value="开锁状态，1：开锁，2：关锁，3:不在线",name="accCtrlStatus")
     @TableField(value = "acc_ctrl_status")
     private Integer accCtrlStatus;
     @ApiModelProperty(value="锁状态",name="lockStatus",notes = "1开锁，2锁定，3告警")
@@ -137,6 +137,14 @@ public class AccCtrlRealTimeEntity {
     @ApiModelProperty(value="最后更新时间",name="updatetime")
     @TableField(value = "updatetime")
     private Date updatetime;
+
+    @ApiModelProperty(value="工作状态(0：实时在线，1：忙时在线，2:闲时休眠)",name="workStatus")
+    @TableField(value = "work_status")
+    private Integer workStatus;
+
+    @ApiModelProperty(value="告警状态(0：低电压告警，1低电量告警，2：非法开锁告警，3：掉线告警，4：故障告警，5：关锁超时报警)",name="alarmStatus")
+    @TableField(value = "alarm_status")
+    private Integer alarmStatus;
 
     public AccCtrlRealTimeEntity(){}
 

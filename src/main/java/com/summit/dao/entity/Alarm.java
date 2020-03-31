@@ -67,5 +67,9 @@ public class Alarm {
     @TableField(exist = false)
     private Integer processResult;
 
+    @ApiModelProperty(value="进出方式(0:进,1:出)",name="enterOrExit")
+    @TableField(value = "enterOrExit")
+    private Integer enterOrExit;
+
     public Alarm(){}
 }

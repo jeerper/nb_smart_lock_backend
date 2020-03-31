@@ -83,6 +83,8 @@ public class AlarmController {
         String lockId = updateAlarmParam.getLockId();
         Integer alarmStatus = updateAlarmParam.getAlarmStatus();
         String processRemark = updateAlarmParam.getProcessRemark();
+        Integer enterOrExit = updateAlarmParam.getEnterOrExit();//进或者出
+        String unlockCause = updateAlarmParam.getUnlockCause();//进出事由
         String operName = null;
         UserInfo userInfo = UserContextHolder.getUserInfo();
         if (userInfo != null)
@@ -137,6 +139,8 @@ public class AlarmController {
             accCtrlProcess.setProcessResult(processResult);
             accCtrlProcess.setProcessUuid(unlockProcessUuid);
             accCtrlProcess.setCreateTime(processTime);
+            accCtrlProcess.setEnterOrExit(enterOrExit);
+            accCtrlProcess.setUnlockCause(unlockCause);
             accCtrlProcessDao.insert(accCtrlProcess);
         }
 
