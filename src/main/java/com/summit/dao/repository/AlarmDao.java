@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface AlarmDao  extends BaseMapper<Alarm> {
 
-    Alarm selectAlarmById(@Param("alarmId") String alarmId, @Param("roles") List<String> roles);
+    Alarm selectAlarmById(@Param("alarmId") String alarmId, @Param("depts") List<String> depts);
 
     Alarm selectByAccCtrlProId(@Param("accCtrlProId") String accCtrlProId, @Param("roles") List<String> roles);
 
@@ -18,7 +18,7 @@ public interface AlarmDao  extends BaseMapper<Alarm> {
                                 @Param("alarm") Alarm alarm,
                                 @Param("start") Date start,
                                 @Param("end") Date end,
-                                @Param("roles") List<String> roles);
+                                @Param("depts") List<String> depts);
 
     Integer selectAlarmCountByStatus(@Param("alarmStatus") Integer alarmStatus, @Param("depts") List<String> depts);
 

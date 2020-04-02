@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface AccCtrlProcessDao extends BaseMapper<AccCtrlProcess> {
 
-    AccCtrlProcess selectAccCtrlProcessById(@Param("accCtrlProId")  String accCtrlProId, @Param("roles") List<String> roles);
+    AccCtrlProcess selectAccCtrlProcessById(@Param("accCtrlProId")  String accCtrlProId, @Param("depts") List<String> depts);
 
     List<AccCtrlProcess> selectAccCtrlProcessByLockCode(@Param("lockCode") String lockCode,
                                        @Param("page") SimplePage page,
@@ -20,7 +20,7 @@ public interface AccCtrlProcessDao extends BaseMapper<AccCtrlProcess> {
     List<AccCtrlProcess> selectCondition(Page page, @Param("accCtrlProcess") AccCtrlProcess accCtrlProcess,
                                          @Param("start") Date start,
                                          @Param("end") Date end,
-                                         @Param("roles") List<String> roles);
+                                         @Param("depts") List<String> depts);
 
     List<AccCtrlProcess> selectRecodByAccessControlIds(@Param("accessControlIds") List<String> accessControlIds);
 

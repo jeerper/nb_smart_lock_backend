@@ -16,6 +16,7 @@ import com.summit.service.AccessControlService;
 import com.summit.service.AlarmService;
 import com.summit.service.LockInfoService;
 import com.summit.util.CommonUtil;
+import com.summit.util.UserDeptAuthUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -208,7 +209,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
             log.error("门禁操作记录id为空");
             return null;
         }
-        return accCtrlProcessDao.selectAccCtrlProcessById(accCtrlProId, UserAuthUtils.getRoles());
+        return accCtrlProcessDao.selectAccCtrlProcessById(accCtrlProId,UserDeptAuthUtils.getDepts());
     }
 
     /**
@@ -367,7 +368,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         if (current != null && pageSize != null) {
             pageParam = new Page<>(current, pageSize);
         }
-        List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, UserAuthUtils.getRoles());
+        List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, UserDeptAuthUtils.getDepts());
 
         if (pageParam != null) {
             pageParam.setRecords(accCtrlProcesses);

@@ -127,7 +127,7 @@ public class AlarmServiceImpl implements AlarmService {
      */
     @Override
     public Alarm selectAlarmById(String alarmId) {
-        return alarmDao.selectAlarmById(alarmId, UserAuthUtils.getRoles());
+        return alarmDao.selectAlarmById(alarmId, UserDeptAuthUtils.getDepts());
     }
 
     /**
@@ -364,7 +364,7 @@ public class AlarmServiceImpl implements AlarmService {
         if (current != null && pageSize != null) {
             pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
         }
-        List<Alarm> alarms = alarmDao.selectCondition(pageParam,alarm, start, end, UserAuthUtils.getRoles());
+        List<Alarm> alarms = alarmDao.selectCondition(pageParam,alarm, start, end, UserDeptAuthUtils.getDepts());
         Pageable pageable = null;
         if (pageParam != null) {
             pageable = new Pageable((int) pageParam.getTotal(), (int) pageParam.getPages(), (int) pageParam.getCurrent(), (int) pageParam.getSize()
