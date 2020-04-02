@@ -1,10 +1,6 @@
 package com.summit.dao.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldStrategy;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
@@ -153,10 +149,6 @@ public class AccCtrlRealTimeEntity {
     @ApiModelProperty(value="进出方式(0:进,1:出)",name="enterOrExit")
     @TableField(value = "enterOrExit")
     private Integer enterOrExit;
-
-    @ApiModelProperty(value = "部门id",name = "deptId")
-    @TableField(exist = false)
-    private String deptId;
 
     @ApiModelProperty(value = "部门名称",name = "deptName")
     @TableField(exist = false)

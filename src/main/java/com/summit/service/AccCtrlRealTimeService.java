@@ -31,7 +31,7 @@ public interface AccCtrlRealTimeService {
      * @param end 最近更新时间截止时间
      * @return 门禁实时信息分页
      */
-    Page<AccCtrlRealTimeEntity> selectByConditionPage(AccCtrlRealTimeEntity accCtrlRealTimeEntity, Date start, Date end,Integer current, Integer pageSize);
+    Page<AccCtrlRealTimeEntity> selectByConditionPage(AccCtrlRealTimeEntity accCtrlRealTimeEntity, Date start, Date end,Integer current, Integer pageSize,List<String> deptIds);
 
     /**
      * 根据门禁实时id查询最近更新时间毫秒值

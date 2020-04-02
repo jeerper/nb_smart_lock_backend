@@ -1,6 +1,7 @@
 package com.summit.service.impl;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.summit.cbb.utils.page.Pageable;
@@ -8,8 +9,8 @@ import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlRealTimeEntity;
 import com.summit.dao.repository.AccCtrlRealTimeDao;
 import com.summit.service.AccCtrlRealTimeService;
+import com.summit.service.DeptsService;
 import com.summit.util.CommonUtil;
-import com.summit.util.UserDeptAuthUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,8 @@ public class AccCtrlRealTimeServiceImpl implements AccCtrlRealTimeService {
 
     @Autowired
     private AccCtrlRealTimeDao accCtrlRealTimeDao;
-
+    @Autowired
+    private DeptsService deptsService;
     /**
      * 第一次是插入，后面都是更新
      *
@@ -76,13 +78,21 @@ public class AccCtrlRealTimeServiceImpl implements AccCtrlRealTimeService {
      */
     @Override
     public com.summit.cbb.utils.page.Page<AccCtrlRealTimeEntity> selectByConditionPage(AccCtrlRealTimeEntity accCtrlRealTimeEntity, Date start,
-                                                                                       Date end, Integer current, Integer pageSize) {
-        List<String> depts = UserDeptAuthUtils.getDepts();
+                                                                                       Date end, Integer current, Integer pageSize,List<String> deptIds) {
         Page<AccCtrlRealTimeEntity> pageParam = null;
         if (current != null && pageSize != null) {
             pageParam = new Page<>(current, pageSize);
         }
-        List<AccCtrlRealTimeEntity> realTimeEntities = accCtrlRealTimeDao.selectCondition(pageParam, accCtrlRealTimeEntity, depts,start,end);
+        List<AccCtrlRealTimeEntity> realTimeEntities=null;
+        if (deptIds.size()>1){
+            realTimeEntities = accCtrlRealTimeDao.selectCondition(pageParam, accCtrlRealTimeEntity, deptIds,start,end);
+        }else {
+            String dept = deptIds.get(0);
+            JSONObject paramJson=new JSONObject();
+            paramJson.put("pdept",dept);
+            List<String> depts = deptsService.getDeptsByPdept(paramJson);
+            realTimeEntities = accCtrlRealTimeDao.selectCondition(pageParam,accCtrlRealTimeEntity, depts,start,end);
+        }
         Pageable pageable = null;
         if (pageParam != null) {
             pageable = new Pageable((int) pageParam.getTotal(), (int) pageParam.getPages(), (int) pageParam.getCurrent(), (int) pageParam.getSize()

@@ -114,9 +114,6 @@
                 <if test="accCtrlRealTimeEntity.accCtrlStatus != null">
                     and ar.acc_ctrl_status = #{accCtrlRealTimeEntity.accCtrlStatus}
                 </if>
-                <if test="accCtrlRealTimeEntity.deptId != null">
-                    and accDept.depts like concat('%', #{accCtrlRealTimeEntity.deptId}, '%')
-                </if>
                 <if test="accCtrlRealTimeEntity.alarmStatus != null">
                     and ar.alarm_status like concat('%', #{accCtrlRealTimeEntity.alarmStatus}, '%')
                 </if>
