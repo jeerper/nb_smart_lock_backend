@@ -4,7 +4,9 @@ public enum AlarmProcessType {
 
     Illegal_LOCK_ALARM(1,"非法开锁告警"),
     LowPower_Alarm(2,"低电量告警"),
-    Drop_line_Alarm(3,"掉线告警");
+    Drop_line_Alarm(3,"掉线告警"),
+    LowVoltage_Alarm(4,"低电压告警"),
+    Breakdown_Alarm(5,"故障告警");
     private int code;
     private String description;
 

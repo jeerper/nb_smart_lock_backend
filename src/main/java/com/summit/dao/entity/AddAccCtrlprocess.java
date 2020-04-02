@@ -46,6 +46,11 @@ public class AddAccCtrlprocess {
     @TableField(value = "alarm_count")
     private Integer alarmCount;
 
+    @ApiModelProperty(value = "进出频次",name = "enterOrExitCount")
+    @TableField(value = "enterOrExit_count")
+    private Integer enterOrExitCount;
+
+
     public AddAccCtrlprocess() {
     }
 }

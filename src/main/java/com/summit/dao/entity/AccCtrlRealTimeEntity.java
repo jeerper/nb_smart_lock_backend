@@ -142,9 +142,30 @@ public class AccCtrlRealTimeEntity {
     @TableField(value = "work_status")
     private Integer workStatus;
 
-    @ApiModelProperty(value="告警状态(0：低电压告警，1低电量告警，2：非法开锁告警，3：掉线告警，4：故障告警，5：关锁超时报警)",name="alarmStatus")
+    @ApiModelProperty(value="告警状态(0：低电压告警，1：非法开锁告警，2低电量告警，3：掉线告警，4：故障告警，5：关锁超时报警)",name="alarmStatus")
     @TableField(value = "alarm_status")
     private Integer alarmStatus;
+
+   /* @ApiModelProperty(value="告警状态(0：低电压告警，1：非法开锁告警，2低电量告警，3：掉线告警，4：故障告警，5：关锁超时报警)",name="alarmStatusName")
+    @TableField(exist = false)
+    private String alarmStatusName;*/
+
+    @ApiModelProperty(value="进出方式(0:进,1:出)",name="enterOrExit")
+    @TableField(value = "enterOrExit")
+    private Integer enterOrExit;
+
+    @ApiModelProperty(value = "部门id",name = "deptId")
+    @TableField(exist = false)
+    private String deptId;
+
+    @ApiModelProperty(value = "部门名称",name = "deptName")
+    @TableField(exist = false)
+    private String deptNames;
+
+    @ApiModelProperty(value = "电池电量",name = "batteryLeve")
+    @TableField(exist = false)
+    private Integer batteryLeve;
+
 
     public AccCtrlRealTimeEntity(){}
 

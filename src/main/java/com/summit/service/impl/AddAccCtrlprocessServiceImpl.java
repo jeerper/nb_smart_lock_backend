@@ -150,4 +150,21 @@ public class AddAccCtrlprocessServiceImpl implements AddAccCtrlprocessService {
         int i=addAccCtrlprocessDao.updateAddAccProcessAlarmCount(accessControlId);
         return i;
     }
+
+    @Override
+    public int insertOrUpdateEnterOrExitCount(String accessControlId) {
+        AddAccCtrlprocess addccCtrlprocess =selectAddAccCtrlByAccCtrlID(accessControlId);
+        if (null == addccCtrlprocess){
+            AddAccCtrlprocess addAccCtrlprocess=new AddAccCtrlprocess();
+            Integer enterOrExitCount=1;
+            addAccCtrlprocess.setAccessControlId(accessControlId);
+            addAccCtrlprocess.setEnterOrExitCount(enterOrExitCount);
+            int add=addAccCtrlprocessDao.insert(addAccCtrlprocess);
+        }else {
+            int i=addAccCtrlprocessDao.insertOrUpdateEnterOrExitCount(accessControlId);
+        }
+        return 0;
+    }
+
+
 }

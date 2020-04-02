@@ -61,4 +61,11 @@ public interface AddAccCtrlprocessService {
      */
     int updateAddAccProcessAlarmCount(String accessControlId);
 
+
+    /**
+     * 修改统计分析进出频次
+     * @param accessControlId
+     * @return
+     */
+    int insertOrUpdateEnterOrExitCount(String accessControlId);
 }

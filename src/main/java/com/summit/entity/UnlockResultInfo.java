@@ -26,4 +26,8 @@ public class UnlockResultInfo {
     private String currentPassword;
     @ApiModelProperty(value="新密码",name="newPassword")
     private String newPassword;
+    @ApiModelProperty(value="进出方式(0:进,1:出)",name="enterOrExit")
+    private Integer enterOrExit;
+
+
 }

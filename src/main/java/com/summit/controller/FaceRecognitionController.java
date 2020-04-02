@@ -13,11 +13,7 @@ import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.LockInfo;
-import com.summit.dao.repository.AccCtrlProcessDao;
-import com.summit.dao.repository.AccessControlDao;
-import com.summit.dao.repository.FaceInfoAccCtrlDao;
-import com.summit.dao.repository.FaceInfoManagerDao;
-import com.summit.dao.repository.LockInfoDao;
+import com.summit.dao.repository.*;
 import com.summit.entity.FaceRecognitionInfo;
 import com.summit.entity.SearchFaceResult;
 import com.summit.entity.UnlockResultEnum;
@@ -30,24 +26,14 @@ import com.summit.util.JwtSettings;
 import com.summit.utils.BaiduSdkClient;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -172,8 +158,9 @@ public class FaceRecognitionController {
             if (count < 1) {
                 //没有操作权限时需要执行报警操作
                 String failReason = "没有操作该门禁锁的权限";
+                Integer  enterOrExit=3; //进出未知
                 accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode, CameraUploadType.Illegal_Alarm,
-                        LockProcessResultType.Failure, failReason);
+                        LockProcessResultType.Failure, failReason,enterOrExit);
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, failReason, null);
             }
             return ResultBuilder.buildSuccess(lockInfoDao.selectLockPassWordByLockCode(lockCode));
@@ -196,6 +183,7 @@ public class FaceRecognitionController {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有操作该门禁锁的权限", null);
             }
             LockProcessResultType processResult;
+            Integer enterOrExit = unlockResultInfo.getEnterOrExit();
             String failReason = null;
             CameraUploadType cameraUploadType;
             if (unlockResultInfo.isSuccess()) {
@@ -232,7 +220,7 @@ public class FaceRecognitionController {
                 cameraUploadType = CameraUploadType.Illegal_Alarm;
                 failReason = UnlockResultEnum.codeOf(unlockResultInfo.getResult()).getDescription();
             }
-            accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode, cameraUploadType, processResult, failReason);
+            accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode, cameraUploadType, processResult, failReason,enterOrExit);
             return ResultBuilder.buildSuccess();
         } catch (Exception e) {
             log.error(e.getMessage());

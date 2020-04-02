@@ -35,7 +35,12 @@
         <result column="alarm_id" jdbcType="VARCHAR" property="alarmId"/>
         <result column="acc_ctrl_pro_id" jdbcType="VARCHAR" property="accCtrlProId"/>
         <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime"/>
-
+        <result column="deptNames" jdbcType="VARCHAR" property="deptNames"/>
+        <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime"/>
+        <result column="alarm_status" jdbcType="INTEGER" property="alarmStatus"/>
+        <result column="work_status" jdbcType="INTEGER" property="workStatus"/>
+        <result column="enterOrExit" jdbcType="INTEGER" property="enterOrExit"/>
+        <result column="battery_leve" jdbcType="INTEGER" property="batteryLeve"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -53,7 +58,8 @@
         ar.user_id, ar.user_name, ar.name, ar.gender, ar.birthday, ar.province, ar.city,
         ar.card_type, ar.card_id, ar.face_match_rate, ar.face_lib_name, ar.face_lib_type,ar.face_panorama_url,
         ar.face_pic_url, ar.face_match_url, ar.pic_snapshot_time, ar.longitude, ar.latitude,
-        ar.alarm_id, ar.acc_ctrl_pro_id, ar.updatetime
+        ar.alarm_id, ar.acc_ctrl_pro_id, ar.updatetime,accDept.deptNames,ar.alarm_status,ar.work_status,
+        ar.enterOrExit,addc.battery_leve,accDept.depts
     </sql>
 
     <sql id="Auth_No_Alias_List">
@@ -85,11 +91,16 @@
         <include refid="RealTime_Have_Alias_List"/>
         from acc_crtl_realtime ar
         inner join access_control ac on ar.access_control_id=ac.access_control_id
+        left join
+            (SELECT dc.access_control_id,GROUP_CONCAT(dc.dept_id)AS depts, GROUP_CONCAT(dept.DEPTNAME)AS deptNames  FROM dept_accesscontrol_auth dc
+            inner join cbb_userauth.sys_dept dept on dc.dept_id=dept.ID  GROUP BY access_control_id)accDept
+            on ar.access_control_id=accDept.access_control_id
+        left join addup_acc_ctrl_process addc on ar.access_control_id=addc.access_control_id
         <where>
-            <if test="roles != null">
-                and ar.access_control_id IN ( SELECT DISTINCT au.access_control_id FROM role_accesscontrol_auth au WHERE au.role_id IN
-                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
-                    #{role}
+            <if test="depts != null">
+                and ar.access_control_id IN ( SELECT DISTINCT du.access_control_id FROM dept_accesscontrol_auth du WHERE du.dept_id IN
+                <foreach item="dept" collection="depts" index="index" open="(" separator="," close=")">
+                    #{dept}
                 </foreach>
                 )
             </if>
@@ -103,8 +114,23 @@
                 <if test="accCtrlRealTimeEntity.accCtrlStatus != null">
                     and ar.acc_ctrl_status = #{accCtrlRealTimeEntity.accCtrlStatus}
                 </if>
-                <if test="accCtrlRealTimeEntity.name != null">
-                    and ar.name like concat('%', #{accCtrlRealTimeEntity.name}, '%')
+                <if test="accCtrlRealTimeEntity.deptId != null">
+                    and accDept.depts like concat('%', #{accCtrlRealTimeEntity.deptId}, '%')
+                </if>
+                <if test="accCtrlRealTimeEntity.alarmStatus != null">
+                    and ar.alarm_status like concat('%', #{accCtrlRealTimeEntity.alarmStatus}, '%')
+                </if>
+                <if test="accCtrlRealTimeEntity.workStatus != null">
+                    and ar.work_status like concat('%', #{accCtrlRealTimeEntity.workStatus}, '%')
+                </if>
+                <if test="accCtrlRealTimeEntity.accCtrlStatus != null">
+                    and  ar.acc_ctrl_status like concat('%', #{accCtrlRealTimeEntity.accCtrlStatus}, '%')
+                </if>
+                <if test="start != null">
+                    and ar.updatetime &gt;= #{start}
+                </if>
+                <if test="end != null">
+                    and ar.updatetime &lt;= #{end}
                 </if>
             </if>
         </where>

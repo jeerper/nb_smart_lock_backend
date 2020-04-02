@@ -41,6 +41,11 @@
         where  access_control_id==#{accessControlId}
     </update>
 
+    <update id="insertOrUpdateEnterOrExitCount" parameterType="java.lang.String">
+        update addup_acc_ctrl_process set enterOrExit_count = enterOrExit_count + 1
+        where  access_control_id==#{accessControlId}
+    </update>
+
     <select id="selectAddAcpByAcIds" resultMap="accCtrlprocess">
         SELECT
         <include refid="accCtrlprocessCloum"/>

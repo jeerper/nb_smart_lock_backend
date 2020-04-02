@@ -86,12 +86,14 @@ public class LoginFaceRecognitionController {
             if (StrUtil.isBlank(lockCode)) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "锁编码为空", null);
             }
+            String faceId = FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId();
             int count = faceInfoAccCtrlDao.selectCountByFaceIdAndLockCode(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId(), lockCode);
             if (count < 1) {
                 //没有操作权限时需要执行报警操作
                 String failReason = "没有操作该门禁锁的权限";
+                Integer  enterOrExit=3; //进出未知
                 accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode, CameraUploadType.Illegal_Alarm,
-                        LockProcessResultType.Failure, failReason);
+                        LockProcessResultType.Failure, failReason,enterOrExit);
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, failReason, null);
             }
             return ResultBuilder.buildSuccess(lockInfoDao.selectLockPassWordByLockCode(lockCode));
@@ -114,6 +116,7 @@ public class LoginFaceRecognitionController {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有操作该门禁锁的权限", null);
             }
             LockProcessResultType processResult;
+            Integer enterOrExit = unlockResultInfo.getEnterOrExit();
             String failReason = null;
             CameraUploadType cameraUploadType;
             if (unlockResultInfo.isSuccess()) {
@@ -150,7 +153,7 @@ public class LoginFaceRecognitionController {
                 cameraUploadType = CameraUploadType.Illegal_Alarm;
                 failReason = UnlockResultEnum.codeOf(unlockResultInfo.getResult()).getDescription();
             }
-            accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode, cameraUploadType, processResult, failReason);
+            accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode, cameraUploadType, processResult, failReason,enterOrExit);
             return ResultBuilder.buildSuccess();
         } catch (Exception e) {
             log.error(e.getMessage());

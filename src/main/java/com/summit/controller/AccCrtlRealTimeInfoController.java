@@ -1,5 +1,6 @@
 package com.summit.controller;
 
+import cn.hutool.core.date.DateUtil;
 import com.summit.cbb.utils.page.Page;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,14 +45,28 @@ public class AccCrtlRealTimeInfoController {
     @GetMapping(value = "/selectAccCtrlRealTimeByPage")
     public RestfulEntityBySummit<Map<String, Object>> selectAllLockRealTimeInfo(AccCtrlRealTimeEntity accCtrlRealTimeEntity,
                                                                                 @ApiParam(value = "当前页，大于等于1") @RequestParam(value = "current", required = false) Integer current,
-                                                                                @ApiParam(value = "每页条数，大于等于0") @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+                                                                                @ApiParam(value = "每页条数，大于等于0") @RequestParam(value = "pageSize", required = false) Integer pageSize,
+                                                                                @ApiParam(value = "起始时间") @RequestParam(value = "startTime", required = false) String startTime,
+                                                                                @ApiParam(value = "结束时间") @RequestParam(value = "endTime", required = false) String endTime
+                                                                                /*@ApiParam(value = "部门id")@RequestParam(value = "deptId", required = false)String deptId,
+                                                                                @ApiParam(value = "门禁名称")@RequestParam(value = "accCtrlName", required = false)String accCtrlName,
+                                                                                @ApiParam(value = "工作状态") @RequestParam(value = "workStatus(1:实时在线,2：忙时在线，3：闲时在线)", required = false) Integer workStatus,
+                                                                                @ApiParam(value = "告警状态") @RequestParam(value = "alarmStatus(1:非法开锁告警,2：低电量告警，3：掉线告警,4:低电压告警,5:故障告警)", required = false) Integer alarmStatus,
+                                                                                @ApiParam(value = "开关锁状态") @RequestParam(value = "lockStatus(1:开锁,2：关锁，3：不在线)", required = false) Integer lockStatus*/) {
         Map<String, Object> data = new HashMap<>();
         try {
+            Date start = DateUtil.parse(startTime);
+            Date end = DateUtil.parse(endTime);
             //查出有操作记录的门禁并再分页
-            Page<AccCtrlRealTimeEntity> accCtrlRealTimePage = accCtrlRealTimeService.selectByConditionPage(accCtrlRealTimeEntity, null, null, current, pageSize);
+            Page<AccCtrlRealTimeEntity> accCtrlRealTimePage = accCtrlRealTimeService.selectByConditionPage(accCtrlRealTimeEntity, start, end, current, pageSize);
             Integer integer = alarmService.selectAlarmCountByStatus(AlarmStatus.UNPROCESSED.getCode());
             int allAlarmCount = integer == null ? 0 : integer;
             data.put("allAlarmCount", allAlarmCount);
+          /*  List<AccCtrlRealTimeEntity> accCtrlRealTimeEntities = accCtrlRealTimePage.getContent();
+            for (AccCtrlRealTimeEntity ctrlRealTimeEntity :accCtrlRealTimeEntities){
+                AlarmProcessType alarmProcessType = AlarmProcessType.codeOf(ctrlRealTimeEntity.getAlarmStatus());
+                ctrlRealTimeEntity.setAlarmStatusName( alarmProcessType.getDescription());
+            }*/
             data.put("content", accCtrlRealTimePage.getContent());
             data.put("pageable", accCtrlRealTimePage.getPageable());
         } catch (Exception e) {

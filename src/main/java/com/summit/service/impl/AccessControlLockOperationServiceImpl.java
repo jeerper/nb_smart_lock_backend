@@ -37,7 +37,7 @@ public class AccessControlLockOperationServiceImpl implements AccessControlLockO
 
     @Override
     public void insertAccessControlLockOperationEvent(String lockCode, CameraUploadType type, LockProcessResultType processResult,
-                                                      String failReason) throws Exception {
+                                                      String failReason,Integer enterOrExit) throws Exception {
         try {
             Date date = new Date();
             String snapshotTime = CommonUtil.dateFormat.get().format(date);
@@ -50,7 +50,7 @@ public class AccessControlLockOperationServiceImpl implements AccessControlLockO
                     .append(CommonConstants.URL_SEPARATOR)
                     .append(snapshotTime)
                     .append(CommonConstants.URL_SEPARATOR)
-                    .append(type.getCode())
+                    .append(type)
                     .append(CommonConstants.URL_SEPARATOR)
                     .append(fileName)
                     .toString();
@@ -60,7 +60,7 @@ public class AccessControlLockOperationServiceImpl implements AccessControlLockO
             FaceInfo faceInfo = faceInfoManagerDao.selectById(faceRecognitionInfo.getFaceId());
 
             AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(lockCode, faceInfo,faceRecognitionInfo.getScore(), type, facePanoramaFile, date, processResult,
-                    failReason);
+                    failReason,enterOrExit);
             //在事务控制下插入门禁操作记录、门禁实时信息、告警
             ApplicationContextUtil.getBean(ClientFaceInfoCallbackImpl.class).insertData(type, accCtrlProcess);
         } catch (Exception e) {

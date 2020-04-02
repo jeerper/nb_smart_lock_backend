@@ -70,6 +70,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         }else if (type !=null  && CameraUploadType.Illegal_Alarm == type){
             accessControlDao.update(null, Wrappers.<AccessControlInfo>lambdaUpdate()
                     .set(AccessControlInfo::getAlarmStatus,accCtrlProcess.getAlarmStatus())
+                    .set(AccessControlInfo::getStatus,accCtrlProcess.getProcessType())
                     .eq(AccessControlInfo::getAccessControlId, accCtrlProcess.getAccessControlId()));
         }else if (type !=null && CameraUploadType.Lock==type){
             accessControlDao.update(null, Wrappers.<AccessControlInfo>lambdaUpdate()
@@ -85,6 +86,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
             lockInfo.setStatus(accCtrlProcess.getProcessType());
         }else if (type !=null && CameraUploadType.Illegal_Alarm == type){
             lockInfo.setAlarmStatus(accCtrlProcess.getAlarmStatus());
+            lockInfo.setStatus(accCtrlProcess.getProcessType());
         }else if (type !=null && CameraUploadType.Unlock == type ){
             lockInfo.setStatus(accCtrlProcess.getProcessType());
         }

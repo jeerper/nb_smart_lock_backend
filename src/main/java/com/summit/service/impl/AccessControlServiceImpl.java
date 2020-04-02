@@ -193,6 +193,10 @@ public class AccessControlServiceImpl implements AccessControlService {
             AlarmType alarmType = AlarmType.codeOf(status);
             accessControlInfo.setStatus(alarmType == null ? null : alarmType.getAlarmCode());
         }
+        Integer workStatus = accessControlInfo.getWorkStatus();
+        if(workStatus == null){
+            accessControlInfo.setStatus(0);
+        }
         accessControlInfo.setCreatetime(time);
         accessControlInfo.setUpdatetime(time);
         UserInfo uerInfo = UserContextHolder.getUserInfo();

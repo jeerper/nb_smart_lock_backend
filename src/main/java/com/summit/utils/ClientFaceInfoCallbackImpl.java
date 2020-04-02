@@ -23,12 +23,7 @@ import com.summit.sdk.huawei.model.FaceInfo;
 import com.summit.sdk.huawei.model.FaceLibType;
 import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessType;
-import com.summit.service.AccCtrlProcessService;
-import com.summit.service.AccCtrlRealTimeService;
-import com.summit.service.AccessControlService;
-import com.summit.service.AlarmService;
-import com.summit.service.CameraDeviceService;
-import com.summit.service.FaceInfoAccCtrlService;
+import com.summit.service.*;
 import com.summit.service.impl.NBLockServiceImpl;
 import com.summit.util.AccCtrlProcessUtil;
 import com.summit.util.CommonUtil;
@@ -65,7 +60,8 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
     private UnlockCommandQueueDao unlockCommandQueueDao;
     @Autowired
     private AccCtrlProcessDao accCtrlProcessDao;
-
+    @Autowired
+    AddAccCtrlprocessService addAccCtrlprocessService;
     @Override
     public void invoke(Object object) {
         try {
@@ -239,6 +235,12 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             }
             log.info("门禁实时信息入库");
             accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity);
+            log.info("统计分析统计进出频次");
+            if (accCtrlProcess.getEnterOrExit() !=null && accCtrlProcess.getAccessControlId() !=null){
+                addAccCtrlprocessService.insertOrUpdateEnterOrExitCount(accCtrlProcess.getAccessControlId());
+            }
+
+
             //TODO:(废弃)插入开锁指令队列
 //            if (type == CameraUploadType.Unlock) {
 //                UnlockCommandQueue unlockCommandQueue = new UnlockCommandQueue();

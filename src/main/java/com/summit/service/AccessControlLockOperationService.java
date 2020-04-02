@@ -17,5 +17,5 @@ public interface AccessControlLockOperationService {
      * @param failReason  失败信息描述 成功则传入null
      * @throws Exception
      */
-    void insertAccessControlLockOperationEvent(String lockCode, CameraUploadType type, LockProcessResultType processResult, String failReason) throws Exception;
+    void insertAccessControlLockOperationEvent(String lockCode, CameraUploadType type, LockProcessResultType processResult, String failReason,Integer enterOrExit) throws Exception;
 }

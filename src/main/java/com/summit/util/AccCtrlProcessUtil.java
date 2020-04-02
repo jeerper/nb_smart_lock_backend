@@ -215,8 +215,7 @@ public class AccCtrlProcessUtil {
             }
         }
         try {
-            CameraUploadType type =null;
-            accCtrlProcessService.insertAccCtrlProcess(type, accCtrlProcess);
+            accCtrlProcessService.insertAccCtrlProcess(CameraUploadType.Unlock, accCtrlProcess);
             log.info("门禁操作记录入库成功");
         } catch (Exception e) {
             log.error("门禁操作记录入库失败");
@@ -238,7 +237,7 @@ public class AccCtrlProcessUtil {
      * @return 组装好的门禁操作记录信息对象
      */
     public AccCtrlProcess getAccCtrlProcess(String lockCode,FaceInfo faceInfo,float score, CameraUploadType type, FileInfo facePanoramaFile, Date snapshotTime,
-                                            LockProcessResultType processResult, String failReason) {
+                                            LockProcessResultType processResult, String failReason,Integer enterOrExit) {
 
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setProcessMethod(LockProcessMethod.FACE_RECOGNITION.getCode());
@@ -281,6 +280,7 @@ public class AccCtrlProcessUtil {
             accCtrlProcess.setFailReason(failReason);
         } else if (CameraUploadType.Illegal_Alarm == type) {
             accCtrlProcess.setAlarmStatus(AlarmProcessType.Illegal_LOCK_ALARM.getCode());//非法开锁告警
+            accCtrlProcess.setProcessType(LockProcessType.CLOSE_LOCK.getCode());//关锁
             if (CommonUtil.isEmptyStr(failReason)) {
                 accCtrlProcess.setFailReason("匹配度过低");
             } else {
@@ -292,6 +292,9 @@ public class AccCtrlProcessUtil {
         }
         if (processResult != null) {
             accCtrlProcess.setProcessResult(processResult.getCode());
+        }
+        if (enterOrExit !=null){
+            accCtrlProcess.setEnterOrExit(enterOrExit);
         }
         return accCtrlProcess;
     }
@@ -308,6 +311,7 @@ public class AccCtrlProcessUtil {
         alarm.setAlarmTime(accCtrlProcess.getCreateTime());
         alarm.setAlarmStatus(AlarmStatus.UNPROCESSED.getCode());
         alarm.setDescription(accCtrlProcess.getFailReason());
+        alarm.setEnterOrExit(accCtrlProcess.getEnterOrExit());
         return alarm;
     }
 
@@ -372,9 +376,11 @@ public class AccCtrlProcessUtil {
                 accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());
             }else if (type !=null  && CameraUploadType.Illegal_Alarm == type){
                 accCtrlRealTimeEntity.setAlarmStatus(accCtrlProcess.getAlarmStatus());
+                accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());
             }
             accCtrlRealTimeEntity.setLongitude(accessControlInfo.getLongitude());
             accCtrlRealTimeEntity.setLatitude(accessControlInfo.getLatitude());
+            accCtrlRealTimeEntity.setWorkStatus(accessControlInfo.getWorkStatus());
         }
         accCtrlRealTimeEntity.setDevId(accCtrlProcess.getDeviceId());
         accCtrlRealTimeEntity.setDeviceIp(accCtrlProcess.getDeviceIp());
@@ -408,7 +414,7 @@ public class AccCtrlProcessUtil {
             accCtrlRealTimeEntity.setFaceMatchUrl(null);
         }
         accCtrlRealTimeEntity.setUpdatetime(accCtrlProcess.getCreateTime());
-
+        accCtrlRealTimeEntity.setEnterOrExit(accCtrlProcess.getEnterOrExit());
         return accCtrlRealTimeEntity;
     }
 }

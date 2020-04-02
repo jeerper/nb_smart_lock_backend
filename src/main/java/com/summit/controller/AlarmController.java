@@ -24,6 +24,7 @@ import com.summit.sdk.huawei.model.LockProcessMethod;
 import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessType;
 import com.summit.sdk.huawei.model.LockStatus;
+import com.summit.service.AddAccCtrlprocessService;
 import com.summit.service.AlarmService;
 import com.summit.service.impl.NBLockServiceImpl;
 import com.summit.util.AccCtrlProcessUtil;
@@ -33,13 +34,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -63,6 +58,9 @@ public class AlarmController {
 
     @Autowired
     private AccessControlDao accessControlDao;
+
+    @Autowired
+    private AddAccCtrlprocessService addAccCtrlprocessService;
 
 
     @Autowired
@@ -142,9 +140,12 @@ public class AlarmController {
             accCtrlProcess.setEnterOrExit(enterOrExit);
             accCtrlProcess.setUnlockCause(unlockCause);
             accCtrlProcessDao.insert(accCtrlProcess);
+            //统计分析统计进出频次
+            if (accCtrlProId !=null && enterOrExit !=null){
+                addAccCtrlprocessService.insertOrUpdateEnterOrExitCount(accCtrlProId);
+            }
+
         }
-
-
         Alarm alarm = alarmDao.selectOne(Wrappers.<Alarm>lambdaQuery()
                 .eq(Alarm::getAccCtrlProId, accCtrlProId));
 
@@ -169,6 +170,10 @@ public class AlarmController {
                         .set(AccCtrlProcess::getProcessResult, processResult)
                         .set(AccCtrlProcess::getProcessTime, processTime)
                         .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProId));
+                //统计分析统计进出频次
+                if (accCtrlProId !=null){
+                    addAccCtrlprocessService.insertOrUpdateEnterOrExitCount(accCtrlProId);
+                }
             } else {
                 //只处理告警任务，不开锁时的业务
                 //更新实时状态为锁定状态
