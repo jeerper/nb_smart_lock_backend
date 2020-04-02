@@ -52,5 +52,8 @@ public interface AccCtrlRealTimeDao extends BaseMapper<AccCtrlRealTimeEntity> {
     Date selectLastUpdatetime();
 
 
-
+    List<AccCtrlRealTimeEntity> selectConditionRefresh(Page page, @Param("accCtrlRealTimeEntity") AccCtrlRealTimeEntity accCtrlRealTimeEntity,
+                                                       @Param("depts") List<String> depts,
+                                                       @Param("start") Date start,
+                                                       @Param("end") Date end);
 }

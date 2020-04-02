@@ -11,7 +11,6 @@ import com.summit.service.AccCtrlRealTimeService;
 import com.summit.service.AccessControlService;
 import com.summit.service.AlarmService;
 import com.summit.util.AccCtrlProcessUtil;
-import com.summit.util.CommonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -48,19 +46,15 @@ public class AccCrtlRealTimeInfoController {
     public RestfulEntityBySummit<Map<String, Object>> selectAllLockRealTimeInfo(AccCtrlRealTimeEntity accCtrlRealTimeEntity,
                                                                                 @ApiParam(value = "当前页，大于等于1") @RequestParam(value = "current", required = false) Integer current,
                                                                                 @ApiParam(value = "每页条数，大于等于0") @RequestParam(value = "pageSize", required = false) Integer pageSize,
-                                                                                @ApiParam(value = "部门Id",required = true) @RequestParam(value = "deptIds") List<String> deptIds,
+                                                                                @ApiParam(value = "部门Id多个的话，用,隔开") @RequestParam(value = "deptId", required = false) String deptId,
                                                                                 @ApiParam(value = "起始时间") @RequestParam(value = "startTime", required = false) String startTime,
                                                                                 @ApiParam(value = "结束时间") @RequestParam(value = "endTime", required = false) String endTime) {
         Map<String, Object> data = new HashMap<>();
         try {
             Date start = DateUtil.parse(startTime);
             Date end = DateUtil.parse(endTime);
-            if(CommonUtil.isEmptyList(deptIds)){
-                log.error("部门id为空");
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"部门id为空",null);
-            }
             //查出有操作记录的门禁并再分页
-            Page<AccCtrlRealTimeEntity> accCtrlRealTimePage = accCtrlRealTimeService.selectByConditionPage(accCtrlRealTimeEntity, start, end, current, pageSize,deptIds);
+            Page<AccCtrlRealTimeEntity> accCtrlRealTimePage = accCtrlRealTimeService.selectByConditionPage(accCtrlRealTimeEntity, start, end, current, pageSize,deptId);
             /*  Integer integer = alarmService.selectAlarmCountByStatus(AlarmStatus.UNPROCESSED.getCode());
                 int allAlarmCount = integer == null ? 0 : integer;
                 data.put("allAlarmCount", allAlarmCount);

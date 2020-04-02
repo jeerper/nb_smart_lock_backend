@@ -33,7 +33,7 @@ public class RealTimeSchedule {
 
     @Scheduled(fixedDelay = 2000)
     public void refreshRealTimeLockStatus() {
-        List<AccCtrlRealTimeEntity> accCtrlRealTimeList = accCtrlRealTimeDao.selectCondition(null, null, null,null,null);
+        List<AccCtrlRealTimeEntity> accCtrlRealTimeList = accCtrlRealTimeDao.selectConditionRefresh(null, null, null,null,null);
         LockRequest lockRequest = new LockRequest();
         for (AccCtrlRealTimeEntity accCtrlRealTime : accCtrlRealTimeList) {
 
