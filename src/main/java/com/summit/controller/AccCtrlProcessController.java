@@ -6,24 +6,17 @@ import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
-import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.AddAccCtrlprocess;
 import com.summit.service.AccCtrlProcessService;
 import com.summit.service.AccessControlService;
 import com.summit.service.AddAccCtrlprocessService;
 import com.summit.util.CommonUtil;
-import com.summit.util.SummitTools;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.PropertyAccessException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -63,7 +56,8 @@ public class AccCtrlProcessController {
     @GetMapping(value = "/queryAccCtrlProcessCondition")
     public RestfulEntityBySummit<Page<AccCtrlProcess>> queryAccCtrlProcessCondition(
             @ApiParam(value = "门禁名称") @RequestParam(value = "accessControlName", required = false) String accessControlName,
-            @ApiParam(value = "门禁操作类型，1：开锁，2：关锁，3：告警") @RequestParam(value = "processType", required = false) Integer processType,
+            @ApiParam(value = "开关锁状态，1：开锁，2：关锁，3：不在线") @RequestParam(value = "processType", required = false) Integer processType,
+            @ApiParam(value = "告警状态(0：低电压告警，1：非法开锁告警，2低电量告警，3：掉线告警，4：故障告警，5：关锁超时报警)") @RequestParam(value = "alarmStatus", required = false) Integer alarmStatus,
             @ApiParam(value = "起始时间") @RequestParam(value = "startTime", required = false) String startTime,
             @ApiParam(value = "结束时间") @RequestParam(value = "endTime", required = false) String endTime,
             @ApiParam(value = "当前页，大于等于1") @RequestParam(value = "current", required = false) Integer current,
@@ -74,6 +68,7 @@ public class AccCtrlProcessController {
             AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
             accCtrlProcess.setAccessControlName(accessControlName);
             accCtrlProcess.setProcessType(processType);
+            accCtrlProcess.setAlarmStatus(alarmStatus);
             Page<AccCtrlProcess> accCtrlProcessPage = accCtrlProcessService.selectAccCtrlProcessCondition(accCtrlProcess, start, end, current, pageSize);
             return ResultBuilder.buildSuccess(accCtrlProcessPage);
         } catch (Exception e) {

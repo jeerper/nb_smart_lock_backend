@@ -17,11 +17,9 @@ import com.summit.dao.repository.AccCtrlProcessDao;
 import com.summit.dao.repository.AccCtrlRealTimeDao;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.AlarmDao;
-import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.entity.UpdateAlarmParam;
 import com.summit.sdk.huawei.model.LockProcessMethod;
-import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessType;
 import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.service.AddAccCtrlprocessService;
@@ -100,7 +98,7 @@ public class AlarmController {
             lockRequest.setLockId(lockId);
             lockRequest.setOperName(operName);
 
-            RestfulEntityBySummit result = nbLockServiceImpl.toUnLock(lockRequest);
+           /* RestfulEntityBySummit result = nbLockServiceImpl.toUnLock(lockRequest);
             if (result == null) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg + "开锁失败", null);
             }
@@ -116,11 +114,10 @@ public class AlarmController {
             if (backLockInfo.getObjx() != LockProcessResultType.CommandSuccess.getCode()) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "开锁失败:" + backLockInfo.getContent(), null);
             }
-
             //开锁指令下发成功的处理逻辑
             processResult = backLockInfo.getObjx();
 
-            unlockProcessUuid = backLockInfo.getRmid();
+            unlockProcessUuid = backLockInfo.getRmid();*/
 
             //通过LockID查找门禁信息
             AccessControlInfo accessControlInfo = accessControlDao.selectOne(Wrappers.<AccessControlInfo>lambdaQuery()
@@ -137,8 +134,8 @@ public class AlarmController {
             accCtrlProcess.setProcessResult(processResult);
             accCtrlProcess.setProcessUuid(unlockProcessUuid);
             accCtrlProcess.setCreateTime(processTime);
-            accCtrlProcess.setEnterOrExit(enterOrExit);
-            accCtrlProcess.setUnlockCause(unlockCause);
+            accCtrlProcess.setEnterOrExit(enterOrExit);//进出
+            accCtrlProcess.setUnlockCause(unlockCause);//事由
             accCtrlProcessDao.insert(accCtrlProcess);
             //统计分析统计进出频次
             if (accCtrlProId !=null && enterOrExit !=null){
@@ -157,10 +154,11 @@ public class AlarmController {
         if (StrUtil.isNotEmpty(alarmId) && StrUtil.isNotEmpty(processRemark)) {
             //更新告警表
             alarmDao.update(null, Wrappers.<Alarm>lambdaUpdate()
-                    .set(Alarm::getAlarmStatus, alarmStatus)
+                    .set(Alarm::getAlarmDealStatus, alarmStatus)
                     .set(Alarm::getProcessPerson, operName)
                     .set(Alarm::getProcessRemark, processRemark)
                     .set(Alarm::getUpdatetime, processTime)
+                    .set(Alarm::getEnterOrExit, enterOrExit)
                     .eq(Alarm::getAlarmId, alarmId));
 
             if (needUnLock) {
@@ -244,7 +242,7 @@ public class AlarmController {
     public RestfulEntityBySummit<Page<Alarm>> queryAlarmCondition(
             @ApiParam(value = "门禁id，精确匹配") @RequestParam(value = "accessControlId", required = false) String accessControlId,
             @ApiParam(value = "门禁名称，模糊匹配") @RequestParam(value = "accessControlName", required = false) String accessControlName,
-            @ApiParam(value = "门禁告警处理状态，，0已处理，1未处理") @RequestParam(value = "alarmStatus", required = false) Integer alarmStatus,
+            @ApiParam(value = "门禁告警处理状态，，0已处理，1未处理") @RequestParam(value = "alarmDealStatus", required = false) Integer alarmDealStatus,
             @ApiParam(value = "起始时间") @RequestParam(value = "startTime", required = false) String startTime,
             @ApiParam(value = "结束时间") @RequestParam(value = "endTime", required = false) String endTime,
             @ApiParam(value = "当前页，大于等于1") @RequestParam(value = "current", required = false) Integer current,
@@ -257,7 +255,7 @@ public class AlarmController {
             Alarm alarm = new Alarm();
             alarm.setAccessControlId(accessControlId);
             alarm.setAccessControlName(accessControlName);
-            alarm.setAlarmStatus(alarmStatus);
+            alarm.setAlarmDealStatus(alarmDealStatus);
 
             Page<Alarm> alarms = alarmService.selectAlarmConditionByPage(alarm, start, end, current, pageSize);
 

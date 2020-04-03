@@ -309,9 +309,10 @@ public class AccCtrlProcessUtil {
         Alarm alarm = new Alarm();
         alarm.setAccCtrlProId(accCtrlProcess.getAccCtrlProId());
         alarm.setAlarmTime(accCtrlProcess.getCreateTime());
-        alarm.setAlarmStatus(AlarmStatus.UNPROCESSED.getCode());
+        alarm.setAlarmDealStatus(AlarmStatus.UNPROCESSED.getCode());//报警处理状态(0已处理，1未处理)
         alarm.setDescription(accCtrlProcess.getFailReason());
         alarm.setEnterOrExit(accCtrlProcess.getEnterOrExit());
+        alarm.setAlarmStatus(accCtrlProcess.getAlarmStatus());
         return alarm;
     }
 
@@ -371,12 +372,13 @@ public class AccCtrlProcessUtil {
 //                accCtrlRealTimeEntity.setAccCtrlStatus(LockProcessType.CLOSE_LOCK.getCode());
 //            }
             if (type !=null && CameraUploadType.Unlock == type ){
-                accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());
+                accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());//开锁状态
+                accCtrlRealTimeEntity.setAlarmStatus(null);//开锁时候告警状态为null   //告警状态
             }else if (type !=null && CameraUploadType.Lock==type){
                 accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());
             }else if (type !=null  && CameraUploadType.Illegal_Alarm == type){
-                accCtrlRealTimeEntity.setAlarmStatus(accCtrlProcess.getAlarmStatus());
-                accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());
+                accCtrlRealTimeEntity.setAlarmStatus(accCtrlProcess.getAlarmStatus()); //告警状态
+                accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());//开锁状态
             }
             accCtrlRealTimeEntity.setLongitude(accessControlInfo.getLongitude());
             accCtrlRealTimeEntity.setLatitude(accessControlInfo.getLatitude());

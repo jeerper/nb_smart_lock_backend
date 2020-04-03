@@ -36,7 +36,8 @@
         <result column="process_method" jdbcType="INTEGER" property="processMethod"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="enterOrExit" jdbcType="INTEGER" property="enterOrExit"/>
-
+        <result column="unlockCause" jdbcType="VARCHAR" property="unlockCause"/>
+        <result column="alarm_status" jdbcType="INTEGER" property="alarmStatus"/>
 
         <association property="facePanorama" javaType="com.summit.dao.entity.FileInfo">
             <result column="fi1_id" jdbcType="VARCHAR" property="fileId"/>
@@ -72,7 +73,7 @@
     acp.user_id, acp.user_name, acp.gender, acp.birthday, acp.province, acp.city, acp.card_type, acp.card_id,
     acp.face_match_rate, acp.face_lib_name, acp.face_lib_type, acp.process_type,acp.process_uuid, acp.process_result,acp.fail_reason,
     acp.panorama_pic_id, acp.face_panorama_id, acp.face_pic_id, acp.face_match_id, acp.process_time, acp.process_method,acp.create_time,
-    acp.enterOrExit
+    acp.enterOrExit,acp.unlockCause,acp.alarm_status
     </sql>
     <sql id="AccCtrlInfo_Have_Alias_List">
         ac.access_control_id ac_access_control_id, ac.access_control_name ac_access_control_name,
@@ -358,6 +359,9 @@
                 </if>
                 <if test="accCtrlProcess.failReason != null">
                     and acp.fail_reason like concat('%', #{accCtrlProcess.processResult}, '%')
+                </if>
+                <if test="accCtrlProcess.alarmStatus != null">
+                    and acp.alarm_status = #{accCtrlProcess.alarmStatus}
                 </if>
             </if>
         </where>

@@ -16,6 +16,7 @@
         <result column="process_result" jdbcType="INTEGER" property="processResult"/>
         <result column="acc_ctrl_status" jdbcType="INTEGER" property="accCtrlStatus"/>
         <result column="enterOrExit" jdbcType="INTEGER" property="enterOrExit"/>
+        <result column="alarm_deal_status" jdbcType="INTEGER" property="alarmDealStatus"/>
 
         <association property="accCtrlProcess" javaType="com.summit.dao.entity.AccCtrlProcess">
             <result column="acc_ctrl_pro_id" jdbcType="VARCHAR" property="accCtrlProId"/>
@@ -79,7 +80,7 @@
     </sql>
     <sql id="Alarm_Have_Alias_List">
         al.alarm_id, al.alarm_name, al.acc_ctrl_pro_id, al.alarm_time, al.alarm_status, al.process_person,
-    al.description,al.updatetime, al.process_remark,acp.process_result,al.enterOrExit
+    al.description,al.updatetime, al.process_remark,acp.process_result,al.enterOrExit,al.alarm_deal_status
     </sql>
     <sql id="AccCtrl_Have_Alias_List">
         acp.acc_ctrl_pro_id, ac.access_control_id, ac.access_control_name, acp.device_id, acp.device_ip,
@@ -172,19 +173,18 @@
         SELECT
         count( al.alarm_id )
         FROM
-        acc_ctrl_process acp
-        INNER JOIN alarm al ON al.acc_ctrl_pro_id = acp.acc_ctrl_pro_id
+        alarm al
         where
-        acp.process_type=3
+        1=1
         <if test="depts != null">
-            and acp.access_control_id IN ( SELECT DISTINCT au.access_control_id FROM dept_accesscontrol_auth au WHERE au.dept_id IN
+            and al.acc_ctrl_pro_id IN ( SELECT DISTINCT au.access_control_id FROM dept_accesscontrol_auth au WHERE au.dept_id IN
             <foreach item="dept" collection="depts" index="index" open="(" separator="," close=")">
                 #{dept}
             </foreach>
             )
         </if>
         <if test="alarmStatus != null">
-            and al.alarm_status = #{alarmStatus}
+            and al.alarm_deal_status = #{alarmStatus}
         </if>
     </select>
 
@@ -232,8 +232,8 @@
                 <if test="alarm.accessControlName != null ">
                     and ac.access_control_name like concat('%', #{alarm.accessControlName}, '%')
                 </if>
-                <if test="alarm.alarmStatus != null">
-                    and al.alarm_status = #{alarm.alarmStatus}
+                <if test="alarm.alarmDealStatus != null">
+                    and al.alarm_deal_status = #{alarm.alarmDealStatus}
                 </if>
                 <if test="alarm.processPerson != null">
                     and al.process_person = #{alarm.processPerson}

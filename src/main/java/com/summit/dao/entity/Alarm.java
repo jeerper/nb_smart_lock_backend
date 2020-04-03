@@ -43,7 +43,7 @@ public class Alarm {
     @ApiModelProperty(value="告警发生时间 ",name="alarmTime")
     @TableField(value = "alarm_time")
     private Date alarmTime;
-    @ApiModelProperty(value="告警状态，0已处理，1未处理",name="alarmStatus")
+    @ApiModelProperty(value="告警状态(0：低电压告警，2低电量告警，1：非法开锁告警，3：掉线告警，4：故障告警，5：关锁超时报警",name="alarmStatus")
     @TableField(value = "alarm_status")
     private Integer alarmStatus;
     @ApiModelProperty(value="处理人",name="processPerson")
@@ -70,6 +70,10 @@ public class Alarm {
     @ApiModelProperty(value="进出方式(0:进,1:出)",name="enterOrExit")
     @TableField(value = "enterOrExit")
     private Integer enterOrExit;
+
+    @ApiModelProperty(value="报警处理状态(0已处理，1未处理)",name="alarmDealStatus")
+    @TableField(value = "alarm_deal_status")
+    private Integer alarmDealStatus;
 
     public Alarm(){}
 }
