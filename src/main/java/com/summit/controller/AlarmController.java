@@ -17,9 +17,11 @@ import com.summit.dao.repository.AccCtrlProcessDao;
 import com.summit.dao.repository.AccCtrlRealTimeDao;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.AlarmDao;
+import com.summit.entity.BackLockInfo;
 import com.summit.entity.LockRequest;
 import com.summit.entity.UpdateAlarmParam;
 import com.summit.sdk.huawei.model.LockProcessMethod;
+import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.sdk.huawei.model.LockProcessType;
 import com.summit.sdk.huawei.model.LockStatus;
 import com.summit.service.AddAccCtrlprocessService;
@@ -98,7 +100,7 @@ public class AlarmController {
             lockRequest.setLockId(lockId);
             lockRequest.setOperName(operName);
 
-           /* RestfulEntityBySummit result = nbLockServiceImpl.toUnLock(lockRequest);
+            RestfulEntityBySummit result = nbLockServiceImpl.toUnLock(lockRequest);
             if (result == null) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg + "开锁失败", null);
             }
@@ -117,7 +119,7 @@ public class AlarmController {
             //开锁指令下发成功的处理逻辑
             processResult = backLockInfo.getObjx();
 
-            unlockProcessUuid = backLockInfo.getRmid();*/
+            unlockProcessUuid = backLockInfo.getRmid();
 
             //通过LockID查找门禁信息
             AccessControlInfo accessControlInfo = accessControlDao.selectOne(Wrappers.<AccessControlInfo>lambdaQuery()
