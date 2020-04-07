@@ -42,24 +42,28 @@ public class AccessControlLockOperationServiceImpl implements AccessControlLockO
             Date date = new Date();
             String snapshotTime = CommonUtil.dateFormat.get().format(date);
             FaceRecognitionInfo faceRecognitionInfo= FaceInfoContextHolder.getFaceRecognitionInfo();
-            String fileName = FileUtil.getName(faceRecognitionInfo.getFaceImagePath());
-
-            //人脸扫描图片URL
-            String facePanoramaUrl = new StringBuilder()
-                    .append(MainAction.SnapshotFileName)
-                    .append(CommonConstants.URL_SEPARATOR)
-                    .append(snapshotTime)
-                    .append(CommonConstants.URL_SEPARATOR)
-                    .append(type)
-                    .append(CommonConstants.URL_SEPARATOR)
-                    .append(fileName)
-                    .toString();
-            String facePanoramaFilePath = SystemUtil.getUserInfo().getCurrentDir() + File.separator + facePanoramaUrl;
-            FileUtil.copy(faceRecognitionInfo.getFaceImagePath(), facePanoramaFilePath, true);
-            FileInfo facePanoramaFile = new FileInfo(snapshotTime + CommonConstants.FACE_PANORAMA_SUFFIX, facePanoramaUrl, "人脸全景图");
-            FaceInfo faceInfo = faceInfoManagerDao.selectById(faceRecognitionInfo.getFaceId());
-
-            AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(lockCode, faceInfo,faceRecognitionInfo.getScore(), type, facePanoramaFile, date, processResult,
+            FileInfo facePanoramaFile=null;
+            FaceInfo faceInfo=null;
+            Float score=null;
+            if (faceRecognitionInfo !=null){
+                String fileName = FileUtil.getName(faceRecognitionInfo.getFaceImagePath());
+                //人脸扫描图片URL
+                String facePanoramaUrl = new StringBuilder()
+                        .append(MainAction.SnapshotFileName)
+                        .append(CommonConstants.URL_SEPARATOR)
+                        .append(snapshotTime)
+                        .append(CommonConstants.URL_SEPARATOR)
+                        .append(type)
+                        .append(CommonConstants.URL_SEPARATOR)
+                        .append(fileName)
+                        .toString();
+                String facePanoramaFilePath = SystemUtil.getUserInfo().getCurrentDir() + File.separator + facePanoramaUrl;
+                FileUtil.copy(faceRecognitionInfo.getFaceImagePath(), facePanoramaFilePath, true);
+                facePanoramaFile= new FileInfo(snapshotTime + CommonConstants.FACE_PANORAMA_SUFFIX, facePanoramaUrl, "人脸全景图");
+                faceInfo = faceInfoManagerDao.selectById(faceRecognitionInfo.getFaceId());
+                score=faceRecognitionInfo.getScore();
+            }
+            AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(lockCode, faceInfo, score, type, facePanoramaFile, date, processResult,
                     failReason,enterOrExit);
             //在事务控制下插入门禁操作记录、门禁实时信息、告警
             ApplicationContextUtil.getBean(ClientFaceInfoCallbackImpl.class).insertData(type, accCtrlProcess);

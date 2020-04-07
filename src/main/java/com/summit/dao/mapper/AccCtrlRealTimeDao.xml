@@ -71,6 +71,11 @@
         <include refid="RealTime_Have_Alias_List"/>
         from acc_crtl_realtime ar
         inner join access_control ac on ar.access_control_id=ac.access_control_id
+        left join
+        (SELECT dc.access_control_id,GROUP_CONCAT(dc.dept_id)AS depts, GROUP_CONCAT(dept.DEPTNAME)AS deptNames  FROM dept_accesscontrol_auth dc
+        inner join cbb_userauth.sys_dept dept on dc.dept_id=dept.ID  GROUP BY access_control_id)accDept
+        on ar.access_control_id=accDept.access_control_id
+        left join addup_acc_ctrl_process addc on ar.access_control_id=addc.access_control_id
         <where>
             <if test="roles != null">
                 and ar.access_control_id IN ( SELECT DISTINCT au.access_control_id FROM role_accesscontrol_auth au WHERE au.role_id IN

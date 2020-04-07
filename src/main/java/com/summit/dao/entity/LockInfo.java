@@ -62,7 +62,7 @@ public class LockInfo {
     @TableField(value = "updatetime")
     private Date updatetime;
 
-    @ApiModelProperty(value="固定实时设置开始时间",name="fixedRealTimeStart")
+   /* @ApiModelProperty(value="固定实时设置开始时间",name="fixedRealTimeStart")
     @TableField(value = "fixed_realTime_start")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
@@ -103,7 +103,7 @@ public class LockInfo {
 
     @ApiModelProperty(value="关锁超时设置",name="lockTimeoutSet")
     @TableField(value = "lock_timeout_set")
-    private int lockTimeoutSet;
+    private int lockTimeoutSet;*/
 
     @ApiModelProperty(value="锁关联的摄像头列表,为null则json中不返回此字段",name="devices",hidden = true)
     @TableField(exist = false)

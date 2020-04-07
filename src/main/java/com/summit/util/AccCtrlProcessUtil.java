@@ -1,7 +1,9 @@
 package com.summit.util;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.summit.common.Common;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.entity.UserInfo;
 import com.summit.common.web.filter.UserContextHolder;
@@ -236,32 +238,45 @@ public class AccCtrlProcessUtil {
      * @param failReason       人脸识别或门禁操作识别原因
      * @return 组装好的门禁操作记录信息对象
      */
-    public AccCtrlProcess getAccCtrlProcess(String lockCode,FaceInfo faceInfo,float score, CameraUploadType type, FileInfo facePanoramaFile, Date snapshotTime,
+    public AccCtrlProcess getAccCtrlProcess(String lockCode,FaceInfo faceInfo,Float score, CameraUploadType type, FileInfo facePanoramaFile, Date snapshotTime,
                                             LockProcessResultType processResult, String failReason,Integer enterOrExit) {
 
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
-        accCtrlProcess.setProcessMethod(LockProcessMethod.FACE_RECOGNITION.getCode());
-        accCtrlProcess.setUserName(faceInfo.getUserName());
-        if (faceInfo.getGender() != null)
-            accCtrlProcess.setGender(faceInfo.getGender());
-        try {
-            if (faceInfo.getBirthday() != null)
-                accCtrlProcess.setBirthday(CommonUtil.dateFormat.get().parse(faceInfo.getBirthday()));
-        } catch (ParseException e) {
-            log.error("生日格式有误");
+        if (faceInfo !=null){
+            accCtrlProcess.setUserName(faceInfo.getUserName());
+            if (faceInfo.getGender() != null){
+                accCtrlProcess.setGender(faceInfo.getGender());
+            }
+            try {
+                if (faceInfo.getBirthday() != null)
+                    accCtrlProcess.setBirthday(CommonUtil.dateFormat.get().parse(faceInfo.getBirthday()));
+            } catch (ParseException e) {
+                log.error("生日格式有误");
+            }
+            accCtrlProcess.setProvince(faceInfo.getProvince());
+            accCtrlProcess.setCity(faceInfo.getCity());
+            if (faceInfo.getCardType() != null){
+                accCtrlProcess.setCardType(faceInfo.getCardType());
+            }
+            accCtrlProcess.setCardId(faceInfo.getCardId());
+            accCtrlProcess.setProcessMethod(LockProcessMethod.FACE_RECOGNITION.getCode());//刷脸操作
+        }else if (Common.getLogUser()!=null){
+            UserInfo logUser = Common.getLogUser();
+            accCtrlProcess.setUserName(logUser.getUserName());
+            if (logUser.getSex()!=null){
+                accCtrlProcess.setGender(Integer.parseInt(logUser.getSex()));
+            }
+            accCtrlProcess.setProcessMethod(LockProcessMethod.FACE_RECOGNITION.getCode());//刷脸操作
+           // accCtrlProcess.setProcessMethod(LockProcessMethod.Login_Operation.getCode());//登录操作
         }
-        accCtrlProcess.setProvince(faceInfo.getProvince());
-        accCtrlProcess.setCity(faceInfo.getCity());
-        if (faceInfo.getCardType() != null)
-            accCtrlProcess.setCardType(faceInfo.getCardType());
-        accCtrlProcess.setCardId(faceInfo.getCardId());
         //人脸匹配率需要提供
-        accCtrlProcess.setFaceMatchRate(score);
-        accCtrlProcess.setFacePanorama(facePanoramaFile);
-
+        if (score !=null){
+            accCtrlProcess.setFaceMatchRate(score);
+        }
+        if (facePanoramaFile !=null){
+            accCtrlProcess.setFacePanorama(facePanoramaFile);
+        }
         accCtrlProcess.setCreateTime(snapshotTime);
-
-
         AccessControlInfo acInfo = accessControlService.selectAccCtrlByLockCode(lockCode);
         if (acInfo != null) {
             String accessControlId = acInfo.getAccessControlId();
@@ -378,7 +393,7 @@ public class AccCtrlProcessUtil {
                 accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());
             }else if (type !=null  && CameraUploadType.Illegal_Alarm == type){
                 accCtrlRealTimeEntity.setAlarmStatus(accCtrlProcess.getAlarmStatus()); //告警状态
-                accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());//开锁状态
+                accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());//关锁状态
             }
             accCtrlRealTimeEntity.setLongitude(accessControlInfo.getLongitude());
             accCtrlRealTimeEntity.setLatitude(accessControlInfo.getLatitude());
@@ -408,12 +423,16 @@ public class AccCtrlProcessUtil {
             }
         }
         //通过人脸名称查找人脸库图片
-        com.summit.dao.entity.FaceInfo faceInfo = faceInfoManagerDao.selectOne(Wrappers.<com.summit.dao.entity.FaceInfo>lambdaQuery()
-                .eq(com.summit.dao.entity.FaceInfo::getUserName, accCtrlRealTimeEntity.getName()));
-        if (faceInfo != null) {
-            accCtrlRealTimeEntity.setFaceMatchUrl(faceInfo.getFaceImage());
-        } else {
-            accCtrlRealTimeEntity.setFaceMatchUrl(null);
+        if (accCtrlProcess.getFaceMatchRate() !=null){
+            com.summit.dao.entity.FaceInfo faceInfo = faceInfoManagerDao.selectOne(Wrappers.<com.summit.dao.entity.FaceInfo>lambdaQuery()
+                    .eq(com.summit.dao.entity.FaceInfo::getUserName, accCtrlRealTimeEntity.getName()));
+            if (faceInfo != null) {
+                accCtrlRealTimeEntity.setFaceMatchUrl(faceInfo.getFaceImage());
+            } else {
+                accCtrlRealTimeEntity.setFaceMatchUrl(null);
+            }
+        }else if (Common.getLogUser() !=null && StrUtil.isNotBlank(Common.getLogUser().getHeadPortrait())){
+            accCtrlRealTimeEntity.setFaceMatchUrl(Common.getLogUser().getHeadPortrait());
         }
         accCtrlRealTimeEntity.setUpdatetime(accCtrlProcess.getCreateTime());
         accCtrlRealTimeEntity.setEnterOrExit(accCtrlProcess.getEnterOrExit());

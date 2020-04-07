@@ -156,7 +156,7 @@ public class AccessControlInfoController {
             accessControlService.delBatchAccCtrlByAccCtrlId(accessControlIds);
         } catch (Exception e) {
             msg = getErrorMsg(msg, e);
-            log.error(msg);
+            log.error(msg,e);
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg, null);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "删除门禁信息成功", null);

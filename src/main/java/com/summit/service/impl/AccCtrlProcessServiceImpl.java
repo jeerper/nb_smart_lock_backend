@@ -67,6 +67,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         if (type !=null && CameraUploadType.Unlock == type ){
             accessControlDao.update(null, Wrappers.<AccessControlInfo>lambdaUpdate()
                     .set(AccessControlInfo::getStatus,accCtrlProcess.getProcessType())
+                    .set(AccessControlInfo::getAlarmStatus,null)
                     .eq(AccessControlInfo::getAccessControlId, accCtrlProcess.getAccessControlId()));
         }else if (type !=null  && CameraUploadType.Illegal_Alarm == type){
             accessControlDao.update(null, Wrappers.<AccessControlInfo>lambdaUpdate()

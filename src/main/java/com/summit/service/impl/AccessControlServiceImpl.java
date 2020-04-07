@@ -11,6 +11,7 @@ import com.summit.common.web.filter.UserContextHolder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.*;
 import com.summit.dao.repository.*;
+import com.summit.entity.AccCtrlDept;
 import com.summit.exception.ErrorMsgException;
 import com.summit.sdk.huawei.model.AlarmType;
 import com.summit.service.AccessControlService;
@@ -58,6 +59,8 @@ public class AccessControlServiceImpl implements AccessControlService {
     private AccCtrlRealTimeDao accCtrlRealTimeDao;
     @Autowired
     private ExcelUtil excelUtil;
+    @Autowired
+    private AccCtrlDeptDao accCtrlDeptDao;
 
     /**
      * 根据门禁id查询唯一门禁信息
@@ -395,6 +398,16 @@ public class AccessControlServiceImpl implements AccessControlService {
                         authIds.add(authId);
                 }
             }
+            List<AccCtrlDept> accCtrlDepts = accCtrlDeptDao.selectList(new QueryWrapper<AccCtrlDept>().eq("access_control_id", acId));
+            if(accCtrlDepts != null){
+                for(AccCtrlDept accCtrlDept : accCtrlDepts) {
+                    if(accCtrlDept == null)
+                        continue;
+                    String authId = accCtrlDept.getId();
+                    if(authId != null)
+                        authIds.add(authId);
+                }
+            }
         }
         CommonUtil.removeDuplicate(authIds);
         if(!lockIds.isEmpty()){
@@ -419,8 +432,8 @@ public class AccessControlServiceImpl implements AccessControlService {
             try {
                 result = accessControlDao.deleteBatchIds(accessControlIds);
             } catch (Exception e) {
-                log.error("删除门禁信息失败");
-                throw new ErrorMsgException("删除门禁信息失败");
+                log.error("删除角色门禁信息失败");
+                throw new ErrorMsgException("删除角色门禁信息失败");
             }
         }
 
@@ -431,6 +444,12 @@ public class AccessControlServiceImpl implements AccessControlService {
             } catch (Exception e) {
                 log.error("删除门禁授权信息失败");
                 throw new ErrorMsgException("删除门禁授权信息失败");
+            }
+            try {
+                accCtrlDeptDao.deleteBatchIds(authIds);
+            } catch (Exception e) {
+                log.error("删除部门门禁授权信息失败");
+                throw new ErrorMsgException("删除部门门禁授权信息失败");
             }
         }
 

@@ -4,11 +4,13 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.MainAction;
+import com.summit.common.Common;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.repository.*;
+import com.summit.entity.GetLockCodeParam;
 import com.summit.entity.UnlockResultEnum;
 import com.summit.entity.UnlockResultInfo;
 import com.summit.sdk.huawei.model.CameraUploadType;
@@ -26,7 +28,10 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -77,21 +82,21 @@ public class LoginFaceRecognitionController {
     }
 
     @ApiOperation(value = "获取智能锁密码")
-    @GetMapping(value = "/lock-code-password/{lockCode}")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "lockCode", value = "智能锁编码", paramType = "path", required = true),
-    })
-    public RestfulEntityBySummit<LockInfo> lockCodePassword(@PathVariable String lockCode) {
+    @PostMapping(value = "/lock-code-password")
+    public RestfulEntityBySummit<LockInfo> lockCodePassword(@RequestBody GetLockCodeParam getLockCodeParam) {
         try {
-            if (StrUtil.isBlank(lockCode)) {
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "锁编码为空", null);
+            if (getLockCodeParam ==null){
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "获取智能锁密码参数为空", null);
             }
-            String faceId = FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId();
-            int count = faceInfoAccCtrlDao.selectCountByFaceIdAndLockCode(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId(), lockCode);
+            if (Common.getLogUser() ==null && StrUtil.isNotBlank(Common.getLogUser().getUserName())) {
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "用户名不存在", null);
+            }
+            String lockCode = getLockCodeParam.getLockCode();
+            Integer enterOrExit = getLockCodeParam.getEnterOrExit();
+            int count = faceInfoAccCtrlDao.selectCountByUserNameAndLockCode(Common.getLogUser().getUserName(),lockCode);
             if (count < 1) {
                 //没有操作权限时需要执行报警操作
                 String failReason = "没有操作该门禁锁的权限";
-                Integer  enterOrExit=3; //进出未知
                 accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode, CameraUploadType.Illegal_Alarm,
                         LockProcessResultType.Failure, failReason,enterOrExit);
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, failReason, null);
