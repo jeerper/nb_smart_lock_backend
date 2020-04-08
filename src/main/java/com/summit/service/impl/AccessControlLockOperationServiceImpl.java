@@ -1,8 +1,10 @@
 package com.summit.service.impl;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.system.SystemUtil;
 import com.summit.MainAction;
+import com.summit.common.Common;
 import com.summit.common.util.ApplicationContextUtil;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
@@ -62,6 +64,8 @@ public class AccessControlLockOperationServiceImpl implements AccessControlLockO
                 facePanoramaFile= new FileInfo(snapshotTime + CommonConstants.FACE_PANORAMA_SUFFIX, facePanoramaUrl, "人脸全景图");
                 faceInfo = faceInfoManagerDao.selectById(faceRecognitionInfo.getFaceId());
                 score=faceRecognitionInfo.getScore();
+            }else if (Common.getLogUser()!=null && StrUtil.isNotBlank(Common.getLogUser().getHeadPortrait())){
+                facePanoramaFile=new FileInfo(snapshotTime + CommonConstants.HEAD_SUFFIX, Common.getLogUser().getHeadPortrait(), "用户头像");
             }
             AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(lockCode, faceInfo, score, type, facePanoramaFile, date, processResult,
                     failReason,enterOrExit);

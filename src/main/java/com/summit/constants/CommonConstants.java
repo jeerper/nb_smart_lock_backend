@@ -68,6 +68,12 @@ public class CommonConstants {
     public static final String FACE_Image_SUFFIX = "_Faceimage.jpg";
 
     /**
+     *
+     * 用户头像后缀
+     */
+    public static final String HEAD_SUFFIX = "_Head.jpg";
+
+    /**
      * 查询锁状态超时时间，单位秒
      */
     public static final int QUERY_LOCK_STATUS_OUTTIME = 2;
@@ -76,4 +82,6 @@ public class CommonConstants {
      * 人脸门禁授权前缀
      */
     public static final String FaceAccCtrl = "faceAccCtrl.";
+
+
 }

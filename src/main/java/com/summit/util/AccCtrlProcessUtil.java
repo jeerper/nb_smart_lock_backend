@@ -266,8 +266,8 @@ public class AccCtrlProcessUtil {
             if (logUser.getSex()!=null){
                 accCtrlProcess.setGender(Integer.parseInt(logUser.getSex()));
             }
-            accCtrlProcess.setProcessMethod(LockProcessMethod.FACE_RECOGNITION.getCode());//刷脸操作
-           // accCtrlProcess.setProcessMethod(LockProcessMethod.Login_Operation.getCode());//登录操作
+            //accCtrlProcess.setProcessMethod(LockProcessMethod.FACE_RECOGNITION.getCode());//刷脸操作
+           accCtrlProcess.setProcessMethod(LockProcessMethod.Login_Operation.getCode());//app登录操作
         }
         //人脸匹配率需要提供
         if (score !=null){
@@ -283,8 +283,8 @@ public class AccCtrlProcessUtil {
             accCtrlProcess.setAccessControlId(accessControlId);
             String accessControlName = acInfo.getAccessControlName();
             accCtrlProcess.setAccessControlName(accessControlName);
+            accCtrlProcess.setLockId(acInfo.getLockId());
         }
-        accCtrlProcess.setLockId(acInfo.getLockId());
         accCtrlProcess.setLockCode(lockCode);
 
         if (CameraUploadType.Unlock == type) {
@@ -428,8 +428,6 @@ public class AccCtrlProcessUtil {
                     .eq(com.summit.dao.entity.FaceInfo::getUserName, accCtrlRealTimeEntity.getName()));
             if (faceInfo != null) {
                 accCtrlRealTimeEntity.setFaceMatchUrl(faceInfo.getFaceImage());
-            } else {
-                accCtrlRealTimeEntity.setFaceMatchUrl(null);
             }
         }else if (Common.getLogUser() !=null && StrUtil.isNotBlank(Common.getLogUser().getHeadPortrait())){
             accCtrlRealTimeEntity.setFaceMatchUrl(Common.getLogUser().getHeadPortrait());

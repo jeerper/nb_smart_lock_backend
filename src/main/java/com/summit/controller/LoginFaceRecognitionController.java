@@ -93,7 +93,8 @@ public class LoginFaceRecognitionController {
             }
             String lockCode = getLockCodeParam.getLockCode();
             Integer enterOrExit = getLockCodeParam.getEnterOrExit();
-            int count = faceInfoAccCtrlDao.selectCountByUserNameAndLockCode(Common.getLogUser().getUserName(),lockCode);
+            String userName = Common.getLogUser().getUserName();
+            int count = faceInfoAccCtrlDao.selectCountByUserNameAndLockCode(userName,lockCode);
             if (count < 1) {
                 //没有操作权限时需要执行报警操作
                 String failReason = "没有操作该门禁锁的权限";
@@ -103,7 +104,7 @@ public class LoginFaceRecognitionController {
             }
             return ResultBuilder.buildSuccess(lockInfoDao.selectLockPassWordByLockCode(lockCode));
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(),e);
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸扫描信息上传失败", null);
         }
     }

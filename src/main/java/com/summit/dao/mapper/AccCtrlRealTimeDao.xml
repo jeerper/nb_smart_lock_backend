@@ -102,11 +102,13 @@
             on ar.access_control_id=accDept.access_control_id
         left join addup_acc_ctrl_process addc on ar.access_control_id=addc.access_control_id
         <where>
+            <if test="depts != null">
                 and ar.access_control_id IN ( SELECT DISTINCT du.access_control_id FROM dept_accesscontrol_auth du WHERE du.dept_id IN
                 <foreach item="dept" collection="depts" index="index" open="(" separator="," close=")">
                     #{dept}
                 </foreach>
                 )
+            </if>
             <if test="accCtrlRealTimeEntity != null">
                 <if test="accCtrlRealTimeEntity.accessControlId != null">
                     and ac.access_control_id = #{accCtrlRealTimeEntity.accessControlId}
