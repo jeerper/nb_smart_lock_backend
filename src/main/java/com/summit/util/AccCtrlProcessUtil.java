@@ -272,6 +272,8 @@ public class AccCtrlProcessUtil {
         //人脸匹配率需要提供
         if (score !=null){
             accCtrlProcess.setFaceMatchRate(score);
+        }else {
+            accCtrlProcess.setFaceMatchRate(100f);
         }
         if (facePanoramaFile !=null){
             accCtrlProcess.setFacePanorama(facePanoramaFile);
@@ -410,7 +412,8 @@ public class AccCtrlProcessUtil {
         accCtrlRealTimeEntity.setCity(accCtrlProcess.getCity());
         accCtrlRealTimeEntity.setCardType(accCtrlProcess.getCardType());
         accCtrlRealTimeEntity.setCardId(accCtrlProcess.getCardId());
-        accCtrlRealTimeEntity.setFaceMatchRate(accCtrlProcess.getFaceMatchRate());
+        Float faceMatchRate = accCtrlProcess.getFaceMatchRate();
+        accCtrlRealTimeEntity.setFaceMatchRate(faceMatchRate);
         accCtrlRealTimeEntity.setFaceLibName(accCtrlProcess.getFaceLibName());
         accCtrlRealTimeEntity.setFaceLibType(accCtrlProcess.getFaceLibType());
         //人脸识别全景图Url
@@ -424,13 +427,11 @@ public class AccCtrlProcessUtil {
             }
         }
         //通过人脸名称查找人脸库图片
-        if (accCtrlProcess.getFaceMatchRate() !=null){
-            com.summit.dao.entity.FaceInfo faceInfo = faceInfoManagerDao.selectOne(Wrappers.<com.summit.dao.entity.FaceInfo>lambdaQuery()
-                    .eq(com.summit.dao.entity.FaceInfo::getUserName, accCtrlRealTimeEntity.getName()));
-            if (faceInfo != null) {
-                accCtrlRealTimeEntity.setFaceMatchUrl(faceInfo.getFaceImage());
-            }
-        }else if (Common.getLogUser() !=null && StrUtil.isNotBlank(Common.getLogUser().getHeadPortrait())){
+        com.summit.dao.entity.FaceInfo faceInfo = faceInfoManagerDao.selectOne(Wrappers.<com.summit.dao.entity.FaceInfo>lambdaQuery()
+                .eq(com.summit.dao.entity.FaceInfo::getUserName, accCtrlRealTimeEntity.getName()));
+        if (faceInfo != null) {
+            accCtrlRealTimeEntity.setFaceMatchUrl(faceInfo.getFaceImage());
+        }else if (Common.getLogUser() !=null && StrUtil.isNotBlank(Common.getLogUser().getHeadPortrait())) {
             accCtrlRealTimeEntity.setFaceMatchUrl(Common.getLogUser().getHeadPortrait());
         }
         accCtrlRealTimeEntity.setUpdatetime(accCtrlProcess.getCreateTime());
