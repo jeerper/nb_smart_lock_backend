@@ -236,7 +236,7 @@ public class ClientFaceInfoCallbackImpl implements ClientFaceInfoCallback {
             log.info("门禁实时信息入库");
             accCtrlRealTimeService.insertOrUpdate(accCtrlRealTimeEntity);
             log.info("统计分析统计进出频次");
-            if (accCtrlProcess.getEnterOrExit() !=null && accCtrlProcess.getAccessControlId() !=null){
+            if (CameraUploadType.Unlock==type){
                 addAccCtrlprocessService.insertOrUpdateEnterOrExitCount(accCtrlProcess.getAccessControlId());
             }
 

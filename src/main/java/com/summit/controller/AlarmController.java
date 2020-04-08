@@ -81,6 +81,7 @@ public class AlarmController {
         String processRemark = updateAlarmParam.getProcessRemark();
         Integer enterOrExit = updateAlarmParam.getEnterOrExit();//进或者出
         String unlockCause = updateAlarmParam.getUnlockCause();//进出事由
+        String accCtrlProId = updateAlarmParam.getAccCtrlProId();
         String operName = null;
         UserInfo userInfo = UserContextHolder.getUserInfo();
         if (userInfo != null)
@@ -91,7 +92,6 @@ public class AlarmController {
         Integer processResult = null;
         //开锁处理UUID
         String unlockProcessUuid = null;
-        String accCtrlProId = updateAlarmParam.getAccCtrlProId();
         Date processTime = new Date();
         if (needUnLock) {
             LockRequest lockRequest = new LockRequest();
@@ -129,7 +129,8 @@ public class AlarmController {
 //            accCtrlProcess.setProcessTime(new Date());
             accCtrlProcess.setProcessType(LockProcessType.UNLOCK.getCode());
             accCtrlProcess.setUserName(operName);
-            accCtrlProcess.setAccessControlId(accessControlInfo.getAccessControlId());
+            String accessControlId = accessControlInfo.getAccessControlId();
+            accCtrlProcess.setAccessControlId(accessControlId);
             accCtrlProcess.setAccessControlName(accessControlInfo.getAccessControlName());
             accCtrlProcess.setProcessResult(processResult);
             accCtrlProcess.setProcessUuid(unlockProcessUuid);
@@ -139,8 +140,8 @@ public class AlarmController {
             accCtrlProcess.setAlarmStatus(accessControlInfo.getAlarmStatus());
             accCtrlProcessDao.insert(accCtrlProcess);
             //统计分析统计进出频次
-            if (accCtrlProId !=null && enterOrExit !=null){
-                addAccCtrlprocessService.insertOrUpdateEnterOrExitCount(accCtrlProId);
+            if (accessControlId !=null && enterOrExit !=null){
+                addAccCtrlprocessService.insertOrUpdateEnterOrExitCount(accessControlId);
             }
 
         }
@@ -169,10 +170,10 @@ public class AlarmController {
                         .set(AccCtrlProcess::getProcessResult, processResult)
                         .set(AccCtrlProcess::getProcessTime, processTime)
                         .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProId));
-                //统计分析统计进出频次
+                /*//统计分析统计进出频次
                 if (accCtrlProId !=null){
                     addAccCtrlprocessService.insertOrUpdateEnterOrExitCount(accCtrlProId);
-                }
+                }*/
             } else {
                 //只处理告警任务，不开锁时的业务
                 //更新实时状态为锁定状态

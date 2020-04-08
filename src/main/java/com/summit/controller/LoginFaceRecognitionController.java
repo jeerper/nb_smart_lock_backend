@@ -16,7 +16,6 @@ import com.summit.entity.UnlockResultInfo;
 import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.service.AccessControlLockOperationService;
-import com.summit.util.FaceInfoContextHolder;
 import com.summit.util.JwtSettings;
 import com.summit.utils.BaiduSdkClient;
 import io.swagger.annotations.Api;
@@ -117,7 +116,11 @@ public class LoginFaceRecognitionController {
             if (StrUtil.isBlank(lockCode)) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "锁编码为空", null);
             }
-            int count = faceInfoAccCtrlDao.selectCountByFaceIdAndLockCode(FaceInfoContextHolder.getFaceRecognitionInfo().getFaceId(), lockCode);
+            if (Common.getLogUser() ==null && StrUtil.isNotBlank(Common.getLogUser().getUserName())) {
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "用户名不存在", null);
+            }
+            String userName = Common.getLogUser().getUserName();
+            int count = faceInfoAccCtrlDao.selectCountByUserNameAndLockCode(userName,lockCode);
             if (count < 1) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有操作该门禁锁的权限", null);
             }
@@ -162,7 +165,7 @@ public class LoginFaceRecognitionController {
             accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode, cameraUploadType, processResult, failReason,enterOrExit);
             return ResultBuilder.buildSuccess();
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(),e);
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "开锁结果提交失败", null);
         }
     }
