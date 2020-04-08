@@ -49,7 +49,7 @@ public class FaceRecognitionInterceptor extends HandlerInterceptorAdapter {
 
         boolean isExists=genericRedisTemplate.hasKey(MainAction.FACE_AUTH_CACHE_PREFIX +token);
 
-        if((!isExists)||(!isContains)){
+        if((!isExists) && (!isContains)){
             response.setCharacterEncoding(CommonConstant.UTF8);
             response.setContentType(CommonConstant.CONTENT_TYPE);
             response.setStatus(HttpStatus.OK.value());
@@ -58,16 +58,16 @@ public class FaceRecognitionInterceptor extends HandlerInterceptorAdapter {
             return false;
         }
         BoundValueOperations<String,Object> boundValueOperations=genericRedisTemplate.boundValueOps(MainAction.FACE_AUTH_CACHE_PREFIX +token);
-
         FaceRecognitionInfo faceRecognitionInfo=(FaceRecognitionInfo)boundValueOperations.get();
-        Claims claims = Jwts.parser()
-                .setSigningKey(jwtSettings.getSecretKey())
-                .parseClaimsJws(token)
-                .getBody();
-        String faceId=(String)claims.get(MainAction.FACE_ID);
-
-        FaceInfoContextHolder.setFaceRecognitionInfo(faceRecognitionInfo);
-        boundValueOperations.expire(jwtSettings.getExpireLength(), TimeUnit.MINUTES);
+        if(faceRecognitionInfo !=null){
+            Claims claims = Jwts.parser()
+                    .setSigningKey(jwtSettings.getSecretKey())
+                    .parseClaimsJws(token)
+                    .getBody();
+            String faceId=(String)claims.get(MainAction.FACE_ID);
+            FaceInfoContextHolder.setFaceRecognitionInfo(faceRecognitionInfo);
+            boundValueOperations.expire(jwtSettings.getExpireLength(), TimeUnit.MINUTES);
+        }
         return true;
     }
 

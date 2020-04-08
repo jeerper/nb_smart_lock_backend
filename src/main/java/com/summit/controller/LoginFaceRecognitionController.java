@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Api(tags = "登录app人脸识别操作接口")
 @RestController
-@RequestMapping("/loginFaceRecognitionController")
+@RequestMapping("/face-recognition")
 public class LoginFaceRecognitionController {
 
     @Autowired
