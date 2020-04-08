@@ -136,7 +136,7 @@ public class AlarmController {
             accCtrlProcess.setProcessUuid(unlockProcessUuid);
             accCtrlProcess.setCreateTime(processTime);
             accCtrlProcess.setEnterOrExit(enterOrExit);//进出
-            accCtrlProcess.setUnlockCause(unlockCause);//事由
+            accCtrlProcess.setUnlockCause(processRemark);//事由
             accCtrlProcess.setAlarmStatus(accessControlInfo.getAlarmStatus());
             accCtrlProcessDao.insert(accCtrlProcess);
             //统计分析统计进出频次
