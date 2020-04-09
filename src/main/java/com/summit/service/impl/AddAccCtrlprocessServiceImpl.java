@@ -90,7 +90,10 @@ public class AddAccCtrlprocessServiceImpl implements AddAccCtrlprocessService {
                 for (AccessControlInfo accessControlInfo:accessControlInfos){
                     actIds.add(accessControlInfo.getAccessControlId());
                 }
-                addAccCtrlprocesses=addAccCtrlprocessDao.selectAddAcpByAcIds(actIds);
+                if (!CommonUtil.isEmptyList(actIds)){
+                    addAccCtrlprocesses=addAccCtrlprocessDao.selectAddAcpByAcIds(actIds);
+                }
+
             }
         }
         /*List<String> depts = UserDeptAuthUtils.getDepts();
