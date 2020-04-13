@@ -18,7 +18,7 @@ public interface ICbbUserAuthService {
      * @param pdept
      * @return 根据pdept查询下面所有的子节点
      */
-    @GetMapping("/dept/queryAllDeptByPdept")
+    @GetMapping("/dept/queryLowerAllDeptByPdept")
     RestfulEntityBySummit<List<String>> queryAllDeptByPdept(@RequestParam("pdept") String pdept);
 
 }
