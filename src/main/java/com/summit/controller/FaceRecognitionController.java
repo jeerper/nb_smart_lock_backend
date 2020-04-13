@@ -142,7 +142,7 @@ public class FaceRecognitionController {
     }
 
     @ApiOperation(value = "获取智能锁密码")
-    @GetMapping(value = "/lock-code-password")
+    @PostMapping(value = "/lock-code-password")
     public RestfulEntityBySummit<LockInfo> lockCodePassword(@RequestBody GetLockCodeParam getLockCodeParam) {
         try {
             if (getLockCodeParam ==null){
