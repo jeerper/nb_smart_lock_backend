@@ -21,4 +21,5 @@ public interface FaceInfoAccCtrlDao extends BaseMapper<FaceInfoAccCtrl> {
     List<FaceInfo> selectFaceInfoAccCtrlByActrlIds(@Param("accCtrlIds")List<String> accCtrlIds);
 
     int selectCountByUserNameAndLockCode(@Param("userName") String userName,@Param("lockCode") String lockCode);
+
 }

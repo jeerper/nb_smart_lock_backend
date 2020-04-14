@@ -11,14 +11,11 @@ import com.summit.common.util.ResultBuilder;
 import com.summit.common.web.filter.UserContextHolder;
 import com.summit.dao.entity.AccCtrlRole;
 import com.summit.dao.entity.AccessControlInfo;
-import com.summit.dao.entity.AddAccCtrlprocess;
 import com.summit.dao.entity.SimpleAccCtrlInfo;
-import com.summit.entity.AccCtrlDept;
 import com.summit.exception.ErrorMsgException;
 import com.summit.service.AccCtrlDeptService;
 import com.summit.service.AccCtrlRoleService;
 import com.summit.service.AccessControlService;
-import com.summit.service.AddAccCtrlprocessService;
 import com.summit.util.CommonUtil;
 import com.summit.util.ExcelExportUtil;
 import com.summit.util.ExcelUtil;
@@ -47,8 +44,6 @@ public class AccessControlInfoController {
     @Autowired
     private AccCtrlRoleService accCtrlRoleService;
     @Autowired
-    private AddAccCtrlprocessService addAccCtrlprocessService;
-    @Autowired
     private ExcelUtil excelUtil;
     @Autowired
     private AccCtrlDeptService accCtrlDeptService;
@@ -62,6 +57,7 @@ public class AccessControlInfoController {
     public RestfulEntityBySummit<Page<AccessControlInfo>> selectAccCtrlByPage(@ApiParam(value = "门禁名")  @RequestParam(value = "accessControlName",required = false) String accessControlName,
                                                                               @ApiParam(value = "创建人")  @RequestParam(value = "createby",required = false) String createby,
                                                                               @ApiParam(value = "锁编号")  @RequestParam(value = "lockCode",required = false) String lockCode,
+                                                                              @ApiParam(value = "多个部门Id")  @RequestParam(value = "deptIds",required = false) String deptIds,
                                                                               @ApiParam(value = "入口摄像头ip")  @RequestParam(value = "入口摄像头",required = false) String entryCameraIp,
                                                                               @ApiParam(value = "出口摄像头ip")  @RequestParam(value = "出口摄像头",required = false) String exitCameraIp,
                                                                               @ApiParam(value = "门禁状态")  @RequestParam(value = "status",required = false) Integer status,
@@ -70,7 +66,7 @@ public class AccessControlInfoController {
 
         AccessControlInfo accessControlInfo = new AccessControlInfo(accessControlName,createby,lockCode,entryCameraIp,exitCameraIp,status);
         try {
-            Page<AccessControlInfo> controlInfoPage  = accessControlService.selectAccCtrlByPage(accessControlInfo, current, pageSize);
+            Page<AccessControlInfo> controlInfoPage  = accessControlService.selectAccCtrlByPage(accessControlInfo, current, pageSize,deptIds);
             return ResultBuilder.buildSuccess(controlInfoPage);
         } catch (Exception e) {
             log.error("分页查询全部门禁信息失败",e);
@@ -90,16 +86,16 @@ public class AccessControlInfoController {
         try {
             accessControlService.insertAccCtrl(accessControlInfo);
             //录入后立即给当前用户授权改门禁
-            if(uerInfo != null){
+          /*  if(uerInfo != null){
                 String[] depts = uerInfo.getDepts();
                 //暂时取第一个角色
                 if(!CommonUtil.isEmptyArr(depts))
                   //  accCtrlRoleService.insertAccCtrlRole(new AccCtrlRole(null,null,roles[0],accessControlInfo.getAccessControlId()));
                     accCtrlDeptService.insertAccCtrlDept(new AccCtrlDept(null,depts[0],accessControlInfo.getAccessControlId()));
-            }
+            }*/
         } catch (Exception e) {
             msg = getErrorMsg(msg, e);
-            log.error(msg);
+            log.error(msg,e);
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg, null);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"录入门禁信息成功", null);
@@ -130,27 +126,6 @@ public class AccessControlInfoController {
             log.error("门禁id为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁id为空",null);
         }
-        /**
-         * 删除门禁的时候,统计分析也要删除相应的门禁
-         */
-        List<String> needDeladdAccCtrlprocessIds=new ArrayList<>();
-        for (String accessControlId:accessControlIds){
-            AddAccCtrlprocess addAccCtrlprocess = addAccCtrlprocessService.selectAddAccCtrlByAccCtrlID(accessControlId);
-            if (addAccCtrlprocess !=null){
-                needDeladdAccCtrlprocessIds.add(addAccCtrlprocess.getId());
-            }
-        }
-        String msg1 = "删除统计信息表中对应的门禁信息失败";
-        if (!CommonUtil.isEmptyList(needDeladdAccCtrlprocessIds)){
-            try {
-                addAccCtrlprocessService.deladdAccCtrlprocessByAccCtrlId(needDeladdAccCtrlprocessIds);
-            } catch (Exception e) {
-                msg1 = getErrorMsg(msg1, e);
-                log.error(msg1);
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg1, null);
-            }
-        }
-
         String msg = "删除门禁信息失败";
         try {
             accessControlService.delBatchAccCtrlByAccCtrlId(accessControlIds);
@@ -201,6 +176,24 @@ public class AccessControlInfoController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询门禁信息列表失败",accessControlInfos);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询门禁信息列表成功",accessControlInfos);
+    }
+
+    @ApiOperation(value = "根据门禁id查询门禁详细信息", notes = "根据门禁id查询门禁详细信息")
+    @GetMapping(value = "/selectAccCtrlInfosById")
+    public RestfulEntityBySummit<AccessControlInfo> selectAccCtrlInfosById(@ApiParam(value = "门禁id",required = true)  @RequestParam(value = "accCtrlId") String accCtrlId) {
+        if(accCtrlId == null){
+            log.error("门禁id为空");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"门禁id为空",null);
+        }
+        AccessControlInfo accessControlInfo=null;
+        try{
+            accessControlInfo=accessControlService.selectAccCtrlById(accCtrlId);
+        }catch (Exception e){
+            log.error("根据门禁id查询门禁详细信息失败",e);
+            e.printStackTrace();
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"根据门禁id查询门禁详细信息失败",accessControlInfo);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"根据门禁id查询门禁详细信息成功",accessControlInfo);
     }
 
     @ApiOperation(value = "门禁信息批量导入excel")
@@ -323,10 +316,6 @@ public class AccessControlInfoController {
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"文件下载成功",fileName);
     }
-
-
-
-
 
 
     @ApiOperation(value = "查询全部门禁信息，包括门禁id和name", notes = "无论有无门禁权限都查询全部")

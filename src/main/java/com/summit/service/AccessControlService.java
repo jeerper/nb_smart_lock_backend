@@ -36,7 +36,7 @@ public interface AccessControlService {
      * 分页条件查询门禁信息
      * @return 门禁信息列表分页对象
      */
-    Page<AccessControlInfo> selectAccCtrlByPage(AccessControlInfo accessControlInfo, Integer current, Integer pageSize);
+    Page<AccessControlInfo> selectAccCtrlByPage(AccessControlInfo accessControlInfo, Integer current, Integer pageSize,String deptIds) throws Exception;
 
     /**
      * 分页查询全部有操作记录的门禁信息

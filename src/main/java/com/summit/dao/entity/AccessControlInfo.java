@@ -101,6 +101,20 @@ public class AccessControlInfo {
     @TableField(value = "alarm_status")
     private Integer alarmStatus;
 
+    @ApiModelProperty(value = "门禁所属部门集合", name = "depts")
+    @TableField(exist = false)
+    private String[] depts;
+
+    @ApiModelProperty(value = "查询用--门禁所属部门集合", name = "deptIds",hidden = true)
+    @TableField(exist = false)
+    private String deptIds;
+
+    @ApiModelProperty(value = "查询用--门禁所属部门名称，以,分割", name = "deptNames", hidden = true)
+    @TableField(exist = false)
+    private String deptNames;
+
+
+
     public AccessControlInfo(){}
 
     public AccessControlInfo(String accessControlName, String createby, String lockCode, String entryCameraIp, String exitCameraIp, Integer status){

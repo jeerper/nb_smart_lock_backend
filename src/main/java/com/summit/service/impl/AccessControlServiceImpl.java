@@ -1,7 +1,10 @@
 package com.summit.service.impl;
 
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
@@ -16,6 +19,7 @@ import com.summit.exception.ErrorMsgException;
 import com.summit.sdk.huawei.model.AlarmType;
 import com.summit.service.AccessControlService;
 import com.summit.service.CameraDeviceService;
+import com.summit.service.DeptsService;
 import com.summit.service.LockInfoService;
 import com.summit.util.CommonUtil;
 import com.summit.util.ExcelUtil;
@@ -28,10 +32,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -61,6 +62,12 @@ public class AccessControlServiceImpl implements AccessControlService {
     private ExcelUtil excelUtil;
     @Autowired
     private AccCtrlDeptDao accCtrlDeptDao;
+    @Autowired
+    private DeptsService deptsService;
+    @Autowired
+    private AddAccCtrlprocessDao addAccCtrlprocessDao;
+    @Autowired
+    private FaceInfoAccCtrlDao faceInfoAccCtrlDao;
 
     /**
      * 根据门禁id查询唯一门禁信息
@@ -73,7 +80,13 @@ public class AccessControlServiceImpl implements AccessControlService {
             log.error("门禁id为空");
             return null;
         }
-        return accessControlDao.selectAccCtrlById(accessControlId, UserAuthUtils.getRoles());
+        AccessControlInfo accessControlInfo = accessControlDao.selectAccCtrlById(accessControlId, null);
+        String deptId = accessControlInfo.getDeptIds();
+        if (StrUtil.isNotBlank(deptId)){
+            String[] dept_Ids = deptId.split(",");
+            accessControlInfo.setDepts(dept_Ids);
+        }
+        return accessControlInfo;
     }
 
     /**
@@ -101,7 +114,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             log.error("锁编号为空");
             return null;
         }
-        return accessControlDao.selectAccCtrlByLockCode(lockCode, null);
+        return accessControlDao.selectAccCtrlByLockCode(lockCode, UserDeptAuthUtils.getDepts());
     }
 
     /**
@@ -109,7 +122,7 @@ public class AccessControlServiceImpl implements AccessControlService {
      * @return 门禁信息列表
      */
     @Override
-    public Page<AccessControlInfo> selectAccCtrlByPage(AccessControlInfo accessControlInfo,Integer current, Integer pageSize) {
+    public Page<AccessControlInfo> selectAccCtrlByPage(AccessControlInfo accessControlInfo,Integer current, Integer pageSize,String deptIds) throws Exception {
         if(accessControlInfo == null){
             accessControlInfo = new AccessControlInfo();
         }
@@ -118,9 +131,51 @@ public class AccessControlServiceImpl implements AccessControlService {
         if (current != null && pageSize != null) {
             pageParam = new Page<>(current, pageSize);
         }
-
-        List<AccessControlInfo> accessControls = accessControlDao.selectCondition(pageParam,accessControlInfo, UserDeptAuthUtils.getDepts());
-
+        List<String> dept_ids =new ArrayList<>();
+        if (StrUtil.isNotBlank(deptIds)){
+            if (deptIds.contains(",")){//多个部门
+                String[] list = deptIds.split(",");
+                List<String> deptIdList = Arrays.asList(list);
+                for (String deptId:deptIdList){
+                    JSONObject paramJson=new JSONObject();
+                    paramJson.put("pdept",deptId);
+                    List<String> depts = deptsService.getDeptsByPdept(paramJson);
+                    if (!CommonUtil.isEmptyList(depts)){
+                        for (String dept_id:depts){
+                            dept_ids.add(dept_id);
+                        }
+                    }
+                }
+            }else {//一个部门
+                JSONObject paramJson=new JSONObject();
+                paramJson.put("pdept",deptIds);
+                List<String> depts = deptsService.getDeptsByPdept(paramJson);
+                if (!CommonUtil.isEmptyList(depts)){
+                    for (String dept_id:depts){
+                        dept_ids.add(dept_id);
+                    }
+                }
+            }
+        }else {
+            String currentDeptService = deptsService.getCurrentDeptService();
+            JSONObject paramJson=new JSONObject();
+            paramJson.put("pdept",currentDeptService);
+            List<String> depts = deptsService.getDeptsByPdept(paramJson);
+            if (!CommonUtil.isEmptyList(depts)){
+                for (String dept_id:depts){
+                    dept_ids.add(dept_id);
+                }
+            }
+        }
+        CommonUtil.removeDuplicate(dept_ids);//去重
+        List<AccessControlInfo> accessControls = accessControlDao.selectCondition(pageParam,accessControlInfo, dept_ids);
+        for (AccessControlInfo accessControl:accessControls){
+            String deptId = accessControl.getDeptIds();
+            if (StrUtil.isNotBlank(deptId)){
+                String[] dept_Ids = deptId.split(",");
+                accessControl.setDepts(dept_Ids);
+            }
+        }
         if (pageParam != null) {
             pageParam.setRecords(accessControls);
             return pageParam;
@@ -136,11 +191,11 @@ public class AccessControlServiceImpl implements AccessControlService {
     @Override
     public Page<AccessControlInfo> selectHaveHistoryByPage(SimplePage page) {
         //转换当前页之前设置当前页
-        List<String> roles = UserAuthUtils.getRoles();
-        Integer rowsCount = accessControlDao.selectHaveHistoryCountByPage(null, roles);
+        List<String> depts = UserDeptAuthUtils.getDepts();
+        Integer rowsCount = accessControlDao.selectHaveHistoryCountByPage(null, depts);
         Pageable pageable = PageConverter.getPageable(page,rowsCount);
         PageConverter.convertPage(page);
-        List<AccessControlInfo> accessControlInfos = accessControlDao.selectHaveHistoryByPage(page, roles);
+        List<AccessControlInfo> accessControlInfos = accessControlDao.selectHaveHistoryByPage(page, depts);
         Page<AccessControlInfo> backPage = new Page<>(accessControlInfos,pageable);
         return backPage;
     }
@@ -188,7 +243,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             return CommonConstants.UPDATE_ERROR;
         }
         Date time = new Date();
-        accessControlInfo.setAccessControlId(null);
+        accessControlInfo.setAccessControlId(IdWorker.getIdStr());
         Integer status = accessControlInfo.getStatus();
         if(status == null){
             accessControlInfo.setStatus(2);
@@ -234,6 +289,36 @@ public class AccessControlServiceImpl implements AccessControlService {
             } catch (Exception e) {
                 log.error("录入锁信息失败，锁{}已存在且已属于其他门禁", lockCode);
                 throw new ErrorMsgException("录入锁信息失败，锁" + lockCode + "已存在且已属于其他门禁");
+            }
+        }
+        //保存部门门禁表
+        if (accessControlInfo.getDepts() != null && accessControlInfo.getDepts().length > 0) {
+            List<String> deptIds=new ArrayList<>();
+            for (String deptId : accessControlInfo.getDepts()) {
+                JSONObject paramJson=new JSONObject();
+                paramJson.put("pdept",deptId);
+                List<String> depts = deptsService.getDeptsByPdept(paramJson);
+                if (!CommonUtil.isEmptyList(depts)){
+                    for (String dept_id:depts){
+                        deptIds.add(dept_id);
+                    }
+                }
+            }
+            CommonUtil.removeDuplicate(deptIds);
+           /* List<String> needDelDeptIds=new ArrayList<>();
+            for (String deptId:deptIds){
+                AccCtrlDept accCtrlDept = accCtrlDeptDao.selectOne(Wrappers.<AccCtrlDept>lambdaQuery()
+                        .eq(AccCtrlDept::getDeptId, deptId)
+                        .eq(AccCtrlDept::getAccessControlId,accessControlInfo.getAccessControlId()));
+                if (accCtrlDept !=null){
+                    needDelDeptIds.add(accCtrlDept.getId());
+                }
+            }
+            if (!CommonUtil.isEmptyList(needDelDeptIds)){
+                accCtrlDeptDao.deleteBatchIds(needDelDeptIds);
+            }*/
+            for (String deptId:deptIds){
+                accCtrlDeptDao.insert(new AccCtrlDept(null,deptId,accessControlInfo.getAccessControlId()));
             }
         }
         return accessControlDao.insert(accessControlInfo);
@@ -312,7 +397,49 @@ public class AccessControlServiceImpl implements AccessControlService {
             log.error("更新门禁{}失败", accessControlId);
             throw new ErrorMsgException("更新门禁" + accessControlId +"失败");
         }
+        //保存部门门禁表
+        if (accessControlInfo.getDepts() != null && accessControlInfo.getDepts().length > 0) {
+            List<String> deptIds=new ArrayList<>();
+            for (String deptId : accessControlInfo.getDepts()) {
+                JSONObject paramJson=new JSONObject();
+                paramJson.put("pdept",deptId);
+                List<String> depts = deptsService.getDeptsByPdept(paramJson);
+                if (!CommonUtil.isEmptyList(depts)){
+                    for (String dept_id:depts){
+                        deptIds.add(dept_id);
+                    }
+                }
+            }
+            CommonUtil.removeDuplicate(deptIds);
+            List<AccCtrlDept> accCtrlDepts=selectAccCtrlDeptsByAccCtrlId(accessControlId);
+            List<String> needDelDeptIds=new ArrayList<>();
+            if (!CommonUtil.isEmptyList(accCtrlDepts)){
+               for (AccCtrlDept accCtrlDept:accCtrlDepts){
+                   needDelDeptIds.add(accCtrlDept.getId());
+               }
+            }
+            accCtrlDeptDao.deleteBatchIds(needDelDeptIds);
+            for (String deptId:deptIds){
+                accCtrlDeptDao.insert(new AccCtrlDept(null,deptId,accessControlInfo.getAccessControlId()));
+                /*AccCtrlDept accCtrlDept = accCtrlDeptDao.selectOne(Wrappers.<AccCtrlDept>lambdaQuery()
+                        .eq(AccCtrlDept::getDeptId, deptId)
+                        .eq(AccCtrlDept::getAccessControlId,accessControlInfo.getAccessControlId()));
+                if (accCtrlDept !=null){
+                    needDelDeptIds.add(accCtrlDept.getId());
+                }*/
+            }
+
+        }
         return result;
+    }
+
+    private List<AccCtrlDept> selectAccCtrlDeptsByAccCtrlId(String accessControlId) {
+        if(accessControlId == null){
+            log.error("门禁id未空");
+            return null;
+        }
+        QueryWrapper<AccCtrlDept> wrapper = new QueryWrapper<>();
+        return accCtrlDeptDao.selectList(wrapper.eq("access_control_id",accessControlId));
     }
 
     /**
@@ -388,16 +515,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             if(accCtrlRealTimeEntity != null &&
                     !CommonUtil.isEmptyStr((accCrtlRealTimeId = accCtrlRealTimeEntity.getAccCrtlRealTimeId())))
                 accCrtlRealTimeIds.add(accCrtlRealTimeId);
-            List<AccCtrlRole> accessControls = accCtrlRoleDao.selectList(new QueryWrapper<AccCtrlRole>().eq("access_control_id", acId));
-            if(accessControls != null){
-                for(AccCtrlRole ar : accessControls) {
-                    if(ar == null)
-                        continue;
-                    String authId = ar.getId();
-                    if(authId != null)
-                        authIds.add(authId);
-                }
-            }
+
             List<AccCtrlDept> accCtrlDepts = accCtrlDeptDao.selectList(new QueryWrapper<AccCtrlDept>().eq("access_control_id", acId));
             if(accCtrlDepts != null){
                 for(AccCtrlDept accCtrlDept : accCtrlDepts) {
@@ -408,8 +526,27 @@ public class AccessControlServiceImpl implements AccessControlService {
                         authIds.add(authId);
                 }
             }
+            //先判断门禁人脸授权关系是否解除，如果解除再删除
+            List<FaceInfoAccCtrl> faceInfoAccCtrls=faceInfoAccCtrlDao.selectList(new QueryWrapper<FaceInfoAccCtrl>().eq("access_control_id",acId));
+            if(!CommonUtil.isEmptyList(faceInfoAccCtrls)){
+                throw new ErrorMsgException("请先解除该门禁下的人脸!");
+            }
+
+            List<AddAccCtrlprocess> addAccCtrlprocesses = addAccCtrlprocessDao.selectList(new QueryWrapper<AddAccCtrlprocess>().eq("access_control_id",acId));
+            if(!CommonUtil.isEmptyList(addAccCtrlprocesses)){
+                for(AddAccCtrlprocess addAccCtrlprocess : addAccCtrlprocesses) {
+                    if(addAccCtrlprocess == null)
+                        continue;
+                    String authId = addAccCtrlprocess.getId();
+                    if(authId != null)
+                        authIds.add(authId);
+                }
+            }
         }
         CommonUtil.removeDuplicate(authIds);
+        /**
+         * 批量删除锁信息
+         */
         if(!lockIds.isEmpty()){
             try {
                 lockInfoDao.deleteBatchIds(lockIds);
@@ -418,6 +555,9 @@ public class AccessControlServiceImpl implements AccessControlService {
                 throw new ErrorMsgException("批量删除锁信息失败");
             }
         }
+        /**
+         * 批量删除摄像头信息
+         */
         if(!cameraIds.isEmpty()){
             try {
                 cameraDeviceDao.deleteBatchIds(cameraIds);
@@ -426,30 +566,16 @@ public class AccessControlServiceImpl implements AccessControlService {
                 throw new ErrorMsgException("批量删除摄像头信息失败");
             }
         }
-
+        /**
+         * 删除门禁信息
+         */
         int result = -1;
         if(!accessControlIds.isEmpty()){
             try {
                 result = accessControlDao.deleteBatchIds(accessControlIds);
             } catch (Exception e) {
-                log.error("删除角色门禁信息失败");
-                throw new ErrorMsgException("删除角色门禁信息失败");
-            }
-        }
-
-        //删除门禁授权信息
-        if(!authIds.isEmpty()){
-            try {
-                accCtrlRoleDao.deleteBatchIds(authIds);
-            } catch (Exception e) {
-                log.error("删除门禁授权信息失败");
-                throw new ErrorMsgException("删除门禁授权信息失败");
-            }
-            try {
-                accCtrlDeptDao.deleteBatchIds(authIds);
-            } catch (Exception e) {
-                log.error("删除部门门禁授权信息失败");
-                throw new ErrorMsgException("删除部门门禁授权信息失败");
+                log.error("删除门禁信息失败");
+                throw new ErrorMsgException("删除门禁信息失败");
             }
         }
 
@@ -479,6 +605,29 @@ public class AccessControlServiceImpl implements AccessControlService {
             } catch (Exception e) {
                 log.error("删除相应的门禁实时信息失败");
                 throw new ErrorMsgException("删除相应的门禁实时信息失败");
+            }
+        }
+        /**
+         * 删除门禁的时候,统计分析也要删除相应的门禁
+         */
+        if (!CommonUtil.isEmptyList(authIds)){
+            try {
+                addAccCtrlprocessDao.deleteBatchIds(authIds);
+            } catch (Exception e) {
+                log.error("删除相应的门禁统计分析信息失败",e);
+                throw new ErrorMsgException("删除相应的门禁统计分析信息失败");
+            }
+        }
+
+        /**1、先判断门禁人脸授权关系是否解除，如果解除再删除
+         * 2、同时删除门禁和部门的授权关系
+         */
+        if (!CommonUtil.isEmptyList(authIds)){
+            try {
+                accCtrlDeptDao.deleteBatchIds(authIds);
+            } catch (Exception e) {
+                log.error("删除门禁和部门的授权关系失败",e);
+                throw new ErrorMsgException("删除门禁和部门的授权关系失败");
             }
         }
         return result;

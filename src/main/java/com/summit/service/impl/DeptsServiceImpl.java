@@ -56,4 +56,16 @@ public class DeptsServiceImpl implements DeptsService {
         }
         return null;
     }
+
+    @Override
+    public String getCurrentDeptService() throws Exception {
+        JSONObject current_dept = DeptUtil.getCurrentDeptByPDept(null);
+        String currentDept=current_dept.getString("currentDept");
+        /*String dept_string  = null;
+        if (currentDept !=null){
+            dept_string = currentDept.replace("''","" );
+            return dept_string;
+        }*/
+        return currentDept;
+    }
 }

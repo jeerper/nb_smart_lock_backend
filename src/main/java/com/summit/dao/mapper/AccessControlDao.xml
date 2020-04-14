@@ -16,11 +16,34 @@
         <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime"/>
         <result column="longitude" jdbcType="VARCHAR" property="longitude"/>
         <result column="latitude" jdbcType="VARCHAR" property="latitude"/>
-
         <collection property="roles" resultMap="rolesResult"/>
     </resultMap>
-
     <resultMap id="rolesResult" type="com.summit.dao.entity.AccCtrlRole">
+        <result column="au_id" jdbcType="VARCHAR" property="id"/>
+        <result column="au_role_id" jdbcType="VARCHAR" property="roleCode"/>
+        <result column="au_access_control_id" jdbcType="VARCHAR" property="accessControlId"/>
+    </resultMap>
+
+    <resultMap id="AccCtrlResultMap" type="com.summit.dao.entity.AccessControlInfo">
+        <result column="access_control_id" jdbcType="VARCHAR" property="accessControlId"/>
+        <result column="access_control_name" jdbcType="VARCHAR" property="accessControlName"/>
+        <result column="lock_id" jdbcType="VARCHAR" property="lockId"/>
+        <result column="lock_code" jdbcType="VARCHAR" property="lockCode"/>
+        <result column="entry_camera_id" jdbcType="VARCHAR" property="entryCameraId"/>
+        <result column="entry_camera_ip" jdbcType="VARCHAR" property="entryCameraIp"/>
+        <result column="exit_camera_id" jdbcType="VARCHAR" property="exitCameraId"/>
+        <result column="exit_camera_ip" jdbcType="VARCHAR" property="exitCameraIp"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="createby" jdbcType="VARCHAR" property="createby"/>
+        <result column="createtime" jdbcType="TIMESTAMP" property="createtime"/>
+        <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime"/>
+        <result column="longitude" jdbcType="VARCHAR" property="longitude"/>
+        <result column="latitude" jdbcType="VARCHAR" property="latitude"/>
+        <result column="names" jdbcType="VARCHAR" property="deptNames"/>
+        <result column="deptIds" jdbcType="VARCHAR" property="deptIds"/>
+        <collection property="roles" resultMap="roles_Result"/>
+    </resultMap>
+    <resultMap id="roles_Result" type="com.summit.dao.entity.AccCtrlRole">
         <result column="au_id" jdbcType="VARCHAR" property="id"/>
         <result column="au_role_id" jdbcType="VARCHAR" property="roleCode"/>
         <result column="au_access_control_id" jdbcType="VARCHAR" property="accessControlId"/>
@@ -35,30 +58,34 @@
     ac.entry_camera_ip, ac.exit_camera_id, ac.exit_camera_ip, ac.status, ac.createby, ac.createtime, ac.updatetime,
     ac.longitude, ac.latitude
     </sql>
+    <sql id="AccCtrl_Have_Alias_List_1">
+       accDept.names,accDept.deptIds
+    </sql>
     <sql id="Auth_Have_Alias_List">
-        au.id au_id, au.role_id au_role_id, au.access_control_id au_access_control_id
+        au.id au_id, au.dept_id au_dept_id, au.access_control_id au_access_control_id
     </sql>
     <sql id="Auth_No_Alias_List">
-        au.id, au.role_id, au.access_control_id
+        du.id, du.dept_id, du.access_control_id
     </sql>
 
-    <select id="selectAccCtrlById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <select id="selectAccCtrlById" parameterType="java.lang.String" resultMap="AccCtrlResultMap">
         select
         <include refid="AccCtrl_Have_Alias_List"/>,
-        <include refid="Auth_Have_Alias_List"/>
+        <include refid="Auth_Have_Alias_List"/>,
+        <include refid="AccCtrl_Have_Alias_List_1"/>
         from
         (select distinct
         <include refid="AccCtrl_Have_Alias_List"/>
         from access_control ac
-        <if test="roles != null">
+        <if test="depts != null">
             inner join (
             select
             <include refid="Auth_No_Alias_List"/>
-            from role_accesscontrol_auth au
+            from dept_accesscontrol_auth du
             <where>
-                au.role_id in
-                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
-                    #{role}
+                du.dept_id in
+                <foreach item="dept" collection="depts" index="index" open="(" separator="," close=")">
+                    #{dept}
                 </foreach>
             </where>
             ) au on ac.access_control_id = au.access_control_id
@@ -67,8 +94,12 @@
             ac.access_control_id=#{accessControlId}
         </where>
         ) ac
-        left join role_accesscontrol_auth au on ac.access_control_id = au.access_control_id
-
+        left join dept_accesscontrol_auth au on ac.access_control_id = au.access_control_id
+        left join
+        (SELECT accDept.access_control_id,GROUP_CONCAT(accDept.dept_id)AS deptIds, GROUP_CONCAT(dept.DEPTNAME)AS names
+         FROM dept_accesscontrol_auth accDept
+         inner join cbb_userauth.sys_dept dept on accDept.dept_id=dept.ID
+         GROUP BY access_control_id)accDept on ac.access_control_id=accDept.access_control_id
     </select>
 
     <select id="selectAccCtrlByLockCode" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -79,15 +110,15 @@
         (select distinct
         <include refid="AccCtrl_Have_Alias_List"/>
         from access_control ac
-        <if test="roles != null">
+        <if test="depts != null">
             inner join (
             select
             <include refid="Auth_No_Alias_List"/>
-            from role_accesscontrol_auth au
+            from dept_accesscontrol_auth du
             <where>
-                au.role_id in
-                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
-                    #{role}
+                du.dept_id in
+                <foreach item="dept" collection="depts" index="index" open="(" separator="," close=")">
+                    #{dept}
                 </foreach>
             </where>
             ) au on ac.access_control_id = au.access_control_id
@@ -96,7 +127,7 @@
             ac.lock_code=#{lockCode}
         </where>
         ) ac
-        left join role_accesscontrol_auth au on ac.access_control_id = au.access_control_id
+        left join dept_accesscontrol_auth au on ac.access_control_id = au.access_control_id
 
     </select>
 
@@ -167,15 +198,19 @@
     </select>
 
 
-    <select id="loginAccessControlInfoExport" resultMap="BaseResultMap">
+    <select id="loginAccessControlInfoExport" resultMap="AccCtrlResultMap">
         select
         ac.access_control_id, ac.access_control_name, ac.lock_id, ac.lock_code, ac.entry_camera_id,
         ac.entry_camera_ip, ac.exit_camera_id, ac.exit_camera_ip, ac.status, ac.createby,
         DATE_FORMAT(ac.createtime,'%Y-%m-%d %H:%i:%s')as createtime,
         DATE_FORMAT(ac.updatetime,'%Y-%m-%d %H:%i:%s')as updatetime ,
-        ac.longitude, ac.latitude
+        ac.longitude, ac.latitude,accDept.names
         from
         access_control ac
+        left join
+        (SELECT accDept.access_control_id,GROUP_CONCAT(accDept.dept_id)AS deptIds, GROUP_CONCAT(dept.DEPTNAME)AS names  FROM dept_accesscontrol_auth accDept
+        inner join cbb_userauth.sys_dept dept on accDept.dept_id=dept.ID  GROUP BY access_control_id)
+        accDept on ac.access_control_id=accDept.access_control_id
         <where>
             <if test="accessControlInfo.accessControlName != null">
                 and ac.access_control_name like concat('%', #{accessControlInfo.accessControlName}, '%')
@@ -242,15 +277,15 @@
         <include refid="AccCtrl_Have_Alias_List"/>
         from access_control ac
         inner join acc_ctrl_process acp on acp.access_control_id = ac.access_control_id
-        <if test="roles != null">
+        <if test="depts != null">
             inner join (
             select
             <include refid="Auth_No_Alias_List"/>
-            from role_accesscontrol_auth au
+            from dept_accesscontrol_auth du
             <where>
-                au.role_id in
-                <foreach item="role" collection="roles" index="index" open="(" separator="," close=")">
-                    #{role}
+                du.dept_id in
+                <foreach item="dept" collection="depts" index="index" open="(" separator="," close=")">
+                    #{dept}
                 </foreach>
             </where>
             ) au on ac.access_control_id = au.access_control_id
@@ -260,7 +295,7 @@
             limit #{page.current},#{page.pageSize}
         </if>
         ) ac
-        left join role_accesscontrol_auth au on ac.access_control_id = au.access_control_id
+        left join dept_accesscontrol_auth au on ac.access_control_id = au.access_control_id
 
     </select>
 
@@ -288,11 +323,15 @@
     </select>
 
 
-    <select id="selectCondition" parameterType="com.summit.dao.entity.AccessControlInfo" resultMap="BaseResultMap">
+    <select id="selectCondition" parameterType="com.summit.dao.entity.AccessControlInfo" resultMap="AccCtrlResultMap">
         select
-        <include refid="AccCtrl_Have_Alias_List"/>
+        <include refid="AccCtrl_Have_Alias_List"/>,
+        <include refid="AccCtrl_Have_Alias_List_1"/>
         from
         access_control ac
+        left join
+        (SELECT accDept.access_control_id,GROUP_CONCAT(accDept.dept_id)AS deptIds, GROUP_CONCAT(dept.DEPTNAME)AS names  FROM dept_accesscontrol_auth accDept
+        inner join cbb_userauth.sys_dept dept on accDept.dept_id=dept.ID  GROUP BY access_control_id)accDept on ac.access_control_id=accDept.access_control_id
         <where>
             <if test="depts != null">
                 ac.access_control_id IN ( SELECT DISTINCT au.access_control_id FROM dept_accesscontrol_auth au WHERE au.dept_id IN

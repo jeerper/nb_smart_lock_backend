@@ -12,4 +12,7 @@ public interface DeptsService  {
      * @return
      */
     List<String> getDeptsByPdept(JSONObject paramJson);
+
+    //查找当前登录人所在的部门
+    String  getCurrentDeptService() throws Exception;
 }
