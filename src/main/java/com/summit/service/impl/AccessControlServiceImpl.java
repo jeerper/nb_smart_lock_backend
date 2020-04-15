@@ -114,7 +114,7 @@ public class AccessControlServiceImpl implements AccessControlService {
             log.error("锁编号为空");
             return null;
         }
-        return accessControlDao.selectAccCtrlByLockCode(lockCode, UserDeptAuthUtils.getDepts());
+        return accessControlDao.selectAccCtrlByLockCode(lockCode, null);
     }
 
     /**
@@ -253,7 +253,7 @@ public class AccessControlServiceImpl implements AccessControlService {
         }
         Integer workStatus = accessControlInfo.getWorkStatus();
         if(workStatus == null){
-            accessControlInfo.setStatus(0);
+            accessControlInfo.setWorkStatus(0);
         }
         accessControlInfo.setCreatetime(time);
         accessControlInfo.setUpdatetime(time);
@@ -672,10 +672,14 @@ public class AccessControlServiceImpl implements AccessControlService {
         List<AccessControlInfo> accessControlInfos = (List<AccessControlInfo>)stringObjectMap.get("accessControlInfos");
         List<LockInfo> lockInfos=(List<LockInfo>)stringObjectMap.get("lockInfos");
         try{
-            accessControlDao.insertAccessControlInfos(accessControlInfos);
-            lockInfoDao.insertLockInfos(lockInfos);
+            if (!CommonUtil.isEmptyList(accessControlInfos)){
+                accessControlDao.insertAccessControlInfos(accessControlInfos);
+            }
+            if (!CommonUtil.isEmptyList(accessControlInfos)){
+                lockInfoDao.insertLockInfos(lockInfos);
+            }
         }catch (Exception e){
-            log.error("批量插入数据失败");
+            log.error("批量插入数据失败",e);
             throw new ErrorMsgException("批量插入数据失败");
         }
         return true;

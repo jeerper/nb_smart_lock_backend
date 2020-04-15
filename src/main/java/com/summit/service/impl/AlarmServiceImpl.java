@@ -1,5 +1,6 @@
 package com.summit.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.cbb.utils.page.Page;
 import com.summit.cbb.utils.page.Pageable;
@@ -11,6 +12,7 @@ import com.summit.dao.repository.CameraDeviceDao;
 import com.summit.dao.repository.LockProcessDao;
 import com.summit.service.AddAccCtrlprocessService;
 import com.summit.service.AlarmService;
+import com.summit.service.DeptsService;
 import com.summit.util.CommonUtil;
 import com.summit.util.PageConverter;
 import com.summit.util.UserDeptAuthUtils;
@@ -33,7 +35,8 @@ public class AlarmServiceImpl implements AlarmService {
     private LockProcessDao lockProcessDao;
     @Autowired
     private CameraDeviceDao deviceDao;
-
+    @Autowired
+    private DeptsService deptsService;
     @Autowired
     private AddAccCtrlprocessService addAccCtrlprocessService;
     /**
@@ -359,12 +362,22 @@ public class AlarmServiceImpl implements AlarmService {
      * @return 告警记录Page对象
      */
     @Override
-    public Page<Alarm> selectAlarmConditionByPage(Alarm alarm, Date start, Date end,  Integer current, Integer pageSize) {
+    public Page<Alarm> selectAlarmConditionByPage(Alarm alarm, Date start, Date end,  Integer current, Integer pageSize) throws Exception {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Alarm> pageParam = null;
         if (current != null && pageSize != null) {
             pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
         }
-        List<Alarm> alarms = alarmDao.selectCondition(pageParam,alarm, start, end, UserDeptAuthUtils.getDepts());
+        List<String> dept_ids =new ArrayList<>();
+        String currentDeptService = deptsService.getCurrentDeptService();
+        JSONObject paramJson=new JSONObject();
+        paramJson.put("pdept",currentDeptService);
+        List<String> depts = deptsService.getDeptsByPdept(paramJson);
+        if (!CommonUtil.isEmptyList(depts)){
+            for (String dept_id:depts){
+                dept_ids.add(dept_id);
+            }
+        }
+        List<Alarm> alarms = alarmDao.selectCondition(pageParam,alarm, start, end, dept_ids);
         Pageable pageable = null;
         if (pageParam != null) {
             pageable = new Pageable((int) pageParam.getTotal(), (int) pageParam.getPages(), (int) pageParam.getCurrent(), (int) pageParam.getSize()
@@ -379,7 +392,7 @@ public class AlarmServiceImpl implements AlarmService {
      * @return 告警记录Page对象
      */
     @Override
-    public Page<Alarm> selectAlarmConditionByPage(Alarm alarm, Integer current, Integer pageSize) {
+    public Page<Alarm> selectAlarmConditionByPage(Alarm alarm, Integer current, Integer pageSize) throws Exception {
 
         return selectAlarmConditionByPage(alarm, null, null, current,pageSize);
     }

@@ -44,9 +44,6 @@ public class AccCtrlProcess {
     @ApiModelProperty(value="门禁操作记录对应锁编号",name="lockCode")
     @TableField(value = "lock_code")
     private String lockCode;
-
-
-
     @ApiModelProperty(value="用户id",name="userId")
     @TableField(value = "user_id")
     private String userId;

@@ -75,13 +75,13 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         String base64Str = faceInfoManagerEntity.getFaceImage();
         if (StrUtil.isBlank(base64Str)) {
             log.error("人脸图片为空");
-            throw new Exception("人脸图片不能为空");
+            throw new Exception("人脸图片不能为空!");
         }
         int i = base64Str.indexOf(",");
         String subNewImageBase64 = base64Str.substring(i + 1);
 
         if (!baiduSdkClient.detectFace(subNewImageBase64)) {
-            throw new Exception("没有检测到人脸");
+            throw new Exception("上传的图片中没有检测到人脸!");
         }
 
         byte[] subNewImageBase64Byte = Base64.getDecoder().decode(subNewImageBase64);
@@ -96,7 +96,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
             try {
                 byte[] faceImagesBase64 = FileUtil.readBytes(faceImagesAbsolutePath);
                 if (Arrays.equals(subNewImageBase64Byte, faceImagesBase64)) {
-                    throw new Exception("人脸添加失败,头像重复");
+                    throw new Exception("人脸添加失败,头像重复!");
                 }
             } catch (IORuntimeException e) {
                 log.error("本地人脸库图片丢失,图片路径：" + faceImagesAbsolutePath);

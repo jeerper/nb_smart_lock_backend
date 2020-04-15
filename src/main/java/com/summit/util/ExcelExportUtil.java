@@ -27,7 +27,7 @@ public class ExcelExportUtil {
     //工作表行高
     private Integer rowHeight=25;
     //字体大小
-    private int fontSize = 14;
+    private int fontSize;
 
     public int getFontSize() {
         return fontSize;
@@ -271,9 +271,9 @@ public class ExcelExportUtil {
             workbook = new HSSFWorkbook();
             sheet = workbook.createSheet(sheetName);
             writeTitle();
-            CellStyle cellStyle = ExcelStyleUtilFor2003.getHeadStyle(this.workbook,14);
+            CellStyle cellStyle = ExcelStyleUtilFor2003.getHeadStyle(this.workbook,12);
             writeTableHead(this.headList,cellStyle,1);
-            writeMainData(2);
+            //writeMainData(2);
             FileOutputStream output=new FileOutputStream(filePath+fileName);
             //Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile),"utf-8"));
             workbook.write(output);

@@ -2,12 +2,15 @@ package com.summit.service.impl;
 
 import cn.hutool.core.util.NumberUtil;
 import com.summit.cbb.utils.page.Page;
+import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.SimplePage;
+import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.AlarmDao;
 import com.summit.sdk.huawei.model.AlarmStatus;
+import com.summit.sdk.huawei.model.WorkProcessType;
+import com.summit.service.AccessControlService;
 import com.summit.service.AlarmService;
-import com.summit.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,10 +25,8 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -34,6 +35,11 @@ public class AlarmServiceImplTest {
     private AlarmService alarmService;
     @Autowired
     private AlarmDao alarmDao;
+    @Autowired
+    private AccessControlService accessControlService;
+    @Autowired
+    private AccessControlDao accessControlDao;
+
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -41,7 +47,6 @@ public class AlarmServiceImplTest {
 
     @Test
     public void insertAlarm() {
-
         Alarm alarm = new Alarm();
         alarm.setAccCtrlProId("123123213213123");
         alarm.setAlarmTime(new Date());
@@ -51,6 +56,13 @@ public class AlarmServiceImplTest {
         log.debug(alarm.getAlarmId());
 
 
+    }
+    @Test
+    public void accessControlService() {
+        List<String> depts=new ArrayList<>();
+        depts.add("1");
+        AccessControlInfo accessControlInfo = accessControlDao.selectAccCtrlByLockCode("summit6",depts);
+        System.out.println(accessControlInfo);
     }
 
 
@@ -87,8 +99,16 @@ public class AlarmServiceImplTest {
 
     @Test
     public void selectAlarmById() {
-        Alarm alarm = alarmService.selectAlarmById("1167390622789668865");
-        System.out.println(alarm);
+       // Alarm alarm = alarmService.selectAlarmById("1167390622789668865");
+        //System.out.println(alarm);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("河长", "eee");
+        map.put("河段名称：", "weweqwe");
+        map.put("开始日期：", "2019-10-2");
+        map.put("结束日期：", "2019-10-6");
+        map.put("巡河任务", "2019-10-6");
+        System.out.println(map.toString());
+
     }
 
     @Test
@@ -113,11 +133,16 @@ public class AlarmServiceImplTest {
 
     @Test
     public void selectAlarmByName() throws ParseException {
-        SimpleDateFormat facestartDf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");//设置日期格式
+        /*SimpleDateFormat facestartDf = new SimpleDateFormat("yyyy-MM");//设置日期格式
         Date date = new Date();
         String startTime = facestartDf.format(date);
-        Date faceStartTime = CommonUtil.dateFormat.get().parse(startTime);
-        System.out.println(faceStartTime);
+        System.out.println(startTime);*/
+       /* Date faceStartTime = CommonUtil.dateFormat.get().parse(startTime);
+        System.out.println(faceStartTime);*/
+        String orginFileName="nb_smart_lock源码.docx";
+        int i = orginFileName.lastIndexOf(".");
+        String substring = orginFileName.substring(orginFileName.lastIndexOf("."));
+        System.out.println(substring);
     }
 
     @Test
@@ -128,6 +153,12 @@ public class AlarmServiceImplTest {
 
     @Test
     public void selectAlarmByStatus1() {
+      //  System.out.println(CameraUploadType.valueOf("Illegal_Alarm"));
+
+          WorkProcessType workProcessType = WorkProcessType.getWorkProcessType(1);
+          System.out.println(workProcessType.getCode());
+//        System.out.println(CameraUploadType.Illegal_Alarm.getDescription());
+//        System.out.println(CameraUploadType.valueOf("Illegal_Alarm").getCode());
     }
 
     @Test
@@ -157,7 +188,7 @@ public class AlarmServiceImplTest {
     }
 
     @Test
-    public void selectAlarmCondition() {
+    public void selectAlarmCondition() throws Exception {
         Alarm alarm = new Alarm();
         alarm.setAccessControlName("门禁");
         Page<Alarm> alarmPage = alarmService.selectAlarmConditionByPage(alarm, null,null);

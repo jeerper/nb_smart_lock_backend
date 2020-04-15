@@ -55,14 +55,6 @@ public class AccCrtlRealTimeInfoController {
             Date end = DateUtil.parse(endTime);
             //查出有操作记录的门禁并再分页
             Page<AccCtrlRealTimeEntity> accCtrlRealTimePage = accCtrlRealTimeService.selectByConditionPage(accCtrlRealTimeEntity, start, end, current, pageSize,deptId);
-            /*  Integer integer = alarmService.selectAlarmCountByStatus(AlarmStatus.UNPROCESSED.getCode());
-                int allAlarmCount = integer == null ? 0 : integer;
-                data.put("allAlarmCount", allAlarmCount);
-                List<AccCtrlRealTimeEntity> accCtrlRealTimeEntities = accCtrlRealTimePage.getContent();
-               for (AccCtrlRealTimeEntity ctrlRealTimeEntity :accCtrlRealTimeEntities){
-                AlarmProcessType alarmProcessType = AlarmProcessType.codeOf(ctrlRealTimeEntity.getAlarmStatus());
-                ctrlRealTimeEntity.setAlarmStatusName( alarmProcessType.getDescription());
-               }*/
             data.put("content", accCtrlRealTimePage.getContent());
             data.put("pageable", accCtrlRealTimePage.getPageable());
         } catch (Exception e) {

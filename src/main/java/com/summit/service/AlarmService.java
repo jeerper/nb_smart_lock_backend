@@ -166,13 +166,13 @@ public interface AlarmService {
      * @param end 截止时间
      * @return 告警记录列表
      */
-    Page<Alarm> selectAlarmConditionByPage(Alarm alarm, Date start, Date end, Integer current, Integer pageSize);
+    Page<Alarm> selectAlarmConditionByPage(Alarm alarm, Date start, Date end, Integer current, Integer pageSize) throws Exception;
 
     /**
      * 根据alarm对象所带条件查询，不带时间段重载
      * @param alarm 告警对象
      * @return 告警记录列表
      */
-    Page<Alarm> selectAlarmConditionByPage(Alarm alarm,Integer current, Integer pageSize);
+    Page<Alarm> selectAlarmConditionByPage(Alarm alarm,Integer current, Integer pageSize) throws Exception;
 
 }

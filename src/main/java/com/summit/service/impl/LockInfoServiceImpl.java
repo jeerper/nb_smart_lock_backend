@@ -45,8 +45,8 @@ public class LockInfoServiceImpl implements LockInfoService {
      */
     @Override
     public LockInfo selectBylockCode(String lockCode) {
-        List<String> rolesList = UserAuthUtils.getRoles();
-        return lockInfoDao.selectBylockCode(lockCode, rolesList);
+        //List<String> rolesList = UserAuthUtils.getRoles();
+        return lockInfoDao.selectBylockCode(lockCode, null);
     }
 
     /**

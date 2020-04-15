@@ -1,5 +1,6 @@
 package com.summit.service;
 
+import com.summit.common.entity.DeptBean;
 import com.summit.common.entity.RestfulEntityBySummit;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,5 +21,12 @@ public interface ICbbUserAuthService {
      */
     @GetMapping("/dept/queryLowerAllDeptByPdept")
     RestfulEntityBySummit<List<String>> queryAllDeptByPdept(@RequestParam("pdept") String pdept);
+
+    /**
+     * 查询所有的部门信息
+     * @return
+     */
+    @GetMapping("/dept/queryAllDept")
+    RestfulEntityBySummit<List<DeptBean>> queryAllDept();
 
 }

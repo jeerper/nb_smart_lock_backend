@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -80,22 +81,48 @@ public class AccCtrlRealTimeServiceImpl implements AccCtrlRealTimeService {
      */
     @Override
     public com.summit.cbb.utils.page.Page<AccCtrlRealTimeEntity> selectByConditionPage(AccCtrlRealTimeEntity accCtrlRealTimeEntity, Date start,
-                                                                                       Date end, Integer current, Integer pageSize,String deptId) {
+                                                                                       Date end, Integer current, Integer pageSize,String deptIds) {
         Page<AccCtrlRealTimeEntity> pageParam = null;
         if (current != null && pageSize != null) {
             pageParam = new Page<>(current, pageSize);
         }
         List<AccCtrlRealTimeEntity> realTimeEntities=null;
-        if (StrUtil.isNotBlank(deptId) && deptId.contains(",")){//说明是多个部门id
-            String[] deptIds = deptId.split(",");
-            List<String> deptIdList = Arrays.asList(deptIds);
-            realTimeEntities = accCtrlRealTimeDao.selectCondition(pageParam, accCtrlRealTimeEntity, deptIdList,start,end);
+        List<String> dept_ids =new ArrayList<>();
+        if (StrUtil.isNotBlank(deptIds)){//说明是多个部门id
+            if (deptIds.contains(",")){//多个部门
+                String[] list = deptIds.split(",");
+                List<String> deptIdList = Arrays.asList(list);
+                for (String deptId:deptIdList){
+                    JSONObject paramJson=new JSONObject();
+                    paramJson.put("pdept",deptId);
+                    List<String> depts = deptsService.getDeptsByPdept(paramJson);
+                    if (!CommonUtil.isEmptyList(depts)){
+                        for (String dept_id:depts){
+                            dept_ids.add(dept_id);
+                        }
+                    }
+                }
+            }else {//一个部门
+                JSONObject paramJson=new JSONObject();
+                paramJson.put("pdept",deptIds);
+                List<String> depts = deptsService.getDeptsByPdept(paramJson);
+                if (!CommonUtil.isEmptyList(depts)){
+                    for (String dept_id:depts){
+                        dept_ids.add(dept_id);
+                    }
+                }
+            }
         }else {
             JSONObject paramJson=new JSONObject();
-            paramJson.put("pdept",deptId);
+            paramJson.put("pdept",deptIds);
             List<String> depts = deptsService.getDeptsByPdept(paramJson);
-            realTimeEntities = accCtrlRealTimeDao.selectCondition(pageParam,accCtrlRealTimeEntity, depts,start,end);
+            if (!CommonUtil.isEmptyList(depts)){
+                for (String dept_id:depts){
+                    dept_ids.add(dept_id);
+                }
+            }
         }
+        realTimeEntities = accCtrlRealTimeDao.selectCondition(pageParam,accCtrlRealTimeEntity, dept_ids,start,end);
         Pageable pageable = null;
         if (pageParam != null && realTimeEntities !=null) {
             pageable = new Pageable((int) pageParam.getTotal(), (int) pageParam.getPages(), (int) pageParam.getCurrent(), (int) pageParam.getSize()

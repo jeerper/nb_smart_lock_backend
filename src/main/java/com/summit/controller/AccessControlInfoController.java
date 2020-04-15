@@ -215,7 +215,7 @@ public class AccessControlInfoController {
                 boolean b= accessControlService.batchImport(mulFileByPath);
             }catch (Exception e){
                 msg = getErrorMsg(msg, e);
-                log.error(msg);
+                log.error(msg,e);
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg,null);
             }
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"门禁信息批量导入excel成功",null);
@@ -228,9 +228,9 @@ public class AccessControlInfoController {
     public RestfulEntityBySummit<String> loginAccessControlInfoExport( @ApiParam(value = "门禁名")  @RequestParam(value = "accessControlName",required = false) String accessControlName,
                                                                        @ApiParam(value = "创建人")  @RequestParam(value = "createby",required = false) String createby,
                                                                        @ApiParam(value = "锁编号")  @RequestParam(value = "lockCode",required = false) String lockCode) {
-        AccessControlInfo accessControlInfo = new AccessControlInfo(accessControlName,createby,lockCode);
         String fileName=null;
         try{
+            /*AccessControlInfo accessControlInfo = new AccessControlInfo(accessControlName,createby,lockCode);
             List<AccessControlInfo> accessControlInfos= accessControlService.loginAccessControlInfoExport(accessControlInfo);
             if(accessControlInfos!=null && accessControlInfos.size()>0){
                 List<JSONObject> dataList= new ArrayList<>();
@@ -253,24 +253,25 @@ public class AccessControlInfoController {
                     jsonObject.put("latitude",accCtrl.getLatitude());
                     dataList.add(jsonObject);
                 }
-                filePath = new StringBuilder()
-                        .append(SystemUtil.getUserInfo().getCurrentDir())
-                        .append(File.separator)
-                        .append(MainAction.SnapshotFileName)
-                        .append(File.separator)
-                        .toString();
-                fileName =System.currentTimeMillis()+"AccCtrl.xls";
-                String [] title = new String[]{"门禁名称","锁编号","入口摄像头ip地址","出口摄像头ip地址","经度","纬度"};  //设置表格表头字段
-                String [] properties = new String[]{"accessControlName","lockCode","entryCameraIp","exitCameraIp","longitude","latitude"};  // 查询对应的字段
-                ExcelExportUtil excelExport2 = new ExcelExportUtil();
-                excelExport2.setData(dataList);
-                excelExport2.setHeadKey(properties);
-                excelExport2.setFontSize(20);
-                excelExport2.setSheetName("门禁信息导出模板");
-                excelExport2.setTitle("门禁信息导出模板");
-                excelExport2.setHeadList(title);
-                excelExport2.setResponseInfo(filePath,fileName);
-            }
+            }*/
+            filePath = new StringBuilder()
+                    .append(SystemUtil.getUserInfo().getCurrentDir())
+                    .append(File.separator)
+                    .append(MainAction.SnapshotFileName)
+                    .append(File.separator)
+                    .toString();
+            //fileName =System.currentTimeMillis()+"AccCtrl.xls";
+            fileName ="门禁信息模板.xls";
+            String [] title = new String[]{"门禁名称","锁编号(不能重复)","所属机构(多个部门用逗号隔开)","经度","纬度"};  //设置表格表头字段
+            String [] properties = new String[]{"accessControlName","depts","lockCode","longitude","latitude"};  // 查询对应的字段
+            ExcelExportUtil excelExport = new ExcelExportUtil();
+            //excelExport.setData(dataList);
+            excelExport.setHeadKey(properties);
+            excelExport.setFontSize(10);
+            excelExport.setSheetName("门禁信息模板");
+            excelExport.setTitle("门禁信息模板");
+            excelExport.setHeadList(title);
+            excelExport.setResponseInfo(filePath,fileName);
         }catch (Exception e){
             log.error("门禁信息批量导出excel模板失败",e);
             e.printStackTrace();
