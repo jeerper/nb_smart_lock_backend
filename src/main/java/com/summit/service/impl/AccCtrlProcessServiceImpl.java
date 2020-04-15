@@ -1,5 +1,6 @@
 package com.summit.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.summit.cbb.utils.page.Page;
@@ -11,10 +12,7 @@ import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.AlarmDao;
 import com.summit.dao.repository.FileInfoDao;
 import com.summit.sdk.huawei.model.CameraUploadType;
-import com.summit.service.AccCtrlProcessService;
-import com.summit.service.AccessControlService;
-import com.summit.service.AlarmService;
-import com.summit.service.LockInfoService;
+import com.summit.service.*;
 import com.summit.util.CommonUtil;
 import com.summit.util.UserDeptAuthUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +42,8 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
     private AlarmDao alarmDao;
     @Autowired
     private LockInfoService lockInfoService;
-
+    @Autowired
+    private DeptsService deptsService;
     /**
      * 门禁操作记录插入
      *
@@ -362,15 +361,24 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
      */
     @Override
     public Page<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, Date start, Date end, Integer current,
-                                                              Integer pageSize) {
+                                                              Integer pageSize) throws Exception {
 
         Page<AccCtrlProcess> pageParam = null;
 
         if (current != null && pageSize != null) {
             pageParam = new Page<>(current, pageSize);
         }
-        List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, UserDeptAuthUtils.getDepts());
-
+        List<String> dept_ids =new ArrayList<>();
+        String currentDeptService = deptsService.getCurrentDeptService();
+        JSONObject paramJson=new JSONObject();
+        paramJson.put("pdept",currentDeptService);
+        List<String> depts = deptsService.getDeptsByPdept(paramJson);
+        if (!CommonUtil.isEmptyList(depts)){
+            for (String dept_id:depts){
+                dept_ids.add(dept_id);
+            }
+        }
+        List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, dept_ids);
         if (pageParam != null) {
             pageParam.setRecords(accCtrlProcesses);
             return pageParam;

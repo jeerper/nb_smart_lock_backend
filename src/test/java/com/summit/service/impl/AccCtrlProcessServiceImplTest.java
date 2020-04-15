@@ -35,7 +35,7 @@ public class AccCtrlProcessServiceImplTest {
         System.out.println(accCtrlProcess);
     }
     @Test
-    public void selectAccCtrlProcessCondition() {
+    public void selectAccCtrlProcessCondition() throws Exception {
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
 //        accCtrlProcess.setAccCtrlProId("1163356805951225858");
 //        accCtrlProcess.setAccessControlName("门");
