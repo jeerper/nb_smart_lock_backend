@@ -39,6 +39,13 @@
         (SELECT deptFace.face_id,GROUP_CONCAT(deptFace.dept_id)AS depts, GROUP_CONCAT(dept.DEPTNAME)AS deptNames  FROM dept_face_auth deptFace  inner join cbb_userauth.sys_dept dept on deptFace.dept_id=dept.ID  GROUP BY face_id)deptFace
         on faceInfo.face_id=deptFace.face_id
         <where>
+            <if test="depts != null">
+                faceInfo.face_id IN ( SELECT DISTINCT dfu.face_id FROM dept_face_auth dfu WHERE dfu.dept_id IN
+                <foreach item="dept" collection="depts" index="index" open="(" separator="," close=")">
+                    #{dept}
+                </foreach>
+                )
+            </if>
             <if test="faceInfoManagerEntity.pubquery !=null and faceInfoManagerEntity.pubquery !=''">
                 AND concat(faceInfo.user_name,faceInfo.card_id,faceInfo.province,faceInfo.city) like concat('%',#{faceInfoManagerEntity.pubquery}, '%')
             </if>
@@ -57,16 +64,8 @@
             <if test="faceInfoManagerEntity.isValidTime !=null">
                 AND faceInfo.is_valid_time=#{faceInfoManagerEntity.isValidTime}
             </if>
-            <if test="faceInfoManagerEntity.deptId !=null and faceInfoManagerEntity.deptId !=''">
-                AND deptFace.depts like concat('%',#{faceInfoManagerEntity.deptId}, '%')
-            </if>
         </where>
-        ORDER BY
-        face_startTime
-        DESC
-        <if test="page !=null and page.current !=null and page.pageSize !=null">
-            limit #{page.current},#{page.pageSize}
-        </if>
+        ORDER BY face_startTime DESC
     </select>
     <select id="selectFaceInfoByID" parameterType="java.lang.String" resultMap="facemanager">
         SELECT

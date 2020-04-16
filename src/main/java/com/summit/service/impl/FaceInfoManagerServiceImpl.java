@@ -5,11 +5,11 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.system.SystemUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.summit.MainAction;
 import com.summit.cbb.utils.page.Page;
-import com.summit.cbb.utils.page.Pageable;
 import com.summit.common.util.ApplicationContextUtil;
 import com.summit.dao.entity.City;
 import com.summit.dao.entity.FaceInfo;
@@ -21,11 +21,11 @@ import com.summit.dao.repository.ProvinceDao;
 import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.exception.ErrorMsgException;
 import com.summit.service.DeptFaceService;
+import com.summit.service.DeptsService;
 import com.summit.service.FaceInfoAccCtrlService;
 import com.summit.service.FaceInfoManagerService;
 import com.summit.util.CommonUtil;
 import com.summit.util.ExcelUtil;
-import com.summit.util.PageConverter;
 import com.summit.utils.BaiduSdkClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +63,8 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
     private DeptFaceService deptFaceService;
     @Autowired
     public JdbcTemplate jdbcTemplate;
+    @Autowired
+    private DeptsService deptsService;
     /**
      * 插入人脸信息
      *
@@ -225,22 +227,58 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
      * @return 人脸信息列表
      */
     @Override
-    public Page<FaceInfo> selectFaceInfoByPage(FaceInfoManagerEntity faceInfoManagerEntity, SimplePage page) {
+    public Page<FaceInfo> selectFaceInfoByPage(FaceInfoManagerEntity faceInfoManagerEntity,String deptIds,Integer current, Integer pageSize) throws Exception {
         if (faceInfoManagerEntity == null) {
             log.error("人脸信息对象为空");
             return null;
         }
-        List<FaceInfo> faceInfoList = faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity, null);
-        // System.out.println(faceInfoList+"qqq");
-        //faceInfoList=null等于0,不等于null的时候为他本身的大小
-        int rowsCount = faceInfoList == null ? 0 : faceInfoList.size();
-        Pageable pageable = PageConverter.getPageable(page, rowsCount);
-        PageConverter.convertPage(page);
-
-        List<FaceInfo> faceInfoList1 = faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity, page);
-        //System.out.println(faceInfoList1+"wwww");
-        Page<FaceInfo> backpage = new Page<>(faceInfoList1, pageable);
-        return backpage;
+        Page<FaceInfo> pageParam = null;
+        if (current != null && pageSize != null) {
+            pageParam = new Page<>(current, pageSize);
+        }
+        List<String> dept_ids =new ArrayList<>();
+        if (StrUtil.isNotBlank(deptIds)){
+            if (deptIds.contains(",")){//多个部门
+                String[] list = deptIds.split(",");
+                List<String> deptIdList = Arrays.asList(list);
+                for (String deptId:deptIdList){
+                    JSONObject paramJson=new JSONObject();
+                    paramJson.put("pdept",deptId);
+                    List<String> depts = deptsService.getDeptsByPdept(paramJson);
+                    if (!CommonUtil.isEmptyList(depts)){
+                        for (String dept_id:depts){
+                            dept_ids.add(dept_id);
+                        }
+                    }
+                }
+            }else {//一个部门
+                JSONObject paramJson=new JSONObject();
+                paramJson.put("pdept",deptIds);
+                List<String> depts = deptsService.getDeptsByPdept(paramJson);
+                if (!CommonUtil.isEmptyList(depts)){
+                    for (String dept_id:depts){
+                        dept_ids.add(dept_id);
+                    }
+                }
+            }
+        }else {
+            String currentDeptService = deptsService.getCurrentDeptService();
+            JSONObject paramJson=new JSONObject();
+            paramJson.put("pdept",currentDeptService);
+            List<String> depts = deptsService.getDeptsByPdept(paramJson);
+            if (!CommonUtil.isEmptyList(depts)){
+                for (String dept_id:depts){
+                    dept_ids.add(dept_id);
+                }
+            }
+        }
+        CommonUtil.removeDuplicate(dept_ids);//去重
+        List<FaceInfo> faceInfos = faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity, pageParam,dept_ids);
+        if (pageParam != null) {
+            pageParam.setRecords(faceInfos);
+            return pageParam;
+        }
+        return new Page<>(faceInfos, null);
     }
 
     /**

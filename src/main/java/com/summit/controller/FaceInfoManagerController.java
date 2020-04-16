@@ -11,7 +11,6 @@ import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.City;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.Province;
-import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.entity.SimpleFaceInfo;
@@ -67,24 +66,15 @@ public class FaceInfoManagerController {
     @ApiOperation(value = "根据所传一个或多个条件组合分页查询人脸信息记录", notes = "各字段都为空则查询全部。分页参数为空则查全部，current和pageSize有一个为null则查询不到结果，current<=0则置为1，pageSize<=0" +
             "则查不到结果")
     @GetMapping(value = "/selectFaceInfoByPage")
-    public RestfulEntityBySummit<Page<FaceInfo>> selectFaceInfoByPage( @ApiParam(value = "姓名、省份、城市、证件号") @RequestParam(value = "pubquery", required = false,
-                                                                              defaultValue = "") String pubquery,
-                                                                      @ApiParam(value = "性别，0：男，1：女，2：未知") @RequestParam(value = "gender",
-                                                                              required = false) Integer gender,
-                                                                      @ApiParam(value = "证件类型，0：身份证，1：护照，2：军官证，3：驾驶证，4：未知") @RequestParam(value =
-                                                                              "cardType", required = false) Integer cardType,
-                                                                      @ApiParam(value = "人脸类型，0:内部人员，1:临时人员") @RequestParam(value = "faceType",
-                                                                              required = false) Integer faceType,
-                                                                      @ApiParam(value = "人脸过期，0:没有过期，1:已经过期") @RequestParam(value = "isValidTime",
-                                                                              required = false) Integer isValidTime,
-                                                                      @ApiParam(value = "部门id") @RequestParam(value = "deptId", required = false,
-                                                                              defaultValue = "") String deptId,
-                                                                      @ApiParam(value = "当前页，大于等于1") @RequestParam(value = "current", required =
-                                                                              true) Integer current,
-                                                                      @ApiParam(value = "每页条数，大于等于0") @RequestParam(value = "pageSize", required =
-                                                                              true) Integer pageSize) {
+    public RestfulEntityBySummit<Page<FaceInfo>> selectFaceInfoByPage( @ApiParam(value = "姓名、省份、城市、证件号") @RequestParam(value = "pubquery", required = false, defaultValue = "") String pubquery,
+                                                                      @ApiParam(value = "性别，0：男，1：女，2：未知") @RequestParam(value = "gender", required = false) Integer gender,
+                                                                      @ApiParam(value = "证件类型，0：身份证，1：护照，2：军官证，3：驾驶证，4：未知") @RequestParam(value = "cardType", required = false) Integer cardType,
+                                                                      @ApiParam(value = "人脸类型，0:内部人员，1:临时人员") @RequestParam(value = "faceType",required = false) Integer faceType,
+                                                                      @ApiParam(value = "人脸过期，0:没有过期，1:已经过期") @RequestParam(value = "isValidTime",required = false) Integer isValidTime,
+                                                                      @ApiParam(value = "部门id(多个部门用,隔开)") @RequestParam(value = "deptId", required = false,defaultValue = "") String deptId,
+                                                                      @ApiParam(value = "当前页，大于等于1") @RequestParam(value = "current", required = false)Integer current,
+                                                                      @ApiParam(value = "每页条数，大于等于0") @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         Page<FaceInfo> faceInfoPage = null;
-
         try {
             FaceInfoManagerEntity faceInfoManagerEntity = new FaceInfoManagerEntity();
             faceInfoManagerEntity.setPubquery(pubquery);
@@ -92,9 +82,7 @@ public class FaceInfoManagerController {
             faceInfoManagerEntity.setCardType(cardType);
             faceInfoManagerEntity.setFaceType(faceType);
             faceInfoManagerEntity.setIsValidTime(isValidTime);
-            faceInfoManagerEntity.setDeptId(deptId);
-            faceInfoPage = faceInfoManagerService.selectFaceInfoByPage(faceInfoManagerEntity, new SimplePage(current, pageSize));
-
+            faceInfoPage = faceInfoManagerService.selectFaceInfoByPage(faceInfoManagerEntity,deptId, current,pageSize);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("分页全部查询人脸信息失败");

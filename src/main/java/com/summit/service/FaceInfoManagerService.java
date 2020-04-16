@@ -45,7 +45,7 @@ public interface FaceInfoManagerService {
      * @param  simplePage 分页对象
      * @return  人脸信息列表分页对象
      */
-    Page<FaceInfo> selectFaceInfoByPage(FaceInfoManagerEntity faceInfoManagerEntity, SimplePage simplePage);
+    Page<FaceInfo> selectFaceInfoByPage(FaceInfoManagerEntity faceInfoManagerEntity, String deptId,Integer current, Integer pageSize) throws Exception;
 
     /**
      * 更新人脸信息
