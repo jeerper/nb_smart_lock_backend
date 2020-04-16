@@ -174,18 +174,19 @@
         count( al.alarm_id )
         FROM
         alarm al
-        where
-        1=1
-        <if test="depts != null">
-            and al.acc_ctrl_pro_id IN ( SELECT DISTINCT au.access_control_id FROM dept_accesscontrol_auth au WHERE au.dept_id IN
-            <foreach item="dept" collection="depts" index="index" open="(" separator="," close=")">
-                #{dept}
-            </foreach>
-            )
-        </if>
-        <if test="alarmStatus != null">
-            and al.alarm_deal_status = #{alarmStatus}
-        </if>
+        INNER JOIN  acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
+        <where>
+            <if test="depts != null">
+                and acp.access_control_id IN ( SELECT DISTINCT au.access_control_id FROM dept_accesscontrol_auth au WHERE au.dept_id IN
+                <foreach item="dept" collection="depts" index="index" open="(" separator="," close=")">
+                    #{dept}
+                </foreach>
+                )
+            </if>
+            <if test="alarmStatus != null">
+                and al.alarm_deal_status = #{alarmStatus}
+            </if>
+        </where>
     </select>
 
 
