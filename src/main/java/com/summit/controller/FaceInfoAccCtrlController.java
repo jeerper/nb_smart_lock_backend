@@ -114,10 +114,6 @@ public class FaceInfoAccCtrlController {
     @ApiOperation(value = "根据所传部门Id查询当前以及子部门下的人脸信息")
     @GetMapping(value = "/selectAllFaceByDeptId")
     public RestfulEntityBySummit<List<SimpleFaceInfo>> selectAllFaceByDeptId(@ApiParam(value = "部门Id",required = true) @RequestParam(value = "deptIds")List<String> deptIds){
-        if(CommonUtil.isEmptyList(deptIds)){
-            log.error("部门id为空");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"部门id为空",null);
-        }
         List<SimpleFaceInfo> simpleFaceInfos = new ArrayList<>();
         try{
             List<FaceInfo> faceInfos =faceInfoAccCtrlService.selectAllFaceByDeptId(deptIds);

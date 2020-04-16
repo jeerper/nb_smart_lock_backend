@@ -16,6 +16,7 @@ import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.Province;
 import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.CityDao;
+import com.summit.dao.repository.DeptFaceDao;
 import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.dao.repository.ProvinceDao;
 import com.summit.entity.FaceInfoManagerEntity;
@@ -63,6 +64,9 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
     private DeptFaceService deptFaceService;
     @Autowired
     public JdbcTemplate jdbcTemplate;
+    @Autowired
+    private DeptFaceDao deptFaceDao;
+
     @Autowired
     private DeptsService deptsService;
     /**
@@ -303,8 +307,10 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         }
         String base64Str = faceInfo.getFaceImage();
         // 修改所属部门
-        String deptFaceSql = " delete from dept_face_auth where face_id  IN ('" + faceInfo.getFaceid() + "') ";
-        jdbcTemplate.update(deptFaceSql);
+        //String deptFaceSql = " delete from dept_face_auth where face_id  IN ('" + faceInfo.getFaceid() + "') ";
+        //jdbcTemplate.update(deptFaceSql);
+        //deptFaceDao.delete(Wrappers.<FaceDept>lambdaQuery().eq(FaceDept::getFaceId,faceInfo.getFaceid()));
+        deptFaceService.delDeptFaceByFaceIdBatch(faceInfo.getFaceid());
         deptFaceService.insert(faceInfo.getDeptId(),faceInfo.getFaceid());
 
         if (StrUtil.isBlank(base64Str)) {

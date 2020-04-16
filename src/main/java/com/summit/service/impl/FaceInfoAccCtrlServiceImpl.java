@@ -87,40 +87,63 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
      * @return
      */
     @Override
-    public List<FaceInfo> selectAllFaceByDeptId(List<String> deptIds) {
-        List<FaceInfo> faceInfos =null;
-        if (deptIds.size()>1){
-            List<String> depts=new ArrayList<>();
+    public List<FaceInfo> selectAllFaceByDeptId(List<String> deptIds) throws Exception {
+        List<String> dept_ids =new ArrayList<>();
+        if (!CommonUtil.isEmptyList(deptIds)){
             for(String deptId:deptIds){
-                depts.add(deptId);
+                JSONObject paramJson=new JSONObject();
+                paramJson.put("pdept",deptId);
+                List<String> depts = deptsService.getDeptsByPdept(paramJson);
+                if (!CommonUtil.isEmptyList(depts)){
+                    for (String dept_id:depts){
+                        dept_ids.add(dept_id);
+                    }
+                }
             }
-            faceInfos= faceInfoManagerDao.selectAllFaceByDeptId(depts);
         }else {
-            String dept = deptIds.get(0);
+            String currentDeptService = deptsService.getCurrentDeptService();
             JSONObject paramJson=new JSONObject();
-            paramJson.put("pdept",dept);
+            paramJson.put("pdept",currentDeptService);
             List<String> depts = deptsService.getDeptsByPdept(paramJson);
-            faceInfos= faceInfoManagerDao.selectAllFaceByDeptId(depts);
+            if (!CommonUtil.isEmptyList(depts)){
+                for (String dept_id:depts){
+                    dept_ids.add(dept_id);
+                }
+            }
         }
+        CommonUtil.removeDuplicate(dept_ids);//去重
+        List<FaceInfo> faceInfos= faceInfoManagerDao.selectAllFaceByDeptId(dept_ids);
         return faceInfos;
     }
 
     @Override
-    public List<AccessControlInfo> selectAllAccCtrlByDeptId(List<String> deptIds) {
-        List<AccessControlInfo> accessControlInfos=null;
-        if (deptIds.size()>1){
-            List<String> depts=new ArrayList<>();
+    public List<AccessControlInfo> selectAllAccCtrlByDeptId(List<String> deptIds) throws Exception {
+        List<String> dept_ids =new ArrayList<>();
+        if (deptIds.size()>0){
             for(String deptId:deptIds){
-                depts.add(deptId);
+                JSONObject paramJson=new JSONObject();
+                paramJson.put("pdept",deptId);
+                List<String> depts = deptsService.getDeptsByPdept(paramJson);
+                if (!CommonUtil.isEmptyList(depts)){
+                    for (String dept_id:depts){
+                        dept_ids.add(dept_id);
+                    }
+                }
             }
-            accessControlInfos= faceInfoAccCtrlDao.selectAllAccCtrlByDeptId(depts);
         }else {
-            String dept = deptIds.get(0);
+            String currentDeptService = deptsService.getCurrentDeptService();
             JSONObject paramJson=new JSONObject();
-            paramJson.put("pdept",dept);
+            paramJson.put("pdept",currentDeptService);
             List<String> depts = deptsService.getDeptsByPdept(paramJson);
-            accessControlInfos= faceInfoAccCtrlDao.selectAllAccCtrlByDeptId(depts);
+            if (!CommonUtil.isEmptyList(depts)){
+                for (String dept_id:depts){
+                    dept_ids.add(dept_id);
+                }
+            }
+
         }
+        CommonUtil.removeDuplicate(dept_ids);//去重
+        List<AccessControlInfo> accessControlInfos= faceInfoAccCtrlDao.selectAllAccCtrlByDeptId(dept_ids);
         return accessControlInfos;
     }
 

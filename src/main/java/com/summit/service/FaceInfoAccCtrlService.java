@@ -40,14 +40,14 @@ public interface FaceInfoAccCtrlService {
      * @param deptIds
      * @return
      */
-    List<FaceInfo> selectAllFaceByDeptId(List<String> deptIds);
+    List<FaceInfo> selectAllFaceByDeptId(List<String> deptIds) throws Exception;
 
     /**
      * 根据所传部门Id查询当前以及子部门下的门禁信息
      * @param deptIds
      * @return
      */
-    List<AccessControlInfo> selectAllAccCtrlByDeptId(List<String> deptIds);
+    List<AccessControlInfo> selectAllAccCtrlByDeptId(List<String> deptIds) throws Exception;
 
     int refreshAccCtrlFaceBatch(List<String> accessControlIds, List<String> faceids) throws Exception;
 }
