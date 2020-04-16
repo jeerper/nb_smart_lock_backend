@@ -15,7 +15,6 @@ import com.summit.service.AlarmService;
 import com.summit.service.DeptsService;
 import com.summit.util.CommonUtil;
 import com.summit.util.PageConverter;
-import com.summit.util.UserDeptAuthUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -130,7 +129,7 @@ public class AlarmServiceImpl implements AlarmService {
      */
     @Override
     public Alarm selectAlarmById(String alarmId) {
-        return alarmDao.selectAlarmById(alarmId, UserDeptAuthUtils.getDepts());
+        return alarmDao.selectAlarmById(alarmId, null);
     }
 
     /**
@@ -212,13 +211,22 @@ public class AlarmServiceImpl implements AlarmService {
      * @return 告警数量
      */
     @Override
-    public Integer selectAlarmCountByStatus(Integer alarmStatus) {
+    public Integer selectAlarmCountByStatus(Integer alarmStatus) throws Exception {
         if(alarmStatus == null){
             log.error("告警状态为空");
             return null;
         }
-        List<String> depts = UserDeptAuthUtils.getDepts();
-        return alarmDao.selectAlarmCountByStatus(alarmStatus,depts);
+        List<String> dept_ids =new ArrayList<>();
+        String currentDeptService = deptsService.getCurrentDeptService();
+        JSONObject paramJson=new JSONObject();
+        paramJson.put("pdept",currentDeptService);
+        List<String> depts = deptsService.getDeptsByPdept(paramJson);
+        if (!CommonUtil.isEmptyList(depts)){
+            for (String dept_id:depts){
+                dept_ids.add(dept_id);
+            }
+        }
+        return alarmDao.selectAlarmCountByStatus(alarmStatus,dept_ids);
     }
 
     /**

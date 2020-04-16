@@ -103,7 +103,7 @@ public interface AlarmService {
      * @param alarmStatus 告警状态
      * @return 告警数量
      */
-    Integer selectAlarmCountByStatus(Integer alarmStatus);
+    Integer selectAlarmCountByStatus(Integer alarmStatus) throws Exception;
 
     /**
      * 根据锁操作记录对应的锁编号查询告警，可指定时间段

@@ -126,7 +126,7 @@ public class AlarmServiceImplTest {
     }
 
     @Test
-    public void selectAlarmCountByStatus() {
+    public void selectAlarmCountByStatus() throws Exception {
         Integer count = alarmService.selectAlarmCountByStatus(1);
         System.out.println(count);
     }

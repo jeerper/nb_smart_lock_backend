@@ -14,7 +14,6 @@ import com.summit.dao.repository.FileInfoDao;
 import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.service.*;
 import com.summit.util.CommonUtil;
-import com.summit.util.UserDeptAuthUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -209,7 +208,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
             log.error("门禁操作记录id为空");
             return null;
         }
-        return accCtrlProcessDao.selectAccCtrlProcessById(accCtrlProId,UserDeptAuthUtils.getDepts());
+        return accCtrlProcessDao.selectAccCtrlProcessById(accCtrlProId,null);
     }
 
     /**

@@ -33,8 +33,8 @@ public class LockInfoServiceImpl implements LockInfoService {
      */
     @Override
     public LockInfo selectLockById(String lockId) {
-        List<String> rolesList = UserAuthUtils.getRoles();
-        return lockInfoDao.selectLockById(lockId, rolesList);
+        //List<String> rolesList = UserAuthUtils.getRoles();
+        return lockInfoDao.selectLockById(lockId, null);
     }
 
     /**
