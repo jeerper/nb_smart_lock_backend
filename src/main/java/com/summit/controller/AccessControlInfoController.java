@@ -4,7 +4,6 @@ import cn.hutool.system.SystemUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.summit.MainAction;
 import com.summit.cbb.utils.page.Page;
-import com.summit.common.entity.DeptBean;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.entity.UserInfo;
@@ -19,7 +18,6 @@ import com.summit.service.AccCtrlRoleService;
 import com.summit.service.AccessControlService;
 import com.summit.service.ICbbUserAuthService;
 import com.summit.util.CommonUtil;
-import com.summit.util.EasyExcelUtil;
 import com.summit.util.ExcelExportUtil;
 import com.summit.util.ExcelUtil;
 import io.swagger.annotations.Api;
@@ -31,7 +29,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.ArrayList;
@@ -286,7 +283,7 @@ public class AccessControlInfoController {
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"门禁信息批量导出excel模板成功",fileName);
     }
 
-    @ApiOperation(value="获取门禁信息导入模板")
+   /* @ApiOperation(value="获取门禁信息导入模板")
     @RequestMapping(value = "/getAccCtrlTemplate", method = RequestMethod.GET)
     public void getAccCtrlTemplate(HttpServletResponse response) throws IOException {
         String sheetName = "门禁数据导入模板";
@@ -304,7 +301,7 @@ public class AccessControlInfoController {
         String path = getClass().getResource("/").getPath();
         outputStream.write(EasyExcelUtil.exportSingleByTemplate(path + File.separator +"template"+File.separator+"AccCtrl_template.xls",sheetName,dept_names,2,3));
         outputStream.flush();
-    }
+    }*/
 
 
 
