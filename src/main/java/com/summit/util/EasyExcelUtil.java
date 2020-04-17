@@ -3,7 +3,6 @@ package com.summit.util;
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 import com.summit.exception.ErrorMsgException;
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -11,10 +10,7 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFDataValidation;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -208,12 +204,21 @@ public class EasyExcelUtil {
      * @date  2020/4/15 16:00
      */
     public static List importExcelByAnnotation(int skipHead,Class clazz,byte[] bye) throws Exception {
-        ImportParams params = new ImportParams();
-        params.setTitleRows(1);
-        params.setHeadRows(skipHead);
-        ByteInputStream byteInputStream = new ByteInputStream();
-        byteInputStream.setBuf(bye);
-        List list = ExcelImportUtil.importExcel(byteInputStream, clazz, params);
+        ByteArrayInputStream byteArrayInputStream=null;
+        List list=null;
+        try{
+            ImportParams params = new ImportParams();
+            params.setTitleRows(1);
+            params.setHeadRows(skipHead);
+            byteArrayInputStream = new ByteArrayInputStream(bye);
+            list = ExcelImportUtil.importExcel(byteArrayInputStream, clazz, params);
+        }catch (IOException e){
+            e.printStackTrace();
+        }finally {
+           if (null!= byteArrayInputStream){
+               byteArrayInputStream.close();
+           }
+        }
         return list;
 
     }
