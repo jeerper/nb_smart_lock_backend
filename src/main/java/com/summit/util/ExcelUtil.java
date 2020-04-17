@@ -77,7 +77,7 @@ public class ExcelUtil {
         }else {
             throw new ErrorMsgException("文件不是Excel文件");
         }
-        Sheet sheet = workbook.getSheet("门禁信息模板");
+        Sheet sheet = workbook.getSheetAt(0);
         int rows = sheet.getLastRowNum();//指定行数。一共多少+
         if(rows==0) {
             throw new ErrorMsgException("请填写行数");
@@ -122,9 +122,9 @@ public class ExcelUtil {
                 if (CommonUtil.isEmptyList(deptBeans)){
                     throw new ErrorMsgException("部门管理列表为空!");
                 }
-                List<String> deptIds=getDeptIds(deptNames,deptBeans);
+                List<String> deptIds=getDeptIdsByNameAndCode(deptNames,deptBeans);
                 if (CommonUtil.isEmptyList(deptIds)){
-                    throw new ErrorMsgException("所属部门无法匹配!");
+                    throw new ErrorMsgException("所属部门为空!");
                 }
                 for (String deptId:deptIds){
                     accCtrlDeptDao.insert(new AccCtrlDept(null,deptId,accessControlInfo.getAccessControlId()));
@@ -135,12 +135,13 @@ public class ExcelUtil {
                 lockInfo.setCreatetime(new Date());
                 accessControlInfo.setUpdatetime(new Date());
                 lockInfo.setUpdatetime(new Date());
-                String longitude = getCellValue(row.getCell(3));
+                DecimalFormat df = new DecimalFormat("0.00");
+                String longitude = df.format(row.getCell(3).getNumericCellValue());
                 if (StrUtil.isBlank(longitude)){
                     throw new ErrorMsgException("经度不能为空!");
                 }
                 accessControlInfo.setLongitude(longitude);
-                String latitude = getCellValue(row.getCell(4));
+                String latitude = df.format(row.getCell(4).getNumericCellValue());
                 if (StrUtil.isBlank(latitude)){
                     throw new ErrorMsgException("纬度不能为空!");
                 }
@@ -156,6 +157,18 @@ public class ExcelUtil {
         return map;
     }
 
+    private List<String> getDeptIdsByNameAndCode(String deptNames, List<DeptBean> deptBeans) {
+        List<String> deptIds=new ArrayList<>();
+        String deptcode = deptNames.substring(deptNames.indexOf("(")+1,  deptNames.indexOf(")"));
+        for (DeptBean deptBean:deptBeans){
+            if (deptcode.equalsIgnoreCase(deptBean.getDeptCode())){
+                deptIds.add(deptBean.getId());
+                break;
+            }
+        }
+        return deptIds;
+    }
+
     private List<String> getDeptIds(String deptNames,List<DeptBean> deptBeans ) {
         List<String> deptIds=new ArrayList<>();
         if (deptNames.contains(",") ){//多个部门名称
@@ -168,7 +181,7 @@ public class ExcelUtil {
                     }
                 }
             }
-        }else if (deptNames.contains("，")){//一个部门
+        }else if (deptNames.contains("，")){//多个部门名称
             String[] list = deptNames.split("，");
             List<String> deptNameList = Arrays.asList(list);
             for (String deptName:deptNameList){
@@ -180,7 +193,7 @@ public class ExcelUtil {
                 }
             }
         }else {
-            for (DeptBean deptBean:deptBeans){
+            for (DeptBean deptBean:deptBeans){//一个部门名称
                 if (deptNames.equalsIgnoreCase(deptBean.getDeptName())){
                     deptIds.add(deptBean.getId());
                 }
