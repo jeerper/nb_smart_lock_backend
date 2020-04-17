@@ -17,7 +17,7 @@ import com.summit.entity.SimpleFaceInfo;
 import com.summit.exception.ErrorMsgException;
 import com.summit.service.FaceInfoManagerService;
 import com.summit.util.ExcelExportUtil;
-import com.summit.util.ExcelUtil;
+import com.summit.util.ExcelLoadData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -47,7 +47,7 @@ public class FaceInfoManagerController {
     @Autowired
     private FaceInfoManagerDao faceInfoManagerDao;
     @Autowired
-    private ExcelUtil excelUtil;
+    private ExcelLoadData excelLoadData;
 
 
     private String filePath;
@@ -261,7 +261,7 @@ public class FaceInfoManagerController {
                         .toString();
                 filesName = com.summit.util.FileUtil.uploadFile(filePath, faceExcel);
                 String orginFileName = filesName.getString("fileName");
-                MultipartFile mulFileByPath = excelUtil.getMulFileByPath(filePath+orginFileName);
+                MultipartFile mulFileByPath = excelLoadData.getMulFileByPath(filePath+orginFileName);
                 boolean b= faceInfoManagerService.batchImport(mulFileByPath);
             }catch (Exception e){
                 msg = getErrorMsg(msg, e);

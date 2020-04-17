@@ -22,7 +22,7 @@ import com.summit.service.CameraDeviceService;
 import com.summit.service.DeptsService;
 import com.summit.service.LockInfoService;
 import com.summit.util.CommonUtil;
-import com.summit.util.ExcelUtil;
+import com.summit.util.ExcelLoadData;
 import com.summit.util.PageConverter;
 import com.summit.util.UserDeptAuthUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +59,7 @@ public class AccessControlServiceImpl implements AccessControlService {
     @Autowired
     private AccCtrlRealTimeDao accCtrlRealTimeDao;
     @Autowired
-    private ExcelUtil excelUtil;
+    private ExcelLoadData excelLoadData;
     @Autowired
     private AccCtrlDeptDao accCtrlDeptDao;
     @Autowired
@@ -668,7 +668,7 @@ public class AccessControlServiceImpl implements AccessControlService {
     @Override
     @Transactional(propagation= Propagation.REQUIRED, rollbackFor = {Exception.class} )
     public boolean batchImport(MultipartFile uploadFile) throws Exception {
-        Map<String, Object> stringObjectMap = excelUtil.loadExcel(uploadFile);
+        Map<String, Object> stringObjectMap = excelLoadData.loadExcel(uploadFile);
         List<AccessControlInfo> accessControlInfos = (List<AccessControlInfo>)stringObjectMap.get("accessControlInfos");
         List<LockInfo> lockInfos=(List<LockInfo>)stringObjectMap.get("lockInfos");
         try{

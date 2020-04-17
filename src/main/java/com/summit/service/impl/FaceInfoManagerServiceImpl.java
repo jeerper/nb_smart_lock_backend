@@ -26,7 +26,7 @@ import com.summit.service.DeptsService;
 import com.summit.service.FaceInfoAccCtrlService;
 import com.summit.service.FaceInfoManagerService;
 import com.summit.util.CommonUtil;
-import com.summit.util.ExcelUtil;
+import com.summit.util.ExcelLoadData;
 import com.summit.utils.BaiduSdkClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +59,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
     @Autowired
     private BaiduSdkClient baiduSdkClient;
     @Autowired
-    private ExcelUtil excelUtil;
+    private ExcelLoadData excelLoadData;
     @Autowired
     private DeptFaceService deptFaceService;
     @Autowired
@@ -453,7 +453,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
     @Override
     @Transactional(propagation= Propagation.REQUIRED, rollbackFor = {Exception.class} )
     public boolean batchImport(MultipartFile file) throws Exception {
-        Map<String, Object> stringObjectMap = excelUtil.loadFaceExcel(file);
+        Map<String, Object> stringObjectMap = excelLoadData.loadFaceExcel(file);
         List<FaceInfo> faceInfos = (List<FaceInfo>)stringObjectMap.get("faceInfos");
         try{
             faceInfoManagerDao.insertFaceInfos(faceInfos);

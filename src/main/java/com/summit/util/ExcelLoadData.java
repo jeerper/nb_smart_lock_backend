@@ -42,7 +42,7 @@ import java.util.*;
 
 @Slf4j
 @Component
-public class ExcelUtil {
+public class ExcelLoadData {
     private static final String XLS = "xls";
     private static final String XLSK = "xlsx";
     @Autowired
