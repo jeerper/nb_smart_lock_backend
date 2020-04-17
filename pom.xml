@@ -203,6 +203,7 @@
                                         <include>*.yml</include>
                                         <include>cert*/**</include>
                                         <include>db/**</include>
+                                        <include>template/**</include>
                                     </includes>
                                     <filtering>true</filtering>
                                 </resource>
