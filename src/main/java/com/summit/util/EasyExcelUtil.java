@@ -38,6 +38,7 @@ public class EasyExcelUtil {
      * @date  2020/4/15 9:14
      */
     public static byte[] exportSingleByTemplate(String path,String sheetName,String[] dataSource,int firstCol,int secondCol) {
+        log.debug("门禁模板路径:"+path);
         File file = new File(path);
         if(!file.exists() || !file.isFile()){
             log.error("文件不存在:{}",path);
