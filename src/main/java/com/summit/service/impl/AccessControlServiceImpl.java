@@ -187,6 +187,21 @@ public class AccessControlServiceImpl implements AccessControlService {
                 String[] dept_Ids = deptId.split(",");
                 accessControl.setDepts(dept_Ids);
             }
+            if (StrUtil.isNotBlank(accessControl.getDeptNames())){
+                List<String> parentDeptNames = deptsService.getParentDeptNamesByCurrentDept(null);
+                List<String> deptNames=new ArrayList<>();
+                String[] dept_names = accessControl.getDeptNames().split(",");
+                List<String> sonDeptNames = Arrays.asList(dept_names);
+                for (String sonDeptName :sonDeptNames){
+                    if (!parentDeptNames.contains(sonDeptName)){
+                        deptNames.add(sonDeptName);
+                    }
+                }
+                if (!CommonUtil.isEmptyList(deptNames)){
+                    String deptName = String.join("," , deptNames);
+                    accessControl.setDeptNames(deptName);//需要过滤当前用户以上的部门名称
+                }
+            }
         }
         if (pageParam != null) {
             pageParam.setRecords(accessControls);

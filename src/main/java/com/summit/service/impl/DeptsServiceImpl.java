@@ -48,11 +48,44 @@ public class DeptsServiceImpl implements DeptsService {
         return currentDept;
     }
 
+    /**
+     * 根据当前节点查询当前节点以上所有的父节点(部门id)(包括不当前节点、多级)
+     * @param paramJson
+     * @return
+     */
     @Override
     public List<String> getParentDeptsByCurrentDept(JSONObject paramJson) {
         try{
             List<String> depts=new ArrayList<>();
             JSONObject objct= DeptUtil.getParentAllDeptByCurrentDept(paramJson, cbbUserAuthService);
+            String pdept=objct.getString("pdept");
+            List<DeptBean> deptData=(List)objct.getJSONArray("deptList");
+            if(deptData!=null && deptData.size()>0) {
+                for(int i = 0; i < deptData.size() ; i++){
+                    String dept = String.valueOf(deptData.get(i));
+                    depts.add(dept);
+                }
+            }
+            /*if (null !=pdept && !StringUtil.isEmpty(pdept)){
+                depts.add(pdept);
+            }*/
+            return depts;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 根据当前节点查询当前节点以上所有的父节点(部门名称)(包括不当前节点、多级)
+     * @param paramJson
+     * @return
+     */
+    @Override
+    public List<String> getParentDeptNamesByCurrentDept(JSONObject paramJson) {
+        try{
+            List<String> depts=new ArrayList<>();
+            JSONObject objct= DeptUtil.getParentDeptNamesByCurrentDept(paramJson, cbbUserAuthService);
             String pdept=objct.getString("pdept");
             List<DeptBean> deptData=(List)objct.getJSONArray("deptList");
             if(deptData!=null && deptData.size()>0) {

@@ -283,6 +283,21 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
                 String[] dept_Ids = deptId.split(",");
                 faceInfo.setDepts(dept_Ids);
             }
+            if (StrUtil.isNotBlank(faceInfo.getDeptNames())){
+                List<String> parentDeptNames = deptsService.getParentDeptNamesByCurrentDept(null);
+                List<String> deptNames=new ArrayList<>();
+                String[] dept_names = faceInfo.getDeptNames().split(",");
+                List<String> sonDeptNames = Arrays.asList(dept_names);
+                for (String sonDeptName :sonDeptNames){
+                    if (!parentDeptNames.contains(sonDeptName)){
+                        deptNames.add(sonDeptName);
+                    }
+                }
+                if (!CommonUtil.isEmptyList(deptNames)){
+                    String deptName = String.join("," , deptNames);
+                    faceInfo.setDeptNames(deptName);//需要过滤当前用户以上的部门名称
+                }
+            }
         }
         if (pageParam != null) {
             pageParam.setRecords(faceInfos);

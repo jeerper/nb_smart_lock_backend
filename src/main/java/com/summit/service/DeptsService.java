@@ -17,10 +17,16 @@ public interface DeptsService  {
     String  getCurrentDeptService() throws Exception;
 
     /**
-     * 根据当前节点查询当前节点以上所有的父节点(包括不当前节点、多级)
+     * 根据当前节点查询当前节点以上所有的父节点(部门id)(包括不当前节点、多级)
      * @param paramJson
      * @return
      */
     List<String> getParentDeptsByCurrentDept(JSONObject paramJson);
 
+    /**
+     * 根据当前节点查询当前节点以上所有的父节点(部门名称)(包括不当前节点、多级)
+     * @param paramJson
+     * @return
+     */
+    List<String> getParentDeptNamesByCurrentDept(JSONObject paramJson);
 }

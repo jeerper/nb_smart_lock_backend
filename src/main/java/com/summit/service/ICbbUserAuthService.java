@@ -31,11 +31,16 @@ public interface ICbbUserAuthService {
 
 
     /**
-     * 根据当前节点查询当前节点以上所有的父节点(包括不当前节点、多级)
+     * 根据当前节点查询当前节点以上所有的父节点(部门id)(包括不当前节点、多级)
      * @return
      */
     @GetMapping("/dept/queryParentAllDeptByPdept")
     RestfulEntityBySummit<List<String>> queryParentAllDeptByPdept(@RequestParam("pdept") String pdept);
 
-
+    /**
+     * 根据当前节点查询当前节点以上所有的父节点(部门名称)(包括不当前节点、多级)
+     * @return
+     */
+    @GetMapping("/dept/queryParentAllDeptNameByPdept")
+    RestfulEntityBySummit<List<String>> queryParentAllDeptNameByPdept(@RequestParam("pdept") String pdept);
 }
