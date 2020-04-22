@@ -4,6 +4,7 @@ import cn.hutool.system.SystemUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.summit.MainAction;
 import com.summit.cbb.utils.page.Page;
+import com.summit.common.entity.DeptBean;
 import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
@@ -16,6 +17,8 @@ import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.entity.SimpleFaceInfo;
 import com.summit.exception.ErrorMsgException;
 import com.summit.service.FaceInfoManagerService;
+import com.summit.service.ICbbUserAuthService;
+import com.summit.util.EasyExcelUtil;
 import com.summit.util.ExcelExportUtil;
 import com.summit.util.ExcelLoadData;
 import io.swagger.annotations.Api;
@@ -29,10 +32,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2019/8/21.
@@ -48,8 +55,8 @@ public class FaceInfoManagerController {
     private FaceInfoManagerDao faceInfoManagerDao;
     @Autowired
     private ExcelLoadData excelLoadData;
-
-
+    @Autowired
+    private ICbbUserAuthService iCbbUserAuthService;
     private String filePath;
 
     @ApiOperation(value = "录入人脸信息", notes = "返回不是-1则为成功")
@@ -243,6 +250,74 @@ public class FaceInfoManagerController {
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸信息批量导出excel模板成功",fileName);
     }
+
+
+    @ApiOperation(value = "获取人脸导入数据模板")
+    @RequestMapping(value = "/getFaceInfoTemplate",method = RequestMethod.GET)
+    public void getFaceInfoTemplate(HttpServletResponse response) throws IOException {
+        String sheetName="人脸数据导入模板";
+        String[] faceType=new String[]{"内部人员","临时人员"};
+        String[] sex=new String[]{"男","女"};
+        String[] cardType=new String[]{"身份证","护照","军官证","驾驶证","其他"};
+        List<Province> provinces = faceInfoManagerService.selectProvince(null);
+        List<String> province_names=new ArrayList<>();
+        for (Province province:provinces){
+            province_names.add(province.getProvince());
+        }
+        String[] provinceNames = province_names.toArray(new String[province_names.size()]);
+        RestfulEntityBySummit<List<DeptBean>> allDept = iCbbUserAuthService.queryAllDept();
+        List<String> deptNames=new ArrayList<>();
+        for (DeptBean deptBean:allDept.getData()){
+            deptNames.add(deptBean.getDeptName()+"("+deptBean.getDeptCode()+")");
+        }
+        String[] dept_names = deptNames.toArray(new String[deptNames.size()]);
+        response.setCharacterEncoding("UTF-8");
+        response.reset();
+        response.setContentType("application/x-download;charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment;filename=" + sheetName);
+        ServletOutputStream outputStream = response.getOutputStream();
+        String path = getClass().getResource("/").getPath();
+        Map<Integer,String[]> map=new HashMap<>();
+        map.put(0,faceType);
+        map.put(1,sex);
+        map.put(2,cardType);
+        map.put(3,provinceNames);
+        map.put(4,dept_names);
+        byte[] bytes = EasyExcelUtil.exportSingleFaceInfoByTemplate(path + File.separator + "template" + File.separator + "Face_template.xls", map, sheetName);
+        outputStream.write(bytes);
+        outputStream.flush();
+
+    }
+
+    @ApiOperation(value = "人脸批量导入zip")
+    @RequestMapping(value = "/uploadZip", method = RequestMethod.POST,consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public RestfulEntityBySummit<String> uploadZip(@ApiParam(value = "压缩文件夹", required = true)
+                                                     @RequestPart("faceZip") MultipartFile faceZip) throws IOException {
+        JSONObject filesName = null;
+        String msg = "人脸信息批量导入失败";
+        String zipPath=null;
+        if (faceZip !=null){
+            try{
+                zipPath=new StringBuilder()
+                        .append(SystemUtil.getUserInfo().getCurrentDir())
+                        .append(File.separator)
+                        .append(MainAction.SnapshotFileName)
+                        .append(File.separator)
+                        .toString();
+                filesName = com.summit.util.FileUtil.uploadFile(zipPath, faceZip);
+                String orginFileName = filesName.getString("fileName");
+
+            }catch (Exception e){
+                msg = getErrorMsg(msg, e);
+                log.error(msg,e);
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg,null);
+            }
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸信息批量导入成功",null);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"导入压缩文件夹为空",null);
+    }
+
+
 
 
     @ApiOperation(value = "人脸信息批量导入excel")

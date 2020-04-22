@@ -302,7 +302,7 @@ public class AccessControlInfoController {
         response.setHeader("Content-Disposition", "attachment;filename=" + sheetName);
         ServletOutputStream outputStream = response.getOutputStream();
         String path = getClass().getResource("/").getPath();
-        outputStream.write(EasyExcelUtil.exportSingleByTemplate(path + File.separator +"template"+File.separator+"AccCtrl_template.xls",sheetName,dept_names,2,3));
+        outputStream.write(EasyExcelUtil.exportSingleAccCtrlByTemplate(path + File.separator +"template"+File.separator+"AccCtrl_template.xls",sheetName,dept_names,2));
         outputStream.flush();
     }
 

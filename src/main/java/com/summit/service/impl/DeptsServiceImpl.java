@@ -35,22 +35,6 @@ public class DeptsServiceImpl implements DeptsService {
                 depts.add(pdept);
             }
             return depts;
-           /* if(deptData!=null && deptData.size()>0) {
-                String depts = "'"+pdept+"'";
-                for(int i = 0; i < deptData.size() ; i++){
-                    String dept = String.valueOf(deptData.get(i));
-                    depts = depts+",'"+ dept+"'";
-                }
-                String ss = depts.substring(0,1);
-                String es = depts.substring(depts.length()-1,depts.length());
-                if(ss.equals("'") && es.equals("'")){
-                    return depts.substring(1,depts.length()-1);
-                }else{
-                    return "";
-                }
-            }else{
-                return "";
-            }*/
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -61,11 +45,29 @@ public class DeptsServiceImpl implements DeptsService {
     public String getCurrentDeptService() throws Exception {
         JSONObject current_dept = DeptUtil.getCurrentDeptByPDept(null);
         String currentDept=current_dept.getString("currentDept");
-        /*String dept_string  = null;
-        if (currentDept !=null){
-            dept_string = currentDept.replace("''","" );
-            return dept_string;
-        }*/
         return currentDept;
+    }
+
+    @Override
+    public List<String> getParentDeptsByCurrentDept(JSONObject paramJson) {
+        try{
+            List<String> depts=new ArrayList<>();
+            JSONObject objct= DeptUtil.getParentAllDeptByCurrentDept(paramJson, cbbUserAuthService);
+            String pdept=objct.getString("pdept");
+            List<DeptBean> deptData=(List)objct.getJSONArray("deptList");
+            if(deptData!=null && deptData.size()>0) {
+                for(int i = 0; i < deptData.size() ; i++){
+                    String dept = String.valueOf(deptData.get(i));
+                    depts.add(dept);
+                }
+            }
+            /*if (null !=pdept && !StringUtil.isEmpty(pdept)){
+                depts.add(pdept);
+            }*/
+            return depts;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

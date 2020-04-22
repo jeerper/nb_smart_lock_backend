@@ -15,4 +15,12 @@ public interface DeptsService  {
 
     //查找当前登录人所在的部门
     String  getCurrentDeptService() throws Exception;
+
+    /**
+     * 根据当前节点查询当前节点以上所有的父节点(包括不当前节点、多级)
+     * @param paramJson
+     * @return
+     */
+    List<String> getParentDeptsByCurrentDept(JSONObject paramJson);
+
 }

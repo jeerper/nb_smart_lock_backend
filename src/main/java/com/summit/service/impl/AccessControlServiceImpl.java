@@ -83,8 +83,20 @@ public class AccessControlServiceImpl implements AccessControlService {
         AccessControlInfo accessControlInfo = accessControlDao.selectAccCtrlById(accessControlId, null);
         String deptId = accessControlInfo.getDeptIds();
         if (StrUtil.isNotBlank(deptId)){
+            List<String> parentDeptIds = deptsService.getParentDeptsByCurrentDept(null);
+            List<String> deptIds=new ArrayList<>();
             String[] dept_Ids = deptId.split(",");
-            accessControlInfo.setDepts(dept_Ids);
+            List<String> sonDeptIds = Arrays.asList(dept_Ids);
+            for (String sonDeptId :sonDeptIds){
+                if (!parentDeptIds.contains(sonDeptId)){
+                    deptIds.add(sonDeptId);
+                }
+            }
+            if (!CommonUtil.isEmptyList(deptIds)){
+                String[] deptList = deptIds.toArray(new String[deptIds.size()]);
+                accessControlInfo.setDepts(deptList);//需要过滤当前用户以上的部门id
+            }
+            //accessControlInfo.setDepts(dept_Ids);
         }
         return accessControlInfo;
     }
@@ -295,16 +307,17 @@ public class AccessControlServiceImpl implements AccessControlService {
         if (accessControlInfo.getDepts() != null && accessControlInfo.getDepts().length > 0) {
             List<String> deptIds=new ArrayList<>();
             for (String deptId : accessControlInfo.getDepts()) {
-                JSONObject paramJson=new JSONObject();
+                /*JSONObject paramJson=new JSONObject();
                 paramJson.put("pdept",deptId);
                 List<String> depts = deptsService.getDeptsByPdept(paramJson);
                 if (!CommonUtil.isEmptyList(depts)){
                     for (String dept_id:depts){
                         deptIds.add(dept_id);
                     }
-                }
+                }*/
+                deptIds.add(deptId);
             }
-            CommonUtil.removeDuplicate(deptIds);
+            //CommonUtil.removeDuplicate(deptIds);
            /* List<String> needDelDeptIds=new ArrayList<>();
             for (String deptId:deptIds){
                 AccCtrlDept accCtrlDept = accCtrlDeptDao.selectOne(Wrappers.<AccCtrlDept>lambdaQuery()
@@ -401,16 +414,17 @@ public class AccessControlServiceImpl implements AccessControlService {
         if (accessControlInfo.getDepts() != null && accessControlInfo.getDepts().length > 0) {
             List<String> deptIds=new ArrayList<>();
             for (String deptId : accessControlInfo.getDepts()) {
-                JSONObject paramJson=new JSONObject();
+                /*JSONObject paramJson=new JSONObject();
                 paramJson.put("pdept",deptId);
                 List<String> depts = deptsService.getDeptsByPdept(paramJson);
                 if (!CommonUtil.isEmptyList(depts)){
                     for (String dept_id:depts){
                         deptIds.add(dept_id);
                     }
-                }
+                }*/
+                deptIds.add(deptId);
             }
-            CommonUtil.removeDuplicate(deptIds);
+            //CommonUtil.removeDuplicate(deptIds);
             List<AccCtrlDept> accCtrlDepts=selectAccCtrlDeptsByAccCtrlId(accessControlId);
             List<String> needDelDeptIds=new ArrayList<>();
             if (!CommonUtil.isEmptyList(accCtrlDepts)){

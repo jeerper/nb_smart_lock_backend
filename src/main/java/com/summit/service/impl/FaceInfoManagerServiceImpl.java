@@ -11,14 +11,8 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.summit.MainAction;
 import com.summit.cbb.utils.page.Page;
 import com.summit.common.util.ApplicationContextUtil;
-import com.summit.dao.entity.City;
-import com.summit.dao.entity.FaceInfo;
-import com.summit.dao.entity.Province;
-import com.summit.dao.entity.SimplePage;
-import com.summit.dao.repository.CityDao;
-import com.summit.dao.repository.DeptFaceDao;
-import com.summit.dao.repository.FaceInfoManagerDao;
-import com.summit.dao.repository.ProvinceDao;
+import com.summit.dao.entity.*;
+import com.summit.dao.repository.*;
 import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.exception.ErrorMsgException;
 import com.summit.service.DeptFaceService;
@@ -69,6 +63,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
 
     @Autowired
     private DeptsService deptsService;
+
     /**
      * 插入人脸信息
      *
@@ -176,7 +171,11 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
                 throw new Exception("人脸录入失败");
             }
             //插入部门人脸关系数据表
-            int result= deptFaceService.insert(faceInfoManagerEntity.getDeptId(),face_id);
+            if (faceInfoManagerEntity.getDepts() != null && faceInfoManagerEntity.getDepts().length > 0){
+                for (String deptId : faceInfoManagerEntity.getDepts()){
+                    int result= deptFaceService.insert(deptId,face_id);
+                }
+            }
         } catch (Exception e) {
             FileUtil.del(facePicPath);
             log.error("人脸录入异常",e);
@@ -278,6 +277,13 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         }
         CommonUtil.removeDuplicate(dept_ids);//去重
         List<FaceInfo> faceInfos = faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity, pageParam,dept_ids);
+        for (FaceInfo faceInfo:faceInfos){
+            String deptId = faceInfo.getDeptId();
+            if (StrUtil.isNotBlank(deptId)){
+                String[] dept_Ids = deptId.split(",");
+                faceInfo.setDepts(dept_Ids);
+            }
+        }
         if (pageParam != null) {
             pageParam.setRecords(faceInfos);
             return pageParam;
@@ -310,9 +316,19 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         //String deptFaceSql = " delete from dept_face_auth where face_id  IN ('" + faceInfo.getFaceid() + "') ";
         //jdbcTemplate.update(deptFaceSql);
         //deptFaceDao.delete(Wrappers.<FaceDept>lambdaQuery().eq(FaceDept::getFaceId,faceInfo.getFaceid()));
-        deptFaceService.delDeptFaceByFaceIdBatch(faceInfo.getFaceid());
-        deptFaceService.insert(faceInfo.getDeptId(),faceInfo.getFaceid());
-
+        if (faceInfo.getDepts() !=null && faceInfo.getDepts().length>0){
+            List<FaceDept> faceDepts=selectFaceDeptByFaceId(faceInfo.getFaceid());
+            List<String> needDelIds=new ArrayList<>();
+            if (!CommonUtil.isEmptyList(faceDepts)){
+                for (FaceDept faceDept:faceDepts){
+                    needDelIds.add(faceDept.getId());
+                }
+            }
+            deptFaceDao.deleteBatchIds(needDelIds);
+            for (String deptId:faceInfo.getDepts()){
+                deptFaceService.insert(deptId,faceInfo.getFaceid());
+            }
+        }
         if (StrUtil.isBlank(base64Str)) {
             faceInfoManagerDao.updateById(faceInfo);
             return;
@@ -394,6 +410,16 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
 
     }
 
+    private List<FaceDept> selectFaceDeptByFaceId(String faceid) {
+        if(faceid == null){
+            log.error("人脸id未空");
+            return null;
+        }
+        QueryWrapper<FaceDept> wrapper = new QueryWrapper<>();
+        return deptFaceDao.selectList(wrapper.eq("face_id",faceid));
+
+    }
+
     /**
      * 根据人脸id查询唯一的人脸信息记录
      *
@@ -406,7 +432,25 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
             log.error("人脸信息的id为空");
             return null;
         }
-        return faceInfoManagerDao.selectFaceInfoByID(faceid);
+        FaceInfo faceInfo = faceInfoManagerDao.selectFaceInfoByID(faceid);
+        String deptId = faceInfo.getDeptId();
+        if (StrUtil.isNotBlank(deptId)){
+            List<String> parentDeptIds = deptsService.getParentDeptsByCurrentDept(null);
+            List<String> deptIds=new ArrayList<>();
+            String[] dept_Ids = deptId.split(",");
+            List<String> sonDeptIds = Arrays.asList(dept_Ids);
+            for (String sonDeptId :sonDeptIds){
+                if (!parentDeptIds.contains(sonDeptId)){
+                    deptIds.add(sonDeptId);
+                }
+            }
+            if (!CommonUtil.isEmptyList(deptIds)){
+                String[] deptList = deptIds.toArray(new String[deptIds.size()]);
+                faceInfo.setDepts(deptList);//需要过滤当前用户以上的部门id
+            }
+            //faceInfo.setDepts(dept_Ids);
+        }
+        return faceInfo;
     }
 
 

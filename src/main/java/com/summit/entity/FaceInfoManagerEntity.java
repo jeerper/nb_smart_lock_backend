@@ -19,6 +19,6 @@ public class FaceInfoManagerEntity {
     private Integer faceType;
     private String faceEndTime;
     private Integer isValidTime;
-    private String deptId;
+    private String[] depts;
     private String pubquery;
 }
