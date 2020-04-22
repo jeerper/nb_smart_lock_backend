@@ -377,12 +377,15 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
                 dept_ids.add(dept_id);
             }
         }
-        List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, dept_ids);
-        if (pageParam != null) {
-            pageParam.setRecords(accCtrlProcesses);
-            return pageParam;
+        if (!CommonUtil.isEmptyList(dept_ids)){
+            List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, dept_ids);
+            if (pageParam != null) {
+                pageParam.setRecords(accCtrlProcesses);
+                return pageParam;
+            }
+            return new Page<>(accCtrlProcesses, null);
         }
-        return new Page<>(accCtrlProcesses, null);
+        return null;
     }
 
     /**

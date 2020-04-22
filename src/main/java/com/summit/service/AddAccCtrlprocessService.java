@@ -37,7 +37,7 @@ public interface AddAccCtrlprocessService {
      * 查询所有的统计分析记录
      * @return 所有的统计分析记录
      */
-    List<AddAccCtrlprocess> selectAddAccCtrlprocess(List<String> accCtrlIds);
+    List<AddAccCtrlprocess> selectAddAccCtrlprocess(List<String> accCtrlIds) throws Exception;
     /**
      * 根据门禁id修改统计记录表
      * @return 所有的统计分析记录

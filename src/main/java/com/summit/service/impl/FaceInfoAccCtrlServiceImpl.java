@@ -112,8 +112,11 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
             }
         }
         CommonUtil.removeDuplicate(dept_ids);//去重
-        List<FaceInfo> faceInfos= faceInfoManagerDao.selectAllFaceByDeptId(dept_ids);
-        return faceInfos;
+        if (!CommonUtil.isEmptyList(dept_ids)){
+            List<FaceInfo> faceInfos= faceInfoManagerDao.selectAllFaceByDeptId(dept_ids);
+            return faceInfos;
+        }
+        return null;
     }
 
     @Override
@@ -143,8 +146,12 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
 
         }
         CommonUtil.removeDuplicate(dept_ids);//去重
-        List<AccessControlInfo> accessControlInfos= faceInfoAccCtrlDao.selectAllAccCtrlByDeptId(dept_ids);
-        return accessControlInfos;
+        if (!CommonUtil.isEmptyList(dept_ids)){
+            List<AccessControlInfo> accessControlInfos= faceInfoAccCtrlDao.selectAllAccCtrlByDeptId(dept_ids);
+            return accessControlInfos;
+        }
+        return null;
+
     }
 
     @Override

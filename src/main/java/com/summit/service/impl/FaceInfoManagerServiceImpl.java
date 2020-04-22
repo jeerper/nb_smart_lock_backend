@@ -276,34 +276,37 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
             }
         }
         CommonUtil.removeDuplicate(dept_ids);//去重
-        List<FaceInfo> faceInfos = faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity, pageParam,dept_ids);
-        for (FaceInfo faceInfo:faceInfos){
-            String deptId = faceInfo.getDeptId();
-            if (StrUtil.isNotBlank(deptId)){
-                String[] dept_Ids = deptId.split(",");
-                faceInfo.setDepts(dept_Ids);
-            }
-            if (StrUtil.isNotBlank(faceInfo.getDeptNames())){
-                List<String> parentDeptNames = deptsService.getParentDeptNamesByCurrentDept(null);
-                List<String> deptNames=new ArrayList<>();
-                String[] dept_names = faceInfo.getDeptNames().split(",");
-                List<String> sonDeptNames = Arrays.asList(dept_names);
-                for (String sonDeptName :sonDeptNames){
-                    if (!parentDeptNames.contains(sonDeptName)){
-                        deptNames.add(sonDeptName);
+        if (!CommonUtil.isEmptyList(dept_ids)){
+            List<FaceInfo> faceInfos = faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity, pageParam,dept_ids);
+            for (FaceInfo faceInfo:faceInfos){
+                String deptId = faceInfo.getDeptId();
+                if (StrUtil.isNotBlank(deptId)){
+                    String[] dept_Ids = deptId.split(",");
+                    faceInfo.setDepts(dept_Ids);
+                }
+                if (StrUtil.isNotBlank(faceInfo.getDeptNames())){
+                    List<String> parentDeptNames = deptsService.getParentDeptNamesByCurrentDept(null);
+                    List<String> deptNames=new ArrayList<>();
+                    String[] dept_names = faceInfo.getDeptNames().split(",");
+                    List<String> sonDeptNames = Arrays.asList(dept_names);
+                    for (String sonDeptName :sonDeptNames){
+                        if (!parentDeptNames.contains(sonDeptName)){
+                            deptNames.add(sonDeptName);
+                        }
+                    }
+                    if (!CommonUtil.isEmptyList(deptNames)){
+                        String deptName = String.join("," , deptNames);
+                        faceInfo.setDeptNames(deptName);//需要过滤当前用户以上的部门名称
                     }
                 }
-                if (!CommonUtil.isEmptyList(deptNames)){
-                    String deptName = String.join("," , deptNames);
-                    faceInfo.setDeptNames(deptName);//需要过滤当前用户以上的部门名称
-                }
             }
+            if (pageParam != null) {
+                pageParam.setRecords(faceInfos);
+                return pageParam;
+            }
+            return new Page<>(faceInfos, null);
         }
-        if (pageParam != null) {
-            pageParam.setRecords(faceInfos);
-            return pageParam;
-        }
-        return new Page<>(faceInfos, null);
+        return null;
     }
 
     /**

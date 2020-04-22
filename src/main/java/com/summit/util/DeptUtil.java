@@ -17,7 +17,7 @@ public class DeptUtil {
         if(paramJson!=null && paramJson.containsKey("pdept") &&  !StringUtil.isEmpty(paramJson.getString("pdept")) ){
             pdept=paramJson.getString("pdept");
         }else{
-            if(Common.getLogUser().getDepts()!=null && Common.getLogUser().getDepts().length>0){
+            if(Common.getLogUser()!=null && Common.getLogUser().getDepts()!=null && Common.getLogUser().getDepts().length>0){
                 pdept=Common.getLogUser().getDepts()[0];
             }
         }
@@ -38,7 +38,7 @@ public class DeptUtil {
         if(paramJson!=null && paramJson.containsKey("dept") &&  StrUtil.isNotBlank(paramJson.getString("dept"))){
             currentDept=paramJson.getString("dept");
         }else{
-            if(Common.getLogUser().getDepts()!=null && Common.getLogUser().getDepts().length>0){
+            if(Common.getLogUser()!=null && Common.getLogUser().getDepts()!=null && Common.getLogUser().getDepts().length>0){
                 currentDept=Common.getLogUser().getDepts()[0];
             }
         }
@@ -53,7 +53,7 @@ public class DeptUtil {
         if(paramJson!=null && paramJson.containsKey("pdept") &&  !StringUtil.isEmpty(paramJson.getString("pdept")) ){
             pdept=paramJson.getString("pdept");
         }else{
-            if(Common.getLogUser().getDepts()!=null && Common.getLogUser().getDepts().length>0){
+            if(Common.getLogUser()!=null && Common.getLogUser().getDepts()!=null && Common.getLogUser().getDepts().length>0){
                 pdept=Common.getLogUser().getDepts()[0];
             }
         }
@@ -75,7 +75,7 @@ public class DeptUtil {
         if(paramJson!=null && paramJson.containsKey("pdept") &&  !StringUtil.isEmpty(paramJson.getString("pdept")) ){
             pdept=paramJson.getString("pdept");
         }else{
-            if(Common.getLogUser().getDepts()!=null && Common.getLogUser().getDepts().length>0){
+            if(Common.getLogUser()!=null && Common.getLogUser().getDepts()!=null && Common.getLogUser().getDepts().length>0){
                 pdept=Common.getLogUser().getDepts()[0];
             }
         }

@@ -122,13 +122,16 @@ public class AccCtrlRealTimeServiceImpl implements AccCtrlRealTimeService {
                 }
             }
         }
-        realTimeEntities = accCtrlRealTimeDao.selectCondition(pageParam,accCtrlRealTimeEntity, dept_ids,start,end);
-        Pageable pageable = null;
-        if (pageParam != null && realTimeEntities !=null) {
-            pageable = new Pageable((int) pageParam.getTotal(), (int) pageParam.getPages(), (int) pageParam.getCurrent(), (int) pageParam.getSize()
-                    , realTimeEntities.size());
+        if (!CommonUtil.isEmptyList(dept_ids)){
+            realTimeEntities = accCtrlRealTimeDao.selectCondition(pageParam,accCtrlRealTimeEntity, dept_ids,start,end);
+            Pageable pageable = null;
+            if (pageParam != null && realTimeEntities !=null) {
+                pageable = new Pageable((int) pageParam.getTotal(), (int) pageParam.getPages(), (int) pageParam.getCurrent(), (int) pageParam.getSize()
+                        , realTimeEntities.size());
+            }
+            return new com.summit.cbb.utils.page.Page<>(realTimeEntities, pageable);
         }
-        return new com.summit.cbb.utils.page.Page<>(realTimeEntities, pageable);
+        return null;
     }
 
     /**

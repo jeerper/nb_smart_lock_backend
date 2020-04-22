@@ -3,7 +3,6 @@ package com.summit.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.summit.common.Common;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.AddAccCtrlprocess;
 import com.summit.dao.repository.AddAccCtrlprocessDao;
@@ -75,16 +74,16 @@ public class AddAccCtrlprocessServiceImpl implements AddAccCtrlprocessService {
      * @return 所有的统计分析记录
      */
     @Override
-    public List<AddAccCtrlprocess> selectAddAccCtrlprocess(List<String> accCtrlIds) {
+    public List<AddAccCtrlprocess> selectAddAccCtrlprocess(List<String> accCtrlIds) throws Exception {
         List<AddAccCtrlprocess> addAccCtrlprocesses=null;
         if (!CommonUtil.isEmptyList(accCtrlIds)){
              addAccCtrlprocesses=addAccCtrlprocessDao.selectAddAcpByAcIds(accCtrlIds);
         }else {
-            if(Common.getLogUser().getDepts()!=null && Common.getLogUser().getDepts().length>0){
-                String pdept=Common.getLogUser().getDepts()[0];
-                JSONObject paramJson=new JSONObject();
-                paramJson.put("pdept",pdept);
-                List<String> depts = deptsService.getDeptsByPdept(paramJson);
+            String currentDeptService = deptsService.getCurrentDeptService();
+            JSONObject paramJson=new JSONObject();
+            paramJson.put("pdept",currentDeptService);
+            List<String> depts = deptsService.getDeptsByPdept(paramJson);
+            if (!CommonUtil.isEmptyList(depts)){
                 List<AccessControlInfo> accessControlInfos= faceInfoAccCtrlDao.selectAllAccCtrlByDeptId(depts);
                 List<String> actIds=new ArrayList<>();
                 for (AccessControlInfo accessControlInfo:accessControlInfos){
@@ -93,7 +92,6 @@ public class AddAccCtrlprocessServiceImpl implements AddAccCtrlprocessService {
                 if (!CommonUtil.isEmptyList(actIds)){
                     addAccCtrlprocesses=addAccCtrlprocessDao.selectAddAcpByAcIds(actIds);
                 }
-
             }
         }
         /*List<String> depts = UserDeptAuthUtils.getDepts();

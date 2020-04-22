@@ -226,7 +226,11 @@ public class AlarmServiceImpl implements AlarmService {
                 dept_ids.add(dept_id);
             }
         }
-        return alarmDao.selectAlarmCountByStatus(alarmStatus,dept_ids);
+        if (!CommonUtil.isEmptyList(dept_ids)){
+            return alarmDao.selectAlarmCountByStatus(alarmStatus,dept_ids);
+        }
+        return null;
+
     }
 
     /**
@@ -385,13 +389,16 @@ public class AlarmServiceImpl implements AlarmService {
                 dept_ids.add(dept_id);
             }
         }
-        List<Alarm> alarms = alarmDao.selectCondition(pageParam,alarm, start, end, dept_ids);
-        Pageable pageable = null;
-        if (pageParam != null) {
-            pageable = new Pageable((int) pageParam.getTotal(), (int) pageParam.getPages(), (int) pageParam.getCurrent(), (int) pageParam.getSize()
-                    , alarms.size());
+        if (!CommonUtil.isEmptyList(dept_ids)){
+            List<Alarm> alarms = alarmDao.selectCondition(pageParam,alarm, start, end, dept_ids);
+            Pageable pageable = null;
+            if (pageParam != null) {
+                pageable = new Pageable((int) pageParam.getTotal(), (int) pageParam.getPages(), (int) pageParam.getCurrent(), (int) pageParam.getSize()
+                        , alarms.size());
+            }
+            return new Page<>(alarms, pageable);
         }
-        return new Page<>(alarms, pageable);
+       return null;
     }
 
     /**
