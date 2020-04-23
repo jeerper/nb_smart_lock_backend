@@ -22,7 +22,7 @@ public class AccessControlServiceImplTest {
     private AccessControlDao accessControlDao;
 
     @Test
-    public void selectAccCtrlById() {
+    public void selectAccCtrlById() throws Exception {
         List<String> roles = UserAuthUtils.getRoles();
         AccessControlInfo accessControlInfo = accessControlService.selectAccCtrlById("ac02");
         System.out.println(accessControlInfo);

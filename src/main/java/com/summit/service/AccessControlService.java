@@ -16,7 +16,7 @@ public interface AccessControlService {
      * @param accessControlId 门禁id
      * @return 唯一门禁信息对象
      */
-    AccessControlInfo selectAccCtrlById(String accessControlId);
+    AccessControlInfo selectAccCtrlById(String accessControlId) throws Exception;
 
     /**
      * 根据门禁id查询唯一门禁信息,不考虑权限

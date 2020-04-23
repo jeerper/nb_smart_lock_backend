@@ -75,13 +75,25 @@ public class AccessControlServiceImpl implements AccessControlService {
      * @return 唯一门禁信息对象
      */
     @Override
-    public AccessControlInfo selectAccCtrlById(String accessControlId) {
+    public AccessControlInfo selectAccCtrlById(String accessControlId) throws Exception {
         if(accessControlId == null){
             log.error("门禁id为空");
             return null;
         }
-        AccessControlInfo accessControlInfo = accessControlDao.selectAccCtrlById(accessControlId, null);
-        String deptId = accessControlInfo.getDeptIds();
+        AccessControlInfo accessControlInfo=null;
+        String currentDeptService = deptsService.getCurrentDeptService();
+        JSONObject paramJson=new JSONObject();
+        paramJson.put("pdept",currentDeptService);
+        List<String> depts = deptsService.getDeptsByPdept(paramJson);
+        if(!CommonUtil.isEmptyList(depts)){
+            accessControlInfo = accessControlDao.selectAccCtrlById(accessControlId, depts);
+            String deptId = accessControlInfo.getDeptIds();
+            if (StrUtil.isNotBlank(deptId)){
+                String[] dept_Ids = deptId.split(",");
+                accessControlInfo.setDepts(dept_Ids);
+            }
+        }
+       /*
         if (StrUtil.isNotBlank(deptId)){
             List<String> parentDeptIds = deptsService.getParentDeptsByCurrentDept(null);
             List<String> deptIds=new ArrayList<>();
@@ -97,7 +109,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 accessControlInfo.setDepts(deptList);//需要过滤当前用户以上的部门id
             }
             //accessControlInfo.setDepts(dept_Ids);
-        }
+        }*/
         return accessControlInfo;
     }
 
