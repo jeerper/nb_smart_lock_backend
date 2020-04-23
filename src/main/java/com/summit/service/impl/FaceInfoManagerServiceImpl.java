@@ -284,7 +284,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
                     String[] dept_Ids = deptId.split(",");
                     faceInfo.setDepts(dept_Ids);
                 }
-                if (StrUtil.isNotBlank(faceInfo.getDeptNames())){
+               /* if (StrUtil.isNotBlank(faceInfo.getDeptNames())){
                     List<String> parentDeptNames = deptsService.getParentDeptNamesByCurrentDept(null);
                     List<String> deptNames=new ArrayList<>();
                     String[] dept_names = faceInfo.getDeptNames().split(",");
@@ -298,7 +298,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
                         String deptName = String.join("," , deptNames);
                         faceInfo.setDeptNames(deptName);//需要过滤当前用户以上的部门名称
                     }
-                }
+                }*/
             }
             if (pageParam != null) {
                 pageParam.setRecords(faceInfos);
@@ -445,28 +445,23 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
      * @return 确定唯一的人脸信息记录
      */
     @Override
-    public FaceInfo selectFaceInfoByID(String faceid) {
+    public FaceInfo selectFaceInfoByID(String faceid) throws Exception {
         if (faceid == null) {
             log.error("人脸信息的id为空");
             return null;
         }
-        FaceInfo faceInfo = faceInfoManagerDao.selectFaceInfoByID(faceid);
-        String deptId = faceInfo.getDeptId();
-        if (StrUtil.isNotBlank(deptId)){
-            List<String> parentDeptIds = deptsService.getParentDeptsByCurrentDept(null);
-            List<String> deptIds=new ArrayList<>();
-            String[] dept_Ids = deptId.split(",");
-            List<String> sonDeptIds = Arrays.asList(dept_Ids);
-            for (String sonDeptId :sonDeptIds){
-                if (!parentDeptIds.contains(sonDeptId)){
-                    deptIds.add(sonDeptId);
-                }
+        FaceInfo faceInfo=null;
+        String currentDeptService = deptsService.getCurrentDeptService();
+        JSONObject paramJson=new JSONObject();
+        paramJson.put("pdept",currentDeptService);
+        List<String> depts = deptsService.getDeptsByPdept(paramJson);
+        if (!CommonUtil.isEmptyList(depts)){
+            faceInfo = faceInfoManagerDao.selectFaceInfoByID(faceid,depts);
+            String deptId = faceInfo.getDeptId();
+            if (StrUtil.isNotBlank(deptId)){
+                String[] dept_Ids = deptId.split(",");
+                faceInfo.setDepts(dept_Ids);
             }
-            if (!CommonUtil.isEmptyList(deptIds)){
-                String[] deptList = deptIds.toArray(new String[deptIds.size()]);
-                faceInfo.setDepts(deptList);//需要过滤当前用户以上的部门id
-            }
-            //faceInfo.setDepts(dept_Ids);
         }
         return faceInfo;
     }

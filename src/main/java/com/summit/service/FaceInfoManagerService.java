@@ -59,7 +59,7 @@ public interface FaceInfoManagerService {
      * @param faceid
      * @return 唯一确定的人脸信息记录
      */
-    FaceInfo selectFaceInfoByID(String faceid);
+    FaceInfo selectFaceInfoByID(String faceid) throws Exception;
 
     /**
      * 查询所有的省份

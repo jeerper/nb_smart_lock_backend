@@ -122,7 +122,7 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
     @Override
     public List<AccessControlInfo> selectAllAccCtrlByDeptId(List<String> deptIds) throws Exception {
         List<String> dept_ids =new ArrayList<>();
-        if (deptIds.size()>0){
+        if (!CommonUtil.isEmptyList(deptIds)){
             for(String deptId:deptIds){
                 JSONObject paramJson=new JSONObject();
                 paramJson.put("pdept",deptId);

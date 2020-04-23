@@ -113,7 +113,7 @@ public class FaceInfoAccCtrlController {
 
     @ApiOperation(value = "根据所传部门Id查询当前以及子部门下的人脸信息")
     @GetMapping(value = "/selectAllFaceByDeptId")
-    public RestfulEntityBySummit<List<SimpleFaceInfo>> selectAllFaceByDeptId(@ApiParam(value = "部门Id",required = true) @RequestParam(value = "deptIds")List<String> deptIds){
+    public RestfulEntityBySummit<List<SimpleFaceInfo>> selectAllFaceByDeptId(@ApiParam(value = "部门Id") @RequestParam(required = false,value = "deptIds")List<String> deptIds){
         List<SimpleFaceInfo> simpleFaceInfos = new ArrayList<>();
         try{
             List<FaceInfo> faceInfos =faceInfoAccCtrlService.selectAllFaceByDeptId(deptIds);
@@ -132,11 +132,7 @@ public class FaceInfoAccCtrlController {
 
     @ApiOperation(value = "根据所传部门Id查询当前以及子部门下的门禁信息")
     @GetMapping(value = "/selectAllAccCtrlByDeptId")
-    public RestfulEntityBySummit<List<AccessControlInfo>> selectAllAccCtrlByDeptId(@ApiParam(value = "部门Id",required = true) @RequestParam(value = "deptIds")List<String> deptIds){
-        if(CommonUtil.isEmptyList(deptIds)){
-            log.error("部门id为空");
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"部门id为空",null);
-        }
+    public RestfulEntityBySummit<List<AccessControlInfo>> selectAllAccCtrlByDeptId(@ApiParam(value = "部门Id") @RequestParam(required = false, value = "deptIds")List<String> deptIds){
         List<AccessControlInfo> accessControlInfos=null;
         try{
             accessControlInfos=faceInfoAccCtrlService.selectAllAccCtrlByDeptId(deptIds);

@@ -35,9 +35,18 @@
         SELECT
         <include refid="faceInfoCloum"/>
         FROM  face_info faceInfo
-        LEFT JOIN
-        (SELECT deptFace.face_id,GROUP_CONCAT(deptFace.dept_id)AS depts, GROUP_CONCAT(dept.DEPTNAME)AS deptNames  FROM dept_face_auth deptFace  inner join cbb_userauth.sys_dept dept on deptFace.dept_id=dept.ID  GROUP BY face_id)deptFace
-        on faceInfo.face_id=deptFace.face_id
+        LEFT JOIN(
+            SELECT deptFace.face_id,GROUP_CONCAT(deptFace.dept_id)AS depts, GROUP_CONCAT(dept.DEPTNAME)AS deptNames
+            FROM dept_face_auth deptFace
+            inner join cbb_userauth.sys_dept dept on deptFace.dept_id=dept.ID
+            <where>
+                deptFace.dept_id IN
+                <foreach item="dept" collection="depts" index="index" open="(" separator="," close=")">
+                    #{dept}
+                </foreach>
+            </where>
+            GROUP BY face_id
+        )deptFace on faceInfo.face_id=deptFace.face_id
         <where>
             <if test="depts != null">
                 faceInfo.face_id IN ( SELECT DISTINCT dfu.face_id FROM dept_face_auth dfu WHERE dfu.dept_id IN
@@ -71,9 +80,18 @@
         SELECT
         <include refid="faceInfoCloum"/>
         FROM  face_info faceInfo
-        LEFT JOIN
-        (SELECT deptFace.face_id,GROUP_CONCAT(deptFace.dept_id)AS depts, GROUP_CONCAT(dept.DEPTNAME)AS deptNames  FROM dept_face_auth deptFace  inner join cbb_userauth.sys_dept dept on deptFace.dept_id=dept.ID  GROUP BY face_id)deptFace
-        on faceInfo.face_id=deptFace.face_id
+        LEFT JOIN(
+            SELECT deptFace.face_id,GROUP_CONCAT(deptFace.dept_id)AS depts, GROUP_CONCAT(dept.DEPTNAME)AS deptNames
+            FROM dept_face_auth deptFace
+            inner join cbb_userauth.sys_dept dept on deptFace.dept_id=dept.ID
+            <where>
+                deptFace.dept_id IN
+                <foreach item="dept" collection="depts" index="index" open="(" separator="," close=")">
+                    #{dept}
+                </foreach>
+            </where>
+            GROUP BY face_id
+            )deptFace on faceInfo.face_id=deptFace.face_id
         <where>
             faceInfo.face_id=#{faceid}
         </where>

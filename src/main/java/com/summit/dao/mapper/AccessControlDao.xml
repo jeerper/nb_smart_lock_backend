@@ -328,7 +328,8 @@
         from
         access_control ac
         left join (
-            SELECT accDept.access_control_id,GROUP_CONCAT(accDept.dept_id)AS deptIds, GROUP_CONCAT(dept.DEPTNAME)AS names  FROM dept_accesscontrol_auth accDept
+            SELECT accDept.access_control_id,GROUP_CONCAT(accDept.dept_id)AS deptIds, GROUP_CONCAT(dept.DEPTNAME)AS names
+            FROM dept_accesscontrol_auth accDept
             inner join cbb_userauth.sys_dept dept on accDept.dept_id=dept.ID
             <where>
                 accDept.dept_id IN
