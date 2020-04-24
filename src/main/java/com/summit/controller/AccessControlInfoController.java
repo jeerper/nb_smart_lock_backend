@@ -14,10 +14,7 @@ import com.summit.dao.entity.AccCtrlRole;
 import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.SimpleAccCtrlInfo;
 import com.summit.exception.ErrorMsgException;
-import com.summit.service.AccCtrlDeptService;
-import com.summit.service.AccCtrlRoleService;
-import com.summit.service.AccessControlService;
-import com.summit.service.ICbbUserAuthService;
+import com.summit.service.*;
 import com.summit.util.CommonUtil;
 import com.summit.util.EasyExcelUtil;
 import com.summit.util.ExcelExportUtil;
@@ -55,6 +52,8 @@ public class AccessControlInfoController {
     private ICbbUserAuthService iCbbUserAuthService;
 
     private String filePath;
+    @Autowired
+    private DeptsService deptsService;
 
 
 
@@ -288,20 +287,29 @@ public class AccessControlInfoController {
 
     @ApiOperation(value="获取门禁信息导入模板")
     @RequestMapping(value = "/getAccCtrlTemplate", method = RequestMethod.GET)
-    public void getAccCtrlTemplate(HttpServletResponse response) throws IOException {
+    public void getAccCtrlTemplate(HttpServletResponse response) throws Exception {
         String sheetName = "门禁数据导入模板";
         RestfulEntityBySummit<List<DeptBean>> allDept = iCbbUserAuthService.queryAllDept();
+        String currentDeptService = deptsService.getCurrentDeptService();
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("pdept",currentDeptService);
+        List<String> userDeptIds = deptsService.getDeptsByPdept(jsonObject);
         List<String> deptNames=new ArrayList<>();
         for (DeptBean deptBean:allDept.getData()){
-            deptNames.add(deptBean.getDeptName()+"("+deptBean.getDeptCode()+")");
+            if (userDeptIds.contains(deptBean.getId())){
+                deptNames.add(deptBean.getDeptName()+"("+deptBean.getDeptCode()+")");
+            }
         }
-        String[] dept_names = deptNames.toArray(new String[deptNames.size()]);
         response.setCharacterEncoding("UTF-8");
         response.reset();
         response.setContentType("application/x-download;charset=UTF-8");
         response.setHeader("Content-Disposition", "attachment;filename=" + sheetName);
         ServletOutputStream outputStream = response.getOutputStream();
         String path = getClass().getResource("/").getPath();
+        String[] dept_names=null;
+        if (!CommonUtil.isEmptyList(deptNames)){
+            dept_names = deptNames.toArray(new String[deptNames.size()]);
+        }
         outputStream.write(EasyExcelUtil.exportSingleAccCtrlByTemplate(path + File.separator +"template"+File.separator+"AccCtrl_template.xls",sheetName,dept_names,2));
         outputStream.flush();
     }

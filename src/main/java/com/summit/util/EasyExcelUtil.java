@@ -62,9 +62,10 @@ public class EasyExcelUtil {
             // 设置名称
             wb.setSheetName(0,sheetName);
             Sheet sheet = wb.getSheetAt(0);
-            DataValidation dataValidation = createDataValidation(sheet, dataSource, firstCol);
-            //DataValidation data_Validation = createDataValidation(sheet, dataSource, secondCol);
-            sheet.addValidationData(dataValidation);
+            if (dataSource !=null){
+                DataValidation dataValidation = createDataValidation(sheet, dataSource, firstCol);
+                sheet.addValidationData(dataValidation);
+            }
             //sheet.addValidationData(data_Validation);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             wb.write(out);
