@@ -28,6 +28,7 @@ public interface AccCtrlRealTimeDao extends BaseMapper<AccCtrlRealTimeEntity> {
      */
     List<AccCtrlRealTimeEntity> selectCondition(Page page, @Param("accCtrlRealTimeEntity") AccCtrlRealTimeEntity accCtrlRealTimeEntity,
                                                  @Param("depts") List<String> depts,
+                                                @Param("userDepts") List<String> userDepts,
                                                 @Param("start") Date start,
                                                 @Param("end") Date end);
 

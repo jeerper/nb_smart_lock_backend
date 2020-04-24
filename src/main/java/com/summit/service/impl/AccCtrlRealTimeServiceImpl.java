@@ -81,13 +81,16 @@ public class AccCtrlRealTimeServiceImpl implements AccCtrlRealTimeService {
      */
     @Override
     public com.summit.cbb.utils.page.Page<AccCtrlRealTimeEntity> selectByConditionPage(AccCtrlRealTimeEntity accCtrlRealTimeEntity, Date start,
-                                                                                       Date end, Integer current, Integer pageSize,String deptIds) {
+                                                                                       Date end, Integer current, Integer pageSize,String deptIds) throws Exception {
         Page<AccCtrlRealTimeEntity> pageParam = null;
         if (current != null && pageSize != null) {
             pageParam = new Page<>(current, pageSize);
         }
-        List<AccCtrlRealTimeEntity> realTimeEntities=null;
         List<String> dept_ids =new ArrayList<>();
+        String currentDeptService = deptsService.getCurrentDeptService();
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("pdept",currentDeptService);
+        List<String> userDepts = deptsService.getDeptsByPdept(jsonObject);
         if (StrUtil.isNotBlank(deptIds)){//说明是多个部门id
             if (deptIds.contains(",")){//多个部门
                 String[] list = deptIds.split(",");
@@ -113,21 +116,19 @@ public class AccCtrlRealTimeServiceImpl implements AccCtrlRealTimeService {
                 }
             }
         }else {
-            JSONObject paramJson=new JSONObject();
-            paramJson.put("pdept",deptIds);
-            List<String> depts = deptsService.getDeptsByPdept(paramJson);
-            if (!CommonUtil.isEmptyList(depts)){
-                for (String dept_id:depts){
+            if (!CommonUtil.isEmptyList(userDepts)){
+                for (String dept_id:userDepts){
                     dept_ids.add(dept_id);
                 }
             }
         }
+        CommonUtil.removeDuplicate(dept_ids);//去重
         if (!CommonUtil.isEmptyList(dept_ids)){
-            realTimeEntities = accCtrlRealTimeDao.selectCondition(pageParam,accCtrlRealTimeEntity, dept_ids,start,end);
+            List<AccCtrlRealTimeEntity> realTimeEntities = accCtrlRealTimeDao.selectCondition(pageParam,accCtrlRealTimeEntity, dept_ids,userDepts,start,end);
             Pageable pageable = null;
             if (pageParam != null && realTimeEntities !=null) {
-                pageable = new Pageable((int) pageParam.getTotal(), (int) pageParam.getPages(), (int) pageParam.getCurrent(), (int) pageParam.getSize()
-                        , realTimeEntities.size());
+                pageable = new Pageable((int) pageParam.getTotal(), (int) pageParam.getPages(), (int) pageParam.getCurrent(), (int) pageParam.getSize(),
+                        realTimeEntities.size());
             }
             return new com.summit.cbb.utils.page.Page<>(realTimeEntities, pageable);
         }
