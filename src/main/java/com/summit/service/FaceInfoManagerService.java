@@ -87,4 +87,5 @@ public interface FaceInfoManagerService {
 
     boolean batchImport(MultipartFile file) throws Exception;
 
+
 }

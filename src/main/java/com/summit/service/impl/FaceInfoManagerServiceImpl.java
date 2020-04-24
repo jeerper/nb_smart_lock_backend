@@ -439,7 +439,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
     }
 
     /**
-     * 根据人脸id查询唯一的人脸信息记录
+     * 根据人脸id查询唯一的人脸信息记录(加部门权限)
      *
      * @param faceid
      * @return 确定唯一的人脸信息记录
@@ -465,7 +465,6 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         }
         return faceInfo;
     }
-
 
 
     /**
@@ -520,6 +519,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         }
         return true;
     }
+
 
 
 }

@@ -18,6 +18,7 @@ import com.summit.entity.*;
 import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.service.AccessControlLockOperationService;
+import com.summit.service.FaceInfoManagerService;
 import com.summit.util.FaceInfoContextHolder;
 import com.summit.util.JwtSettings;
 import com.summit.utils.BaiduSdkClient;
@@ -69,6 +70,8 @@ public class FaceRecognitionController {
     private AccCtrlProcessDao accCtrlProcessDao;
     @Autowired
     private LockInfoDao lockInfoDao;
+    @Autowired
+    private FaceInfoManagerService faceInfoManagerService;
 
     @ApiOperation(value = "人脸扫描")
     @PostMapping(value = "/face-scan", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -221,5 +224,28 @@ public class FaceRecognitionController {
             log.error(e.getMessage());
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "开锁结果提交失败", null);
         }
+    }
+
+
+    @ApiOperation(value = "App上传人脸图片认证通过后获取人脸信息")
+    @GetMapping(value = "/getFaceInfoByApp")
+    public RestfulEntityBySummit<FaceInfo> getFaceInfo() throws Exception {
+        FaceRecognitionInfo faceRecognitionInfo = FaceInfoContextHolder.getFaceRecognitionInfo();
+        FaceInfo faceInfo=null;
+        try {
+            if (faceRecognitionInfo ==null){
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有上传人脸照片", null);
+            }
+            String faceId = faceRecognitionInfo.getFaceId();
+            if (StrUtil.isBlank(faceId)) {
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "上传人脸照片Id为空", null);
+            }
+            faceInfo=faceInfoManagerDao.selectById(faceId);
+        } catch (Exception e) {
+            log.error("获取人脸信息失败",e);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "获取人脸信息失败", faceInfo);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "获取人脸信息成功", faceInfo);
+
     }
 }
