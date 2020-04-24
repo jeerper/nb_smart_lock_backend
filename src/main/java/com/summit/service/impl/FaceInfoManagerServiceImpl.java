@@ -240,6 +240,10 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
             pageParam = new Page<>(current, pageSize);
         }
         List<String> dept_ids =new ArrayList<>();
+        String currentDeptService = deptsService.getCurrentDeptService();
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("pdept",currentDeptService);
+        List<String> userDepts = deptsService.getDeptsByPdept(jsonObject);
         if (StrUtil.isNotBlank(deptIds)){
             if (deptIds.contains(",")){//多个部门
                 String[] list = deptIds.split(",");
@@ -265,19 +269,15 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
                 }
             }
         }else {
-            String currentDeptService = deptsService.getCurrentDeptService();
-            JSONObject paramJson=new JSONObject();
-            paramJson.put("pdept",currentDeptService);
-            List<String> depts = deptsService.getDeptsByPdept(paramJson);
-            if (!CommonUtil.isEmptyList(depts)){
-                for (String dept_id:depts){
+            if (!CommonUtil.isEmptyList(userDepts)){
+                for (String dept_id:userDepts){
                     dept_ids.add(dept_id);
                 }
             }
         }
         CommonUtil.removeDuplicate(dept_ids);//去重
         if (!CommonUtil.isEmptyList(dept_ids)){
-            List<FaceInfo> faceInfos = faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity, pageParam,dept_ids);
+            List<FaceInfo> faceInfos = faceInfoManagerDao.selectFaceInfoByPage(faceInfoManagerEntity, pageParam,dept_ids,userDepts);
             for (FaceInfo faceInfo:faceInfos){
                 String deptId = faceInfo.getDeptId();
                 if (StrUtil.isNotBlank(deptId)){

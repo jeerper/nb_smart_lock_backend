@@ -333,8 +333,8 @@
             inner join cbb_userauth.sys_dept dept on accDept.dept_id=dept.ID
             <where>
                 accDept.dept_id IN
-                <foreach item="dept" collection="depts" index="index" open="(" separator="," close=")">
-                    #{dept}
+                <foreach item="userDept" collection="userDepts" index="index" open="(" separator="," close=")">
+                    #{userDept}
                 </foreach>
             </where>
             GROUP BY access_control_id

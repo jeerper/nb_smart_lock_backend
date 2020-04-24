@@ -15,7 +15,7 @@ public interface AccessControlDao  extends BaseMapper<AccessControlInfo> {
     AccessControlInfo selectAccCtrlByLockCode(@Param("lockCode")String lockCode, @Param("depts") List<String> depts);
 
     List<AccessControlInfo> selectCondition(Page page, @Param("accessControlInfo") AccessControlInfo accessControlInfo,
-                                            @Param("depts") List<String> depts);
+                                            @Param("depts") List<String> depts,@Param("userDepts") List<String> userDepts);
 
     List<AccessControlInfo> selectHaveHistoryByPage(@Param("page") SimplePage page, @Param("depts") List<String> depts);
 

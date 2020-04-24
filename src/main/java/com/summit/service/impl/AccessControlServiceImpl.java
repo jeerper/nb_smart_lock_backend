@@ -156,6 +156,10 @@ public class AccessControlServiceImpl implements AccessControlService {
             pageParam = new Page<>(current, pageSize);
         }
         List<String> dept_ids =new ArrayList<>();
+        String currentDeptService = deptsService.getCurrentDeptService();
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("pdept",currentDeptService);
+        List<String> userDepts = deptsService.getDeptsByPdept(jsonObject);
         if (StrUtil.isNotBlank(deptIds)){
             if (deptIds.contains(",")){//多个部门
                 String[] list = deptIds.split(",");
@@ -181,19 +185,15 @@ public class AccessControlServiceImpl implements AccessControlService {
                 }
             }
         }else {
-            String currentDeptService = deptsService.getCurrentDeptService();
-            JSONObject paramJson=new JSONObject();
-            paramJson.put("pdept",currentDeptService);
-            List<String> depts = deptsService.getDeptsByPdept(paramJson);
-            if (!CommonUtil.isEmptyList(depts)){
-                for (String dept_id:depts){
+            if (!CommonUtil.isEmptyList(userDepts)){
+                for (String dept_id:userDepts){
                     dept_ids.add(dept_id);
                 }
             }
         }
         CommonUtil.removeDuplicate(dept_ids);//去重
         if (!CommonUtil.isEmptyList(dept_ids)){
-            List<AccessControlInfo> accessControls = accessControlDao.selectCondition(pageParam,accessControlInfo, dept_ids);
+            List<AccessControlInfo> accessControls = accessControlDao.selectCondition(pageParam,accessControlInfo, dept_ids,userDepts);
             for (AccessControlInfo accessControl:accessControls){
                 String deptId = accessControl.getDeptIds();
                 if (StrUtil.isNotBlank(deptId)){
@@ -270,7 +270,7 @@ public class AccessControlServiceImpl implements AccessControlService {
         if (current != null && pageSize != null) {
             pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
         }
-        return accessControlDao.selectCondition(pageParam,accessControlInfo,  UserAuthUtils.getRoles());
+        return accessControlDao.selectCondition(pageParam,accessControlInfo,  UserAuthUtils.getRoles(),null);
     }
 
     /**
