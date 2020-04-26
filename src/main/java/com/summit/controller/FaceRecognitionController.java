@@ -240,7 +240,7 @@ public class FaceRecognitionController {
             if (StrUtil.isBlank(faceId)) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "上传人脸照片Id为空", null);
             }
-            faceInfo=faceInfoManagerDao.selectById(faceId);
+            faceInfo=faceInfoManagerDao.selectFaceInfoById(faceId);
         } catch (Exception e) {
             log.error("获取人脸信息失败",e);
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "获取人脸信息失败", faceInfo);

@@ -28,4 +28,6 @@ public interface FaceInfoManagerDao extends BaseMapper<FaceInfo> {
     void insertFaceInfos(@Param("faceInfos") List<FaceInfo> faceInfos);
 
     List<FaceInfo> selectAllFaceByDeptId(@Param("depts") List<String> depts);
+
+    FaceInfo selectFaceInfoById(@Param("faceid")String faceId);
 }

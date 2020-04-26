@@ -172,4 +172,18 @@
             </if>
         </where>
     </select>
+    <select id="selectFaceInfoById" resultMap="facemanager">
+        SELECT
+        <include refid="faceInfoCloum"/>
+        FROM  face_info faceInfo
+        LEFT JOIN(
+            SELECT deptFace.face_id,GROUP_CONCAT(deptFace.dept_id)AS depts, GROUP_CONCAT(dept.DEPTNAME)AS deptNames
+            FROM dept_face_auth deptFace
+            inner join cbb_userauth.sys_dept dept on deptFace.dept_id=dept.ID
+            GROUP BY face_id
+        )deptFace on faceInfo.face_id=deptFace.face_id
+        <where>
+            faceInfo.face_id=#{faceid}
+        </where>
+    </select>
 </mapper>
