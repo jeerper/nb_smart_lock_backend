@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -93,8 +94,12 @@ public class LoginFaceRecognitionController {
             String lockCode = getLockCodeParam.getLockCode();
             Integer enterOrExit = getLockCodeParam.getEnterOrExit();
             String userName = Common.getLogUser().getUserName();
+            List rolesList = null;
+            if (Common.getLogUser() != null && Common.getLogUser().getRoles()!=null) {
+                rolesList = Arrays.asList(Common.getLogUser().getRoles());
+            }
             int count = faceInfoAccCtrlDao.selectCountByUserNameAndLockCode(userName,lockCode);
-            if (count < 1) {
+            if (count < 1 && rolesList !=null && !rolesList.contains("ROLE_SUPERUSER")) {
                 //没有操作权限时需要执行报警操作
                 String failReason = "没有操作该门禁锁的权限";
                 accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode, CameraUploadType.Illegal_Alarm,

@@ -257,6 +257,8 @@ public class AccessControlServiceImpl implements AccessControlService {
         if (!CommonUtil.isEmptyList(userDepts)){
              accessControls = accessControlDao.selectAllAccessControlByCurrentDeptIds(userDepts);
         }
+        /*QueryWrapper<AccessControlInfo> wrapper = new QueryWrapper<>();
+        List<AccessControlInfo> accessControlInfos = accessControlDao.selectList(wrapper);*/
         return accessControls;
     }
 
