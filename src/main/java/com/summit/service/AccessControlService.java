@@ -46,11 +46,11 @@ public interface AccessControlService {
     Page<AccessControlInfo> selectHaveHistoryByPage(SimplePage page);
 
     /**
-     * 越权查询所有门禁
+     * 根据当前用户查询该用户所属部门下以及子部门下所有的门禁列表
      * @param page 分页对象
      * @return 门禁信息列表
      */
-    List<AccessControlInfo> selectAllAccessControl(SimplePage page);
+    List<AccessControlInfo> selectAllAccessControl() throws Exception;
 
     /**
      * 条件查询门禁信息

@@ -33,4 +33,5 @@ public interface AccessControlDao  extends BaseMapper<AccessControlInfo> {
 
     List<AccessControlInfo> loginAccessControlInfoExport( @Param("accessControlInfo")AccessControlInfo accessControlInfo);
 
+    List<AccessControlInfo> selectAllAccessControlByCurrentDeptIds(@Param("userDepts") List<String> userDepts);
 }

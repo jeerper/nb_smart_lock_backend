@@ -235,30 +235,6 @@ public class AccessControlInfoController {
                                                                        @ApiParam(value = "锁编号")  @RequestParam(value = "lockCode",required = false) String lockCode) {
         String fileName=null;
         try{
-            /*AccessControlInfo accessControlInfo = new AccessControlInfo(accessControlName,createby,lockCode);
-            List<AccessControlInfo> accessControlInfos= accessControlService.loginAccessControlInfoExport(accessControlInfo);
-            if(accessControlInfos!=null && accessControlInfos.size()>0){
-                List<JSONObject> dataList= new ArrayList<>();
-                for (AccessControlInfo accCtrl:accessControlInfos){
-                    JSONObject jsonObject=new JSONObject();
-                    jsonObject.put("accessControlId",accCtrl.getAccessControlId());
-                    jsonObject.put("accessControlName",accCtrl.getAccessControlName());
-                    jsonObject.put("accessControlId",accCtrl.getAccessControlId());
-                    jsonObject.put("lockId",accCtrl.getLockId());
-                    jsonObject.put("lockCode",accCtrl.getLockCode());
-                    jsonObject.put("entryCameraId",accCtrl.getEntryCameraId());
-                    jsonObject.put("entryCameraIp",accCtrl.getEntryCameraIp());
-                    jsonObject.put("exitCameraId",accCtrl.getExitCameraId());
-                    jsonObject.put("exitCameraIp",accCtrl.getExitCameraIp());
-                    jsonObject.put("status",accCtrl.getStatus());
-                    jsonObject.put("createby",accCtrl.getCreateby());
-                    jsonObject.put("createtime",accCtrl.getCreatetime());
-                    jsonObject.put("updatetime",accCtrl.getUpdatetime());
-                    jsonObject.put("longitude",accCtrl.getLongitude());
-                    jsonObject.put("latitude",accCtrl.getLatitude());
-                    dataList.add(jsonObject);
-                }
-            }*/
             filePath = new StringBuilder()
                     .append(SystemUtil.getUserInfo().getCurrentDir())
                     .append(File.separator)
@@ -355,19 +331,19 @@ public class AccessControlInfoController {
     }
 
 
-    @ApiOperation(value = "查询全部门禁信息，包括门禁id和name", notes = "无论有无门禁权限都查询全部")
+    @ApiOperation(value = "根据当前用户查询该用户所属部门下以及子部门下所有的门禁列表，包括门禁id和name", notes = "加部门权限")
     @GetMapping(value = "/selectAllAccessControl")
     public RestfulEntityBySummit<List<SimpleAccCtrlInfo>> selectAllAccessControl(){
         List<SimpleAccCtrlInfo> simpleAccCtrlInfos = new ArrayList<>();
         try {
-            List<AccessControlInfo> accessControlInfos = accessControlService.selectAllAccessControl(null);
-            if(accessControlInfos != null){
+            List<AccessControlInfo> accessControlInfos = accessControlService.selectAllAccessControl();
+            if(!CommonUtil.isEmptyList(accessControlInfos)){
                 for(AccessControlInfo acInfo : accessControlInfos) {
                     simpleAccCtrlInfos.add(new SimpleAccCtrlInfo(acInfo.getAccessControlId(),acInfo.getAccessControlName()));
                 }
             }
         } catch (Exception e) {
-            log.error("分页查询全部门禁信息失败");
+            log.error("分页查询全部门禁信息失败",e);
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"查询全部门禁信息失败", simpleAccCtrlInfos);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"查询全部门禁信息成功", simpleAccCtrlInfos);

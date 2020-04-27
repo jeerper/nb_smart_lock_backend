@@ -36,8 +36,8 @@ public class AccessControlServiceImplTest {
         System.out.println(aaa);
     }
     @Test
-    public void selectAllAccessControl() {
-        List<AccessControlInfo> accessControlInfos = accessControlService.selectAllAccessControl(null);
+    public void selectAllAccessControl() throws Exception {
+        List<AccessControlInfo> accessControlInfos = accessControlService.selectAllAccessControl();
         System.out.println(accessControlInfos);
     }
 

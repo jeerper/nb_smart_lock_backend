@@ -380,5 +380,25 @@
         </where>
         order by ac.updatetime desc
     </select>
+    <select id="selectAllAccessControlByCurrentDeptIds" resultMap="AccCtrlResultMap">
+        select
+        <include refid="AccCtrl_Have_Alias_List"/>,
+        <include refid="AccCtrl_Have_Alias_List_1"/>
+        from
+        access_control ac
+        left join (
+            SELECT accDept.access_control_id,GROUP_CONCAT(accDept.dept_id)AS deptIds, GROUP_CONCAT(dept.DEPTNAME)AS names
+            FROM dept_accesscontrol_auth accDept
+            inner join cbb_userauth.sys_dept dept on accDept.dept_id=dept.ID
+            GROUP BY access_control_id
+        )accDept on ac.access_control_id=accDept.access_control_id
+        <where>
+            ac.access_control_id IN ( SELECT DISTINCT au.access_control_id FROM dept_accesscontrol_auth au WHERE au.dept_id IN
+            <foreach item="userDept" collection="userDepts" index="index" open="(" separator="," close=")">
+                #{userDept}
+            </foreach>
+            )
+        </where>
+    </select>
 
 </mapper>

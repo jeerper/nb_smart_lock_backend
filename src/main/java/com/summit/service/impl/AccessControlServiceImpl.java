@@ -244,15 +244,20 @@ public class AccessControlServiceImpl implements AccessControlService {
     }
 
     /**
-     * 越权查询所有门禁
-     * @param page 分页对象
-     * @return 门禁信息列表
+     *根据当前用户查询该用户所属部门下以及子部门下所有的门禁列表
+     * @return
      */
     @Override
-    public List<AccessControlInfo> selectAllAccessControl(SimplePage page) {
-        //分页参数暂时不用
-        QueryWrapper<AccessControlInfo> wrapper = new QueryWrapper<>();
-        return accessControlDao.selectList(wrapper);
+    public List<AccessControlInfo> selectAllAccessControl() throws Exception {
+        String currentDeptService = deptsService.getCurrentDeptService();
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("pdept",currentDeptService);
+        List<String> userDepts = deptsService.getDeptsByPdept(jsonObject);
+        List<AccessControlInfo> accessControls=null;
+        if (!CommonUtil.isEmptyList(userDepts)){
+             accessControls = accessControlDao.selectAllAccessControlByCurrentDeptIds(userDepts);
+        }
+        return accessControls;
     }
 
     /**
