@@ -288,6 +288,7 @@ public class AccCtrlProcessUtil {
             //改为在开锁真正成功后更新状态
             accCtrlProcess.setProcessTime(new Date());
             accCtrlProcess.setProcessType(LockProcessType.UNLOCK.getCode());//开锁
+            accCtrlProcess.setAlarmStatus(AlarmProcessType.No_Alarm.getCode());//无报警
             //刷脸成功后开锁操作也有可能失败,成功则failReason=null
             accCtrlProcess.setFailReason(failReason);
         } else if (CameraUploadType.Illegal_Alarm == type) {
@@ -386,7 +387,7 @@ public class AccCtrlProcessUtil {
 //            }
             if (type !=null && CameraUploadType.Unlock == type ){
                 accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());//开锁状态
-                accCtrlRealTimeEntity.setAlarmStatus(null);//开锁时候告警状态为null   //告警状态
+                accCtrlRealTimeEntity.setAlarmStatus(accCtrlProcess.getAlarmStatus());//无报警
             }else if (type !=null && CameraUploadType.Lock==type){
                 accCtrlRealTimeEntity.setAccCtrlStatus(accCtrlProcess.getProcessType());
             }else if (type !=null  && CameraUploadType.Illegal_Alarm == type){
