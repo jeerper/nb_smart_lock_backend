@@ -128,7 +128,7 @@ public class FaceRecognitionController {
         }
     }
 
-    @ApiOperation(value = "智能锁编码解析")
+    @ApiOperation(value = "通过人脸扫描获取智能锁编码解析")
     @PostMapping(value = "/lock-code-parse")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "lockCodes", value = "智能锁编码", paramType = "body", required = true),
@@ -140,11 +140,11 @@ public class FaceRecognitionController {
             }
             return ResultBuilder.buildSuccess(lockInfoDao.selectByLockCodes(lockCodes));
         } catch (Exception e) {
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸扫描信息上传失败", null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "通过人脸扫描获取锁编码解析失败", null);
         }
     }
 
-    @ApiOperation(value = "获取智能锁密码")
+    @ApiOperation(value = "通过人脸扫描获取智能锁密码")
     @PostMapping(value = "/lock-code-password")
     public RestfulEntityBySummit<LockInfo> lockCodePassword(@RequestBody GetLockCodeParam getLockCodeParam) {
         try {
@@ -164,11 +164,11 @@ public class FaceRecognitionController {
             return ResultBuilder.buildSuccess(lockInfoDao.selectLockPassWordByLockCode(lockCode));
         } catch (Exception e) {
             log.error(e.getMessage(),e);
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "人脸扫描信息上传失败", null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "通过人脸扫描获取智能锁密码失败", null);
         }
     }
 
-    @ApiOperation(value = "提交智能锁开锁结果")
+    @ApiOperation(value = "通过人脸扫描提交智能锁开锁结果")
     @PostMapping(value = "/unlock-result")
     public RestfulEntityBySummit<String> unlockResult(@RequestBody UnlockResultInfo unlockResultInfo) {
         try {
@@ -221,8 +221,8 @@ public class FaceRecognitionController {
             accessControlLockOperationService.insertAccessControlLockOperationEvent(lockCode, cameraUploadType, processResult, failReason,enterOrExit);
             return ResultBuilder.buildSuccess();
         } catch (Exception e) {
-            log.error(e.getMessage());
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "开锁结果提交失败", null);
+            log.error(e.getMessage(),e);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "通过人脸扫描提交智能锁开锁结果失败", null);
         }
     }
 

@@ -423,6 +423,8 @@ public class AccCtrlProcessUtil {
         FileInfo facePanorama = accCtrlProcess.getFacePanorama();
         if (facePanorama != null && faceInfo != null) {
             accCtrlRealTimeEntity.setFacePanoramaUrl(facePanorama.getFilePath());
+        }else {
+            accCtrlRealTimeEntity.setFacePanoramaUrl("");
         }
         if (faceInfo != null) {
             accCtrlRealTimeEntity.setFaceMatchUrl(faceInfo.getFaceImage());
