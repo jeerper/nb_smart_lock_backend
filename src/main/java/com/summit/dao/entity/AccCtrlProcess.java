@@ -47,9 +47,16 @@ public class AccCtrlProcess {
     @ApiModelProperty(value="用户id",name="userId")
     @TableField(value = "user_id")
     private String userId;
-    @ApiModelProperty(value="姓名",name="userName")
+
+    @ApiModelProperty(value="人脸名",name="userName")
+    //@TableField(value = "face_name")
+    @TableField(exist = false)
+    private String faceName;
+
+    @ApiModelProperty(value="开锁人姓名",name="userName")
     @TableField(value = "user_name")
     private String userName;
+
     @ApiModelProperty(value="性别，0男，1女，2未知",name="gender")
     @TableField(value = "gender")
     private Integer gender;

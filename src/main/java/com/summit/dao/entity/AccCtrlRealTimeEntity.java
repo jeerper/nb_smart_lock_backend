@@ -59,10 +59,10 @@ public class AccCtrlRealTimeEntity {
     @TableField(value = "user_id")
     private String userId;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @ApiModelProperty(value="用户名",name="userName")
+    @ApiModelProperty(value="人脸名",name="userName")
     @TableField(value = "user_name")
     private String userName;
-    @ApiModelProperty(value="姓名",name="name")
+    @ApiModelProperty(value="开锁人姓名",name="name")
     @TableField(value = "name",updateStrategy= FieldStrategy.IGNORED)
     private String name;
     @ApiModelProperty(value="性别。0男，1女，2未知",name="gender")

@@ -7,10 +7,7 @@ import com.summit.cbb.utils.page.Page;
 import com.summit.common.util.UserAuthUtils;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.*;
-import com.summit.dao.repository.AccCtrlProcessDao;
-import com.summit.dao.repository.AccessControlDao;
-import com.summit.dao.repository.AlarmDao;
-import com.summit.dao.repository.FileInfoDao;
+import com.summit.dao.repository.*;
 import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.service.*;
 import com.summit.util.CommonUtil;
@@ -43,6 +40,8 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
     private LockInfoService lockInfoService;
     @Autowired
     private DeptsService deptsService;
+    @Autowired
+    private FaceInfoManagerDao faceInfoManagerDao;
     /**
      * 门禁操作记录插入
      *
@@ -57,9 +56,14 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
             return CommonConstants.UPDATE_ERROR;
         }
         FileInfo facePanorama = accCtrlProcess.getFacePanorama();
+        //通过人脸名称查找人脸库图片
+        com.summit.dao.entity.FaceInfo faceInfo = faceInfoManagerDao.selectOne(Wrappers.<com.summit.dao.entity.FaceInfo>lambdaQuery()
+                .eq(com.summit.dao.entity.FaceInfo::getUserName, accCtrlProcess.getUserName()));
         if (facePanorama != null && facePanorama.getFilePath() != null) {
             fileInfoDao.insert(facePanorama);
-            accCtrlProcess.setFacePanoramaId(facePanorama.getFileId());
+            if (faceInfo!=null){
+                accCtrlProcess.setFacePanoramaId(facePanorama.getFileId());
+            }
         }
 
         if (type !=null && CameraUploadType.Unlock == type ){

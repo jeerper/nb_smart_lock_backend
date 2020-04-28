@@ -10,14 +10,7 @@ import com.summit.common.web.filter.UserContextHolder;
  * CreateTime:2014-4-1上午11:30:56
  */
 public class Common {
-	       
-	// 通用分页数据条数
-	public static final int PAGE_SIZE = 10;
-	
-	public static final String CURRENT_USER = "CURRENT_USER";
 
-	public static final String MASKMESSAGE = "你有新的巡河任务，请注意查收";
-	
 	public static UserInfo getLogUser(){
 		UserInfo userInfo = UserContextHolder.getUserInfo();
 //		UserInfo se = new UserInfo();

@@ -244,6 +244,7 @@ public class AccCtrlProcessUtil {
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         if (faceInfo !=null){
             accCtrlProcess.setUserName(faceInfo.getUserName());
+            accCtrlProcess.setFaceName(faceInfo.getUserName());
             if (faceInfo.getGender() != null){
                 accCtrlProcess.setGender(faceInfo.getGender());
             }
@@ -263,17 +264,11 @@ public class AccCtrlProcessUtil {
         }else if (Common.getLogUser()!=null){
             UserInfo logUser = Common.getLogUser();
             accCtrlProcess.setUserName(logUser.getUserName());
-            if (logUser.getSex()!=null){
-                accCtrlProcess.setGender(Integer.parseInt(logUser.getSex()));
-            }
-            //accCtrlProcess.setProcessMethod(LockProcessMethod.FACE_RECOGNITION.getCode());//刷脸操作
            accCtrlProcess.setProcessMethod(LockProcessMethod.Login_Operation.getCode());//app登录操作
         }
         //人脸匹配率需要提供
         if (score !=null){
             accCtrlProcess.setFaceMatchRate(score);
-        }else {
-            accCtrlProcess.setFaceMatchRate(100f);
         }
         if (facePanoramaFile !=null){
             accCtrlProcess.setFacePanorama(facePanoramaFile);
@@ -405,7 +400,12 @@ public class AccCtrlProcessUtil {
         accCtrlRealTimeEntity.setDevId(accCtrlProcess.getDeviceId());
         accCtrlRealTimeEntity.setDeviceIp(accCtrlProcess.getDeviceIp());
         accCtrlRealTimeEntity.setDeviceType(accCtrlProcess.getDeviceType());
-        accCtrlRealTimeEntity.setName(accCtrlProcess.getUserName());
+        accCtrlRealTimeEntity.setName(accCtrlProcess.getUserName());//开锁人姓名
+        if (accCtrlProcess.getFaceName()!=null){
+            accCtrlRealTimeEntity.setUserName(accCtrlProcess.getFaceName());//人脸名称
+        }else {
+            accCtrlRealTimeEntity.setUserName("");//人脸名称
+        }
         accCtrlRealTimeEntity.setGender(accCtrlProcess.getGender());
         accCtrlRealTimeEntity.setBirthday(accCtrlProcess.getBirthday());
         accCtrlRealTimeEntity.setProvince(accCtrlProcess.getProvince());
@@ -416,19 +416,14 @@ public class AccCtrlProcessUtil {
         accCtrlRealTimeEntity.setFaceMatchRate(faceMatchRate);
         accCtrlRealTimeEntity.setFaceLibName(accCtrlProcess.getFaceLibName());
         accCtrlRealTimeEntity.setFaceLibType(accCtrlProcess.getFaceLibType());
-        //人脸识别全景图Url
-        String facePanoramaUrl = accCtrlProcess.getFacePanoramaUrl();
-        if (!CommonUtil.isEmptyStr(facePanoramaUrl)) {
-            accCtrlRealTimeEntity.setFacePanoramaUrl(facePanoramaUrl);
-        } else {
-            FileInfo facePanorama = accCtrlProcess.getFacePanorama();
-            if (facePanorama != null) {
-                accCtrlRealTimeEntity.setFacePanoramaUrl(facePanorama.getFilePath());
-            }
-        }
         //通过人脸名称查找人脸库图片
         com.summit.dao.entity.FaceInfo faceInfo = faceInfoManagerDao.selectOne(Wrappers.<com.summit.dao.entity.FaceInfo>lambdaQuery()
                 .eq(com.summit.dao.entity.FaceInfo::getUserName, accCtrlRealTimeEntity.getName()));
+        //人脸识别全景图Url
+        FileInfo facePanorama = accCtrlProcess.getFacePanorama();
+        if (facePanorama != null && faceInfo != null) {
+            accCtrlRealTimeEntity.setFacePanoramaUrl(facePanorama.getFilePath());
+        }
         if (faceInfo != null) {
             accCtrlRealTimeEntity.setFaceMatchUrl(faceInfo.getFaceImage());
         }else if (Common.getLogUser() !=null && StrUtil.isNotBlank(Common.getLogUser().getHeadPortrait())) {
