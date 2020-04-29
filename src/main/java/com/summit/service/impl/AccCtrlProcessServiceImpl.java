@@ -58,7 +58,9 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         FileInfo facePanorama = accCtrlProcess.getFacePanorama();
         //通过人脸名称查找人脸库图片
         com.summit.dao.entity.FaceInfo faceInfo = faceInfoManagerDao.selectOne(Wrappers.<com.summit.dao.entity.FaceInfo>lambdaQuery()
-                .eq(com.summit.dao.entity.FaceInfo::getUserName, accCtrlProcess.getUserName()));
+                .eq(com.summit.dao.entity.FaceInfo::getFaceid, accCtrlProcess.getFaceId()));
+       /* com.summit.dao.entity.FaceInfo faceInfo = faceInfoManagerDao.selectOne(Wrappers.<com.summit.dao.entity.FaceInfo>lambdaQuery()
+                .eq(com.summit.dao.entity.FaceInfo::getUserName, accCtrlProcess.getUserName()));*/
         if (facePanorama != null && facePanorama.getFilePath() != null) {
             fileInfoDao.insert(facePanorama);
             if (faceInfo!=null){

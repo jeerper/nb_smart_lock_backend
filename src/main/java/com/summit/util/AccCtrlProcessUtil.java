@@ -245,6 +245,7 @@ public class AccCtrlProcessUtil {
         if (faceInfo !=null){
             accCtrlProcess.setUserName(faceInfo.getUserName());
             accCtrlProcess.setFaceName(faceInfo.getUserName());
+            accCtrlProcess.setFaceId(faceInfo.getFaceid());
             if (faceInfo.getGender() != null){
                 accCtrlProcess.setGender(faceInfo.getGender());
             }
@@ -420,8 +421,10 @@ public class AccCtrlProcessUtil {
         accCtrlRealTimeEntity.setFaceLibName(accCtrlProcess.getFaceLibName());
         accCtrlRealTimeEntity.setFaceLibType(accCtrlProcess.getFaceLibType());
         //通过人脸名称查找人脸库图片
+       /* com.summit.dao.entity.FaceInfo faceInfo = faceInfoManagerDao.selectOne(Wrappers.<com.summit.dao.entity.FaceInfo>lambdaQuery()
+                .eq(com.summit.dao.entity.FaceInfo::getUserName, accCtrlRealTimeEntity.getName()));*/
         com.summit.dao.entity.FaceInfo faceInfo = faceInfoManagerDao.selectOne(Wrappers.<com.summit.dao.entity.FaceInfo>lambdaQuery()
-                .eq(com.summit.dao.entity.FaceInfo::getUserName, accCtrlRealTimeEntity.getName()));
+                .eq(com.summit.dao.entity.FaceInfo::getFaceid, accCtrlProcess.getFaceId()));
         //人脸识别全景图Url
         FileInfo facePanorama = accCtrlProcess.getFacePanorama();
         if (facePanorama != null && faceInfo != null) {

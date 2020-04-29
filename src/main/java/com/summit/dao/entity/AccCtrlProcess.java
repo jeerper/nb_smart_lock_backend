@@ -48,6 +48,10 @@ public class AccCtrlProcess {
     @TableField(value = "user_id")
     private String userId;
 
+    @ApiModelProperty(value="人脸id",name="faceId")
+    @TableField(exist = false)
+    private String faceId;
+
     @ApiModelProperty(value="人脸名",name="userName")
     //@TableField(value = "face_name")
     @TableField(exist = false)
