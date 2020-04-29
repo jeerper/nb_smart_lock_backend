@@ -269,6 +269,8 @@ public class AccCtrlProcessUtil {
         //人脸匹配率需要提供
         if (score !=null){
             accCtrlProcess.setFaceMatchRate(score);
+        }else {
+            accCtrlProcess.setFaceMatchRate(0.00f);//用户app登录人脸匹配率为0
         }
         if (facePanoramaFile !=null){
             accCtrlProcess.setFacePanorama(facePanoramaFile);
