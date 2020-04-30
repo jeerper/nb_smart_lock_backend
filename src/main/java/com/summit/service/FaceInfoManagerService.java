@@ -47,6 +47,7 @@ public interface FaceInfoManagerService {
      */
     Page<FaceInfo> selectFaceInfoByPage(FaceInfoManagerEntity faceInfoManagerEntity, String deptId,Integer current, Integer pageSize) throws Exception;
 
+
     /**
      * 更新人脸信息
      * @param faceInfo 需要修改的人脸信息对象

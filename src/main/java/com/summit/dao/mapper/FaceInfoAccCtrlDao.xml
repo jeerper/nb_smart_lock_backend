@@ -58,6 +58,19 @@
             </if>
         </where>
         ) faceAuth on faceAuth.face_id =face.face_id
+        <where>
+            face.face_id IN(
+            SELECT faceInfo.face_id FROM face_info faceInfo
+            <where>
+                faceInfo.face_id IN(
+                SELECT DISTINCT dfu.face_id FROM dept_face_auth dfu WHERE dfu.dept_id IN
+                <foreach item="userDept" collection="userDepts" index="index" open="(" separator="," close=")">
+                    #{userDept}
+                </foreach>
+                )
+            </where>
+            )
+        </where>
     </select>
 
     <select id="selectCountByUserNameAndLockCode" parameterType="map" resultType="java.lang.Integer">

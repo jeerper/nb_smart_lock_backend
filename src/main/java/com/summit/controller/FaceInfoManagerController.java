@@ -16,6 +16,7 @@ import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.entity.SimpleFaceInfo;
 import com.summit.exception.ErrorMsgException;
+import com.summit.service.DeptsService;
 import com.summit.service.FaceInfoManagerService;
 import com.summit.service.ICbbUserAuthService;
 import com.summit.util.EasyExcelUtil;
@@ -58,6 +59,8 @@ public class FaceInfoManagerController {
     @Autowired
     private ICbbUserAuthService iCbbUserAuthService;
     private String filePath;
+    @Autowired
+    private DeptsService deptsService;
 
     @ApiOperation(value = "录入人脸信息", notes = "返回不是-1则为成功")
     @PostMapping(value = "insertFaceInfo")
@@ -252,9 +255,9 @@ public class FaceInfoManagerController {
     }
 
 
-    @ApiOperation(value = "获取人脸导入数据模板")
+    @ApiOperation(value = "获取人脸数据导入模板")
     @RequestMapping(value = "/getFaceInfoTemplate",method = RequestMethod.GET)
-    public void getFaceInfoTemplate(HttpServletResponse response) throws IOException {
+    public void getFaceInfoTemplate(HttpServletResponse response) throws Exception {
         String sheetName="人脸数据导入模板";
         String[] faceType=new String[]{"内部人员","临时人员"};
         String[] sex=new String[]{"男","女"};
@@ -266,9 +269,15 @@ public class FaceInfoManagerController {
         }
         String[] provinceNames = province_names.toArray(new String[province_names.size()]);
         RestfulEntityBySummit<List<DeptBean>> allDept = iCbbUserAuthService.queryAllDept();
+        String currentDeptService = deptsService.getCurrentDeptService();
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("pdept",currentDeptService);
+        List<String> userDeptIds = deptsService.getDeptsByPdept(jsonObject);
         List<String> deptNames=new ArrayList<>();
         for (DeptBean deptBean:allDept.getData()){
-            deptNames.add(deptBean.getDeptName()+"("+deptBean.getDeptCode()+")");
+            if (userDeptIds.contains(deptBean.getId())){
+                deptNames.add(deptBean.getDeptName()+"("+deptBean.getDeptCode()+")");
+            }
         }
         String[] dept_names = deptNames.toArray(new String[deptNames.size()]);
         response.setCharacterEncoding("UTF-8");

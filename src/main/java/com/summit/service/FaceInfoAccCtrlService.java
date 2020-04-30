@@ -15,7 +15,7 @@ public interface FaceInfoAccCtrlService {
      * @param accCtrlIds
      * @return 人脸信息列表
      */
-    List<FaceInfo> selectFaceInfoAccCtrlByActrlIds(List<String> accCtrlIds);
+    List<FaceInfo> selectFaceInfoAccCtrlByActrlIds(List<String> accCtrlIds) throws Exception;
 
     /**
      * 根据人脸名称和身份证号查询门禁的id

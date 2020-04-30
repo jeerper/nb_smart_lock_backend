@@ -42,12 +42,19 @@ public class FaceInfoAccCtrlServiceImpl implements FaceInfoAccCtrlService {
      * @return 人脸信息列表
      */
     @Override
-    public List<FaceInfo> selectFaceInfoAccCtrlByActrlIds(List<String> accCtrlIds) {
+    public List<FaceInfo> selectFaceInfoAccCtrlByActrlIds(List<String> accCtrlIds) throws Exception {
         if(CommonUtil.isEmptyList(accCtrlIds)){
             log.error("门禁id为空");
             return null;
         }
-        List<FaceInfo> faceInfos=faceInfoAccCtrlDao.selectFaceInfoAccCtrlByActrlIds(accCtrlIds);
+        List<FaceInfo> faceInfos=null;
+        String currentDeptService = deptsService.getCurrentDeptService();
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("pdept",currentDeptService);
+        List<String> userDepts = deptsService.getDeptsByPdept(jsonObject);
+        if (!CommonUtil.isEmptyList(userDepts)){
+            faceInfos=faceInfoAccCtrlDao.selectFaceInfoAccCtrlByActrlIds(accCtrlIds,userDepts);
+        }
         return faceInfos;
     }
 
