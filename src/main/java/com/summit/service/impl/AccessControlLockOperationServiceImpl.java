@@ -12,6 +12,7 @@ import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.FileInfo;
 import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.entity.FaceRecognitionInfo;
+import com.summit.sdk.huawei.callback.ClientFaceInfoCallback;
 import com.summit.sdk.huawei.model.CameraUploadType;
 import com.summit.sdk.huawei.model.LockProcessResultType;
 import com.summit.service.AccessControlLockOperationService;
@@ -35,8 +36,8 @@ public class AccessControlLockOperationServiceImpl implements AccessControlLockO
     private FaceInfoManagerDao faceInfoManagerDao;
     @Autowired
     private AccCtrlProcessUtil accCtrlProcessUtil;
-
-
+    @Autowired
+    ClientFaceInfoCallback clientFaceInfoCallback;
     @Override
     public void insertAccessControlLockOperationEvent(String lockCode, CameraUploadType type, LockProcessResultType processResult,
                                                       String failReason,Integer enterOrExit) throws Exception {
@@ -70,7 +71,8 @@ public class AccessControlLockOperationServiceImpl implements AccessControlLockO
             AccCtrlProcess accCtrlProcess = accCtrlProcessUtil.getAccCtrlProcess(lockCode, faceInfo, score, type, facePanoramaFile, date, processResult,
                     failReason,enterOrExit);
             //在事务控制下插入门禁操作记录、门禁实时信息、告警
-            ApplicationContextUtil.getBean(ClientFaceInfoCallbackImpl.class).insertData(type, accCtrlProcess);
+           ApplicationContextUtil.getBean(ClientFaceInfoCallbackImpl.class).insertData(type, accCtrlProcess);
+           // clientFaceInfoCallback.insertData(type, accCtrlProcess);
         } catch (Exception e) {
             log.error("门禁锁操作事件入库失败", e);
             throw new Exception("门禁锁操作事件入库失败");

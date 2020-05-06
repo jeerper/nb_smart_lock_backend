@@ -243,8 +243,8 @@ public class AccCtrlProcessUtil {
 
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         if (faceInfo !=null){
-            accCtrlProcess.setUserName(faceInfo.getUserName());
-            accCtrlProcess.setFaceName(faceInfo.getUserName());
+            accCtrlProcess.setLockUserName(faceInfo.getUserName());
+            accCtrlProcess.setFaceName(faceInfo.getUserName());//人脸名
             accCtrlProcess.setFaceId(faceInfo.getFaceid());
             if (faceInfo.getGender() != null){
                 accCtrlProcess.setGender(faceInfo.getGender());
@@ -264,8 +264,9 @@ public class AccCtrlProcessUtil {
             accCtrlProcess.setProcessMethod(LockProcessMethod.FACE_RECOGNITION.getCode());//刷脸操作
         }else if (Common.getLogUser()!=null){
             UserInfo logUser = Common.getLogUser();
-            accCtrlProcess.setUserName(logUser.getUserName());
-           accCtrlProcess.setProcessMethod(LockProcessMethod.Login_Operation.getCode());//app登录操作
+            accCtrlProcess.setLockUserName(logUser.getUserName());
+            accCtrlProcess.setUserName(logUser.getUserName());//用户名
+            accCtrlProcess.setProcessMethod(LockProcessMethod.Login_Operation.getCode());//app登录操作
         }
         //人脸匹配率需要提供
         if (score !=null){
@@ -404,7 +405,7 @@ public class AccCtrlProcessUtil {
         accCtrlRealTimeEntity.setDevId(accCtrlProcess.getDeviceId());
         accCtrlRealTimeEntity.setDeviceIp(accCtrlProcess.getDeviceIp());
         accCtrlRealTimeEntity.setDeviceType(accCtrlProcess.getDeviceType());
-        accCtrlRealTimeEntity.setName(accCtrlProcess.getUserName());//开锁人姓名
+        accCtrlRealTimeEntity.setName(accCtrlProcess.getLockUserName());//开锁人姓名
         if (accCtrlProcess.getFaceName()!=null){
             accCtrlRealTimeEntity.setUserName(accCtrlProcess.getFaceName());//人脸名称
         }else {

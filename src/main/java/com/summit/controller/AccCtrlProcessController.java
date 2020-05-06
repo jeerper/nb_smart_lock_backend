@@ -6,7 +6,6 @@ import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
 import com.summit.constants.CommonConstants;
 import com.summit.dao.entity.AccCtrlProcess;
-import com.summit.dao.entity.AddAccCtrlprocess;
 import com.summit.service.AccCtrlProcessService;
 import com.summit.service.AccessControlService;
 import com.summit.service.AddAccCtrlprocessService;
@@ -85,10 +84,13 @@ public class AccCtrlProcessController {
             log.error("门禁操作记录id列表为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "门禁操作记录id列表为空", null);
         }
-        //同时删除分析统计表中门禁所对应的开关锁记录数量
+        /*//同时删除分析统计表中门禁所对应的开关锁记录数量
         for(String accCtrlProId:accCtrlProIds){
             AccCtrlProcess accCtrlProcess = accCtrlProcessService.selectAccCtrlProcessByAcpId(accCtrlProId);
-            if (accCtrlProcess.getProcessType()== 1 || accCtrlProcess.getProcessType()== 2) {
+            if (accCtrlProcess ==null ){
+                continue;
+            }
+            if ( accCtrlProcess.getProcessType()== 1 || accCtrlProcess.getProcessType()== 2) {
                 List<AddAccCtrlprocess> addAccCtrlprocesses = addAccCtrlprocessService.selectAddAccCtrlprocessByAccCtrlProId(accCtrlProcess.getAccessControlId());
                 if (!CommonUtil.isEmptyList(addAccCtrlprocesses)) {
                     AddAccCtrlprocess addAccCtrlprocess = addAccCtrlprocesses.get(0);
@@ -101,7 +103,7 @@ public class AccCtrlProcessController {
                     addAccCtrlprocessService.update(updateAddAccCtrlprocess);
                 }
             }
-        }
+        }*/
         try {
             accCtrlProcessService.delAccCtrlProcessByIdBatch(accCtrlProIds);
         } catch (Exception e) {

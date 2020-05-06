@@ -38,6 +38,8 @@
         <result column="enterOrExit" jdbcType="INTEGER" property="enterOrExit"/>
         <result column="unlockCause" jdbcType="VARCHAR" property="unlockCause"/>
         <result column="alarm_status" jdbcType="INTEGER" property="alarmStatus"/>
+        <result column="face_name" jdbcType="VARCHAR" property="faceName"/>
+
 
         <association property="facePanorama" javaType="com.summit.dao.entity.FileInfo">
             <result column="fi1_id" jdbcType="VARCHAR" property="fileId"/>
@@ -73,7 +75,7 @@
     acp.user_id, acp.user_name, acp.gender, acp.birthday, acp.province, acp.city, acp.card_type, acp.card_id,
     acp.face_match_rate, acp.face_lib_name, acp.face_lib_type, acp.process_type,acp.process_uuid, acp.process_result,acp.fail_reason,
     acp.panorama_pic_id, acp.face_panorama_id, acp.face_pic_id, acp.face_match_id, acp.process_time, acp.process_method,acp.create_time,
-    acp.enterOrExit,acp.unlockCause,acp.alarm_status
+    acp.enterOrExit,acp.unlockCause,acp.alarm_status,acp.face_name
     </sql>
     <sql id="AccCtrlInfo_Have_Alias_List">
         ac.access_control_id ac_access_control_id, ac.access_control_name ac_access_control_name,

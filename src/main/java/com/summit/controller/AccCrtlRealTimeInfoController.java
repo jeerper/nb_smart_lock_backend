@@ -55,11 +55,13 @@ public class AccCrtlRealTimeInfoController {
             Date end = DateUtil.parse(endTime);
             //查出有操作记录的门禁并再分页
             Page<AccCtrlRealTimeEntity> accCtrlRealTimePage = accCtrlRealTimeService.selectByConditionPage(accCtrlRealTimeEntity, start, end, current, pageSize,deptId);
-            data.put("content", accCtrlRealTimePage.getContent());
-            data.put("pageable", accCtrlRealTimePage.getPageable());
+            if (accCtrlRealTimePage!=null){
+                data.put("content", accCtrlRealTimePage.getContent());
+                data.put("pageable", accCtrlRealTimePage.getPageable());
+            }
         } catch (Exception e) {
             log.error("查询门禁操作记录失败", e);
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "查询门禁操作记录失败", data);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "分页查询门禁操作实时信息失败", data);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "查询门禁操作记录成功", data);
 

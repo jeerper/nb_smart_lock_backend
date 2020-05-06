@@ -124,8 +124,12 @@ public class LoginFaceRecognitionController {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "用户名不存在", null);
             }
             String userName = Common.getLogUser().getUserName();
+            List rolesList = null;
+            if (Common.getLogUser() != null && Common.getLogUser().getRoles()!=null) {
+                rolesList = Arrays.asList(Common.getLogUser().getRoles());
+            }
             int count = faceInfoAccCtrlDao.selectCountByUserNameAndLockCode(userName,lockCode);
-            if (count < 1) {
+            if (count < 1 && !rolesList.contains("ROLE_SUPERUSER")) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "没有操作该门禁锁的权限", null);
             }
             LockProcessResultType processResult;
