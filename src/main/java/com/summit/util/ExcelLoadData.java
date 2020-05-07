@@ -1,5 +1,6 @@
 package com.summit.util;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
@@ -11,8 +12,10 @@ import com.summit.dao.entity.AccessControlInfo;
 import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.LockInfo;
 import com.summit.dao.repository.AccCtrlDeptDao;
+import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.entity.AccCtrlDept;
 import com.summit.exception.ErrorMsgException;
+import com.summit.service.FaceInfoManagerService;
 import com.summit.service.ICbbUserAuthService;
 import com.summit.service.LockInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +32,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -45,12 +49,19 @@ import java.util.*;
 public class ExcelLoadData {
     private static final String XLS = "xls";
     private static final String XLSK = "xlsx";
+    private static final String JPG = "jpg";
+    private static final String JPEG = "jpeg";
+    private static final String PNG = "png";
     @Autowired
     private LockInfoService lockInfoService;
     @Autowired
     ICbbUserAuthService iCbbUserAuthService;
     @Autowired
     private AccCtrlDeptDao accCtrlDeptDao;
+    @Autowired
+    private FaceInfoManagerDao faceInfoManagerDao;
+    @Autowired
+    private FaceInfoManagerService faceInfoManagerService;
 
     public Map<String,Object> loadExcel(MultipartFile file) throws Exception{
 
@@ -224,12 +235,12 @@ public class ExcelLoadData {
                 e.printStackTrace( );
             }
         }else {
-            throw new ErrorMsgException("文件不是Excel文件");
+            throw new Exception("文件不是Excel文件");
         }
-        Sheet sheet = workbook.getSheet("人脸信息导出模板");
+        Sheet sheet = workbook.getSheetAt(0);
         int rows = sheet.getLastRowNum();//指定行数。一共多少行
         if(rows==0) {
-            throw new ErrorMsgException("请填写行数");
+            throw new Exception("请填写行数");
         }
         for (int i = 2; i < rows+1; i++) {
             Row row = sheet.getRow(i);
@@ -237,35 +248,85 @@ public class ExcelLoadData {
                 FaceInfo faceInfo=new FaceInfo();
                 //读取cell
                 faceInfo.setFaceid(IdWorker.getIdStr());
-                String userName = getCellValue(row.getCell(0));
+                String faceType = getCellValue(row.getCell(0));//人脸类型
+                if (StrUtil.isBlank(faceType)){
+                    throw new Exception("人脸类型不能为空!");
+                }
+                if (faceType.equalsIgnoreCase("内部人员")){
+                    faceInfo.setFaceType(0);
+                }else if (faceType.equalsIgnoreCase("临时人员")){
+                    faceInfo.setFaceType(1);
+                }
+                String userName = getCellValue(row.getCell(1));//人脸名
+                if (StrUtil.isBlank(userName)){
+                    throw new Exception("人脸名不能为空!");
+                }
                 faceInfo.setUserName(userName);
-                String gender = getCellValue(row.getCell(1));
-                if (!StrUtil.isEmpty(gender)){
-                    faceInfo.setGender(Integer.parseInt(gender));
+                String cardType = getCellValue(row.getCell(2));//证件类型
+                if (StrUtil.isBlank(cardType)){
+                    throw new Exception("证件类型不能为空!");
                 }
-                String birthday = getCellValue(row.getCell(2));
-                faceInfo.setBirthday(birthday);
-                String province = getCellValue(row.getCell(3));
-                faceInfo.setProvince(province);
-                String city = getCellValue(row.getCell(4));
-                faceInfo.setCity(city);
-                String cardType = getCellValue(row.getCell(5));
-                if (!StrUtil.isEmpty(cardType)){
-                    faceInfo.setCardType(Integer.parseInt(cardType));
+                if (cardType.equalsIgnoreCase("身份证号")){
+                    faceInfo.setCardType(0);
+                }else if (cardType.equalsIgnoreCase("护照")){
+                    faceInfo.setCardType(1);
+                }else if (cardType.equalsIgnoreCase("军官证")){
+                    faceInfo.setCardType(2);
+                }else if (cardType.equalsIgnoreCase("驾驶证")){
+                    faceInfo.setCardType(3);
+                }else if (cardType.equalsIgnoreCase("其他")){
+                    faceInfo.setCardType(4);
                 }
-                String cardId = getCellValue(row.getCell(6));
+                String cardId = getCellValue(row.getCell(3));//证件号
+                if (StrUtil.isBlank(cardId)){
+                    throw new Exception("证件号不能为空!");
+                }
                 faceInfo.setCardId(cardId);
-                String faceType = getCellValue(row.getCell(7));
-                if (!StrUtil.isEmpty(faceType)){
-                    faceInfo.setFaceType(Integer.parseInt(faceType));
+                String gender = getCellValue(row.getCell(4));//性别
+                if (StrUtil.isBlank(gender)){
+                    throw new Exception("性别不能为空!");
                 }
-                String faceEndTime = getCellValue(row.getCell(8));
-                if (!StrUtil.isEmpty(faceEndTime)){
-                    faceInfo.setFaceType(Integer.parseInt(faceType));
-                    faceInfo.setFaceEndTime(DateUtil.stringToDate(faceEndTime,"yyyy-MM-dd"));
+                if (gender.equalsIgnoreCase("男")){
+                    faceInfo.setGender(0);
+                }else if (gender.equalsIgnoreCase("女")){
+                    faceInfo.setGender(1);
                 }
-                faceInfo.setFaceStartTime(DateUtil.getDatePattern("yyyy-MM-dd-HH-mm-ss"));
+                String birthday = getCellValue(row.getCell(5));//生日
+                if (StrUtil.isBlank(birthday)){
+                    throw new Exception("生日不能为空!");
+                }
+                faceInfo.setBirthday(birthday);
+                String province = getCellValue(row.getCell(6));//省份
+                if (StrUtil.isBlank(province)){
+                    throw new Exception("省份不能为空!");
+                }
+                faceInfo.setProvince(province);
+                String city = getCellValue(row.getCell(7));//城市
+                if (StrUtil.isBlank(city)){
+                    throw new Exception("城市不能为空!");
+                }
+                faceInfo.setCity(city);
+                String faceEndTime = getCellValue(row.getCell(8));//有效日期
+                if (StrUtil.isBlank(faceEndTime)){
+                    throw new Exception("有效日期不能为空!");
+                }
+                faceInfo.setFaceEndTime(DateUtil.stringToDate(faceEndTime,"yyyy-MM-dd"));
+                String setDeptNames = getCellValue(row.getCell(9));//所属机构单个
+                if (StrUtil.isBlank(setDeptNames)){
+                    throw new Exception("所属机构为空!");
+                }
+                RestfulEntityBySummit<List<DeptBean>> allDept = iCbbUserAuthService.queryAllDept();
+                List<String> deptCodes=new ArrayList<>();
+                for (DeptBean deptBean:allDept.getData()){
+                    deptCodes.add(deptBean.getDeptCode());
+                }
+                String deptCode = setDeptNames.substring(setDeptNames.indexOf("(")+1, setDeptNames.lastIndexOf(")"));
+                if (!deptCodes.contains(deptCode)){
+                    throw new Exception("所属机构不匹配!");
+                }
+                faceInfo.setDeptNames(setDeptNames);
                 faceInfo.setIsValidTime(0);
+                faceInfo.setFaceStartTime(DateUtil.getDatePattern("yyyy-MM-dd-HH-mm-ss"));
                 faceInfos.add(faceInfo);
             }
         }
@@ -355,5 +416,61 @@ public class ExcelLoadData {
         }
         return item;
     }
-
+    @Transactional(rollbackFor = {Exception.class})
+    public void loadFaceZip(String path) throws Exception {
+            List<File> files = FileUtil.loopFiles(path);
+            List<FaceInfo> faceInfos=null;
+            for (File file:files){
+                String extName = FileUtil.extName(file.getName());//扩展名
+                if(extName.equals(XLS) || extName.equals(XLSK)) {
+                    MultipartFile multipartFile = getMulFileByPath(file.getAbsolutePath());
+                    Map<String, Object> stringObjectMap = loadFaceExcel(multipartFile);
+                    faceInfos = (List<FaceInfo>)stringObjectMap.get("faceInfos");
+                }
+            }
+            if (!CommonUtil.isEmptyList(faceInfos)){
+                for (FaceInfo faceInfo:faceInfos){
+                    for (File file:files){
+                        String fileName = file.getName();
+                        String extName = FileUtil.extName(fileName);//扩展名
+                        String absolutePath = file.getAbsolutePath();
+                        String name = fileName.substring(0,fileName.lastIndexOf("."));
+                        if(extName.equals(JPG) && name.equalsIgnoreCase(faceInfo.getCardId())){
+                            faceInfo.setFaceImage(absolutePath);
+                        }else if (extName.equals(PNG) && name.equalsIgnoreCase(faceInfo.getCardId())){
+                            faceInfo.setFaceImage(absolutePath);
+                        }else if (extName.equals(JPEG) && name.equalsIgnoreCase(faceInfo.getCardId())){
+                            faceInfo.setFaceImage(absolutePath);
+                        }
+                    }
+                }
+            }
+           /* for (File file:files){
+                String fileName = file.getName();
+                String extName = FileUtil.extName(fileName);//扩展名
+                String absolutePath = file.getAbsolutePath();
+                if (!CommonUtil.isEmptyList(faceInfos)){
+                    for (FaceInfo faceInfo:faceInfos){
+                        String name = fileName.substring(0,fileName.lastIndexOf("."));
+                        if(extName.equals(JPG) && name.equalsIgnoreCase(faceInfo.getCardId())){
+                            //String subNewImageBase64 = com.summit.util.FileUtil.imageToBase64Str(file.getAbsolutePath());
+                            //faceInfo.setFaceImage(subNewImageBase64);
+                            faceInfo.setFaceImage(absolutePath*//*+File.separator+name+StrUtil.DOT+JPG*//*);
+                        }else if (extName.equals(JPEG) && name.equalsIgnoreCase(faceInfo.getCardId())){
+                            faceInfo.setFaceImage(absolutePath*//*+File.separator+name+StrUtil.DOT+JPEG*//*);
+                        }else if (extName.equals(JPEG) && name.equalsIgnoreCase(faceInfo.getCardId())){
+                            faceInfo.setFaceImage(absolutePath*//*+File.separator+name+StrUtil.DOT+PNG*//*);
+                        }
+                    }
+                }
+            }*/
+            if (CommonUtil.isEmptyList(faceInfos)){
+                throw new Exception("execl文件格式不对!");
+            }
+            if (!CommonUtil.isEmptyList(faceInfos)){
+                for (FaceInfo faceInfo:faceInfos){
+                    faceInfoManagerService.insertFaceInfoByExcel(faceInfo);
+                }
+            }
+    }
 }

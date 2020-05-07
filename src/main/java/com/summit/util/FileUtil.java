@@ -2,11 +2,13 @@ package com.summit.util;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import sun.misc.BASE64Encoder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
@@ -200,7 +202,8 @@ public class FileUtil {
         // 获取原始名字
         String orginFileName = uploadFile.getOriginalFilename();
         // 文件重命名，防止重复
-        String key = UUID.randomUUID().toString().replace("-", "");
+        //String key = UUID.randomUUID().toString().replace("-", "");
+        String key = IdWorker.getIdStr().replace("-", "");
         String fileName = key + "" + orginFileName.substring(orginFileName.lastIndexOf("."));
         JSONObject jsonObject=new JSONObject();
         jsonObject.put("fileName",fileName);
@@ -222,4 +225,23 @@ public class FileUtil {
     }
 
 
+    /* 图片转base64字符串
+     * @param imgFile 图片路径
+     * @return base64字符串格式的图片
+     */
+    public static String imageToBase64Str(String imgFile) {
+        InputStream inputStream = null;
+        byte[] data = null;
+        try {
+            inputStream = new FileInputStream(imgFile);
+            data = new byte[inputStream.available()];  //根据文件流字节大小初始化data字节数组大小
+            inputStream.read(data);  //将流读入data
+            inputStream.close();  //关闭流
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //将图片数组加密
+        BASE64Encoder encoder = new BASE64Encoder();
+        return encoder.encode(data);
+    }
 }

@@ -20,7 +20,8 @@ public class MainAction {
     public static final String FACE_AUTH_CACHE_PREFIX = "face_auth:";
     public static final String FACE_ID = "face_id";
     public static final String CHANGE_LOCK_PSW_LOCK_PREFIX="change_lock_password_lock:";
-
+    public static final String FaceTemplateZip = "faceTemplateZip";
+    //public static final String AccCtrlExportTemplate="accCtrlExportTemplate";
 
     public static void main(String[] args) {
         SpringApplication.run(MainAction.class, args);

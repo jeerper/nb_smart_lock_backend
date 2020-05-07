@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -18,22 +19,107 @@ public class ZipUtil {
     public static void main(String[] args) throws IOException {
         String filename = "D:\\faceInfo.zip";
         String path = "D:\\";
-        ZipUtil.unZip(filename, path);
+        //ZipUtil.unZip(filename, path);
     }
 
 
-    public static void unZip(String sourceFilename, String targetDir) throws IOException {
-        unZip(new File(sourceFilename), targetDir);
+    /*public static void unZip(String sourceFilename, String targetDir) throws IOException {
+        unZip2(new File(sourceFilename), targetDir);
+    }*/
+
+
+
+    /**
+     * @param sourcefiles 源文件(服务器上的zip包存放地址)
+     * @param decompreDirectory 解压缩后文件存放的目录
+     * @throws IOException IO异常
+     */
+    @SuppressWarnings("unchecked")
+    public static void unzip(String sourcefiles, String decompreDirectory) throws IOException {
+        ZipFile readfile = null;
+        try {
+            //readfile =new ZipFile(sourcefiles);
+            readfile = new ZipFile(sourcefiles, Charset.forName("GBK"));
+            Enumeration<?> entries = readfile.entries();
+            ZipEntry zipEntry = null;
+            File credirectory = new File(decompreDirectory);
+            credirectory.mkdirs();
+            while (entries.hasMoreElements()) {
+                zipEntry = (ZipEntry) entries.nextElement();
+                String entryName = zipEntry.getName();
+                InputStream in = null;
+                FileOutputStream out = null;
+                try {
+                    if (zipEntry.isDirectory()) {
+                        String name = zipEntry.getName();
+                        name = name.substring(0, name.length() - 1);
+                        File  createDirectory = new File(decompreDirectory+ File.separator + name);
+                        createDirectory.mkdirs();
+                    } else {
+                        int index = entryName.lastIndexOf("\\");
+                        if (index != -1) {
+                            File createDirectory = new File(decompreDirectory+ File.separator+ entryName.substring(0, index));
+                            createDirectory.mkdirs();
+                        }
+                        index = entryName.lastIndexOf("/");
+                        if (index != -1) {
+                            File createDirectory = new File(decompreDirectory + File.separator + entryName.substring(0, index));
+                            createDirectory.mkdirs();
+                        }
+                        File unpackfile = new File(decompreDirectory + File.separator + zipEntry.getName());
+                        in = readfile.getInputStream(zipEntry);
+                        out = new FileOutputStream(unpackfile);
+                        int c;
+                        byte[] by = new byte[1024];
+                        while ((c = in.read(by)) != -1) {
+                            out.write(by, 0, c);
+                        }
+                        out.flush();
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    throw new IOException("解压失败：" + ex.toString());
+                } finally {
+                    if (in != null) {
+                        try {
+                            in.close();
+                        } catch (IOException ex) {
+
+                        }
+                    }
+                    if (out != null) {
+                        try {
+                            out.close();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                    in=null;
+                    out=null;
+                }
+
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            throw new IOException("解压失败：" + ex.toString());
+        } finally {
+            if (readfile != null) {
+                try {
+                    readfile.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    throw new IOException("解压失败：" + ex.toString());
+                }
+            }
+        }
     }
-
-
     /**
      * 将sourceFile解压到targetDir
      * @param sourceFile
      * @param targetDir
      * @throws RuntimeException
      */
-    public static void unZip(File sourceFile, String targetDir) throws IOException {
+    public static void unZip2(File sourceFile, String targetDir) throws IOException {
         long start = System.currentTimeMillis();
         if (!sourceFile.exists()) {
             throw new FileNotFoundException("cannot find the file = " + sourceFile.getPath());

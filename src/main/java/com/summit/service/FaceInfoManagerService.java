@@ -25,6 +25,14 @@ public interface FaceInfoManagerService {
      */
     void insertFaceInfo(FaceInfoManagerEntity faceInfoManagerEntity) throws Exception;
 
+
+    /**
+     * 人脸信息插入excel
+     * @param faceInfo 人脸信息
+     */
+    void insertFaceInfoByExcel(FaceInfo faceInfo) throws Exception;
+
+
     /**
      * 根据id批量删除人脸信息
      * @param faceInfoIds

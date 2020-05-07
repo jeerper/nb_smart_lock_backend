@@ -28,6 +28,7 @@ public class DeptFaceServiceImpl implements DeptFaceService {
             faceDept.setDeptId(deptId);
             faceDept.setFaceId(face_id);
             int insert = deptFaceDao.insert(faceDept);
+            return insert;
         }
         return 0;
     }

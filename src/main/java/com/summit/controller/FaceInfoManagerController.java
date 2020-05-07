@@ -22,6 +22,7 @@ import com.summit.service.ICbbUserAuthService;
 import com.summit.util.EasyExcelUtil;
 import com.summit.util.ExcelExportUtil;
 import com.summit.util.ExcelLoadData;
+import com.summit.util.ZipUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -261,7 +262,7 @@ public class FaceInfoManagerController {
         String sheetName="人脸数据导入模板";
         String[] faceType=new String[]{"内部人员","临时人员"};
         String[] sex=new String[]{"男","女"};
-        String[] cardType=new String[]{"身份证","护照","军官证","驾驶证","其他"};
+        String[] cardType=new String[]{"身份证号","护照","军官证","驾驶证","其他"};
         List<Province> provinces = faceInfoManagerService.selectProvince(null);
         List<String> province_names=new ArrayList<>();
         for (Province province:provinces){
@@ -304,22 +305,24 @@ public class FaceInfoManagerController {
                                                      @RequestPart("faceZip") MultipartFile faceZip) throws IOException {
         JSONObject filesName = null;
         String msg = "人脸信息批量导入失败";
-        String zipPath=null;
         if (faceZip !=null){
             try{
-                zipPath=new StringBuilder()
+                String zipPath=new StringBuilder()
                         .append(SystemUtil.getUserInfo().getCurrentDir())
                         .append(File.separator)
                         .append(MainAction.SnapshotFileName)
                         .append(File.separator)
+                        .append(MainAction.FaceTemplateZip)
+                        .append(File.separator)
                         .toString();
                 filesName = com.summit.util.FileUtil.uploadFile(zipPath, faceZip);
-                String orginFileName = filesName.getString("fileName");
-
+                String fileName = filesName.getString("fileName");
+                String zipFileName = fileName.substring(0,fileName.indexOf("."));
+                ZipUtil.unzip(zipPath+fileName,zipPath+zipFileName);
+                excelLoadData.loadFaceZip(zipPath+zipFileName);
             }catch (Exception e){
-                msg = getErrorMsg(msg, e);
                 log.error(msg,e);
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg,null);
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, e.getMessage(), null);
             }
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸信息批量导入成功",null);
         }
@@ -348,9 +351,8 @@ public class FaceInfoManagerController {
                 MultipartFile mulFileByPath = excelLoadData.getMulFileByPath(filePath+orginFileName);
                 boolean b= faceInfoManagerService.batchImport(mulFileByPath);
             }catch (Exception e){
-                msg = getErrorMsg(msg, e);
-                log.error(msg);
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg,null);
+                log.error(msg,e);
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, e.getMessage(), null);
             }
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸信息批量导入excel成功",null);
         }

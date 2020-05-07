@@ -10,15 +10,17 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.summit.MainAction;
 import com.summit.cbb.utils.page.Page;
+import com.summit.common.entity.DeptBean;
+import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ApplicationContextUtil;
 import com.summit.dao.entity.*;
-import com.summit.dao.repository.*;
+import com.summit.dao.repository.CityDao;
+import com.summit.dao.repository.DeptFaceDao;
+import com.summit.dao.repository.FaceInfoManagerDao;
+import com.summit.dao.repository.ProvinceDao;
 import com.summit.entity.FaceInfoManagerEntity;
 import com.summit.exception.ErrorMsgException;
-import com.summit.service.DeptFaceService;
-import com.summit.service.DeptsService;
-import com.summit.service.FaceInfoAccCtrlService;
-import com.summit.service.FaceInfoManagerService;
+import com.summit.service.*;
 import com.summit.util.CommonUtil;
 import com.summit.util.ExcelLoadData;
 import com.summit.utils.BaiduSdkClient;
@@ -63,6 +65,8 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
 
     @Autowired
     private DeptsService deptsService;
+    @Autowired
+    private ICbbUserAuthService iCbbUserAuthService;
 
     /**
      * 插入人脸信息
@@ -187,8 +191,128 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
     }
 
     /**
+     * 插入人脸信息excel
+     * @param faceInfo 人脸信息
+     * @return 返回-1则为不成功
+     */
+    @Transactional(rollbackFor = {Exception.class})
+    @Override
+    public void insertFaceInfoByExcel(FaceInfo faceInfo) throws Exception {
+        if (StrUtil.isBlank(faceInfo.getFaceImage())) {
+            log.error("人脸图片命名和身份证号不匹配!");
+            throw new Exception("人脸图片命名和身份证号不匹配!");
+        }
+        String faceImagesAbsolutePath = faceInfo.getFaceImage();
+        byte[] subNewImageBase64Byte = FileUtil.readBytes(faceImagesAbsolutePath);
+        String subNewImageBase64 = com.summit.util.FileUtil.imageToBase64Str(faceImagesAbsolutePath);
+    /*    String base64Str = faceInfo.getFaceImage();
+        int i = base64Str.indexOf("/");
+        String subNewImageBase64 = base64Str.substring(i + 1);*/
+        if (!baiduSdkClient.detectFace(subNewImageBase64)) {
+            throw new Exception("上传的图片中没有检测到人脸!");
+        }
+       /* byte[] subNewImageBase64Byte=null;
+        try{
+            subNewImageBase64Byte = Base64.getDecoder().decode(subNewImageBase64);
+            //判断人脸图片是否在人脸库中存在
+        }catch (Exception e){
+            e.printStackTrace();
+        }*/
+        //byte[] subNewImageBase64Byte = Base64.getDecoder().decode(subNewImageBase64);
+        List<FaceInfo> faceInfoLibrary = faceInfoManagerDao.selectList(null);
+        for (FaceInfo face : faceInfoLibrary) {
+            if (StrUtil.isBlank(face.getFaceImage())) {
+                continue;
+            }
+            String faceImageAbsolutePath = SystemUtil.getUserInfo().getCurrentDir() + face.getFaceImage();
+            try {
+                byte[] faceImageBase64 = FileUtil.readBytes(faceImageAbsolutePath);
+                if (Arrays.equals(subNewImageBase64Byte, faceImageBase64)) {
+                    throw new Exception("人脸添加失败,头像重复!");
+                }
+            } catch (IORuntimeException e) {
+                e.printStackTrace();
+                log.error("本地人脸库图片丢失,图片路径：" + faceImagesAbsolutePath);
+            }
+        }
+        //判断图片的扩展名
+        String extension = "";
+        String extName = faceImagesAbsolutePath.substring(faceImagesAbsolutePath.lastIndexOf("."));
+        if (extName.equals(".png")){
+            extension = ".png";
+        }else if (extName.equals(".jpg")){
+            extension = ".jpg";
+        }else if (extName.equals(".jpeg")){
+            extension = ".jpeg";
+        }
+       /* if (subNewImageBase64.indexOf("data:image/png;") != -1) {
+            extension = ".png";
+        } else if (subNewImageBase64.indexOf("data:image/jpeg;") != -1) {
+            extension = ".jpeg";
+        }*/
+        String picId = IdWorker.getIdStr();
+        String facePicPath = new StringBuilder()
+                .append(SystemUtil.getUserInfo().getCurrentDir())
+                .append(File.separator)
+                .append(MainAction.SnapshotFileName)
+                .append(File.separator)
+                .append(picId)
+                .append("_Face")
+                .append(extension)
+                .toString();
+        String faceUrl = new StringBuilder()
+                .append("/")
+                .append(MainAction.SnapshotFileName)
+                .append("/")
+                .append(picId)
+                .append("_Face")
+                .append(extension)
+                .toString();
+        faceInfo.setFaceImage(faceUrl);
+        try {
+
+            //插入部门人脸关系数据表
+            if (faceInfo.getDeptNames() != null){
+                String deptName = faceInfo.getDeptNames();
+                int i = deptName.indexOf("(");
+                int j = deptName.lastIndexOf(")");
+                String deptCode = deptName.substring(i+1, j);
+                RestfulEntityBySummit<List<DeptBean>> allDept = iCbbUserAuthService.queryAllDept();
+                for (DeptBean deptBean:allDept.getData()){
+                    if (deptCode.equals(deptBean.getDeptCode())){
+                        int result= deptFaceService.insert(deptBean.getId(),faceInfo.getFaceid());
+                        faceInfoManagerDao.insertFaceInfo(faceInfo);
+                        FileUtil.writeBytes(subNewImageBase64Byte, facePicPath);
+                        String faceId = baiduSdkClient.searchFace(subNewImageBase64).getFaceId();
+                        if (StrUtil.isNotBlank(faceId)) {
+                            FaceInfo similarFaceInfo = faceInfoManagerDao.selectById(faceId);
+                            if (similarFaceInfo != null) {
+                                throw new Exception("发现人脸库中有相似的人脸，名字为：" + similarFaceInfo.getUserName() + "，不能重复录入相同的人脸");
+                            } else {
+                                throw new Exception("发现人脸库中有相似的人脸，名字为：null，不能重复录入相同的人脸");
+                            }
+
+                        }
+                        if (!baiduSdkClient.addFace(subNewImageBase64, faceInfo.getFaceid())) {
+                            throw new Exception("人脸录入失败");
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            FileUtil.del(facePicPath);
+            log.error("人脸录入异常",e);
+            if (e instanceof DuplicateKeyException) {
+                throw new Exception("人脸信息录入名称已存在");
+            }
+            throw new Exception(e.getMessage());
+        }
+    }
+
+
+
+    /**
      * 根据id批量删除人脸信息
-     *
      * @param faceInfoIds
      * @return 返回-1则为不成功
      */
