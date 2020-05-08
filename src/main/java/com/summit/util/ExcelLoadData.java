@@ -1,8 +1,10 @@
 package com.summit.util;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.system.SystemUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.summit.common.entity.DeptBean;
 import com.summit.common.entity.RestfulEntityBySummit;
@@ -18,6 +20,7 @@ import com.summit.exception.ErrorMsgException;
 import com.summit.service.FaceInfoManagerService;
 import com.summit.service.ICbbUserAuthService;
 import com.summit.service.LockInfoService;
+import com.summit.utils.BaiduSdkClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
@@ -32,7 +35,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -62,6 +64,8 @@ public class ExcelLoadData {
     private FaceInfoManagerDao faceInfoManagerDao;
     @Autowired
     private FaceInfoManagerService faceInfoManagerService;
+    @Autowired
+    private BaiduSdkClient baiduSdkClient;
 
     public Map<String,Object> loadExcel(MultipartFile file) throws Exception{
 
@@ -416,7 +420,7 @@ public class ExcelLoadData {
         }
         return item;
     }
-    @Transactional(rollbackFor = {Exception.class})
+
     public void loadFaceZip(String path) throws Exception {
             List<File> files = FileUtil.loopFiles(path);
             List<FaceInfo> faceInfos=null;
@@ -435,37 +439,58 @@ public class ExcelLoadData {
                         String extName = FileUtil.extName(fileName);//扩展名
                         String absolutePath = file.getAbsolutePath();
                         String name = fileName.substring(0,fileName.lastIndexOf("."));
-                        if(extName.equals(JPG) && name.equalsIgnoreCase(faceInfo.getCardId())){
-                            faceInfo.setFaceImage(absolutePath);
-                        }else if (extName.equals(PNG) && name.equalsIgnoreCase(faceInfo.getCardId())){
-                            faceInfo.setFaceImage(absolutePath);
-                        }else if (extName.equals(JPEG) && name.equalsIgnoreCase(faceInfo.getCardId())){
-                            faceInfo.setFaceImage(absolutePath);
+                        if (name.equalsIgnoreCase(faceInfo.getCardId())){
+                            if (extName.equals(JPG)|| extName.equals(PNG) || extName.equals(JPEG)){
+                                faceInfo.setFaceImage(absolutePath);
+                            }else {
+                                throw new Exception("图片格式不对!");
+                            }
                         }
                     }
                 }
+            }else {
+                throw new Exception("execl文件不存在!");
             }
-           /* for (File file:files){
-                String fileName = file.getName();
-                String extName = FileUtil.extName(fileName);//扩展名
-                String absolutePath = file.getAbsolutePath();
-                if (!CommonUtil.isEmptyList(faceInfos)){
-                    for (FaceInfo faceInfo:faceInfos){
-                        String name = fileName.substring(0,fileName.lastIndexOf("."));
-                        if(extName.equals(JPG) && name.equalsIgnoreCase(faceInfo.getCardId())){
-                            //String subNewImageBase64 = com.summit.util.FileUtil.imageToBase64Str(file.getAbsolutePath());
-                            //faceInfo.setFaceImage(subNewImageBase64);
-                            faceInfo.setFaceImage(absolutePath*//*+File.separator+name+StrUtil.DOT+JPG*//*);
-                        }else if (extName.equals(JPEG) && name.equalsIgnoreCase(faceInfo.getCardId())){
-                            faceInfo.setFaceImage(absolutePath*//*+File.separator+name+StrUtil.DOT+JPEG*//*);
-                        }else if (extName.equals(JPEG) && name.equalsIgnoreCase(faceInfo.getCardId())){
-                            faceInfo.setFaceImage(absolutePath*//*+File.separator+name+StrUtil.DOT+PNG*//*);
+            if (!CommonUtil.isEmptyList(faceInfos)){
+                for (FaceInfo faceInfo:faceInfos){
+                    if (StrUtil.isBlank(faceInfo.getFaceImage())) {
+                        log.error("人脸图片命名和身份证号不匹配!");
+                        throw new Exception("人脸图片命名和身份证号不匹配，名字为："+faceInfo.getUserName());
+                    }
+                }
+                List<FaceInfo> faceInfoLibrary = faceInfoManagerDao.selectList(null);
+                for (FaceInfo faceInfo:faceInfos){
+                    String faceImagesAbsolutePath = faceInfo.getFaceImage();
+                    String subNewImageBase64 = com.summit.util.FileUtil.imageToBase64Str(faceImagesAbsolutePath);
+                    byte[] subNewImageBase64Byte = FileUtil.readBytes(faceImagesAbsolutePath);
+                    if (!baiduSdkClient.detectFace(subNewImageBase64)) {
+                        throw new Exception("上传的图片中没有检测到人脸!");
+                    }
+                    for (FaceInfo face : faceInfoLibrary) {
+                        if (StrUtil.isBlank(face.getFaceImage())) {
+                            continue;
+                        }
+                        String faceImageAbsolutePath = SystemUtil.getUserInfo().getCurrentDir() + face.getFaceImage();
+                        try {
+                            byte[] faceImageBase64 = FileUtil.readBytes(faceImageAbsolutePath);
+                            if (Arrays.equals(subNewImageBase64Byte, faceImageBase64)) {
+                                throw new Exception("人脸添加失败,头像重复!");
+                            }
+                        } catch (IORuntimeException e) {
+                            e.printStackTrace();
+                            log.error("本地人脸库图片丢失,图片路径：" + faceImagesAbsolutePath);
+                        }
+                    }
+                    String faceId = baiduSdkClient.searchFace(subNewImageBase64).getFaceId();
+                    if (StrUtil.isNotBlank(faceId)) {
+                        FaceInfo similarFaceInfo = faceInfoManagerDao.selectById(faceId);
+                        if (similarFaceInfo != null) {
+                            throw new Exception("发现人脸库中有相似的人脸，名字为：" + similarFaceInfo.getUserName() + "，不能重复录入相同的人脸");
+                        } else {
+                            throw new Exception("发现人脸库中有相似的人脸，名字为：null，不能重复录入相同的人脸");
                         }
                     }
                 }
-            }*/
-            if (CommonUtil.isEmptyList(faceInfos)){
-                throw new Exception("execl文件格式不对!");
             }
             if (!CommonUtil.isEmptyList(faceInfos)){
                 for (FaceInfo faceInfo:faceInfos){
