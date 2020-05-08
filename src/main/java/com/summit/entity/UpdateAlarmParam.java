@@ -17,7 +17,7 @@ public class UpdateAlarmParam {
     private Integer alarmStatus = 0;
     @ApiModelProperty(value="对应门禁操作记录id，和alarmId不能同时为空",name="accCtrlProId")
     private String accCtrlProId;
-    @ApiModelProperty(value="告警处理说明",name="processRemark")
+    @ApiModelProperty(value="报警记录处理内容",name="processRemark")
     private String processRemark;
     @ApiModelProperty(value="锁id",name="lockId")
     private String lockId;
@@ -25,7 +25,7 @@ public class UpdateAlarmParam {
     private boolean needUnLock = false;
     @ApiModelProperty(value="进出方式(0:进,1:出)",name="enterOrExit")
     private Integer enterOrExit;
-    @ApiModelProperty(value="开锁事由",name="unlockCause")
+    @ApiModelProperty(value="实时状态处理内容",name="unlockCause")
     private String unlockCause;
 
     public UpdateAlarmParam() {

@@ -71,10 +71,7 @@ public class AlarmController {
             log.error("参数为空");
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993, "参数为空", null);
         }
-
-
         String msg = "操作成功";
-
         boolean needUnLock = updateAlarmParam.isNeedUnLock();
         String lockId = updateAlarmParam.getLockId();
         Integer alarmStatus = updateAlarmParam.getAlarmStatus();
@@ -99,14 +96,11 @@ public class AlarmController {
             LockRequest lockRequest = new LockRequest();
             lockRequest.setLockId(lockId);
             lockRequest.setOperName(operName);
-
             /*RestfulEntityBySummit result = nbLockServiceImpl.toUnLock(lockRequest);
             if (result == null) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg + "开锁失败", null);
             }
-
             BackLockInfo backLockInfo = result.getData() == null ? null : (BackLockInfo) result.getData();
-
             if (backLockInfo == null) {
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "开锁失败", null);
             }
@@ -118,13 +112,11 @@ public class AlarmController {
             }
             //开锁指令下发成功的处理逻辑
             processResult = backLockInfo.getObjx();
-
             unlockProcessUuid = backLockInfo.getRmid();*/
 
             //通过LockID查找门禁信息
             AccessControlInfo accessControlInfo = accessControlDao.selectOne(Wrappers.<AccessControlInfo>lambdaQuery()
                     .eq(AccessControlInfo::getLockId, lockId));
-
             //新增门禁操作记录
             AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
             accCtrlProcess.setProcessMethod(LockProcessMethod.INTERFACE_BY.getCode());
@@ -138,7 +130,8 @@ public class AlarmController {
             accCtrlProcess.setProcessUuid(unlockProcessUuid);
             accCtrlProcess.setCreateTime(processTime);
             accCtrlProcess.setEnterOrExit(enterOrExit);//进出
-            accCtrlProcess.setUnlockCause(processRemark);//事由
+            accCtrlProcess.setUnlockCause(processRemark);//报警记录处理内容
+            accCtrlProcess.setUnlockCause(unlockCause);//实时状态处理内容
             accCtrlProcess.setAlarmStatus(accessControlInfo.getAlarmStatus());
             accCtrlProcessDao.insert(accCtrlProcess);
             //统计分析统计进出频次
@@ -172,8 +165,8 @@ public class AlarmController {
                         .set(AccCtrlProcess::getProcessResult, processResult)
                         .set(AccCtrlProcess::getProcessTime, processTime)
                         .eq(AccCtrlProcess::getAccCtrlProId, accCtrlProId));
-                /*//统计分析统计进出频次
-                if (accCtrlProId !=null){
+                //统计分析统计进出频次
+                /*if (accCtrlProId !=null){
                     addAccCtrlprocessService.insertOrUpdateEnterOrExitCount(accCtrlProId);
                 }*/
             } else {
