@@ -60,6 +60,10 @@ public class AccCtrlProcess {
     @TableField(value = "user_name")
     private String userName;
 
+    @ApiModelProperty(value="用户昵称",name="nickname")
+    @TableField(exist = false)
+    private String nickname;
+
     @ApiModelProperty(value="开锁人姓名",name="lockUserName")
     @TableField(exist = false)
     private String lockUserName;
@@ -180,6 +184,10 @@ public class AccCtrlProcess {
     @ApiModelProperty(value="告警状态(0：低电压告警，2低电量告警，1：非法开锁告警，3：掉线告警，4：故障告警，5：关锁超时报警)",name="alarmStatus")
     @TableField(value = "alarm_status")
     private Integer alarmStatus;
+
+    @ApiModelProperty(value = "部门名称",name = "deptName")
+    @TableField(exist = false)
+    private String deptNames;
 
     public AccCtrlProcess(){}
 }

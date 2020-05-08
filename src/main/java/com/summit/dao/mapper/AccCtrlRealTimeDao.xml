@@ -101,10 +101,12 @@
             FROM dept_accesscontrol_auth dc
             inner join cbb_userauth.sys_dept dept on dc.dept_id=dept.ID
             <where>
-                dc.dept_id IN
-                <foreach item="userDept" collection="userDepts" index="index" open="(" separator="," close=")">
-                    #{userDept}
-                </foreach>
+                <if test="userDepts != null">
+                    dc.dept_id IN
+                    <foreach item="userDept" collection="userDepts" index="index" open="(" separator="," close=")">
+                        #{userDept}
+                    </foreach>
+                </if>
             </where>
             GROUP BY access_control_id
             )accDept on ar.access_control_id=accDept.access_control_id

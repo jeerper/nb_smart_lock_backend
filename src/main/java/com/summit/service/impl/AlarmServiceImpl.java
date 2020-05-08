@@ -1,5 +1,6 @@
 package com.summit.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.cbb.utils.page.Page;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -107,19 +109,9 @@ public class AlarmServiceImpl implements AlarmService {
         return alarmDao.deleteBatchIds(alarmIds);
     }
 
-    /**
-     * 查询所有
-     * @param start 开始时间
-     * @param end 截止时间
-     * @return 告警记录列表
-     */
     @Override
     public List<Alarm> selectAll(Date start, Date end, Integer current, Integer pageSize) {
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Alarm> pageParam = null;
-        if (current != null && pageSize != null) {
-            pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
-        }
-        return alarmDao.selectCondition(pageParam,null, start, end, UserAuthUtils.getRoles());
+        return null;
     }
 
     /**
@@ -146,25 +138,11 @@ public class AlarmServiceImpl implements AlarmService {
         return alarmDao.selectById(alarmId);
     }
 
-    /**
-     * 根据告警name（或者说类型）查询，用selectCondition实现，可指定时间段
-     * @param alarmName 告警名
-     * @param start 开始时间
-     * @param end 截止时间
-     * @return 告警记录列表
-     */
     @Override
     public List<Alarm> selectAlarmByName(String alarmName, Date start, Date end, Integer current, Integer pageSize) {
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Alarm> pageParam = null;
-
-        if (current != null && pageSize != null) {
-            pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
-        }
-        Alarm alarm = new Alarm();
-        alarm.setAlarmName(alarmName);
-
-        return alarmDao.selectCondition(pageParam,alarm, start, end, UserAuthUtils.getRoles());
+        return null;
     }
+
 
     /**
      * 根据告警name（或者说类型）查询，用selectCondition实现，不带时间重载
@@ -176,23 +154,11 @@ public class AlarmServiceImpl implements AlarmService {
         return selectAlarmByName(alarmName, null, null, current,pageSize);
     }
 
-    /**
-     * 根据告警状态查询，用selectCondition实现，可指定时间段
-     * @param alarmStatus 告警状态
-     * @param start 开始时间
-     * @param end 截止时间
-     * @return 告警记录列表
-     */
     @Override
     public List<Alarm> selectAlarmByStatus(Integer alarmStatus, Date start, Date end, Integer current, Integer pageSize) {
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Alarm> pageParam = null;
-        if (current != null && pageSize != null) {
-            pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
-        }
-        Alarm alarm = new Alarm();
-        alarm.setAlarmStatus(alarmStatus);
-        return alarmDao.selectCondition(pageParam,alarm, start, end, UserAuthUtils.getRoles());
+        return null;
     }
+
 
     /**
      * 根据告警状态查询，用selectCondition实现，不带时间重载
@@ -374,23 +340,50 @@ public class AlarmServiceImpl implements AlarmService {
      * @return 告警记录Page对象
      */
     @Override
-    public Page<Alarm> selectAlarmConditionByPage(Alarm alarm, Date start, Date end,  Integer current, Integer pageSize) throws Exception {
+    public Page<Alarm> selectAlarmConditionByPage(Alarm alarm, Date start, Date end, String deptIds,Integer alarmStatus,  Integer current, Integer pageSize) throws Exception {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Alarm> pageParam = null;
         if (current != null && pageSize != null) {
             pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
         }
         List<String> dept_ids =new ArrayList<>();
         String currentDeptService = deptsService.getCurrentDeptService();
-        JSONObject paramJson=new JSONObject();
-        paramJson.put("pdept",currentDeptService);
-        List<String> depts = deptsService.getDeptsByPdept(paramJson);
-        if (!CommonUtil.isEmptyList(depts)){
-            for (String dept_id:depts){
-                dept_ids.add(dept_id);
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("pdept",currentDeptService);
+        List<String> userDepts = deptsService.getDeptsByPdept(jsonObject);
+        if (StrUtil.isNotBlank(deptIds)){
+            if (deptIds.contains(",")){
+                String[] list = deptIds.split(",");
+                List<String> deptIdList = Arrays.asList(list);
+                for (String deptId:deptIdList){
+                    JSONObject paramJson=new JSONObject();
+                    paramJson.put("pdept",deptId);
+                    List<String> depts = deptsService.getDeptsByPdept(paramJson);
+                    if (!CommonUtil.isEmptyList(depts)){
+                        for (String dept_id:depts){
+                            dept_ids.add(dept_id);
+                        }
+                    }
+                }
+            }else {//一个部门
+                JSONObject paramJson=new JSONObject();
+                paramJson.put("pdept",deptIds);
+                List<String> depts = deptsService.getDeptsByPdept(paramJson);
+                if (!CommonUtil.isEmptyList(depts)){
+                    for (String dept_id:depts){
+                        dept_ids.add(dept_id);
+                    }
+                }
+            }
+
+        }else {
+            if (!CommonUtil.isEmptyList(userDepts)){
+                for (String dept_id:userDepts){
+                    dept_ids.add(dept_id);
+                }
             }
         }
         if (!CommonUtil.isEmptyList(dept_ids)){
-            List<Alarm> alarms = alarmDao.selectCondition(pageParam,alarm, start, end, dept_ids);
+            List<Alarm> alarms = alarmDao.selectCondition(pageParam,alarm, start, end,alarmStatus,userDepts, dept_ids);
             Pageable pageable = null;
             if (pageParam != null) {
                 pageable = new Pageable((int) pageParam.getTotal(), (int) pageParam.getPages(), (int) pageParam.getCurrent(), (int) pageParam.getSize()
@@ -408,7 +401,6 @@ public class AlarmServiceImpl implements AlarmService {
      */
     @Override
     public Page<Alarm> selectAlarmConditionByPage(Alarm alarm, Integer current, Integer pageSize) throws Exception {
-
-        return selectAlarmConditionByPage(alarm, null, null, current,pageSize);
+        return null;
     }
 }

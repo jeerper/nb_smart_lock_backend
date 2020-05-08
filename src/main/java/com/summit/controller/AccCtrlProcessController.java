@@ -60,6 +60,7 @@ public class AccCtrlProcessController {
             @ApiParam(value = "起始时间") @RequestParam(value = "startTime", required = false) String startTime,
             @ApiParam(value = "结束时间") @RequestParam(value = "endTime", required = false) String endTime,
             @ApiParam(value = "当前页，大于等于1") @RequestParam(value = "current", required = false) Integer current,
+            @ApiParam(value = "部门Id多个的话，用,隔开") @RequestParam(value = "deptId", required = false) String deptId,
             @ApiParam(value = "每页条数，大于等于0") @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         try {
             Date start = CommonUtil.strToDate(startTime, CommonConstants.STARTTIMEMARK);
@@ -68,7 +69,7 @@ public class AccCtrlProcessController {
             accCtrlProcess.setAccessControlName(accessControlName);
             accCtrlProcess.setProcessType(processType);
             accCtrlProcess.setAlarmStatus(alarmStatus);
-            Page<AccCtrlProcess> accCtrlProcessPage = accCtrlProcessService.selectAccCtrlProcessCondition(accCtrlProcess, start, end, current, pageSize);
+            Page<AccCtrlProcess> accCtrlProcessPage = accCtrlProcessService.selectAccCtrlProcessCondition(accCtrlProcess, deptId, start, end, current, pageSize);
             return ResultBuilder.buildSuccess(accCtrlProcessPage);
         } catch (Exception e) {
             log.error("条件查询门禁操作记录失败", e);

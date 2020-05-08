@@ -75,5 +75,10 @@ public class Alarm {
     @TableField(value = "alarm_deal_status")
     private Integer alarmDealStatus;
 
+    @ApiModelProperty(value = "部门名称",name = "deptName")
+    @TableField(exist = false)
+    private String deptNames;
+
+
     public Alarm(){}
 }

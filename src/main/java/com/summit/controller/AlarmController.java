@@ -83,9 +83,11 @@ public class AlarmController {
         String unlockCause = updateAlarmParam.getUnlockCause();//进出事由
         String accCtrlProId = updateAlarmParam.getAccCtrlProId();
         String operName = null;
+        String username=null;
         UserInfo userInfo = UserContextHolder.getUserInfo();
         if (userInfo != null)
             operName = userInfo.getName();
+            username = userInfo.getUserName();
 
         //开锁指令下发成功的处理逻辑
         //处理结果
@@ -128,7 +130,7 @@ public class AlarmController {
             accCtrlProcess.setProcessMethod(LockProcessMethod.INTERFACE_BY.getCode());
 //            accCtrlProcess.setProcessTime(new Date());
             accCtrlProcess.setProcessType(LockProcessType.UNLOCK.getCode());
-            accCtrlProcess.setUserName(operName);
+            accCtrlProcess.setUserName(username);
             String accessControlId = accessControlInfo.getAccessControlId();
             accCtrlProcess.setAccessControlId(accessControlId);
             accCtrlProcess.setAccessControlName(accessControlInfo.getAccessControlName());
@@ -247,6 +249,8 @@ public class AlarmController {
             @ApiParam(value = "门禁告警处理状态，，0已处理，1未处理") @RequestParam(value = "alarmDealStatus", required = false) Integer alarmDealStatus,
             @ApiParam(value = "起始时间") @RequestParam(value = "startTime", required = false) String startTime,
             @ApiParam(value = "结束时间") @RequestParam(value = "endTime", required = false) String endTime,
+            @ApiParam(value = "部门Id多个的话，用,隔开") @RequestParam(value = "deptId", required = false) String deptId,
+            @ApiParam(value = "告警状态(0：低电压告警，1：非法开锁告警，2低电量告警，3：掉线告警，4：故障告警，5：关锁超时报警)") @RequestParam(value = "alarmStatus", required = false) Integer alarmStatus,
             @ApiParam(value = "当前页，大于等于1") @RequestParam(value = "current", required = false) Integer current,
             @ApiParam(value = "每页条数，大于等于0") @RequestParam(value = "pageSize", required = false) Integer pageSize) {
 
@@ -258,9 +262,7 @@ public class AlarmController {
             alarm.setAccessControlId(accessControlId);
             alarm.setAccessControlName(accessControlName);
             alarm.setAlarmDealStatus(alarmDealStatus);
-
-            Page<Alarm> alarms = alarmService.selectAlarmConditionByPage(alarm, start, end, current, pageSize);
-
+            Page<Alarm> alarms = alarmService.selectAlarmConditionByPage(alarm, start, end, deptId,alarmStatus,current, pageSize);
             return ResultBuilder.buildSuccess(alarms);
         } catch (Exception e) {
             log.error("条件查询告警信息失败", e);

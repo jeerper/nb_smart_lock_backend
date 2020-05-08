@@ -128,7 +128,7 @@ public interface AccCtrlProcessService {
      * @param end 截止时间
      * @return 门禁操作记录列表
      */
-    Page<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, Date start, Date end,  Integer current, Integer pageSize) throws Exception;
+    Page<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, String deptId, Date start, Date end,  Integer current, Integer pageSize) throws Exception;
 
     /**
      * 根据门禁操作id记录查询当前的操所记录

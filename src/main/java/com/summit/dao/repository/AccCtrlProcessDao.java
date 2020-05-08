@@ -20,6 +20,7 @@ public interface AccCtrlProcessDao extends BaseMapper<AccCtrlProcess> {
     List<AccCtrlProcess> selectCondition(Page page, @Param("accCtrlProcess") AccCtrlProcess accCtrlProcess,
                                          @Param("start") Date start,
                                          @Param("end") Date end,
+                                         @Param("userDepts") List<String> userDepts,
                                          @Param("depts") List<String> depts);
 
     List<AccCtrlProcess> selectRecodByAccessControlIds(@Param("accessControlIds") List<String> accessControlIds);

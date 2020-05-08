@@ -1,7 +1,6 @@
 package com.summit.service.impl;
 
 import cn.hutool.core.date.DateTime;
-import com.summit.cbb.utils.page.Page;
 import com.summit.dao.entity.AccCtrlProcess;
 import com.summit.sdk.huawei.model.CardType;
 import com.summit.sdk.huawei.model.FaceInfo;
@@ -36,12 +35,6 @@ public class AccCtrlProcessServiceImplTest {
     }
     @Test
     public void selectAccCtrlProcessCondition() throws Exception {
-        AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
-//        accCtrlProcess.setAccCtrlProId("1163356805951225858");
-//        accCtrlProcess.setAccessControlName("门");
-//        accCtrlProcess.setProcessType(3);
-        Page<AccCtrlProcess> accCtrlProcessPage = accCtrlProcessService.selectAccCtrlProcessCondition(null,null,null,null,null);
-        System.out.println(accCtrlProcessPage);
     }
     @Test
     public void selectAccCtrlProcessByLockCode() {

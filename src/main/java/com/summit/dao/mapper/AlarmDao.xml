@@ -17,6 +17,7 @@
         <result column="acc_ctrl_status" jdbcType="INTEGER" property="accCtrlStatus"/>
         <result column="enterOrExit" jdbcType="INTEGER" property="enterOrExit"/>
         <result column="alarm_deal_status" jdbcType="INTEGER" property="alarmDealStatus"/>
+        <result column="deptNames" jdbcType="VARCHAR" property="deptNames"/>
 
         <association property="accCtrlProcess" javaType="com.summit.dao.entity.AccCtrlProcess">
             <result column="acc_ctrl_pro_id" jdbcType="VARCHAR" property="accCtrlProId"/>
@@ -37,7 +38,6 @@
             <result column="face_match_rate" jdbcType="REAL" property="faceMatchRate"/>
             <result column="face_lib_name" jdbcType="VARCHAR" property="faceLibName"/>
             <result column="face_lib_type" jdbcType="INTEGER" property="faceLibType"/>
-
             <result column="process_type" jdbcType="INTEGER" property="processType"/>
             <result column="acc_process_result" jdbcType="VARCHAR" property="processResult"/>
             <result column="fail_reason" jdbcType="VARCHAR" property="failReason"/>
@@ -111,6 +111,13 @@
     </sql>
     <sql id="Face_Match_Alias_List">
         fi3.file_id fi3_id, fi3.file_name fi3_name, fi3.file_path fi3_path, fi3.description fi3_des
+    </sql>
+    <sql id="Alarm_Info_List">
+        al.alarm_id, al.acc_ctrl_pro_id, al.alarm_time, al.alarm_status, al.process_person,
+        al.description,al.process_remark,al.enterOrExit,al.alarm_deal_status,
+        ac.access_control_id, ac.access_control_name, ac.lock_id, ac.lock_code,
+        acp.user_name, acp.gender, acp.birthday, acp.province, acp.city, acp.card_type, acp.card_id,
+        acp.face_match_rate,accDept.deptNames,accDept.depts
     </sql>
 
     <select id="selectAlarmById" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -192,17 +199,24 @@
 
     <select id="selectCondition" resultMap="BaseResultMap">
         select
-        <include refid="Alarm_Have_Alias_List"/>,
-        <include refid="AccCtrl_Have_Alias_List"/>,
-        <include refid="Face_Panorama_Alias_List"/>,
-        <include refid="Face_Pic_Alias_List"/>,
-        <include refid="Face_Match_Alias_List"/>
+        <include refid="Alarm_Info_List"/>
         from alarm al
         inner join acc_ctrl_process acp on al.acc_ctrl_pro_id=acp.acc_ctrl_pro_id
         inner join access_control ac on ac.access_control_id = acp.access_control_id
-        left join file_info fi1 on acp.face_panorama_id=fi1.file_id
-        left join file_info fi2 on acp.face_pic_id=fi2.file_id
-        left join file_info fi3 on acp.face_match_id=fi3.file_id
+        left join(
+        SELECT dc.access_control_id,GROUP_CONCAT(dc.dept_id)AS depts, GROUP_CONCAT(dept.DEPTNAME)AS deptNames
+        FROM dept_accesscontrol_auth dc
+        inner join cbb_userauth.sys_dept dept on dc.dept_id=dept.ID
+        <where>
+            <if test="userDepts != null">
+                dc.dept_id IN
+                <foreach item="userDept" collection="userDepts" index="index" open="(" separator="," close=")">
+                    #{userDept}
+                </foreach>
+            </if>
+        </where>
+        GROUP BY access_control_id
+        )accDept on ac.access_control_id=accDept.access_control_id
         <where>
             <if test="depts != null">
                 ac.access_control_id IN ( SELECT DISTINCT au.access_control_id FROM dept_accesscontrol_auth au WHERE au.dept_id IN
@@ -235,6 +249,9 @@
                 </if>
                 <if test="alarm.alarmDealStatus != null">
                     and al.alarm_deal_status = #{alarm.alarmDealStatus}
+                </if>
+                <if test="alarmStatus != null">
+                    and al.alarm_status = #{alarmStatus}
                 </if>
                 <if test="alarm.processPerson != null">
                     and al.process_person = #{alarm.processPerson}

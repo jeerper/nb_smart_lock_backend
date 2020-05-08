@@ -1,5 +1,6 @@
 package com.summit.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -199,7 +201,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
      */
     @Override
     public List<AccCtrlProcess> selectAll() {
-        return accCtrlProcessDao.selectCondition(null, null, null, null, UserAuthUtils.getRoles());
+        return null;
     }
 
     /**
@@ -237,7 +239,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         if (current != null && pageSize != null) {
             pageParam = new Page<>(current, pageSize);
         }
-        return accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, UserAuthUtils.getRoles());
+        return null;
     }
 
     /**
@@ -248,7 +250,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
      */
     @Override
     public List<AccCtrlProcess> selectAccCtrlProcessByAccCtrlId(String accessControlId, Integer current, Integer pageSize) {
-        return selectAccCtrlProcessByAccCtrlId(accessControlId, null, null, current, pageSize);
+        return null;
     }
 
     /**
@@ -272,7 +274,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         }
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setAccessControlName(accessControlName);
-        return accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, UserAuthUtils.getRoles());
+        return null;
     }
 
     /**
@@ -283,7 +285,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
      */
     @Override
     public List<AccCtrlProcess> selectAccCtrlProcessByName(String accessControlName, Integer current, Integer pageSize) {
-        return selectAccCtrlProcessByName(accessControlName, null, null, current, pageSize);
+        return null;
     }
 
     /**
@@ -307,7 +309,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         }
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setLockCode(lockCode);
-        return accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, UserAuthUtils.getRoles());
+        return null;
     }
 
     /**
@@ -318,7 +320,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
      */
     @Override
     public List<AccCtrlProcess> selectAccCtrlProcessByLockCode(String lockCode, Integer current, Integer pageSize) {
-        return selectAccCtrlProcessByLockCode(lockCode, null, null, current, pageSize);
+        return null;
     }
 
     /**
@@ -342,7 +344,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         }
         AccCtrlProcess accCtrlProcess = new AccCtrlProcess();
         accCtrlProcess.setProcessType(processType);
-        return accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, UserAuthUtils.getRoles());
+        return null;
     }
 
     /**
@@ -353,7 +355,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
      */
     @Override
     public List<AccCtrlProcess> selectAccCtrlProcessByType(Integer processType, Integer current, Integer pageSize) {
-        return selectAccCtrlProcessByType(processType, null, null, current, pageSize);
+        return null;
     }
 
     /**
@@ -365,7 +367,7 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
      * @return 门禁操作记录列表
      */
     @Override
-    public Page<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, Date start, Date end, Integer current,
+    public Page<AccCtrlProcess> selectAccCtrlProcessCondition(AccCtrlProcess accCtrlProcess, String deptIds, Date start, Date end, Integer current,
                                                               Integer pageSize) throws Exception {
 
         Page<AccCtrlProcess> pageParam = null;
@@ -375,16 +377,43 @@ public class AccCtrlProcessServiceImpl implements AccCtrlProcessService {
         }
         List<String> dept_ids =new ArrayList<>();
         String currentDeptService = deptsService.getCurrentDeptService();
-        JSONObject paramJson=new JSONObject();
-        paramJson.put("pdept",currentDeptService);
-        List<String> depts = deptsService.getDeptsByPdept(paramJson);
-        if (!CommonUtil.isEmptyList(depts)){
-            for (String dept_id:depts){
-                dept_ids.add(dept_id);
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("pdept",currentDeptService);
+        List<String> userDepts = deptsService.getDeptsByPdept(jsonObject);
+        if (StrUtil.isNotBlank(deptIds)){
+            if (deptIds.contains(",")){//多个部门
+                String[] list = deptIds.split(",");
+                List<String> deptIdList = Arrays.asList(list);
+                for (String deptId:deptIdList){
+                    JSONObject paramJson=new JSONObject();
+                    paramJson.put("pdept",deptId);
+                    List<String> depts = deptsService.getDeptsByPdept(paramJson);
+                    if (!CommonUtil.isEmptyList(depts)){
+                        for (String dept_id:depts){
+                            dept_ids.add(dept_id);
+                        }
+                    }
+                }
+            }else {//一个部门
+                JSONObject paramJson=new JSONObject();
+                paramJson.put("pdept",deptIds);
+                List<String> depts = deptsService.getDeptsByPdept(paramJson);
+                if (!CommonUtil.isEmptyList(depts)){
+                    for (String dept_id:depts){
+                        dept_ids.add(dept_id);
+                    }
+                }
+            }
+        }else {
+            if (!CommonUtil.isEmptyList(userDepts)){
+                for (String dept_id:userDepts){
+                    dept_ids.add(dept_id);
+                }
             }
         }
+        CommonUtil.removeDuplicate(dept_ids);//去重
         if (!CommonUtil.isEmptyList(dept_ids)){
-            List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, dept_ids);
+            List<AccCtrlProcess> accCtrlProcesses = accCtrlProcessDao.selectCondition(pageParam, accCtrlProcess, start, end, userDepts, dept_ids);
             if (pageParam != null) {
                 pageParam.setRecords(accCtrlProcesses);
                 return pageParam;
