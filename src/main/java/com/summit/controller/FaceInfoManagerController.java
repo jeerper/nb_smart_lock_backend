@@ -14,6 +14,7 @@ import com.summit.dao.entity.FaceInfo;
 import com.summit.dao.entity.Province;
 import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.entity.FaceInfoManagerEntity;
+import com.summit.entity.FaceUploadZipInfo;
 import com.summit.entity.SimpleFaceInfo;
 import com.summit.exception.ErrorMsgException;
 import com.summit.service.DeptsService;
@@ -28,6 +29,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.BoundValueOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,6 +65,8 @@ public class FaceInfoManagerController {
     private String filePath;
     @Autowired
     private DeptsService deptsService;
+    @Autowired
+    RedisTemplate<String, Object> genericRedisTemplate;
 
     @ApiOperation(value = "录入人脸信息", notes = "返回不是-1则为成功")
     @PostMapping(value = "insertFaceInfo")
@@ -277,7 +282,8 @@ public class FaceInfoManagerController {
         List<String> deptNames=new ArrayList<>();
         for (DeptBean deptBean:allDept.getData()){
             if (userDeptIds.contains(deptBean.getId())){
-                deptNames.add(deptBean.getDeptName()+"("+deptBean.getDeptCode()+")");
+               /* deptNames.add(deptBean.getDeptName()+"("+deptBean.getDeptCode()+")");*/
+                deptNames.add(deptBean.getDeptCode());
             }
         }
         String[] dept_names = deptNames.toArray(new String[deptNames.size()]);
@@ -302,9 +308,10 @@ public class FaceInfoManagerController {
     @ApiOperation(value = "人脸批量导入zip")
     @RequestMapping(value = "/uploadZip", method = RequestMethod.POST,consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public RestfulEntityBySummit<String> uploadZip(@ApiParam(value = "压缩文件夹", required = true)
-                                                     @RequestPart("faceZip") MultipartFile faceZip) throws IOException {
+                                                   @RequestPart("faceZip") MultipartFile faceZip) throws IOException {
         JSONObject filesName = null;
         String msg = "人脸信息批量导入失败";
+        String zipId=null;
         if (faceZip !=null){
             try{
                 String zipPath=new StringBuilder()
@@ -319,16 +326,37 @@ public class FaceInfoManagerController {
                 String fileName = filesName.getString("fileName");
                 String zipFileName = fileName.substring(0,fileName.indexOf("."));
                 ZipUtil.unzip(zipPath+fileName,zipPath+zipFileName);
-                excelLoadData.loadFaceZip(zipPath+zipFileName);
+                zipId = excelLoadData.loadFaceZip(zipPath + zipFileName);
             }catch (Exception e){
                 log.error(msg,e);
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, e.getMessage(), null);
             }
-            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸信息批量导入成功",null);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸信息批量导入成功",zipId);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"导入压缩文件夹为空",null);
     }
 
+    @ApiOperation(value = "根据人脸上传id查询人脸上传结果")
+    @GetMapping(value = "/getFaceUploadResultById")
+    public RestfulEntityBySummit<FaceUploadZipInfo> getFaceUploadResultById(@ApiParam(value = "人脸上传Id",required = true)  @RequestParam(value = "uploadId") String uploadId){
+        if(uploadId == null){
+            log.error("人脸上传Id为空");
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9993,"人脸上传Id为空",null);
+        }
+        FaceUploadZipInfo faceUploadZipInfo=null;
+        try{
+            boolean isExists=genericRedisTemplate.hasKey(uploadId);
+            if (isExists){
+                BoundValueOperations<String,Object> boundValueOperations=genericRedisTemplate.boundValueOps(uploadId);
+                faceUploadZipInfo =(FaceUploadZipInfo)boundValueOperations.get();
+            }
+        }catch (Exception e){
+            log.error("根据人脸上传id查询人脸上传结果失败",e);
+            e.printStackTrace();
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"根据人脸上传id查询人脸上传结果失败",faceUploadZipInfo);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"根据人脸上传id查询人脸上传结果失败成功",faceUploadZipInfo);
+    }
 
 
 

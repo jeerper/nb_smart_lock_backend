@@ -16,7 +16,9 @@ import com.summit.dao.entity.LockInfo;
 import com.summit.dao.repository.AccCtrlDeptDao;
 import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.entity.AccCtrlDept;
+import com.summit.entity.FaceUploadZipInfo;
 import com.summit.exception.ErrorMsgException;
+import com.summit.sdk.huawei.model.FaceZipUploadStatus;
 import com.summit.service.FaceInfoManagerService;
 import com.summit.service.ICbbUserAuthService;
 import com.summit.service.LockInfoService;
@@ -34,9 +36,13 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
+import rx.Observable;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,6 +51,7 @@ import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -66,6 +73,8 @@ public class ExcelLoadData {
     private FaceInfoManagerService faceInfoManagerService;
     @Autowired
     private BaiduSdkClient baiduSdkClient;
+    @Autowired
+    RedisTemplate<String, Object> genericRedisTemplate;
 
     public Map<String,Object> loadExcel(MultipartFile file) throws Exception{
 
@@ -130,16 +139,16 @@ public class ExcelLoadData {
                 accessControlInfo.setLockCode(lock_code);
                 String deptNames = getCellValue(row.getCell(2));
                 if (StrUtil.isBlank(deptNames)){
-                    throw new ErrorMsgException("所属部门不能为空!");
+                    throw new ErrorMsgException("所属部门编码不能为空!");
                 }
                 RestfulEntityBySummit<List<DeptBean>> queryAllDept = iCbbUserAuthService.queryAllDept();
                 List<DeptBean> deptBeans = queryAllDept.getData();
                 if (CommonUtil.isEmptyList(deptBeans)){
                     throw new ErrorMsgException("部门管理列表为空!");
                 }
-                List<String> deptIds=getDeptIdsByNameAndCode(deptNames,deptBeans);
+                List<String> deptIds=getDeptIdsByDeptCode(deptNames,deptBeans);
                 if (CommonUtil.isEmptyList(deptIds)){
-                    throw new ErrorMsgException("所属部门为空!");
+                    throw new ErrorMsgException("所属部门编码不匹配!");
                 }
                 for (String deptId:deptIds){
                     accCtrlDeptDao.insert(new AccCtrlDept(null,deptId,accessControlInfo.getAccessControlId()));
@@ -183,7 +192,17 @@ public class ExcelLoadData {
         }
         return deptIds;
     }
-
+    private List<String> getDeptIdsByDeptCode(String deptNames, List<DeptBean> deptBeans) {
+        List<String> deptIds=new ArrayList<>();
+       /* String deptcode = deptNames.substring(deptNames.indexOf("(")+1,  deptNames.indexOf(")"));*/
+        for (DeptBean deptBean:deptBeans){
+            if (deptNames.equalsIgnoreCase(deptBean.getDeptCode())){
+                deptIds.add(deptBean.getId());
+                break;
+            }
+        }
+        return deptIds;
+    }
     private List<String> getDeptIds(String deptNames,List<DeptBean> deptBeans ) {
         List<String> deptIds=new ArrayList<>();
         if (deptNames.contains(",") ){//多个部门名称
@@ -315,18 +334,18 @@ public class ExcelLoadData {
                     throw new Exception("有效日期不能为空!");
                 }
                 faceInfo.setFaceEndTime(DateUtil.stringToDate(faceEndTime,"yyyy-MM-dd"));
-                String setDeptNames = getCellValue(row.getCell(9));//所属机构单个
+                String setDeptNames = getCellValue(row.getCell(9));//所属机构编码
                 if (StrUtil.isBlank(setDeptNames)){
-                    throw new Exception("所属机构为空!");
+                    throw new Exception("所属机构编码为空!");
                 }
                 RestfulEntityBySummit<List<DeptBean>> allDept = iCbbUserAuthService.queryAllDept();
                 List<String> deptCodes=new ArrayList<>();
                 for (DeptBean deptBean:allDept.getData()){
                     deptCodes.add(deptBean.getDeptCode());
                 }
-                String deptCode = setDeptNames.substring(setDeptNames.indexOf("(")+1, setDeptNames.lastIndexOf(")"));
-                if (!deptCodes.contains(deptCode)){
-                    throw new Exception("所属机构不匹配!");
+               // String deptCode = setDeptNames.substring(setDeptNames.indexOf("(")+1, setDeptNames.lastIndexOf(")"));
+                if (!deptCodes.contains(setDeptNames)){
+                    throw new Exception("所属机构编码不匹配: "+setDeptNames);
                 }
                 faceInfo.setDeptNames(setDeptNames);
                 faceInfo.setIsValidTime(0);
@@ -421,7 +440,7 @@ public class ExcelLoadData {
         return item;
     }
 
-    public void loadFaceZip(String path) throws Exception {
+    public String loadFaceZip(String path) throws Exception {
             List<File> files = FileUtil.loopFiles(path);
             List<FaceInfo> faceInfos=null;
             for (File file:files){
@@ -458,44 +477,85 @@ public class ExcelLoadData {
                         throw new Exception("人脸图片命名和身份证号不匹配，名字为："+faceInfo.getUserName());
                     }
                 }
-                List<FaceInfo> faceInfoLibrary = faceInfoManagerDao.selectList(null);
-                for (FaceInfo faceInfo:faceInfos){
-                    String faceImagesAbsolutePath = faceInfo.getFaceImage();
-                    String subNewImageBase64 = com.summit.util.FileUtil.imageToBase64Str(faceImagesAbsolutePath);
-                    byte[] subNewImageBase64Byte = FileUtil.readBytes(faceImagesAbsolutePath);
-                    if (!baiduSdkClient.detectFace(subNewImageBase64)) {
-                        throw new Exception("上传的图片中没有检测到人脸!");
-                    }
-                    for (FaceInfo face : faceInfoLibrary) {
-                        if (StrUtil.isBlank(face.getFaceImage())) {
-                            continue;
-                        }
-                        String faceImageAbsolutePath = SystemUtil.getUserInfo().getCurrentDir() + face.getFaceImage();
-                        try {
-                            byte[] faceImageBase64 = FileUtil.readBytes(faceImageAbsolutePath);
-                            if (Arrays.equals(subNewImageBase64Byte, faceImageBase64)) {
-                                throw new Exception("人脸添加失败,头像重复!");
+            }
+        String zipId = IdWorker.getIdStr();
+        Observable.just(faceInfos)
+                    .observeOn(Schedulers.io())
+                    .subscribe(new Action1<List<FaceInfo>>() {
+                        @Override
+                        public void call(List<FaceInfo> faceInfos) {
+                            if (!CommonUtil.isEmptyList(faceInfos)){
+                                List<FaceInfo> faceInfoLibrary = faceInfoManagerDao.selectList(null);
+                                FaceUploadZipInfo faceUploadZipInfo=new FaceUploadZipInfo();
+                                for (FaceInfo faceInfo:faceInfos){
+                                    String faceImagesAbsolutePath = faceInfo.getFaceImage();
+                                    String subNewImageBase64 = com.summit.util.FileUtil.imageToBase64Str(faceImagesAbsolutePath);
+                                    byte[] subNewImageBase64Byte = FileUtil.readBytes(faceImagesAbsolutePath);
+                                    try {
+                                        if (!baiduSdkClient.detectFace(subNewImageBase64)) {
+                                            faceUploadZipInfo.setUpstate(FaceZipUploadStatus.FaceNoDetected.getCode());
+                                            faceUploadZipInfo.setFaceName(faceInfo.getUserName());
+                                            genericRedisTemplate.opsForValue().set(zipId, faceUploadZipInfo, 2,  TimeUnit.MINUTES);
+                                            return;
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    for (FaceInfo face : faceInfoLibrary) {
+                                        if (StrUtil.isBlank(face.getFaceImage())) {
+                                            continue;
+                                        }
+                                        String faceImageAbsolutePath = SystemUtil.getUserInfo().getCurrentDir() + face.getFaceImage();
+                                        try {
+                                            byte[] faceImageBase64 = FileUtil.readBytes(faceImageAbsolutePath);
+                                            if (Arrays.equals(subNewImageBase64Byte, faceImageBase64)) {
+                                                faceUploadZipInfo.setUpstate(FaceZipUploadStatus.FaceRepeat.getCode());
+                                                faceUploadZipInfo.setFaceName(faceInfo.getUserName());
+                                                genericRedisTemplate.opsForValue().set(zipId, faceUploadZipInfo, 2,  TimeUnit.MINUTES);
+                                                return;
+                                            }
+                                        } catch (IORuntimeException e) {
+                                            e.printStackTrace();
+                                            log.error("本地人脸库图片丢失,图片路径：" + faceImagesAbsolutePath);
+                                        }
+                                    }
+                                    String faceId = baiduSdkClient.searchFace(subNewImageBase64).getFaceId();
+                                    if (StrUtil.isNotBlank(faceId)) {
+                                        FaceInfo similarFaceInfo = faceInfoManagerDao.selectById(faceId);
+                                        if (similarFaceInfo != null) {
+                                            faceUploadZipInfo.setUpstate(FaceZipUploadStatus.FaceSimilar.getCode());
+                                            faceUploadZipInfo.setFaceName(faceInfo.getUserName());
+                                            genericRedisTemplate.opsForValue().set(zipId, faceUploadZipInfo, 2,  TimeUnit.MINUTES);
+                                            return;
+                                        } else {
+                                            faceUploadZipInfo.setUpstate(FaceZipUploadStatus.FaceSimilar.getCode());
+                                            faceUploadZipInfo.setFaceName(faceInfo.getUserName());
+                                            genericRedisTemplate.opsForValue().set(zipId, faceUploadZipInfo, 2,  TimeUnit.MINUTES);
+                                            return;
+                                        }
+                                    }
+                                    faceUploadZipInfo.setUpstate(FaceZipUploadStatus.FaceUploading.getCode());
+                                    //faceUploadZipInfo.setFaceName(faceInfo.getUserName());
+                                    genericRedisTemplate.opsForValue().set(zipId, faceUploadZipInfo, 2,  TimeUnit.MINUTES);
+                                }
+                                for (FaceInfo faceInfo:faceInfos){
+                                    try {
+                                        faceInfoManagerService.insertFaceInfoByExcel(faceInfo);
+                                        faceUploadZipInfo.setUpstate(FaceZipUploadStatus.FaceUploading.getCode());
+                                        //faceUploadZipInfo.setFaceName(faceInfo.getUserName());
+                                        genericRedisTemplate.opsForValue().set(zipId, faceUploadZipInfo, 2,  TimeUnit.MINUTES);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                faceUploadZipInfo.setUpstate(FaceZipUploadStatus.FaceUploadSucess.getCode());
+                                faceUploadZipInfo.setFaceName("全部人脸");
+                                genericRedisTemplate.opsForValue().set(zipId, faceUploadZipInfo, 2,  TimeUnit.MINUTES);
                             }
-                        } catch (IORuntimeException e) {
-                            e.printStackTrace();
-                            log.error("本地人脸库图片丢失,图片路径：" + faceImagesAbsolutePath);
                         }
-                    }
-                    String faceId = baiduSdkClient.searchFace(subNewImageBase64).getFaceId();
-                    if (StrUtil.isNotBlank(faceId)) {
-                        FaceInfo similarFaceInfo = faceInfoManagerDao.selectById(faceId);
-                        if (similarFaceInfo != null) {
-                            throw new Exception("发现人脸库中有相似的人脸，名字为：" + similarFaceInfo.getUserName() + "，不能重复录入相同的人脸");
-                        } else {
-                            throw new Exception("发现人脸库中有相似的人脸，名字为：null，不能重复录入相同的人脸");
-                        }
-                    }
-                }
-            }
-            if (!CommonUtil.isEmptyList(faceInfos)){
-                for (FaceInfo faceInfo:faceInfos){
-                    faceInfoManagerService.insertFaceInfoByExcel(faceInfo);
-                }
-            }
+                    });
+
+            return zipId;
+
     }
 }

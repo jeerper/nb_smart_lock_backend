@@ -17,7 +17,6 @@ import com.summit.exception.ErrorMsgException;
 import com.summit.service.*;
 import com.summit.util.CommonUtil;
 import com.summit.util.EasyExcelUtil;
-import com.summit.util.ExcelExportUtil;
 import com.summit.util.ExcelLoadData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -228,7 +227,7 @@ public class AccessControlInfoController {
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_9991,"导入文件为空",null);
     }
 
-    @ApiOperation(value="门禁信息导出excel模板")
+    /*@ApiOperation(value="门禁信息导出excel模板")
     @RequestMapping(value = "/loginAccessControlInfoExport", method = RequestMethod.GET)
     public RestfulEntityBySummit<String> loginAccessControlInfoExport( @ApiParam(value = "门禁名")  @RequestParam(value = "accessControlName",required = false) String accessControlName,
                                                                        @ApiParam(value = "创建人")  @RequestParam(value = "createby",required = false) String createby,
@@ -259,7 +258,7 @@ public class AccessControlInfoController {
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"门禁信息批量导出excel模板失败",fileName);
         }
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"门禁信息批量导出excel模板成功",fileName);
-    }
+    }*/
 
     @ApiOperation(value="获取门禁信息导入模板")
     @RequestMapping(value = "/getAccCtrlTemplate", method = RequestMethod.GET)
@@ -273,7 +272,8 @@ public class AccessControlInfoController {
         List<String> deptNames=new ArrayList<>();
         for (DeptBean deptBean:allDept.getData()){
             if (userDeptIds.contains(deptBean.getId())){
-                deptNames.add(deptBean.getDeptName()+"("+deptBean.getDeptCode()+")");
+                /*deptNames.add(deptBean.getDeptName()+"("+deptBean.getDeptCode()+")");*/
+                deptNames.add(deptBean.getDeptCode());
             }
         }
         response.setCharacterEncoding("UTF-8");

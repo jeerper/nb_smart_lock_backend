@@ -4,7 +4,7 @@ import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 import com.summit.exception.ErrorMsgException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFDataValidation;
@@ -91,6 +91,36 @@ public class EasyExcelUtil {
             }
         }
     }
+
+    private static HSSFDataValidation getDataValidationList4Col(HSSFSheet sheet,  String[] dataArray, int col, HSSFWorkbook wbCreat) {
+        HSSFSheet hidden = wbCreat.createSheet("hidden");
+        HSSFCell cell = null;
+        for (int i = 0, length = dataArray.length; i < length; i++)
+        {
+            String name = dataArray[i];
+            HSSFRow row = hidden.createRow(i);
+            cell = row.createCell(0);
+            cell.setCellValue(name);
+        }
+
+        Name namedCell = wbCreat.createName();
+        namedCell.setNameName("hidden");
+        namedCell.setRefersToFormula("hidden!$A$1:$A$" + dataArray.length);
+        //加载数据,将名称为hidden的
+        DVConstraint constraint = DVConstraint.createFormulaListConstraint("hidden");
+
+        // 设置数据有效性加载在哪个单元格上,四个参数分别是：起始行、终止行、起始列、终止列
+        CellRangeAddressList addressList = new CellRangeAddressList(2, 65535, col, col);
+        HSSFDataValidation validation = new HSSFDataValidation(addressList, constraint);
+        //将第二个sheet设置为隐藏
+        wbCreat.setSheetHidden(1, true);
+        if (null != validation)
+        {
+            sheet.addValidationData(validation);
+        }
+        return validation;
+    }
+
     public static DataValidation createDataValidation(Sheet sheet, String[] dataSource, int col) {
         CellRangeAddressList cellRangeAddressList = new CellRangeAddressList(2, 65535, col, col);
 
