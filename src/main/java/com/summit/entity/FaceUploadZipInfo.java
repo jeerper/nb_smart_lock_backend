@@ -6,4 +6,5 @@ import lombok.Data;
 public class FaceUploadZipInfo {
     private String faceName;
     private Integer upstate;
+    private String upDescription;
 }

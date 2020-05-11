@@ -355,7 +355,7 @@ public class FaceInfoManagerController {
             e.printStackTrace();
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999,"根据人脸上传id查询人脸上传结果失败",faceUploadZipInfo);
         }
-        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"根据人脸上传id查询人脸上传结果失败成功",faceUploadZipInfo);
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"根据人脸上传id查询人脸上传结果成功",faceUploadZipInfo);
     }
 
 

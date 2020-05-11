@@ -441,43 +441,43 @@ public class ExcelLoadData {
     }
 
     public String loadFaceZip(String path) throws Exception {
-            List<File> files = FileUtil.loopFiles(path);
-            List<FaceInfo> faceInfos=null;
-            for (File file:files){
-                String extName = FileUtil.extName(file.getName());//扩展名
-                if(extName.equals(XLS) || extName.equals(XLSK)) {
-                    MultipartFile multipartFile = getMulFileByPath(file.getAbsolutePath());
-                    Map<String, Object> stringObjectMap = loadFaceExcel(multipartFile);
-                    faceInfos = (List<FaceInfo>)stringObjectMap.get("faceInfos");
-                }
+        List<File> files = FileUtil.loopFiles(path);
+        List<FaceInfo> faceInfos=null;
+        for (File file:files){
+            String extName = FileUtil.extName(file.getName());//扩展名
+            if(extName.equals(XLS) || extName.equals(XLSK)) {
+                MultipartFile multipartFile = getMulFileByPath(file.getAbsolutePath());
+                Map<String, Object> stringObjectMap = loadFaceExcel(multipartFile);
+                faceInfos = (List<FaceInfo>)stringObjectMap.get("faceInfos");
             }
-            if (!CommonUtil.isEmptyList(faceInfos)){
-                for (FaceInfo faceInfo:faceInfos){
-                    for (File file:files){
-                        String fileName = file.getName();
-                        String extName = FileUtil.extName(fileName);//扩展名
-                        String absolutePath = file.getAbsolutePath();
-                        String name = fileName.substring(0,fileName.lastIndexOf("."));
-                        if (name.equalsIgnoreCase(faceInfo.getCardId())){
-                            if (extName.equals(JPG)|| extName.equals(PNG) || extName.equals(JPEG)){
-                                faceInfo.setFaceImage(absolutePath);
-                            }else {
-                                throw new Exception("图片格式不对!");
-                            }
+        }
+        if (!CommonUtil.isEmptyList(faceInfos)){
+            for (FaceInfo faceInfo:faceInfos){
+                for (File file:files){
+                    String fileName = file.getName();
+                    String extName = FileUtil.extName(fileName);//扩展名
+                    String absolutePath = file.getAbsolutePath();
+                    String name = fileName.substring(0,fileName.lastIndexOf("."));
+                    if (name.equalsIgnoreCase(faceInfo.getCardId())){
+                        if (extName.equals(JPG)|| extName.equals(PNG) || extName.equals(JPEG)){
+                            faceInfo.setFaceImage(absolutePath);
+                        }else {
+                            throw new Exception("图片格式不对!");
                         }
                     }
                 }
-            }else {
-                throw new Exception("execl文件不存在!");
             }
-            if (!CommonUtil.isEmptyList(faceInfos)){
-                for (FaceInfo faceInfo:faceInfos){
-                    if (StrUtil.isBlank(faceInfo.getFaceImage())) {
-                        log.error("人脸图片命名和身份证号不匹配!");
-                        throw new Exception("人脸图片命名和身份证号不匹配，名字为："+faceInfo.getUserName());
-                    }
+        }else {
+            throw new Exception("execl文件不存在!");
+        }
+        if (!CommonUtil.isEmptyList(faceInfos)){
+            for (FaceInfo faceInfo:faceInfos){
+                if (StrUtil.isBlank(faceInfo.getFaceImage())) {
+                    log.error("人脸图片命名和身份证号不匹配!");
+                    throw new Exception("人脸图片命名和身份证号不匹配，名字为："+faceInfo.getUserName());
                 }
             }
+        }
         String zipId = IdWorker.getIdStr();
         Observable.just(faceInfos)
                     .observeOn(Schedulers.io())
@@ -494,6 +494,7 @@ public class ExcelLoadData {
                                     try {
                                         if (!baiduSdkClient.detectFace(subNewImageBase64)) {
                                             faceUploadZipInfo.setUpstate(FaceZipUploadStatus.FaceNoDetected.getCode());
+                                            faceUploadZipInfo.setUpDescription(FaceZipUploadStatus.FaceNoDetected.getDescription());
                                             faceUploadZipInfo.setFaceName(faceInfo.getUserName());
                                             genericRedisTemplate.opsForValue().set(zipId, faceUploadZipInfo, 2,  TimeUnit.MINUTES);
                                             return;
@@ -510,6 +511,7 @@ public class ExcelLoadData {
                                             byte[] faceImageBase64 = FileUtil.readBytes(faceImageAbsolutePath);
                                             if (Arrays.equals(subNewImageBase64Byte, faceImageBase64)) {
                                                 faceUploadZipInfo.setUpstate(FaceZipUploadStatus.FaceRepeat.getCode());
+                                                faceUploadZipInfo.setUpDescription(FaceZipUploadStatus.FaceRepeat.getDescription());
                                                 faceUploadZipInfo.setFaceName(faceInfo.getUserName());
                                                 genericRedisTemplate.opsForValue().set(zipId, faceUploadZipInfo, 2,  TimeUnit.MINUTES);
                                                 return;
@@ -524,17 +526,20 @@ public class ExcelLoadData {
                                         FaceInfo similarFaceInfo = faceInfoManagerDao.selectById(faceId);
                                         if (similarFaceInfo != null) {
                                             faceUploadZipInfo.setUpstate(FaceZipUploadStatus.FaceSimilar.getCode());
+                                            faceUploadZipInfo.setUpDescription(FaceZipUploadStatus.FaceSimilar.getDescription());
                                             faceUploadZipInfo.setFaceName(faceInfo.getUserName());
                                             genericRedisTemplate.opsForValue().set(zipId, faceUploadZipInfo, 2,  TimeUnit.MINUTES);
                                             return;
                                         } else {
                                             faceUploadZipInfo.setUpstate(FaceZipUploadStatus.FaceSimilar.getCode());
+                                            faceUploadZipInfo.setUpDescription(FaceZipUploadStatus.FaceSimilar.getDescription());
                                             faceUploadZipInfo.setFaceName(faceInfo.getUserName());
                                             genericRedisTemplate.opsForValue().set(zipId, faceUploadZipInfo, 2,  TimeUnit.MINUTES);
                                             return;
                                         }
                                     }
                                     faceUploadZipInfo.setUpstate(FaceZipUploadStatus.FaceUploading.getCode());
+                                    faceUploadZipInfo.setUpDescription(FaceZipUploadStatus.FaceUploading.getDescription());
                                     //faceUploadZipInfo.setFaceName(faceInfo.getUserName());
                                     genericRedisTemplate.opsForValue().set(zipId, faceUploadZipInfo, 2,  TimeUnit.MINUTES);
                                 }
@@ -542,6 +547,7 @@ public class ExcelLoadData {
                                     try {
                                         faceInfoManagerService.insertFaceInfoByExcel(faceInfo);
                                         faceUploadZipInfo.setUpstate(FaceZipUploadStatus.FaceUploading.getCode());
+                                        faceUploadZipInfo.setUpDescription(FaceZipUploadStatus.FaceUploading.getDescription());
                                         //faceUploadZipInfo.setFaceName(faceInfo.getUserName());
                                         genericRedisTemplate.opsForValue().set(zipId, faceUploadZipInfo, 2,  TimeUnit.MINUTES);
                                     } catch (Exception e) {
@@ -549,6 +555,7 @@ public class ExcelLoadData {
                                     }
                                 }
                                 faceUploadZipInfo.setUpstate(FaceZipUploadStatus.FaceUploadSucess.getCode());
+                                faceUploadZipInfo.setUpDescription(FaceZipUploadStatus.FaceUploadSucess.getDescription());
                                 faceUploadZipInfo.setFaceName("全部人脸");
                                 genericRedisTemplate.opsForValue().set(zipId, faceUploadZipInfo, 2,  TimeUnit.MINUTES);
                             }
