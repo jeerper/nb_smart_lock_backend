@@ -45,30 +45,36 @@ public class EasyExcelUtil {
             log.error("文件不存在:{}",path);
             throw new ErrorMsgException("文件不存在");
         }
-        if(!path.endsWith(EXCEL_TYPE_XLS) && !path.endsWith(EXCEL_TYPE_XLSX)){
+        /*if(!path.endsWith(EXCEL_TYPE_XLS) && !path.endsWith(EXCEL_TYPE_XLSX)){
+            log.error("文件格式有误");
+            throw new ErrorMsgException("文件格式有误,不是excel格式");
+        }*/
+        if(!path.endsWith(EXCEL_TYPE_XLS)){
             log.error("文件格式有误");
             throw new ErrorMsgException("文件格式有误,不是excel格式");
         }
         FileInputStream in = null;
-        Workbook wb = null;
+        /*Workbook wb = null;*/
+        HSSFWorkbook workbook=null;
         try {
             in = new FileInputStream(path);
             // 根据版本进行不同创建
-            if(path.endsWith(EXCEL_TYPE_XLS)){
+            /*if(path.endsWith(EXCEL_TYPE_XLS)){
                  wb = new HSSFWorkbook(in);//创建excel表
             }else{
                  wb = new XSSFWorkbook(in);//创建excel表
-            }
-            // 设置名称
-            wb.setSheetName(0,sheetName);
-            Sheet sheet = wb.getSheetAt(0);
+            }*/
+            workbook = new HSSFWorkbook(in);
+            workbook.setSheetName(0,sheetName);
+            HSSFSheet sheet = workbook.getSheetAt(0);
             if (dataSource !=null){
-                DataValidation dataValidation = createDataValidation(sheet, dataSource, firstCol);
+                HSSFDataValidation dataValidation = getDataValidationList4Col(sheet, dataSource, firstCol, workbook);
+                /*DataValidation dataValidation = createDataValidation(sheet, dataSource, firstCol);*/
                 sheet.addValidationData(dataValidation);
             }
             //sheet.addValidationData(data_Validation);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            wb.write(out);
+            workbook.write(out);
             return out.toByteArray();
         } catch (Exception ex) {
             log.error("excel 根据模板导入发生了错误", ex);
@@ -82,8 +88,8 @@ public class EasyExcelUtil {
                 log.error("excel 发生错误", ex);
             } finally{
                 try {
-                    if(null != wb){
-                        wb.close();
+                    if(null != workbook){
+                        workbook.close();
                     }
                 } catch (IOException ex) {
                     log.error("excel 发生错误", ex);
@@ -92,7 +98,7 @@ public class EasyExcelUtil {
         }
     }
 
-    private static HSSFDataValidation getDataValidationList4Col(HSSFSheet sheet,  String[] dataArray, int col, HSSFWorkbook wbCreat) {
+    private static HSSFDataValidation getDataValidationList4Col(HSSFSheet sheet,String[] dataArray,int col,HSSFWorkbook wbCreat) {
         HSSFSheet hidden = wbCreat.createSheet("hidden");
         HSSFCell cell = null;
         for (int i = 0, length = dataArray.length; i < length; i++)
@@ -263,40 +269,51 @@ public class EasyExcelUtil {
             log.error("文件不存在:{}",path);
             throw new ErrorMsgException("文件不存在");
         }
-        if(!path.endsWith(EXCEL_TYPE_XLS) && !path.endsWith(EXCEL_TYPE_XLSX)){
+        /*if(!path.endsWith(EXCEL_TYPE_XLS) && !path.endsWith(EXCEL_TYPE_XLSX)){
+            log.error("文件格式有误");
+            throw new ErrorMsgException("文件格式有误,不是excel格式");
+        }*/
+        if(!path.endsWith(EXCEL_TYPE_XLS)){
             log.error("文件格式有误");
             throw new ErrorMsgException("文件格式有误,不是excel格式");
         }
         FileInputStream in = null;
-        Workbook wb = null;
+       /* Workbook wb = null;*/
+        HSSFWorkbook workbook=null;
         try {
             in = new FileInputStream(path);
             // 根据版本进行不同创建
-            if(path.endsWith(EXCEL_TYPE_XLS)){
+            /*if(path.endsWith(EXCEL_TYPE_XLS)){
                 wb = new HSSFWorkbook(in);//创建excel表
             }else{
                 wb = new XSSFWorkbook(in);//创建excel表
-            }
+            }*/
+            workbook = new HSSFWorkbook(in);
             // 设置名称
-            wb.setSheetName(0,sheetName);
-            Sheet sheet = wb.getSheetAt(0);
+            workbook.setSheetName(0,sheetName);
+            HSSFSheet sheet = workbook.getSheetAt(0);
             String[] faceType = map.get(0);
             DataValidation faceType_Validation = createDataValidation(sheet, faceType, 0);
+            /*HSSFDataValidation faceType_Validation = getDataValidationList4Col(sheet, faceType, 0, workbook);*/
+            sheet.addValidationData(faceType_Validation);
             String[] sex = map.get(1);
             DataValidation sex_Validation = createDataValidation(sheet, sex, 4);
-            sheet.addValidationData(faceType_Validation);
+           /* HSSFDataValidation sex_Validation = getDataValidationList4Col(sheet, sex, 4, workbook);*/
             sheet.addValidationData(sex_Validation);
             String[] cardType = map.get(2);
             DataValidation cardType_Validation = createDataValidation(sheet, cardType, 2);
+           /* HSSFDataValidation cardType_Validation = getDataValidationList4Col(sheet, cardType, 2, workbook);*/
             sheet.addValidationData(cardType_Validation);
             String[] provinces = map.get(3);
             DataValidation provinces_Validation = createDataValidation(sheet, provinces, 6);
+          /*  HSSFDataValidation provinces_Validation = getDataValidationList4Col(sheet, provinces, 6, workbook);*/
             sheet.addValidationData(provinces_Validation);
             String[] deptNames = map.get(4);
-            DataValidation deptNames_Validation = createDataValidation(sheet, deptNames, 9);
+           /* DataValidation deptNames_Validation = createDataValidation(sheet, deptNames, 9);*/
+            HSSFDataValidation deptNames_Validation = getDataValidationList4Col(sheet, deptNames, 9, workbook);
             sheet.addValidationData(deptNames_Validation);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            wb.write(out);
+            workbook.write(out);
             return out.toByteArray();
         } catch (Exception ex) {
             log.error("excel 根据模板导入发生了错误", ex);
@@ -310,8 +327,8 @@ public class EasyExcelUtil {
                 log.error("excel 发生错误", ex);
             } finally{
                 try {
-                    if(null != wb){
-                        wb.close();
+                    if(null != workbook){
+                        workbook.close();
                     }
                 } catch (IOException ex) {
                     log.error("excel 发生错误", ex);

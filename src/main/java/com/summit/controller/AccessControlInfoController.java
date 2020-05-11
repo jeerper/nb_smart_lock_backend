@@ -272,8 +272,8 @@ public class AccessControlInfoController {
         List<String> deptNames=new ArrayList<>();
         for (DeptBean deptBean:allDept.getData()){
             if (userDeptIds.contains(deptBean.getId())){
-                /*deptNames.add(deptBean.getDeptName()+"("+deptBean.getDeptCode()+")");*/
-                deptNames.add(deptBean.getDeptCode());
+                deptNames.add(deptBean.getDeptName()+"("+deptBean.getDeptCode()+")");
+               /* deptNames.add(deptBean.getDeptCode());*/
             }
         }
         response.setCharacterEncoding("UTF-8");

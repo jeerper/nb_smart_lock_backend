@@ -139,16 +139,17 @@ public class ExcelLoadData {
                 accessControlInfo.setLockCode(lock_code);
                 String deptNames = getCellValue(row.getCell(2));
                 if (StrUtil.isBlank(deptNames)){
-                    throw new ErrorMsgException("所属部门编码不能为空!");
+                    throw new ErrorMsgException("所属部门!");
                 }
                 RestfulEntityBySummit<List<DeptBean>> queryAllDept = iCbbUserAuthService.queryAllDept();
                 List<DeptBean> deptBeans = queryAllDept.getData();
                 if (CommonUtil.isEmptyList(deptBeans)){
                     throw new ErrorMsgException("部门管理列表为空!");
                 }
-                List<String> deptIds=getDeptIdsByDeptCode(deptNames,deptBeans);
+                /*List<String> deptIds=getDeptIdsByDeptCode(deptNames,deptBeans);*/
+                List<String> deptIds = getDeptIdsByNameAndCode(deptNames, deptBeans);
                 if (CommonUtil.isEmptyList(deptIds)){
-                    throw new ErrorMsgException("所属部门编码不匹配!");
+                    throw new ErrorMsgException("所属部门不匹配!");
                 }
                 for (String deptId:deptIds){
                     accCtrlDeptDao.insert(new AccCtrlDept(null,deptId,accessControlInfo.getAccessControlId()));
@@ -336,16 +337,16 @@ public class ExcelLoadData {
                 faceInfo.setFaceEndTime(DateUtil.stringToDate(faceEndTime,"yyyy-MM-dd"));
                 String setDeptNames = getCellValue(row.getCell(9));//所属机构编码
                 if (StrUtil.isBlank(setDeptNames)){
-                    throw new Exception("所属机构编码为空!");
+                    throw new Exception("所属机构为空!");
                 }
                 RestfulEntityBySummit<List<DeptBean>> allDept = iCbbUserAuthService.queryAllDept();
                 List<String> deptCodes=new ArrayList<>();
                 for (DeptBean deptBean:allDept.getData()){
                     deptCodes.add(deptBean.getDeptCode());
                 }
-               // String deptCode = setDeptNames.substring(setDeptNames.indexOf("(")+1, setDeptNames.lastIndexOf(")"));
-                if (!deptCodes.contains(setDeptNames)){
-                    throw new Exception("所属机构编码不匹配: "+setDeptNames);
+               String deptCode = setDeptNames.substring(setDeptNames.indexOf("(")+1, setDeptNames.lastIndexOf(")"));
+                if (!deptCodes.contains(deptCode)){
+                    throw new Exception("所属机构不匹配: "+setDeptNames);
                 }
                 faceInfo.setDeptNames(setDeptNames);
                 faceInfo.setIsValidTime(0);
@@ -557,7 +558,7 @@ public class ExcelLoadData {
                                 faceUploadZipInfo.setUpstate(FaceZipUploadStatus.FaceUploadSucess.getCode());
                                 faceUploadZipInfo.setUpDescription(FaceZipUploadStatus.FaceUploadSucess.getDescription());
                                 faceUploadZipInfo.setFaceName("全部人脸");
-                                genericRedisTemplate.opsForValue().set(zipId, faceUploadZipInfo, 2,  TimeUnit.MINUTES);
+                                genericRedisTemplate.opsForValue().set(zipId, faceUploadZipInfo, 2,  TimeUnit.SECONDS);
                             }
                         }
                     });

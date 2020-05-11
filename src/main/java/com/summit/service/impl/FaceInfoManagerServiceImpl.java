@@ -235,12 +235,12 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
             //插入部门人脸关系数据表
             if (faceInfo.getDeptNames() != null){
                 String deptName = faceInfo.getDeptNames();
-               /* int i = deptName.indexOf("(");
+                int i = deptName.indexOf("(");
                 int j = deptName.lastIndexOf(")");
-                String deptCode = deptName.substring(i+1, j);*/
+                String deptCode = deptName.substring(i+1, j);
                 RestfulEntityBySummit<List<DeptBean>> allDept = iCbbUserAuthService.queryAllDept();
                 for (DeptBean deptBean:allDept.getData()){
-                    if (deptName.equals(deptBean.getDeptCode())){
+                    if (deptCode.equals(deptBean.getDeptCode())){
                         int result= deptFaceService.insert(deptBean.getId(),faceInfo.getFaceid());
                     }
                 }
