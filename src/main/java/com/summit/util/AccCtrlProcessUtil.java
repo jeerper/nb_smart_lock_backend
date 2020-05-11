@@ -331,6 +331,8 @@ public class AccCtrlProcessUtil {
         alarm.setEnterOrExit(accCtrlProcess.getEnterOrExit());
         alarm.setAlarmStatus(accCtrlProcess.getAlarmStatus());
         alarm.setAccessControlId(accCtrlProcess.getAccessControlId());
+        alarm.setFaceName(accCtrlProcess.getFaceName());
+        alarm.setUserName(accCtrlProcess.getUserName());
         return alarm;
     }
 

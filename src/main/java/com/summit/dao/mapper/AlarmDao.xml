@@ -18,6 +18,9 @@
         <result column="enterOrExit" jdbcType="INTEGER" property="enterOrExit"/>
         <result column="alarm_deal_status" jdbcType="INTEGER" property="alarmDealStatus"/>
         <result column="deptNames" jdbcType="VARCHAR" property="deptNames"/>
+        <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
+        <result column="face_name" jdbcType="VARCHAR" property="faceName"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
 
         <association property="accCtrlProcess" javaType="com.summit.dao.entity.AccCtrlProcess">
             <result column="acc_ctrl_pro_id" jdbcType="VARCHAR" property="accCtrlProId"/>
@@ -80,7 +83,8 @@
     </sql>
     <sql id="Alarm_Have_Alias_List">
         al.alarm_id, al.alarm_name, al.acc_ctrl_pro_id, al.alarm_time, al.alarm_status, al.process_person,
-    al.description,al.updatetime, al.process_remark,acp.process_result,al.enterOrExit,al.alarm_deal_status
+    al.description,al.updatetime, al.process_remark,acp.process_result,al.enterOrExit,al.alarm_deal_status,
+    al.user_name,al.face_name
     </sql>
     <sql id="AccCtrl_Have_Alias_List">
         acp.acc_ctrl_pro_id, ac.access_control_id, ac.access_control_name, acp.device_id, acp.device_ip,
@@ -119,20 +123,24 @@
         acp.user_name, acp.gender, acp.birthday, acp.province, acp.city, acp.card_type, acp.card_id,
         acp.face_match_rate,accDept.deptNames,accDept.depts,acp.process_result
     </sql>
-
+    <sql id="Cbb_Userauth_Info">
+       user.NAME as nickname
+    </sql>
     <select id="selectAlarmById" parameterType="java.lang.String" resultMap="BaseResultMap">
         select acp.process_type acc_ctrl_status,
         <include refid="Alarm_Have_Alias_List"/>,
         <include refid="AccCtrl_Have_Alias_List"/>,
         <include refid="Face_Panorama_Alias_List"/>,
         <include refid="Face_Pic_Alias_List"/>,
-        <include refid="Face_Match_Alias_List"/>
+        <include refid="Face_Match_Alias_List"/>,
+        <include refid="Cbb_Userauth_Info"/>
         from alarm al
         inner join acc_ctrl_process acp on acp.acc_ctrl_pro_id=al.acc_ctrl_pro_id
         inner join access_control ac on ac.access_control_id=acp.access_control_id
         left join file_info fi1 on acp.face_panorama_id=fi1.file_id
         left join file_info fi2 on acp.face_pic_id=fi2.file_id
         left join file_info fi3 on acp.face_match_id=fi3.file_id
+        left join cbb_userauth.sys_user user on al.user_name = user.USERNAME
         <where>
             <if test="depts != null">
                 ac.access_control_id IN ( SELECT DISTINCT au.access_control_id FROM dept_accesscontrol_auth au WHERE au.dept_id IN

@@ -79,6 +79,17 @@ public class Alarm {
     @TableField(exist = false)
     private String deptNames;
 
+    @ApiModelProperty(value = "人脸姓名",name = "faceName")
+    @TableField(value = "face_name")
+    private String faceName;
+
+    @ApiModelProperty(value = "登录账号",name = "userName")
+    @TableField(value = "user_name")
+    private String userName;
+
+    @ApiModelProperty(value="用户昵称",name="nickname")
+    @TableField(exist = false)
+    private String nickname;
 
     public Alarm(){}
 }
