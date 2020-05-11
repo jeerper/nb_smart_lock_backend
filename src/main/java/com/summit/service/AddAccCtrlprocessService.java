@@ -68,4 +68,11 @@ public interface AddAccCtrlprocessService {
      * @return
      */
     int insertOrUpdateEnterOrExitCount(String accessControlId);
+
+    /**
+     * 修改统计分析开关锁次数
+     * @param accessControlId
+     * @return
+     */
+    int insertOrUpdateLockOrUnlockCount(String accessControlId);
 }

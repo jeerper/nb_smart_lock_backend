@@ -2,6 +2,7 @@ package com.summit.controller;
 
 import cn.hutool.system.SystemUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.summit.MainAction;
 import com.summit.cbb.utils.page.Page;
 import com.summit.common.entity.DeptBean;
@@ -12,7 +13,11 @@ import com.summit.common.util.ResultBuilder;
 import com.summit.common.web.filter.UserContextHolder;
 import com.summit.dao.entity.AccCtrlRole;
 import com.summit.dao.entity.AccessControlInfo;
+import com.summit.dao.entity.FaceDept;
 import com.summit.dao.entity.SimpleAccCtrlInfo;
+import com.summit.dao.repository.AccCtrlDeptDao;
+import com.summit.dao.repository.DeptFaceDao;
+import com.summit.entity.AccCtrlDept;
 import com.summit.exception.ErrorMsgException;
 import com.summit.service.*;
 import com.summit.util.CommonUtil;
@@ -53,6 +58,10 @@ public class AccessControlInfoController {
     private String filePath;
     @Autowired
     private DeptsService deptsService;
+    @Autowired
+    private AccCtrlDeptDao accCtrlDeptDao;
+    @Autowired
+    private DeptFaceDao deptFaceDao;
 
 
 
@@ -200,6 +209,43 @@ public class AccessControlInfoController {
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"根据门禁id查询门禁详细信息成功",accessControlInfo);
     }
 
+    @ApiOperation(value = "查询部门删除时判断该部门下有没有人脸和门禁信息")
+    @GetMapping(value = "/checkAccCtrolCountAndFaceCountByDeptId")
+    public RestfulEntityBySummit<String> delDept(@RequestParam(value = "deptIds") String deptIds) {
+        try {
+            if (deptIds.contains(",")){
+                for (String deptId:deptIds.split(",")){
+                    Integer deptAccCtrlCount = accCtrlDeptDao.selectCount(new QueryWrapper<AccCtrlDept>().eq("dept_id", deptId));
+                    if (deptAccCtrlCount>0){
+                        return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "该部门下有门禁信息无法删除", null);
+                    }
+                    Integer deptFaceCount = deptFaceDao.selectCount(new QueryWrapper<FaceDept>().eq("dept_id", deptId));
+                    if (deptFaceCount>0){
+                        return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "该部门下有人脸信息无法删除", null);
+                    }
+                }
+            }else {
+                Integer deptAccCtrlCount = accCtrlDeptDao.selectCount(new QueryWrapper<AccCtrlDept>().eq("dept_id", deptIds));
+                if (deptAccCtrlCount>0){
+                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "该部门下有门禁信息无法删除", null);
+                }
+                Integer deptFaceCount = deptFaceDao.selectCount(new QueryWrapper<FaceDept>().eq("dept_id", deptIds));
+                if (deptFaceCount>0){
+                    return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "该部门下有人脸信息无法删除", null);
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);
+            return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, "查询部门删除时判断该部门下有没有人脸和门禁信息失败", null);
+        }
+        return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "查询部门删除时判断该部门下有没有人脸和门禁信息成功", null);
+    }
+
+
+
+
+
+
     @ApiOperation(value = "门禁信息批量导入excel")
     @RequestMapping(value = "/batchImport", method = RequestMethod.POST,consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public RestfulEntityBySummit<String> batchImport(@ApiParam(value = "门禁模板excel", required = true) @RequestPart("accCtrlExcel") MultipartFile accCtrlExcel){
@@ -289,6 +335,7 @@ public class AccessControlInfoController {
         outputStream.write(EasyExcelUtil.exportSingleAccCtrlByTemplate(path + File.separator +"template"+File.separator+"AccCtrl_template.xls",sheetName,dept_names,2));
         outputStream.flush();
     }
+
 
 
 

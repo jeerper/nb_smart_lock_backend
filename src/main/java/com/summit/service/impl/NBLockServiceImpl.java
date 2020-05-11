@@ -5,7 +5,6 @@ import com.summit.common.entity.ResponseCodeEnum;
 import com.summit.common.entity.RestfulEntityBySummit;
 import com.summit.common.util.ResultBuilder;
 import com.summit.dao.entity.AccessControlInfo;
-import com.summit.dao.entity.AddAccCtrlprocess;
 import com.summit.dao.repository.AccessControlDao;
 import com.summit.dao.repository.LockInfoDao;
 import com.summit.entity.BackLockInfo;
@@ -89,8 +88,7 @@ public class NBLockServiceImpl {
                     resultCode[0] = ResponseCodeEnum.CODE_9999;
                     msg[0] = backLockInfo.getContent();
                 }else{
-                    //插入门禁开关锁记录统计表
-                    String accessControlId = accessControlInfo.getAccessControlId();
+                   /* String accessControlId = accessControlInfo.getAccessControlId();
                     AddAccCtrlprocess accCtrlprocess=addAccCtrlprocessService.selectAddAccCtrlByAccCtrlID(accessControlId);
                     if (accCtrlprocess==null){
                         AddAccCtrlprocess addAccCtrlprocess=new AddAccCtrlprocess();
@@ -100,7 +98,10 @@ public class NBLockServiceImpl {
                         int add=addAccCtrlprocessService.insert(addAccCtrlprocess);
                     }else {
                         int updateAddAccCtrl=addAccCtrlprocessService.updateAddAccCtrlprocess(accessControlId);
-                    }
+                    }*/
+                    //插入门禁开关锁记录统计表
+                    String accessControlId = accessControlInfo.getAccessControlId();
+                    addAccCtrlprocessService.insertOrUpdateLockOrUnlockCount(accessControlId);
                 }
             } else {
                 resultCode[0] = ResponseCodeEnum.CODE_9999;
