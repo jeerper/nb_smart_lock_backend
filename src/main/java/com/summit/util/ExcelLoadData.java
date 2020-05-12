@@ -318,7 +318,10 @@ public class ExcelLoadData {
                 String birthday = getCellValue(row.getCell(5));//生日
                 if (StrUtil.isNotBlank(birthday)){
                     /*throw new Exception("生日不能为空!");*/
-                    faceInfo.setBirthday(birthday);
+                    Date date = DateUtil.stringToDate(birthday, "yyyy-MM-dd");
+                    if (date!=null){
+                        faceInfo.setBirthday(birthday);
+                    }
                 }
                 String province = getCellValue(row.getCell(6));//省份
                 if (StrUtil.isNotBlank(province)){
@@ -334,7 +337,10 @@ public class ExcelLoadData {
                     String faceEndTime = getCellValue(row.getCell(8));//有效日期
                     if (StrUtil.isNotBlank(faceEndTime)){
                         /*throw new Exception("有效日期不能为空!");*/
-                        faceInfo.setFaceEndTime(DateUtil.stringToDate(faceEndTime,"yyyy-MM-dd"));
+                        Date date = DateUtil.stringToDate(faceEndTime, "yyyy-MM-dd");
+                        if (date!=null){
+                            faceInfo.setFaceEndTime(date);
+                        }
                     }
                 }catch (Exception e){
                     throw new Exception("有效日期格式错误"+faceInfo.getUserName());

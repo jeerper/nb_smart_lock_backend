@@ -11,7 +11,7 @@ public enum  FaceZipUploadStatus {
     CardType(7,"证件类型为空,上传失败"),
     CardId(8,"证件号为空,上传失败"),
     Gender(9,"性别为空,上传失败"),
-    Birthday(10,"生日为空,上传失败"),
+    Birthday(10,"生日为空或者格式不对,上传失败"),
     Province(11,"省份为空,上传失败"),
     City(12,"城市为空,上传失败"),
     FaceEndTime(13,"有效期为空或者格式不对,上传失败"),
