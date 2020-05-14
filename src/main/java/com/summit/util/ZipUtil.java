@@ -35,13 +35,11 @@ public class ZipUtil {
      * @throws IOException IO异常
      */
     public static void unzip(String sourcefiles, String decompreDirectory) throws IOException {
-        ZipFile readfile = null;
-        InputStream in = null;
-        FileOutputStream out = null;
+        ZipFile zipFile = null;
         try {
             //readfile =new ZipFile(sourcefiles);
-            readfile = new ZipFile(sourcefiles, Charset.forName("GBK"));
-            Enumeration<?> entries = readfile.entries();
+            zipFile = new ZipFile(sourcefiles, Charset.forName("GBK"));
+            Enumeration<?> entries = zipFile.entries();
             ZipEntry zipEntry = null;
             File credirectory = new File(decompreDirectory);
             credirectory.mkdirs();
@@ -65,31 +63,38 @@ public class ZipUtil {
                         createDirectory.mkdirs();
                     }
                     File unpackfile = new File(decompreDirectory + File.separator + zipEntry.getName());
-                    in = readfile.getInputStream(zipEntry);
-                    out = new FileOutputStream(unpackfile);
-                    int c;
-                    byte[] by = new byte[1024];
-                    while ((c = in.read(by)) != -1) {
-                        out.write(by, 0, c);
+                    InputStream in = null;
+                    FileOutputStream out = null;
+                    try{
+                        in = zipFile.getInputStream(zipEntry);
+                        out = new FileOutputStream(unpackfile);
+                        int c;
+                        byte[] by = new byte[1024];
+                        while ((c = in.read(by)) != -1) {
+                            out.write(by, 0, c);
+                        }
+                        out.flush();
+                    }finally {
+                        try{
+                            in.close();
+                        }catch (Exception e){
+                            log.warn("close FileOutputStream exception", e);
+                        }
+                        try{
+                            out.close();
+                        }catch (Exception e){
+                            log.warn("close InputStream exception", e);
+                        }
                     }
-                    out.flush();
                 }
             }
-        } catch (IOException ex) {
-            ex.printStackTrace();
         } finally {
-            try {
-                if (in!=null){
-                    in.close();
+            if(zipFile != null){
+                try {
+                    zipFile.close();
+                } catch (IOException e) {
+                    log.warn("close zipFile exception", e);
                 }
-                if (out!=null){
-                    out.close();
-                }
-                if (readfile != null) {
-                    readfile.close();
-                }
-            } catch (IOException e) {
-                log.warn("文件流关闭异常",e);
             }
 
         }
