@@ -36,6 +36,8 @@ public class ZipUtil {
      */
     public static void unzip(String sourcefiles, String decompreDirectory) throws IOException {
         ZipFile readfile = null;
+        InputStream in = null;
+        FileOutputStream out = null;
         try {
             //readfile =new ZipFile(sourcefiles);
             readfile = new ZipFile(sourcefiles, Charset.forName("GBK"));
@@ -46,59 +48,50 @@ public class ZipUtil {
             while (entries.hasMoreElements()) {
                 zipEntry = (ZipEntry) entries.nextElement();
                 String entryName = zipEntry.getName();
-                InputStream in = null;
-                FileOutputStream out = null;
-                try {
-                    if (zipEntry.isDirectory()) {
-                        String name = zipEntry.getName();
-                        name = name.substring(0, name.length() - 1);
-                        File  createDirectory = new File(decompreDirectory+ File.separator + name);
+                if (zipEntry.isDirectory()) {
+                    String name = zipEntry.getName();
+                    name = name.substring(0, name.length() - 1);
+                    File  createDirectory = new File(decompreDirectory+ File.separator + name);
+                    createDirectory.mkdirs();
+                } else {
+                    int index = entryName.lastIndexOf("\\");
+                    if (index != -1) {
+                        File createDirectory = new File(decompreDirectory+ File.separator+ entryName.substring(0, index));
                         createDirectory.mkdirs();
-                    } else {
-                        int index = entryName.lastIndexOf("\\");
-                        if (index != -1) {
-                            File createDirectory = new File(decompreDirectory+ File.separator+ entryName.substring(0, index));
-                            createDirectory.mkdirs();
-                        }
-                        index = entryName.lastIndexOf("/");
-                        if (index != -1) {
-                            File createDirectory = new File(decompreDirectory + File.separator + entryName.substring(0, index));
-                            createDirectory.mkdirs();
-                        }
-                        File unpackfile = new File(decompreDirectory + File.separator + zipEntry.getName());
-                        in = readfile.getInputStream(zipEntry);
-                        out = new FileOutputStream(unpackfile);
-                        int c;
-                        byte[] by = new byte[1024];
-                        while ((c = in.read(by)) != -1) {
-                            out.write(by, 0, c);
-                        }
-                        out.flush();
                     }
-                }finally {
-                    try{
-                        if (in!=null){
-                            in.close();
-                        }
-                        if (out!=null){
-                            out.close();
-                        }
-                    }catch (Exception e){
-                        log.warn("关闭流失败", e);
+                    index = entryName.lastIndexOf("/");
+                    if (index != -1) {
+                        File createDirectory = new File(decompreDirectory + File.separator + entryName.substring(0, index));
+                        createDirectory.mkdirs();
                     }
-
+                    File unpackfile = new File(decompreDirectory + File.separator + zipEntry.getName());
+                    in = readfile.getInputStream(zipEntry);
+                    out = new FileOutputStream(unpackfile);
+                    int c;
+                    byte[] by = new byte[1024];
+                    while ((c = in.read(by)) != -1) {
+                        out.write(by, 0, c);
+                    }
+                    out.flush();
                 }
             }
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
-            if (readfile != null) {
-                try {
-                    readfile.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+            try {
+                if (in!=null){
+                    in.close();
                 }
+                if (out!=null){
+                    out.close();
+                }
+                if (readfile != null) {
+                    readfile.close();
+                }
+            } catch (IOException e) {
+                log.warn("文件流关闭异常",e);
             }
+
         }
     }
     /**
@@ -299,27 +292,14 @@ public class ZipUtil {
     }
     public static boolean createZip(String sourcePath, String zipPath,Boolean isDrop) {
         boolean flag = true;
-        FileOutputStream fos = null;
-        ZipOutputStream zos = null;
-        try {
-            fos = new FileOutputStream(zipPath);
-            zos = new ZipOutputStream(fos);
+        try (
+                FileOutputStream fos = new FileOutputStream(zipPath);
+                ZipOutputStream zos = new ZipOutputStream(fos);
+        ){
             writeZip(new File(sourcePath), "", zos,isDrop);
         } catch (Exception e) {
             flag = false;
             log.error("创建ZIP文件失败",e);
-        } finally {
-            try {
-                if (fos != null) {
-                    fos.close();
-                }
-                if (zos != null) {
-                    zos.close();
-                }
-            } catch (IOException e) {
-                log.error("流关闭失败",e);
-            }
-
         }
         return flag;
     }
