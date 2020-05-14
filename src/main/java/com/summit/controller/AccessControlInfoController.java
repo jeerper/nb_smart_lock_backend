@@ -348,18 +348,16 @@ public class AccessControlInfoController {
             response.setContentType("application/octet-stream");
             response.setHeader("Content-Disposition", "attachment;filename=" + fileName); // 3.设置content-disposition响应头控制浏览器以下载的形式打开文件
             byte[] buff = new byte[1024]; // 5.创建数据缓冲区
-            BufferedInputStream bis = null;
-            OutputStream os = null;//
-            try {
-                os = response.getOutputStream(); // 6.通过response对象获取OutputStream流
-                bis = new BufferedInputStream(new FileInputStream(file)); // 4.根据文件路径获取要下载的文件输入流
+            try (
+                    OutputStream os = response.getOutputStream(); // 6.通过response对象获取OutputStream流
+                    BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file)); // 4.根据文件路径获取要下载的文件输入流
+                    ){
                 int i = bis.read(buff); // 7.将FileInputStream流写入到buffer缓冲区
                 while (i != -1) {
                     os.write(buff, 0, buff.length); // 8.使用将OutputStream缓冲区的数据输出到客户端浏览器
                     os.flush();
                     i = bis.read(buff);
                 }
-                bis.close();
             }catch (IOException e) {
                 log.error("文件下载失败",e);
                 e.printStackTrace();

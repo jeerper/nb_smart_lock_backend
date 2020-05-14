@@ -34,7 +34,6 @@ public class ZipUtil {
      * @param decompreDirectory 解压缩后文件存放的目录
      * @throws IOException IO异常
      */
-    @SuppressWarnings("unchecked")
     public static void unzip(String sourcefiles, String decompreDirectory) throws IOException {
         ZipFile readfile = null;
         try {
@@ -76,39 +75,28 @@ public class ZipUtil {
                         }
                         out.flush();
                     }
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                    throw new IOException("解压失败：" + ex.toString());
-                } finally {
-                    if (in != null) {
-                        try {
+                }finally {
+                    try{
+                        if (in!=null){
                             in.close();
-                        } catch (IOException ex) {
-
                         }
-                    }
-                    if (out != null) {
-                        try {
+                        if (out!=null){
                             out.close();
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
                         }
+                    }catch (Exception e){
+                        log.warn("关闭流失败", e);
                     }
-                    in=null;
-                    out=null;
-                }
 
+                }
             }
         } catch (IOException ex) {
             ex.printStackTrace();
-            throw new IOException("解压失败：" + ex.toString());
         } finally {
             if (readfile != null) {
                 try {
                     readfile.close();
                 } catch (IOException ex) {
                     ex.printStackTrace();
-                    throw new IOException("解压失败：" + ex.toString());
                 }
             }
         }
@@ -322,6 +310,9 @@ public class ZipUtil {
             log.error("创建ZIP文件失败",e);
         } finally {
             try {
+                if (fos != null) {
+                    fos.close();
+                }
                 if (zos != null) {
                     zos.close();
                 }

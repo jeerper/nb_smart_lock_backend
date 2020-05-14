@@ -230,13 +230,12 @@ public class FileUtil {
      * @return base64字符串格式的图片
      */
     public static String imageToBase64Str(String imgFile) {
-        InputStream inputStream = null;
         byte[] data = null;
-        try {
-            inputStream = new FileInputStream(imgFile);
+        try (
+                InputStream inputStream = new FileInputStream(imgFile);
+                ){
             data = new byte[inputStream.available()];  //根据文件流字节大小初始化data字节数组大小
             inputStream.read(data);  //将流读入data
-            inputStream.close();  //关闭流
         } catch (IOException e) {
             e.printStackTrace();
         }

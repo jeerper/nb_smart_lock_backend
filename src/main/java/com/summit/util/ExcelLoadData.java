@@ -448,17 +448,16 @@ public class ExcelLoadData {
         File newfile = new File(filePath);
         int bytesRead = 0;
         byte[] buffer = new byte[8192];
-        try
-        {
-            FileInputStream fis = new FileInputStream(newfile);
-            OutputStream os = item.getOutputStream();
+        try (
+                FileInputStream fis = new FileInputStream(newfile);
+                OutputStream os = item.getOutputStream();
+                ){
+
             while ((bytesRead = fis.read(buffer, 0, 8192))
                     != -1)
             {
                 os.write(buffer, 0, bytesRead);
             }
-            os.close();
-            fis.close();
         }
         catch (IOException e)
         {
@@ -627,7 +626,6 @@ public class ExcelLoadData {
                             }
                         }
                     });
-
             return zipId;
 
     }
