@@ -5,6 +5,7 @@ import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.system.SystemUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.summit.common.entity.DeptBean;
 import com.summit.common.entity.RestfulEntityBySummit;
@@ -17,8 +18,8 @@ import com.summit.dao.repository.AccCtrlDeptDao;
 import com.summit.dao.repository.FaceInfoManagerDao;
 import com.summit.entity.AccCtrlDept;
 import com.summit.entity.FaceUploadZipInfo;
-import com.summit.exception.ErrorMsgException;
 import com.summit.sdk.huawei.model.FaceZipUploadStatus;
+import com.summit.service.DeptsService;
 import com.summit.service.FaceInfoManagerService;
 import com.summit.service.ICbbUserAuthService;
 import com.summit.service.LockInfoService;
@@ -75,6 +76,8 @@ public class ExcelLoadData {
     private BaiduSdkClient baiduSdkClient;
     @Autowired
     RedisTemplate<String, Object> genericRedisTemplate;
+    @Autowired
+    private DeptsService deptsService;
 
     public Map<String,Object> loadExcel(MultipartFile file) throws Exception{
 
@@ -99,12 +102,12 @@ public class ExcelLoadData {
                 e.printStackTrace( );
             }
         }else {
-            throw new ErrorMsgException("文件不是Excel文件");
+            throw new Exception("文件不是Excel文件");
         }
         Sheet sheet = workbook.getSheetAt(0);
         int rows = sheet.getLastRowNum();//指定行数。一共多少+
         if(rows==0) {
-            throw new ErrorMsgException("请填写行数");
+            throw new Exception("请填写行数");
         }
         for (int i = 2; i < rows+1; i++) {
             Row row = sheet.getRow(i);
@@ -115,19 +118,19 @@ public class ExcelLoadData {
                 accessControlInfo.setAccessControlId(IdWorker.getIdStr());
                 String access_control_name = getCellValue(row.getCell(0));
                 if (StrUtil.isBlank(access_control_name)){
-                    throw new ErrorMsgException("门禁名称不能为空!");
+                    throw new Exception("门禁名称不能为空!");
                 }
                 accessControlInfo.setAccessControlName(access_control_name);
                 lockInfo.setLockId(IdWorker.getIdStr());
                 accessControlInfo.setLockId(lockInfo.getLockId());
                 String lock_code = getCellValue(row.getCell(1));
                 if (StrUtil.isBlank(lock_code)){
-                    throw new ErrorMsgException("锁编号不能为空!");
+                    throw new Exception("锁编号不能为空!");
                 }
                 LockInfo lock = lockInfoService.selectBylockCode(lock_code);
                 if(lock != null){
                     log.error("录入锁信息失败，锁{}已存在且已属于其他门禁", lock.getLockCode());
-                    throw new ErrorMsgException("录入锁信息失败，锁" + lock.getLockCode() + "已存在且已属于其他门禁");
+                    throw new Exception("录入锁信息失败，锁" + lock.getLockCode() + "已存在且已属于其他门禁");
                 }
                 lockInfo.setLockCode(lock_code);
                 lockInfo.setStatus(2);
@@ -137,19 +140,14 @@ public class ExcelLoadData {
                     accessControlInfo.setCreateby(uerInfo.getName());
                 }
                 accessControlInfo.setLockCode(lock_code);
-                String deptNames = getCellValue(row.getCell(2));
-                if (StrUtil.isBlank(deptNames)){
-                    throw new ErrorMsgException("所属部门!");
-                }
-                RestfulEntityBySummit<List<DeptBean>> queryAllDept = iCbbUserAuthService.queryAllDept();
-                List<DeptBean> deptBeans = queryAllDept.getData();
-                if (CommonUtil.isEmptyList(deptBeans)){
-                    throw new ErrorMsgException("部门管理列表为空!");
+                String insertdeptName = getCellValue(row.getCell(2));//机构名称+机构编码
+                if (StrUtil.isBlank(insertdeptName)){
+                    throw new Exception("所属机构为空!");
                 }
                 /*List<String> deptIds=getDeptIdsByDeptCode(deptNames,deptBeans);*/
-                List<String> deptIds = getDeptIdsByNameAndCode(deptNames, deptBeans);
+                List<String> deptIds = getDeptIdsByNameAndCode(insertdeptName);
                 if (CommonUtil.isEmptyList(deptIds)){
-                    throw new ErrorMsgException("所属部门不匹配!");
+                    throw new Exception("所属机构不匹配!");
                 }
                 for (String deptId:deptIds){
                     accCtrlDeptDao.insert(new AccCtrlDept(null,deptId,accessControlInfo.getAccessControlId()));
@@ -160,17 +158,19 @@ public class ExcelLoadData {
                 lockInfo.setCreatetime(new Date());
                 accessControlInfo.setUpdatetime(new Date());
                 lockInfo.setUpdatetime(new Date());
-                DecimalFormat df = new DecimalFormat("0.00");
-                String longitude = df.format(row.getCell(3).getNumericCellValue());
+                String longitude = getCellValue(row.getCell(3));//经度
                 if (StrUtil.isBlank(longitude)){
-                    throw new ErrorMsgException("经度不能为空!");
+                    throw new Exception("经度不能为空!");
                 }
-                accessControlInfo.setLongitude(longitude);
-                String latitude = df.format(row.getCell(4).getNumericCellValue());
+                DecimalFormat df = new DecimalFormat("0.00");
+                String insertLongitude = df.format(row.getCell(3).getNumericCellValue());
+                accessControlInfo.setLongitude(insertLongitude);
+                String latitude = getCellValue(row.getCell(4));//维度
                 if (StrUtil.isBlank(latitude)){
-                    throw new ErrorMsgException("纬度不能为空!");
+                    throw new Exception("纬度不能为空!");
                 }
-                accessControlInfo.setLatitude(latitude);
+                String insertLatitude = df.format(row.getCell(4).getNumericCellValue());
+                accessControlInfo.setLatitude(insertLatitude);
                 lockInfo.setCurrentPassword("123456");
                 lockInfo.setNewPassword(RandomUtil.randomStringUpper(6));
                 accessControlInfos.add(accessControlInfo);
@@ -182,13 +182,26 @@ public class ExcelLoadData {
         return map;
     }
 
-    private List<String> getDeptIdsByNameAndCode(String deptNames, List<DeptBean> deptBeans) {
-        List<String> deptIds=new ArrayList<>();
-        String deptcode = deptNames.substring(deptNames.indexOf("(")+1,  deptNames.indexOf(")"));
-        for (DeptBean deptBean:deptBeans){
-            if (deptcode.equalsIgnoreCase(deptBean.getDeptCode())){
-                deptIds.add(deptBean.getId());
-                break;
+    /**
+     * 根据当前的机构名称+机构编码获取当前以及子部门的部门id
+     * @param insertdeptName
+     * @return
+     */
+    private List<String> getDeptIdsByNameAndCode(String insertdeptName) {
+        RestfulEntityBySummit<List<DeptBean>> queryAllDept = iCbbUserAuthService.queryAllDept();
+        List<String> deptNames=new ArrayList<>();
+        List<String> deptIds=null;
+        for (DeptBean deptBean:queryAllDept.getData()){
+            deptNames.add(deptBean.getDeptName()+"("+deptBean.getDeptCode()+")");
+        }
+        if (deptNames.contains(insertdeptName)){
+            String deptcode = insertdeptName.substring(insertdeptName.indexOf("(")+1,  insertdeptName.indexOf(")"));
+            for (DeptBean deptBean:queryAllDept.getData()){
+                if (deptcode.equals(deptBean.getDeptCode())){
+                    JSONObject jsonObject=new JSONObject();
+                    jsonObject.put("pdept",deptBean.getId());
+                    deptIds = deptsService.getDeptsByPdept(jsonObject);
+                }
             }
         }
         return deptIds;
@@ -345,19 +358,18 @@ public class ExcelLoadData {
                 }catch (Exception e){
                     throw new Exception("有效日期格式错误"+faceInfo.getUserName());
                 }
-                String setDeptNames = getCellValue(row.getCell(9));//所属机构编码
+                String insertDeptName = getCellValue(row.getCell(9));//所属机构名称+编码
                 try{
-                    if (StrUtil.isNotBlank(setDeptNames)){
-                        /* throw new Exception("所属机构为空!");*/
+                    if (StrUtil.isNotBlank(insertDeptName)){
                         RestfulEntityBySummit<List<DeptBean>> allDept = iCbbUserAuthService.queryAllDept();
-                        List<String> deptCodes=new ArrayList<>();
+                        List<String> deptNames=new ArrayList<>();
                         for (DeptBean deptBean:allDept.getData()){
-                            deptCodes.add(deptBean.getDeptCode());
+                            deptNames.add(deptBean.getDeptName()+"("+deptBean.getDeptCode()+")");
+                            //deptCodes.add(deptBean.getDeptCode());
                         }
-                        String deptCode = setDeptNames.substring(setDeptNames.indexOf("(")+1, setDeptNames.lastIndexOf(")"));
-                        if (deptCodes.contains(deptCode)){
-                            /*throw new Exception("所属机构不匹配: "+setDeptNames);*/
-                            faceInfo.setDeptNames(setDeptNames);
+                        //String deptCode = insertDeptName.substring(insertDeptName.indexOf("(")+1, insertDeptName.lastIndexOf(")"));
+                        if (deptNames.contains(insertDeptName)){
+                            faceInfo.setDeptNames(insertDeptName);
                         }
                     }
                 }catch (Exception e){
@@ -481,7 +493,7 @@ public class ExcelLoadData {
                 }
             }
         }else {
-            throw new Exception("execl文件不存在!");
+            throw new Exception("Excel文件不存在!");
         }
         String zipId = IdWorker.getIdStr();
         Observable.just(faceInfos)

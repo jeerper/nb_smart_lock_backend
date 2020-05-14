@@ -724,19 +724,22 @@ public class AccessControlServiceImpl implements AccessControlService {
         Map<String, Object> stringObjectMap = excelLoadData.loadExcel(uploadFile);
         List<AccessControlInfo> accessControlInfos = (List<AccessControlInfo>)stringObjectMap.get("accessControlInfos");
         List<LockInfo> lockInfos=(List<LockInfo>)stringObjectMap.get("lockInfos");
+        if (CommonUtil.isEmptyList(accessControlInfos)){
+            throw new Exception("Excel表格数据格式不对,导入失败");
+        }
         try{
             if (!CommonUtil.isEmptyList(accessControlInfos)){
                 accessControlDao.insertAccessControlInfos(accessControlInfos);
             }
-            if (!CommonUtil.isEmptyList(accessControlInfos)){
+            if (!CommonUtil.isEmptyList(lockInfos)){
                 lockInfoDao.insertLockInfos(lockInfos);
             }
         }catch (Exception e){
             log.error("批量插入数据失败",e);
             if (e instanceof DuplicateKeyException) {
-                throw new ErrorMsgException("锁编号重复,导入失败");
+                throw new Exception("锁编号重复,导入失败");
             }
-            throw new ErrorMsgException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
         return true;
     }

@@ -241,16 +241,10 @@ public class AccessControlInfoController {
         return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000, "查询部门删除时判断该部门下有没有人脸和门禁信息成功", null);
     }
 
-
-
-
-
-
-    @ApiOperation(value = "门禁信息批量导入excel")
+    @ApiOperation(value = "门禁信息批量导入Excel")
     @RequestMapping(value = "/batchImport", method = RequestMethod.POST,consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public RestfulEntityBySummit<String> batchImport(@ApiParam(value = "门禁模板excel", required = true) @RequestPart("accCtrlExcel") MultipartFile accCtrlExcel){
         JSONObject filesName = null;
-        String msg = "门禁信息批量导入excel失败";
         if(accCtrlExcel!=null){
             try{
                 filePath = new StringBuilder()
@@ -264,9 +258,7 @@ public class AccessControlInfoController {
                 MultipartFile mulFileByPath = excelLoadData.getMulFileByPath(filePath+orginFileName);
                 boolean b= accessControlService.batchImport(mulFileByPath);
             }catch (Exception e){
-                msg = getErrorMsg(msg, e);
-                log.error(msg,e);
-                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, msg,null);
+                return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, e.getMessage(), null);
             }
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"门禁信息批量导入excel成功",null);
         }

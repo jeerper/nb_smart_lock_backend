@@ -311,7 +311,6 @@ public class FaceInfoManagerController {
     public RestfulEntityBySummit<String> uploadZip(@ApiParam(value = "压缩文件夹", required = true)
                                                    @RequestPart("faceZip") MultipartFile faceZip) throws IOException {
         JSONObject filesName = null;
-        String msg = "人脸信息批量导入失败";
         String zipId=null;
         if (faceZip !=null){
             try{
@@ -329,7 +328,6 @@ public class FaceInfoManagerController {
                 ZipUtil.unzip(zipPath+fileName,zipPath+zipFileName);
                 zipId = excelLoadData.loadFaceZip(zipPath + zipFileName);
             }catch (Exception e){
-                log.error(msg,e);
                 return ResultBuilder.buildError(ResponseCodeEnum.CODE_9999, e.getMessage(), null);
             }
             return ResultBuilder.buildError(ResponseCodeEnum.CODE_0000,"人脸信息批量导入成功",zipId);

@@ -2,7 +2,7 @@ package com.summit.sdk.huawei.model;
 
 public enum  FaceZipUploadStatus {
     FaceNoDetected(0,"没有检测到人脸,上传失败"),
-    FaceRepeat(1,"人脸添加失败,头像重复,上传失败"),
+    FaceRepeat(1,"头像重复或命名重复,上传失败"),
     FaceSimilar(2,"发现人脸库中有相似的人脸,上传失败"),
     FaceUploading(3,"上传中"),
     FaceUploadSucess(4,"导入完毕"),
