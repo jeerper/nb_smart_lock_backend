@@ -6,7 +6,7 @@ public enum  FaceZipUploadStatus {
     FaceSimilar(2,"发现人脸库中有相似的人脸,上传失败"),
     FaceUploading(3,"上传中"),
     FaceUploadSucess(4,"导入完毕"),
-    FaceUploadImageNameWrong(5,"人脸图片命名不对,上传失败"),
+    FaceUploadImageNameWrong(5,"人脸图片命名不对或图片不存在,上传失败"),
     FaceType(6,"人脸类型为空,上传失败"),
     CardType(7,"证件类型为空,上传失败"),
     CardId(8,"证件号为空,上传失败"),

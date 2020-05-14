@@ -286,7 +286,8 @@ public class FaceInfoManagerController {
 //                deptNames.add(deptBean.getDeptCode());
             }
         }
-        String[] dept_names = deptNames.toArray(new String[deptNames.size()]);
+       /* String[] dept_names = deptNames.toArray(new String[deptNames.size()]);*/
+        String[] dept_names = deptNames.toArray(new String[0]);
         response.setCharacterEncoding("UTF-8");
         response.reset();
         response.setContentType("application/x-download;charset=UTF-8");

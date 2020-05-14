@@ -27,6 +27,7 @@ import com.summit.util.PageConverter;
 import com.summit.util.UserDeptAuthUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -732,7 +733,10 @@ public class AccessControlServiceImpl implements AccessControlService {
             }
         }catch (Exception e){
             log.error("批量插入数据失败",e);
-            throw new ErrorMsgException("批量插入数据失败");
+            if (e instanceof DuplicateKeyException) {
+                throw new ErrorMsgException("锁编号重复,导入失败");
+            }
+            throw new ErrorMsgException(e.getMessage());
         }
         return true;
     }
