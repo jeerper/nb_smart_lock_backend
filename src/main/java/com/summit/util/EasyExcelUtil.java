@@ -353,10 +353,11 @@ public class EasyExcelUtil {
      */
     public static void createZip(byte[] newBytes,String path) throws Exception {
         long start = System.currentTimeMillis();
-        OutputStream os = null;
+
         try ( ByteArrayOutputStream out = new ByteArrayOutputStream();
-                ZipOutputStream zos  = new ZipOutputStream(out);
-              ByteArrayInputStream in = new ByteArrayInputStream(newBytes)){
+              ZipOutputStream zos  = new ZipOutputStream(out);
+              ByteArrayInputStream in = new ByteArrayInputStream(newBytes);
+              OutputStream os = new FileOutputStream(new File(path))){
             byte[] buf = new byte[BUFFER_SIZE];
             zos.putNextEntry(new ZipEntry( "人脸数据导入模板.xls"));
             int len;
@@ -367,8 +368,6 @@ public class EasyExcelUtil {
             in.close();
             zos.finish();
             byte[] bytes = out.toByteArray();
-
-            os = new FileOutputStream(new File(path));
             os.write(bytes);
             os.flush();
             long end = System.currentTimeMillis();
@@ -377,7 +376,6 @@ public class EasyExcelUtil {
             throw new RuntimeException("zip error from ZipUtils", e);
         }
     }
-
 
 
     /**
