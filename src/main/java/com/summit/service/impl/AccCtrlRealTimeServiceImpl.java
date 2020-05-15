@@ -1,8 +1,6 @@
 package com.summit.service.impl;
 
 
-import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.summit.cbb.utils.page.Pageable;
@@ -18,10 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 门禁实时信息service实现
@@ -86,42 +83,9 @@ public class AccCtrlRealTimeServiceImpl implements AccCtrlRealTimeService {
         if (current != null && pageSize != null) {
             pageParam = new Page<>(current, pageSize);
         }
-        List<String> dept_ids =new ArrayList<>();
-        String currentDeptService = deptsService.getCurrentDeptService();
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("pdept",currentDeptService);
-        List<String> userDepts = deptsService.getDeptsByPdept(jsonObject);
-        if (StrUtil.isNotBlank(deptIds)){//说明是多个部门id
-            if (deptIds.contains(",")){//多个部门
-                String[] list = deptIds.split(",");
-                List<String> deptIdList = Arrays.asList(list);
-                for (String deptId:deptIdList){
-                    JSONObject paramJson=new JSONObject();
-                    paramJson.put("pdept",deptId);
-                    List<String> depts = deptsService.getDeptsByPdept(paramJson);
-                    if (!CommonUtil.isEmptyList(depts)){
-                        for (String dept_id:depts){
-                            dept_ids.add(dept_id);
-                        }
-                    }
-                }
-            }else {//一个部门
-                JSONObject paramJson=new JSONObject();
-                paramJson.put("pdept",deptIds);
-                List<String> depts = deptsService.getDeptsByPdept(paramJson);
-                if (!CommonUtil.isEmptyList(depts)){
-                    for (String dept_id:depts){
-                        dept_ids.add(dept_id);
-                    }
-                }
-            }
-        }else {
-            if (!CommonUtil.isEmptyList(userDepts)){
-                for (String dept_id:userDepts){
-                    dept_ids.add(dept_id);
-                }
-            }
-        }
+        Map<Integer,List<String>> map = deptsService.getAllDeptIdByLoginDeptIdOrParameterDeptId(deptIds);
+        List<String> dept_ids = map.get(1);
+        List<String> userDepts = map.get(2);
         CommonUtil.removeDuplicate(dept_ids);//去重
         if (!CommonUtil.isEmptyList(dept_ids)){
             List<AccCtrlRealTimeEntity> realTimeEntities = accCtrlRealTimeDao.selectCondition(pageParam,accCtrlRealTimeEntity, dept_ids,userDepts,start,end);

@@ -602,13 +602,11 @@ public class ExcelLoadData {
                                             FaceInfo similarFaceInfo = faceInfoManagerDao.selectById(faceId);
                                             if (similarFaceInfo != null) {
                                                 errorList.add("发现人脸库中有相似的人脸，名字为：" + similarFaceInfo.getUserName() + "，不能重复录入相同的人脸");
-                                                genericRedisTemplate.expire(zipId, 2,  TimeUnit.MINUTES);
-                                                continue;
                                             } else {
                                                 errorList.add("发现人脸库中有相似的人脸，名字为：null，不能重复录入相同的人脸");
-                                                genericRedisTemplate.expire(zipId, 2,  TimeUnit.MINUTES);
-                                                continue;
                                             }
+                                            genericRedisTemplate.expire(zipId, 2,  TimeUnit.MINUTES);
+                                            continue;
                                         }
                                         faceInfoManagerService.insertFaceInfoByExcel(faceInfo);
                                     } catch (Exception e) {

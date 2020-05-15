@@ -1,6 +1,5 @@
 package com.summit.service.impl;
 
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.summit.cbb.utils.page.Page;
@@ -21,9 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -345,43 +344,10 @@ public class AlarmServiceImpl implements AlarmService {
         if (current != null && pageSize != null) {
             pageParam = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(current, pageSize);
         }
-        List<String> dept_ids =new ArrayList<>();
-        String currentDeptService = deptsService.getCurrentDeptService();
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("pdept",currentDeptService);
-        List<String> userDepts = deptsService.getDeptsByPdept(jsonObject);
-        if (StrUtil.isNotBlank(deptIds)){
-            if (deptIds.contains(",")){
-                String[] list = deptIds.split(",");
-                List<String> deptIdList = Arrays.asList(list);
-                for (String deptId:deptIdList){
-                    JSONObject paramJson=new JSONObject();
-                    paramJson.put("pdept",deptId);
-                    List<String> depts = deptsService.getDeptsByPdept(paramJson);
-                    if (!CommonUtil.isEmptyList(depts)){
-                        for (String dept_id:depts){
-                            dept_ids.add(dept_id);
-                        }
-                    }
-                }
-            }else {//一个部门
-                JSONObject paramJson=new JSONObject();
-                paramJson.put("pdept",deptIds);
-                List<String> depts = deptsService.getDeptsByPdept(paramJson);
-                if (!CommonUtil.isEmptyList(depts)){
-                    for (String dept_id:depts){
-                        dept_ids.add(dept_id);
-                    }
-                }
-            }
-
-        }else {
-            if (!CommonUtil.isEmptyList(userDepts)){
-                for (String dept_id:userDepts){
-                    dept_ids.add(dept_id);
-                }
-            }
-        }
+        Map<Integer,List<String>> map = deptsService.getAllDeptIdByLoginDeptIdOrParameterDeptId(deptIds);
+        List<String> dept_ids = map.get(1);
+        List<String> userDepts = map.get(2);
+        CommonUtil.removeDuplicate(dept_ids);//去重
         if (!CommonUtil.isEmptyList(dept_ids)){
             List<Alarm> alarms = alarmDao.selectCondition(pageParam,alarm, start, end,alarmStatus,userDepts, dept_ids);
             Pageable pageable = null;

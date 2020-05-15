@@ -10,10 +10,16 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFDataValidation;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.Field;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import static org.springframework.util.StreamUtils.BUFFER_SIZE;
 
 /**
  * Description:
@@ -25,6 +31,7 @@ import java.util.Map;
 @Slf4j
 public class EasyExcelUtil {
 
+    private static final int CACHE =  10 * 1024;;
     private static String EXCEL_TYPE_XLS = ".xls";
     private static String EXCEL_TYPE_XLSX = ".xlsx";
 
@@ -337,12 +344,135 @@ public class EasyExcelUtil {
         }
     }
 
-   /* public static void main(String[] args) throws Exception {
-        byte[] export = exportSingleByTemplate("D:\\a1.xls","1");
-        List list = importExcelByAnnotation(1, MyTest.class, export);
 
-        System.out.println(list.toString());
-    }*/
 
+    /**
+     * 根据byte[],path：文件路径 生成文件压缩包
+     *
+     * @throws Exception
+     */
+    public static void createZip(byte[] newBytes,String path) throws Exception {
+        long start = System.currentTimeMillis();
+        OutputStream os = null;
+        try ( ByteArrayOutputStream out = new ByteArrayOutputStream();
+                ZipOutputStream zos  = new ZipOutputStream(out);
+              ByteArrayInputStream in = new ByteArrayInputStream(newBytes)){
+            byte[] buf = new byte[BUFFER_SIZE];
+            zos.putNextEntry(new ZipEntry( "人脸数据导入模板.xls"));
+            int len;
+            while ((len = in.read(buf)) != -1) {
+                zos.write(buf, 0, len);
+            }
+            zos.closeEntry();
+            in.close();
+            zos.finish();
+            byte[] bytes = out.toByteArray();
+
+            os = new FileOutputStream(new File(path));
+            os.write(bytes);
+            os.flush();
+            long end = System.currentTimeMillis();
+            System.out.println("压缩完成，耗时：" + (end - start) + " ms");
+        } catch (Exception e) {
+            throw new RuntimeException("zip error from ZipUtils", e);
+        }
+    }
+
+
+
+    /**
+     * Description:   文件下载
+     * @author cy
+     * @param filePath: 要下载的文件路径
+     * @param dowloadFileName: 下载生成的文件名称
+     * @param response:
+     * @return void
+     * @date  2019/8/2 15:09
+     */
+    public static void downloadFile(String filePath, String dowloadFileName, HttpServletResponse response) {
+        //文件的路径
+        File file = new File(filePath);
+        if(file.exists() && file.isFile()){
+            InputStream ins = null;
+            // 获取文件输出IO流
+            OutputStream outs = null;
+            BufferedInputStream bins = null;
+            BufferedOutputStream bouts = null;
+            try {
+                ins = new FileInputStream(filePath);
+                outs = response.getOutputStream();
+                // 放到缓冲流里面
+                bins = new BufferedInputStream(ins);
+                bouts = new BufferedOutputStream(outs);
+                response.reset();
+                // 指定下载的文件名--设置响应头
+                response.setHeader("Content-Disposition", "attachment;Filename=" + URLEncoder.encode(dowloadFileName, "UTF-8"));
+                response.setContentType("application/x-download;charset=UTF-8");
+                int bytesRead = 0;
+                byte[] buffer = new byte[CACHE];
+                // 开始向网络传输文件流
+                while ((bytesRead = bins.read(buffer, 0, CACHE)) != -1) {
+                    bouts.write(buffer, 0, bytesRead);
+                }
+                bouts.flush();
+            } catch (IOException e) {
+                log.error("文件流出现异常",e);
+            }finally {
+                if(ins != null){
+                    try {
+                        ins.close();
+                    } catch (IOException e) {
+                        log.warn("文件流关闭异常",e);
+                    }
+                }
+                if(bins != null){
+                    try {
+                        bins.close();
+                    } catch (IOException e) {
+                        log.warn("文件流关闭异常",e);
+                    }
+                }
+                if(outs != null){
+                    try {
+                        outs.close();
+                    } catch (IOException e) {
+                        log.warn("文件流关闭异常",e);
+                    }
+                }
+                if(bouts != null){
+                    try {
+                        bouts.close();
+                    } catch (IOException e) {
+                        log.warn("文件流关闭异常",e);
+                    }
+                }
+
+            }
+        }else {
+            log.error("下载文件不存在");
+        }
+    }
+
+
+    /**
+     * 获得指定文件的byte数组
+     */
+    private static byte[] getBytes(String filePath) {
+        byte[] buffer = null;
+        try (FileInputStream fis = new FileInputStream(new File(filePath));
+             ByteArrayOutputStream bos = new ByteArrayOutputStream(1000)){
+            byte[] b = new byte[1000];
+            int n;
+            while ((n = fis.read(b)) != -1) {
+                bos.write(b, 0, n);
+            }
+            buffer = bos.toByteArray();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return buffer;
+    }
 
 }

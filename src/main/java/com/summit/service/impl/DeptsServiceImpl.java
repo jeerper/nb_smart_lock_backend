@@ -1,16 +1,17 @@
 package com.summit.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.summit.common.entity.DeptBean;
 import com.summit.service.DeptsService;
 import com.summit.service.ICbbUserAuthService;
+import com.summit.util.CommonUtil;
 import com.summit.util.DeptUtil;
 import jodd.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class DeptsServiceImpl implements DeptsService {
@@ -102,5 +103,53 @@ public class DeptsServiceImpl implements DeptsService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * 根据所传部门Id或者当前登录人Id获取所有子部门Id
+     * @param deptIds
+     * @return
+     */
+    public Map<Integer,List<String>> getAllDeptIdByLoginDeptIdOrParameterDeptId(String deptIds) throws Exception {
+        List<String> dept_ids =new ArrayList<>();
+        String currentDeptService = getCurrentDeptService();
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("pdept",currentDeptService);
+        List<String> userDepts = getDeptsByPdept(jsonObject);
+        if (StrUtil.isNotBlank(deptIds)){
+            if (deptIds.contains(",")){//多个部门
+                String[] list = deptIds.split(",");
+                List<String> deptIdList = Arrays.asList(list);
+                for (String deptId:deptIdList){
+                    JSONObject paramJson=new JSONObject();
+                    paramJson.put("pdept",deptId);
+                    List<String> depts = getDeptsByPdept(paramJson);
+                    if (!CommonUtil.isEmptyList(depts)){
+                        for (String dept_id:depts){
+                            dept_ids.add(dept_id);
+                        }
+                    }
+                }
+            }else {//一个部门
+                JSONObject paramJson=new JSONObject();
+                paramJson.put("pdept",deptIds);
+                List<String> depts = getDeptsByPdept(paramJson);
+                if (!CommonUtil.isEmptyList(depts)){
+                    for (String dept_id:depts){
+                        dept_ids.add(dept_id);
+                    }
+                }
+            }
+        }else {
+            if (!CommonUtil.isEmptyList(userDepts)){
+                for (String dept_id:userDepts){
+                    dept_ids.add(dept_id);
+                }
+            }
+        }
+        Map<Integer,List<String>> map=new HashMap<>();
+        map.put(1,dept_ids);
+        map.put(2,userDepts);
+        return map;
     }
 }

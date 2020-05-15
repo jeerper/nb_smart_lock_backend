@@ -3,6 +3,7 @@ package com.summit.service;
 import com.alibaba.fastjson.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 
 public interface DeptsService  {
 
@@ -29,4 +30,12 @@ public interface DeptsService  {
      * @return
      */
     List<String> getParentDeptNamesByCurrentDept(JSONObject paramJson);
+
+
+    /**
+     * 根据所传部门Id或者当前登录人Id获取所有子部门Id和 根据pdept查询下面所有的子节点(包括父节点、多级)
+     * @param deptIds
+     * @return
+     */
+    Map<Integer,List<String>> getAllDeptIdByLoginDeptIdOrParameterDeptId(String deptIds) throws Exception;
 }
