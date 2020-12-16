@@ -2,12 +2,18 @@
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://192.168.140.153:49999/cbb_nb_smart_lock?useOldAliasMetadataBehavior=true&createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8&allowMultiQueries=true
+    #url: jdbc:mysql://192.168.140.153:49999/cbb_nb_smart_lock?useOldAliasMetadataBehavior=true&createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8&allowMultiQueries=true
+    #url: jdbc:mysql://192.168.141.222:55555/cbb_nb_smart_lock?useOldAliasMetadataBehavior=true&createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8&allowMultiQueries=true
+    #username: root
+    #password: Summit2017
+    url: jdbc:mysql://localhost:3306/cbb_nb_smart_lock?useOldAliasMetadataBehavior=true&createDatabaseIfNotExist=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8&allowMultiQueries=true
     username: root
-    password: Summit2017
+    password: 123456
   redis:
-    host: 192.168.140.153
-    port: 10001
+    #host: 192.168.140.153
+    #port: 10001
+    host: 127.0.0.1
+    port: 6379
 eureka:
   instance:
     #使用IP注册服务
@@ -16,4 +22,5 @@ eureka:
     healthcheck:
       enabled: true
     serviceUrl:
-      defaultZone: "http://ucp:Summit2018@192.168.140.153:45000/eureka/"
+      #defaultZone: "http://ucp:Summit2018@192.168.140.153:45000/eureka/"
+      defaultZone: "http://ucp:Summit2018@localhost:8761/eureka/"

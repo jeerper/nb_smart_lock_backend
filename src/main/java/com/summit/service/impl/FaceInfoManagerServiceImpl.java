@@ -316,7 +316,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
         }
         Page<FaceInfo> pageParam = null;
         if (current != null && pageSize != null) {
-            pageParam = new Page<>(current, pageSize);
+            pageParam = new Page<FaceInfo>(current, pageSize);
         }
         Map<Integer,List<String>> map = deptsService.getAllDeptIdByLoginDeptIdOrParameterDeptId(deptIds);
         List<String> dept_ids = map.get(1);
@@ -332,7 +332,7 @@ public class FaceInfoManagerServiceImpl implements FaceInfoManagerService {
                 }
             }
             if (pageParam != null) {
-                pageParam.setRecords(faceInfos);
+                pageParam.setContent(faceInfos);
                 return pageParam;
             }
             return new Page<>(faceInfos, null);

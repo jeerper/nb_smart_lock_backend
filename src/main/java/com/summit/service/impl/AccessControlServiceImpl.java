@@ -170,7 +170,7 @@ public class AccessControlServiceImpl implements AccessControlService {
                 }
             }
             if (pageParam != null) {
-                pageParam.setRecords(accessControls);
+                pageParam.setContent(accessControls);
                 return pageParam;
             }
             return new Page<>(accessControls, null);

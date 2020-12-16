@@ -315,7 +315,7 @@
         </plugins>
     </build>
 
-    <repositories>
+    <!--<repositories>
         <repository>
             <id>summit</id>
             <name>summit</name>
@@ -328,6 +328,6 @@
                 <updatePolicy>always</updatePolicy>
             </snapshots>
         </repository>
-    </repositories>
+    </repositories>-->
 
 </project>

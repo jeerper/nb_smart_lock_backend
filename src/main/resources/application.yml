@@ -5,9 +5,10 @@ sdk:
   groupId: summit_test
 server:
   port: 22233
+  connection-timeout: 18000000
 spring:
   profiles:
-    active: pro
+    active: dev
     include: common
   application:
     name: "cbb-nb-smart-lock"
@@ -17,6 +18,11 @@ spring:
     baseline-on-migrate: true
     locations: classpath:db
     encoding: UTF-8
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 150MB
 
 mybatis-plus:
   mapper-locations: classpath:com/summit/dao/**/*.xml

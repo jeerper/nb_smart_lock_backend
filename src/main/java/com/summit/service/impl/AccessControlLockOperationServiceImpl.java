@@ -1,5 +1,6 @@
 package com.summit.service.impl;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.system.SystemUtil;
@@ -60,6 +61,7 @@ public class AccessControlLockOperationServiceImpl implements AccessControlLockO
                         .append(CommonConstants.URL_SEPARATOR)
                         .append(fileName)
                         .toString();
+                DateTime
                 String facePanoramaFilePath = SystemUtil.getUserInfo().getCurrentDir() + File.separator + facePanoramaUrl;
                 FileUtil.copy(faceRecognitionInfo.getFaceImagePath(), facePanoramaFilePath, true);
                 facePanoramaFile= new FileInfo(snapshotTime + CommonConstants.FACE_PANORAMA_SUFFIX, facePanoramaUrl, "人脸全景图");

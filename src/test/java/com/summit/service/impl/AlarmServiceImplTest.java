@@ -1,8 +1,10 @@
 package com.summit.service.impl;
 
 import cn.hutool.core.util.NumberUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.summit.cbb.utils.page.Page;
-import com.summit.dao.entity.AccessControlInfo;
+import com.summit.common.entity.UserInfo;
 import com.summit.dao.entity.Alarm;
 import com.summit.dao.entity.SimplePage;
 import com.summit.dao.repository.AccessControlDao;
@@ -39,7 +41,8 @@ public class AlarmServiceImplTest {
     private AccessControlService accessControlService;
     @Autowired
     private AccessControlDao accessControlDao;
-
+    @Autowired
+    ObjectMapper objectMapper;
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -59,10 +62,12 @@ public class AlarmServiceImplTest {
     }
     @Test
     public void accessControlService() {
-        List<String> depts=new ArrayList<>();
+      /*  List<String> depts=new ArrayList<>();
         depts.add("1");
         AccessControlInfo accessControlInfo = accessControlDao.selectAccCtrlByLockCode("summit6",depts);
-        System.out.println(accessControlInfo);
+        System.out.println(accessControlInfo);*/
+        String location = System.getProperty("user.dir") + "/data/tmp";
+        System.out.println(location);
     }
 
 
@@ -91,10 +96,16 @@ public class AlarmServiceImplTest {
     }
 
     @Test
-    public void selectAll() {
+    public void selectAll() throws JsonProcessingException {
 
-        List<Alarm> alarms = alarmService.selectAll(null,null,14,2);
-        System.out.println(alarms);
+     /*   List<Alarm> alarms = alarmService.selectAll(null,null,14,2);
+        System.out.println(alarms);*/
+        UserInfo userInfo=new UserInfo();
+        userInfo.setUserName("aaaa");
+        userInfo.setName("bbbbb");
+        userInfo.setPhoneNumber("18860972639");
+        String userInfoString = objectMapper.writeValueAsString(userInfo);
+        System.out.println(userInfoString);
     }
 
     @Test
@@ -121,8 +132,18 @@ public class AlarmServiceImplTest {
 
     @Test
     public void selectByAccCtrlProId() {
-        Alarm alarm = alarmDao.selectByAccCtrlProId("1166896782903349250", null);
-        System.out.println(alarm);
+       /* Alarm alarm = alarmDao.selectByAccCtrlProId("1166896782903349250", null);
+        System.out.println(alarm);*/
+        List<String> list = new ArrayList<String>();
+        list.add("11");
+        list.add("12");
+        list.add("13");
+        list.add("14");
+
+
+       /* String[] arr = new String[2];*/
+        String[] array = list.toArray(new String[0]);
+        System.out.println(Arrays.toString(array));
     }
 
     @Test
@@ -199,6 +220,7 @@ public class AlarmServiceImplTest {
     public void selectAlarmCondition1() {
 
     }
+
     @Test
     public void selectAlarmCondition2() throws IOException {
         String path1="D:\\qianyy\\nb_smart_lock_backend\\snapshot\\1177104482461077505_Face.jpg";
